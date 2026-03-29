@@ -38,7 +38,22 @@ Tagline secundária (contextos técnicos/B2B):
 
 ---
 
-## 4. Arquétipo
+## 4. Paleta de Cores
+
+| Nome | Hex | Uso |
+|------|-----|-----|
+| Floresta Profundo (primária) | `#14532D` | CTAs principais, hero, header, autoridade |
+| Verde Vivo (secundária) | `#16A34A` | Score alto, sucesso, badges otimizado |
+| Dourado Âmbar (acento) | `#D97706` | Números do score, CTAs conversão, destaques |
+| Quase Preto Quente (dark) | `#1C1917` | Textos, fundos dark, seções escuras |
+| Creme Quente (background) | `#FEFCE8` | Hero, onboarding, seções especiais |
+| Stone BG (plataforma) | `#FAFAF9` | Background geral do app |
+
+**Regra de ouro:** sobre âmbar (`#D97706`) usar texto `#1C1917`, nunca branco.
+
+---
+
+## 5. Arquétipo
 
 **O Mago** (com influência do Cuidador)
 
@@ -51,7 +66,7 @@ Implicações de tom:
 
 ---
 
-## 5. StoryBrand (Donald Miller)
+## 6. StoryBrand (Donald Miller)
 
 | Elemento | Destaka |
 |---------|---------|
@@ -67,7 +82,7 @@ Implicações de tom:
 
 ---
 
-## 6. Tom de Voz
+## 7. Tom de Voz
 
 ### É
 - Direto e claro — sem rodeios
@@ -91,7 +106,7 @@ Implicações de tom:
 
 ---
 
-## 7. Headlines Validados
+## 8. Headlines Validados
 
 1. **"Sua clínica deveria aparecer primeiro. A gente faz isso acontecer."**
 2. **"Todo dia, pacientes procuram um dentista na sua cidade. Estão te encontrando?"**
@@ -101,7 +116,7 @@ Implicações de tom:
 
 ---
 
-## 8. Domínio & Identidade Digital
+## 9. Domínio & Identidade Digital
 
 | Canal | Handle / URL |
 |-------|-------------|
@@ -112,7 +127,7 @@ Implicações de tom:
 
 ---
 
-## 9. Identidade Visual (Brief para Designer)
+## 10. Identidade Visual (Brief para Designer)
 
 ### Personalidade visual
 - Limpo, moderno, confiante
@@ -120,10 +135,11 @@ Implicações de tom:
 - Não clínico demais (afasta o lado tech)
 - Equilíbrio: profissional + acessível
 
-### Direção de cor (referência)
-- Primária: um verde forte ou azul-petróleo — transmite confiança e crescimento
-- Evitar: tons hospitalares (azul claro, branco puro) — concorre com a identidade das clínicas dos clientes
-- Evitar: laranja/vermelho agressivo — não combina com saúde
+### Direção de cor (definida)
+- Primária: **Verde Floresta `#14532D`** — autoridade natural, crescimento, sem ser hospitalar
+- Acento: **Dourado Âmbar `#D97706`** — resultado, recompensa, warmth brasileiro
+- Background: **Creme `#FEFCE8`** — acolhedor, orgânico, diferencia do SaaS frio
+- Dark: **`#1C1917`** — quase preto com temperatura quente, não frio azulado
 
 ### Tipografia (referência)
 - Display: sem serifa, peso médio-bold — moderna mas séria
@@ -137,7 +153,7 @@ Implicações de tom:
 
 ---
 
-## 10. Segmentos e Mensagem por Nicho
+## 11. Segmentos e Mensagem por Nicho
 
 ### Dentistas (P0)
 - Dor principal: agenda com horários vagos

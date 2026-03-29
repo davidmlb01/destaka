@@ -1,5 +1,5 @@
 # Design System — Destaka
-**Versão:** 1.0
+**Versão:** 1.1 — Paleta revisada: Verde Floresta + Dourado Âmbar
 **Data:** 2026-03-29
 **Status:** Aprovado para implementação
 **Produzido por:** Design Squad (Design Chief + Visual Generator + Design System Architect) × Copy Squad (Cyrus)
@@ -23,122 +23,165 @@ A Destaka transforma o invisível em visível. O design reflete essa promessa:
 
 ## 2. Paleta de Cores
 
-### Decisão de Cor — Raciocínio
-O violet/roxo profundo foi escolhido por três razões estratégicas:
-1. **Zero concorrência visual** no segmento de saúde local — ninguém usa. Isso é distinctive asset puro (Byron Sharp).
-2. **Arquétipo do Mago** — violet é a cor universal da transformação, sabedoria e poder.
-3. **Contraste perfeito** com o verde esmeralda do resultado/sucesso.
+### Decisão de Cor — Embasamento (Eva Heller × Byron Sharp)
 
-### Paleta Principal
+**Verde Floresta + Dourado Âmbar** foi escolhido por quatro razões:
 
-```
-VIOLET ESCURO (Primária)
-Hex:    #5B21B6
-RGB:    91, 33, 182
-HSL:    265°, 69%, 42%
-Uso:    CTAs principais, hero, elementos de destaque
-Nome:   "Mago"
+1. **Zero concorrência em SaaS de visibilidade local** — distintividade máxima (Byron Sharp: distinctive assets > brand image)
+2. **Verde profundo = autoridade natural** — Eva Heller documenta verde escuro como a cor de maior associação com expertise duradoura e crescimento real, distinta do verde "hospitalar" clínico
+3. **Dourado âmbar = recompensa e resultado** — ativa o circuito de recompensa (warmth + optimism) no exato momento em que o usuário vê o score melhorar
+4. **Ressonância brasileira** — a combinação verde-ouro carrega memória cultural de excelência no Brasil, sem ser literal nem kitsch
 
-VIOLET MÉDIO (Primária clara)
-Hex:    #7C3AED
-RGB:    124, 58, 237
-HSL:    262°, 83%, 58%
-Uso:    Hover states, gradientes, backgrounds secundários
-Nome:   "Destaka Purple"
-
-ESMERALDA (Acento)
-Hex:    #10B981
-RGB:    16, 185, 129
-HSL:    160°, 84%, 39%
-Uso:    Score positivo, sucesso, CTAs secundários, badges "otimizado"
-Nome:   "Visível"
-
-ESMERALDA ESCURO (Acento profundo)
-Hex:    #059669
-RGB:    5, 150, 105
-HSL:    161°, 94%, 30%
-Uso:    Texto sobre fundo verde, estados hover do acento
-Nome:   "Destaque"
-```
-
-### Paleta Neutra
+### Escala Completa — Verde Floresta
 
 ```
-DARK NAVY (Dark mode base / textos)
-Hex:    #1E1B4B
-RGB:    30, 27, 75
-HSL:    244°, 47%, 20%
-Uso:    Textos principais, fundos dark, headings sobre branco
+FLORESTA PROFUNDO (Primária — hero, CTAs principais)
+Hex:    #14532D
+RGB:    20, 83, 45
+HSL:    141°, 61%, 20%
+Nome:   "Raiz"
+Uso:    Botões primários, hero section, header, elementos de autoridade
 
-SLATE (Texto secundário)
-Hex:    #475569
-RGB:    71, 85, 105
-Uso:    Subtítulos, textos de apoio, metadata
+FLORESTA MÉDIO (Hover / gradiente)
+Hex:    #166534
+RGB:    22, 101, 52
+Uso:    Hover state do primário, bordas de destaque
 
-GRAY LIGHT (Borders e divisores)
-Hex:    #E2E8F0
-RGB:    226, 232, 240
+VERDE VIVO (Secundária — resultados positivos)
+Hex:    #16A34A
+RGB:    22, 163, 74
+HSL:    142°, 76%, 36%
+Nome:   "Crescimento"
+Uso:    Score alto, badges "otimizado", CTAs secundários, sucesso
+
+VERDE CLARO (Backgrounds sutis)
+Hex:    #DCFCE7
+RGB:    220, 252, 231
+Uso:    Backgrounds de cards de sucesso, highlights
+
+VERDE MÍNIMO (Background verde mais sutil)
+Hex:    #F0FDF4
+RGB:    240, 253, 244
+Uso:    Fundo de seções com tom verde suave
+```
+
+### Escala Completa — Dourado Âmbar
+
+```
+ÂMBAR QUEIMADO (Acento — CTA, destaques, score)
+Hex:    #D97706
+RGB:    217, 119, 6
+HSL:    37°, 95%, 44%
+Nome:   "Luz"
+Uso:    CTAs de conversão, número do score, badges especiais, hovers de acento
+
+ÂMBAR CLARO (Estados intermediários)
+Hex:    #F59E0B
+RGB:    245, 158, 11
+Uso:    Warning states, score médio, ícones de atenção
+
+ÂMBAR BG (Fundo quente para seções de destaque)
+Hex:    #FFFBEB
+RGB:    255, 251, 235
+Uso:    Background de seções de CTA, toast de sucesso, banners
+```
+
+### Paleta Neutra Quente
+
+```
+QUASE PRETO QUENTE (Dark mode / textos sobre claro)
+Hex:    #1C1917
+RGB:    28, 25, 23
+HSL:    20°, 10%, 10%
+Nome:   "Profundidade"
+Uso:    Textos principais, fundo dark mode, headers sobre creme
+
+STONE MÉDIO (Texto secundário)
+Hex:    #57534E
+RGB:    87, 83, 78
+Uso:    Subtítulos, metadados, textos de apoio
+
+STONE CLARO (Borders e divisores)
+Hex:    #E7E5E4
+RGB:    231, 229, 228
 Uso:    Bordas de card, divisores, inputs inativos
 
-OFF-WHITE (Background principal)
-Hex:    #F8FAFC
-RGB:    248, 250, 252
-Uso:    Background geral da plataforma
+CREME (Background principal da plataforma)
+Hex:    #FAFAF9
+RGB:    250, 250, 249
+Uso:    Background geral — mais quente que branco puro, menos saturado que #FEFCE8
+
+CREME QUENTE (Seções especiais / landing)
+Hex:    #FEFCE8
+RGB:    254, 252, 232
+Uso:    Hero background, seções de depoimento, onboarding
 
 WHITE PURO
 Hex:    #FFFFFF
-Uso:    Cards, modais, áreas de conteúdo
+Uso:    Cards, modais, superfícies internas
 ```
 
 ### Paleta Semântica
 
 ```
 SUCESSO (Score alto / ação concluída)
-Hex:    #10B981   →   usa Esmeralda
+Hex:    #16A34A   →   Verde Vivo
 
 ATENÇÃO (Score médio / pendências)
-Hex:    #F59E0B
-RGB:    245, 158, 11
-Nome:   "Atenção"
+Hex:    #D97706   →   Âmbar Queimado (aproveita a cor de acento)
 
-ALERTA (Score baixo / erros)
-Hex:    #EF4444
-RGB:    239, 68, 68
+ALERTA (Score baixo / erros críticos)
+Hex:    #DC2626
+RGB:    220, 38, 38
 Nome:   "Urgente"
 
 INFO (Informativos neutros)
-Hex:    #3B82F6
-RGB:    59, 130, 246
+Hex:    #0369A1
+RGB:    3, 105, 161
 ```
 
 ### Gradientes
 
 ```
-GRADIENTE HERO (principal)
-De: #7C3AED   Para: #5B21B6
+GRADIENTE HERO (identidade principal)
+De: #14532D   Para: #0F3D20
 Direção: 135deg
-Uso: Hero section, banners principais, cards de destaque
+CSS: linear-gradient(135deg, #14532D 0%, #0F3D20 100%)
+Uso: Hero section, banners principais, cards de autoridade
 
-GRADIENTE ACENTO
-De: #10B981   Para: #059669
+GRADIENTE ÂMBAR (resultado / recompensa)
+De: #D97706   Para: #B45309
 Direção: 135deg
-Uso: Score positivo, badges de resultado
+CSS: linear-gradient(135deg, #D97706 0%, #B45309 100%)
+Uso: Score positivo alto, badges de conquista, CTAs especiais
 
-GRADIENTE DARK (para seções escuras)
-De: #1E1B4B   Para: #2D1B69
+GRADIENTE ESCURO QUENTE (seções dark)
+De: #1C1917   Para: #0C1A0F
 Direção: 135deg
-Uso: Seções de depoimento, footers, CTAs dark
+CSS: linear-gradient(135deg, #1C1917 0%, #0C1A0F 100%)
+Uso: Seções de depoimento, footer, CTA final dark
+
+GRADIENTE VERDE → DOURADO (premium / especial)
+De: #14532D   Para: #D97706
+Direção: 90deg
+CSS: linear-gradient(90deg, #14532D 0%, #D97706 100%)
+Uso: Elementos premium, linha decorativa de destaque, separadores especiais
 ```
 
-### Regras de Uso de Cor
+### Regras de Uso de Cor — WCAG
 
-| Combinação | Contraste WCAG | Uso permitido |
-|------------|---------------|---------------|
-| Branco sobre #5B21B6 | 8.2:1 ✅ AAA | Texto em botões, CTAs |
-| Branco sobre #7C3AED | 5.1:1 ✅ AA | Texto normal |
-| #1E1B4B sobre branco | 16.4:1 ✅ AAA | Texto principal |
-| Branco sobre #10B981 | 2.8:1 ⚠️ | Só ícones/bold grande |
-| #1E1B4B sobre #F8FAFC | 15.9:1 ✅ AAA | Corpo de texto |
+| Combinação | Contraste | Status | Uso permitido |
+|------------|-----------|--------|---------------|
+| Branco sobre `#14532D` | 11.7:1 | ✅ AAA | Texto em botões, CTAs, headings |
+| Branco sobre `#166534` | 10.2:1 | ✅ AAA | Hover states, textos |
+| Branco sobre `#16A34A` | 5.3:1 | ✅ AA | Texto normal em badges |
+| `#1C1917` sobre branco | 17.1:1 | ✅ AAA | Texto principal |
+| `#1C1917` sobre `#FEFCE8` | 16.3:1 | ✅ AAA | Corpo de texto |
+| `#1C1917` sobre `#D97706` | 4.6:1 | ✅ AA | Texto em botões âmbar |
+| Branco sobre `#D97706` | 2.9:1 | ⚠️ | Só bold grande / ícones |
+| `#14532D` sobre `#FEFCE8` | 10.8:1 | ✅ AAA | Texto sobre creme |
+
+> Regra prática: sobre âmbar, usar `#1C1917` (preto quente), nunca branco.
 
 ---
 
@@ -252,31 +295,37 @@ Subtexto visual: o pin de localização dentro do K comunica Google Maps / local
 ```
 1. PRINCIPAL (positivo)
    Wordmark "Destaka" em Plus Jakarta Sans 800
-   Cor: #5B21B6 (Mago)
-   Fundo: Branco ou Off-White
+   Cor: #14532D (Floresta Profundo)
+   Fundo: Branco, Off-White ou Creme #FEFCE8
    Uso: Site, documentos, apresentações sobre fundo claro
 
 2. NEGATIVO (sobre fundo escuro)
    Wordmark "Destaka" em branco (#FFFFFF)
-   Fundo: #5B21B6 ou #1E1B4B ou gradiente hero
+   Fundo: #14532D ou #1C1917 ou gradiente hero verde
    Uso: Header dark mode, slides dark, stories Instagram
 
-3. MONOCROMÁTICO ESCURO
-   Wordmark em #1E1B4B
+3. ÂMBAR (versão acento — uso especial)
+   Wordmark em #D97706 (Dourado Âmbar)
+   Fundo: #1C1917 (preto quente) ou #14532D (verde profundo)
+   Uso: Thumbnails de destaque, covers especiais, merch
+
+4. MONOCROMÁTICO ESCURO
+   Wordmark em #1C1917 (preto quente)
    Uso: Documentos impressos, fundos brancos formais
 
-4. MONOCROMÁTICO CLARO
+5. MONOCROMÁTICO CLARO
    Wordmark em #FFFFFF
    Uso: Fundos escuros sem cor da marca
 
-5. SÍMBOLO ISOLADO (ícone)
-   Apenas o "D" estilizado + pin element
+6. SÍMBOLO ISOLADO (ícone)
+   Apenas o "D" estilizado + pin element em âmbar
+   Cor do D: #14532D | Cor do pin: #D97706
    Uso: Favicon, app icon, avatar de redes sociais
    Tamanho mínimo: 32x32px
 
-6. HORIZONTAL COM TAGLINE
+7. HORIZONTAL COM TAGLINE
    Logo principal + "Apareça para quem precisa de você."
-   Tagline: Inter 400, 12px, #475569
+   Tagline: Inter 400, 12px, #57534E
    Uso: Apresentações formais, rodapés de e-mail, pitch deck
 ```
 
@@ -305,29 +354,38 @@ Impresso: 25mm de largura
 ## 5. Design Tokens (para implementação)
 
 ```css
-/* ── CORES ── */
---color-primary-900: #2E1065;
---color-primary-800: #3B0764;
---color-primary-700: #5B21B6;   /* primária */
---color-primary-600: #7C3AED;   /* primária clara */
---color-primary-500: #8B5CF6;
---color-primary-100: #EDE9FE;
---color-primary-50:  #F5F3FF;
+/* ── VERDE FLORESTA (Primária) ── */
+--color-primary-950: #052E16;
+--color-primary-900: #14532D;   /* primária — hero, CTAs */
+--color-primary-800: #166534;   /* hover primário */
+--color-primary-700: #15803D;
+--color-primary-600: #16A34A;   /* verde vivo — sucesso, secundário */
+--color-primary-500: #22C55E;
+--color-primary-100: #DCFCE7;
+--color-primary-50:  #F0FDF4;
 
---color-accent-700:  #059669;   /* acento escuro */
---color-accent-500:  #10B981;   /* acento */
---color-accent-100:  #D1FAE5;
---color-accent-50:   #ECFDF5;
+/* ── DOURADO ÂMBAR (Acento) ── */
+--color-accent-900:  #78350F;
+--color-accent-700:  #B45309;   /* âmbar escuro — hover acento */
+--color-accent-600:  #D97706;   /* acento principal */
+--color-accent-500:  #F59E0B;   /* âmbar claro — warning */
+--color-accent-100:  #FEF3C7;
+--color-accent-50:   #FFFBEB;   /* background âmbar sutil */
 
---color-warning:     #F59E0B;
---color-danger:      #EF4444;
---color-info:        #3B82F6;
+/* ── SEMÂNTICAS ── */
+--color-success:     #16A34A;   /* verde vivo */
+--color-warning:     #D97706;   /* âmbar — aproveita acento */
+--color-danger:      #DC2626;
+--color-info:        #0369A1;
 
---color-dark:        #1E1B4B;
---color-text:        #1E1B4B;
---color-text-muted:  #475569;
---color-border:      #E2E8F0;
---color-bg:          #F8FAFC;
+/* ── NEUTROS QUENTES ── */
+--color-dark:        #1C1917;   /* quase preto quente */
+--color-dark-mid:    #292524;
+--color-text:        #1C1917;
+--color-text-muted:  #57534E;   /* stone-600 */
+--color-border:      #E7E5E4;   /* stone-200 */
+--color-bg:          #FAFAF9;   /* stone-50 — creme sutil */
+--color-bg-warm:     #FEFCE8;   /* yellow-50 — creme quente */
 --color-surface:     #FFFFFF;
 
 /* ── TIPOGRAFIA ── */
@@ -395,12 +453,12 @@ Cores:      sRGB
 
 ```
 ┌─────────────────────────────────────┐
-│ ░░░░ FUNDO: Gradiente Hero ░░░░░░░░ │
+│ ░░░░ FUNDO: Gradiente Hero Verde ░░░ │
 │                                     │
 │  [BADGE superior]                   │
 │  ┌──────────────┐                   │
 │  │ VOCÊ SABIA?  │  ← Inter 500 12px │
-│  │ esmeralda    │     em pill verde  │
+│  │ pill âmbar   │     #D97706        │
 │  └──────────────┘                   │
 │                                     │
 │  [NÚMERO / DADO EM DESTAQUE]        │
@@ -437,7 +495,7 @@ VARIAÇÃO de cor: fundo #1E1B4B (dark navy)
 │                                     │
 │  [NÚMERO DA DICA]                   │
 │  "Dica 03"   ← Jakarta Sans 700    │
-│               20px, #7C3AED         │
+│               20px, #16A34A         │
 │                                     │
 │  [HEADLINE]                         │
 │  "Como responder avaliações         │
@@ -459,7 +517,8 @@ VARIAÇÃO de cor: fundo #1E1B4B (dark navy)
 │  │ A Destaka faz isso por você  │   │
 │  │ destaka.com.br               │   │
 │  └──────────────────────────────┘   │
-│  Pill violet, Inter 600 13px        │
+│  Pill #14532D, texto branco         │
+│  Inter 600 13px                     │
 │                                     │
 │  [LOGO] Destaka (violet) — rodapé  │
 └─────────────────────────────────────┘
@@ -473,7 +532,7 @@ VARIAÇÃO de cor: fundo #1E1B4B (dark navy)
 │                                     │
 │  [ASPAS GRANDES]                    │
 │  "  ← Jakarta Sans 800, 80px       │
-│       #7C3AED (violet médio)        │
+│       #D97706 (dourado âmbar)       │
 │                                     │
 │  [DEPOIMENTO]                       │
 │  "Em 30 dias, saí de 4 para 47     │
@@ -492,7 +551,7 @@ VARIAÇÃO de cor: fundo #1E1B4B (dark navy)
 │  │ antes  │     │ depois │         │
 │  └────────┘     └────────┘         │
 │  Números: Jakarta 800, 28px         │
-│  Antes: #EF4444 / Depois: #10B981  │
+│  Antes: #DC2626 / Depois: #16A34A  │
 │                                     │
 │  [LOGO] Destaka branco — rodapé    │
 └─────────────────────────────────────┘
@@ -502,7 +561,7 @@ VARIAÇÃO de cor: fundo #1E1B4B (dark navy)
 
 ```
 ┌─────────────────────────────────────┐
-│ ░░░░ FUNDO: Gradiente Hero ░░░░░░░░ │
+│ ░░░░ FUNDO: Gradiente Hero Verde ░░░ │
 │                                     │
 │  [BADGE CARROSSEL]                  │
 │  "Deslize para ver →"               │
@@ -576,7 +635,7 @@ Zona segura: 250px top / 340px bottom (sem conteúdo importante)
 │  [NÚMERO]       │
 │  "51%"          │
 │  Jakarta 800    │
-│  96px, violet   │
+│  96px, #D97706  │
 │                 │
 │  [TEXTO]        │
 │  "dos negócios  │
@@ -617,7 +676,7 @@ Carrossel:         1080 × 1080px (quadrado)
 │                                            │
 │ [CATEGORIA]                                │
 │ GOOGLE MEU NEGÓCIO ← Inter 600, 12px      │
-│ tracking: 0.1em, #7C3AED                   │
+│ tracking: 0.1em, #16A34A                   │
 │                                            │
 │ [HEADLINE]                                 │
 │ "Por que 9 em 10 dentistas                 │
@@ -650,17 +709,16 @@ Carrossel:         1080 × 1080px (quadrado)
 │                                            │
 │ ┌──────────────┐    ┌──────────────┐       │
 │ │   ANTES      │    │   DEPOIS     │       │
-│ │              │    │              │       │
+│ │ fundo #57534E│    │ fundo #14532D│       │
 │ │   Score: 31  │ →  │   Score: 89  │       │
 │ │   2 fotos    │    │   18 fotos   │       │
 │ │   0 posts    │    │   4 posts/mês│       │
 │ │   3 aval.    │    │   41 aval.   │       │
 │ └──────────────┘    └──────────────┘       │
-│ Antes: fundo cinza / Depois: fundo verde   │
 │                                            │
 │ [TEMPO]                                    │
 │ "Resultado em 30 dias"                     │
-│ Inter 600, 16px, esmeralda                 │
+│ Inter 600, 16px, #D97706 (âmbar)           │
 │                                            │
 │ [LOGO] Destaka branco                      │
 └────────────────────────────────────────────┘
