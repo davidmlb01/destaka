@@ -422,10 +422,10 @@ Impresso: 25mm de largura
 --radius-full: 9999px;   /* pill */
 
 /* ── SOMBRAS ── */
---shadow-sm:  0 1px 2px rgba(30, 27, 75, 0.06);
---shadow-md:  0 4px 12px rgba(30, 27, 75, 0.10);
---shadow-lg:  0 8px 24px rgba(30, 27, 75, 0.14);
---shadow-xl:  0 16px 40px rgba(30, 27, 75, 0.18);
+--shadow-sm:  0 1px 2px rgba(28, 25, 23, 0.06);
+--shadow-md:  0 4px 12px rgba(28, 25, 23, 0.10);
+--shadow-lg:  0 8px 24px rgba(28, 25, 23, 0.14);
+--shadow-xl:  0 16px 40px rgba(28, 25, 23, 0.18);
 
 /* ── Z-INDEX ── */
 --z-dropdown: 100;
@@ -484,7 +484,7 @@ Cores:      sRGB
 │  Inter 500 12px                     │
 └─────────────────────────────────────┘
 
-VARIAÇÃO de cor: fundo #1E1B4B (dark navy)
+VARIAÇÃO de cor: fundo #1C1917 (preto quente)
 ```
 
 ### Template 02 — DICA RÁPIDA ("Como fazer")
@@ -500,9 +500,9 @@ VARIAÇÃO de cor: fundo #1E1B4B (dark navy)
 │  [HEADLINE]                         │
 │  "Como responder avaliações         │
 │   negativas no Google"              │
-│   Jakarta Sans 800, 30px, #1E1B4B  │
+│   Jakarta Sans 800, 30px, #1C1917  │
 │                                     │
-│  [LINHA COLORIDA]  ████  violet     │
+│  [LINHA COLORIDA]  ████  #14532D   │
 │                                     │
 │  [CORPO]                            │
 │  "1. Responda sempre em 24h         │
@@ -510,7 +510,7 @@ VARIAÇÃO de cor: fundo #1E1B4B (dark navy)
 │   3. Convide para conversa          │
 │      privada                        │
 │   4. Assine com seu nome"           │
-│   Inter 400, 15px, #475569          │
+│   Inter 400, 15px, #57534E          │
 │                                     │
 │  [CTA]                              │
 │  ┌──────────────────────────────┐   │
@@ -520,7 +520,7 @@ VARIAÇÃO de cor: fundo #1E1B4B (dark navy)
 │  Pill #14532D, texto branco         │
 │  Inter 600 13px                     │
 │                                     │
-│  [LOGO] Destaka (violet) — rodapé  │
+│  [LOGO] Destaka (#14532D) — rodapé │
 └─────────────────────────────────────┘
 ```
 
@@ -528,7 +528,7 @@ VARIAÇÃO de cor: fundo #1E1B4B (dark navy)
 
 ```
 ┌─────────────────────────────────────┐
-│ ░░░░ FUNDO: #1E1B4B (dark) ░░░░░░░ │
+│ ░░░░ FUNDO: #1C1917 (preto quente) ░│
 │                                     │
 │  [ASPAS GRANDES]                    │
 │  "  ← Jakarta Sans 800, 80px       │
@@ -543,7 +543,7 @@ VARIAÇÃO de cor: fundo #1E1B4B (dark navy)
 │                                     │
 │  [IDENTIFICAÇÃO]                    │
 │  Dr. Carlos Lima — Dentista        │
-│  Inter 500, 14px, #10B981          │
+│  Inter 500, 14px, #16A34A          │
 │                                     │
 │  [SCORE ANTES / DEPOIS]             │
 │  ┌────────┐  →  ┌────────┐         │
@@ -608,7 +608,7 @@ Zona segura: 250px top / 340px bottom (sem conteúdo importante)
 │  ou mais?"      │
 │  Jakarta 800    │
 │  40px, branco   │
-│  fundo: violet  │
+│  fundo: verde   │
 │  gradiente      │
 │                 │
 │  [BOTÕES]       │
@@ -630,7 +630,7 @@ Zona segura: 250px top / 340px bottom (sem conteúdo importante)
 ┌─────────────────┐
 │ [LOGO]          │
 │                 │
-│  FUNDO: #1E1B4B │
+│  FUNDO: #1C1917 │
 │                 │
 │  [NÚMERO]       │
 │  "51%"          │
@@ -672,7 +672,7 @@ Carrossel:         1080 × 1080px (quadrado)
 
 ```
 ┌────────────────────────────────────────────┐
-│ FUNDO: Off-white. Linha violet esquerda.   │
+│ FUNDO: Creme #FEFCE8. Borda esquerda #14532D│
 │                                            │
 │ [CATEGORIA]                                │
 │ GOOGLE MEU NEGÓCIO ← Inter 600, 12px      │
@@ -682,15 +682,15 @@ Carrossel:         1080 × 1080px (quadrado)
 │ "Por que 9 em 10 dentistas                 │
 │  brasileiros estão deixando dinheiro       │
 │  na mesa no Google"                        │
-│  Jakarta Sans 700, 32px, #1E1B4B           │
+│  Jakarta Sans 700, 32px, #1C1917           │
 │                                            │
-│ [LINHA DIVIDER] violet 3px                 │
+│ [LINHA DIVIDER] #14532D, 3px              │
 │                                            │
 │ [DADOS] (3 bullets)                        │
 │ • 7× mais cliques com perfil completo      │
 │ • 51% dos perfis não reivindicados         │
 │ • R$0 de custo adicional para mudar isso   │
-│ Inter 400, 16px, #475569                   │
+│ Inter 400, 16px, #57534E                   │
 │                                            │
 │ [LOGO + URL]                               │
 │ Destaka | destaka.com.br                   │
