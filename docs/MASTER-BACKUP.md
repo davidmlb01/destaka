@@ -1,12 +1,12 @@
-# MASTER BACKUP — Projeto GMM
-**Atualizado:** 2026-03-28
-**Status:** Planejamento completo — pronto para desenvolvimento
+# MASTER BACKUP — Destaka (Projeto GMM)
+**Atualizado:** 2026-03-29
+**Status:** Planejamento completo + Branding definido — pronto para desenvolvimento
 
 ---
 
 ## 1. Visão
 
-**GMM (Google Meu Negócio Manager)** é um SaaS que automatiza a otimização do Google Business Profile para profissionais liberais brasileiros.
+**Destaka** é um SaaS que automatiza a otimização do Google Business Profile para profissionais liberais brasileiros. Tagline: *"Apareça para quem precisa de você."*
 
 **Por que vai funcionar:**
 - 51% dos negócios têm perfis incompletos no Google
@@ -89,7 +89,7 @@
 | Paige (Merchynt) | EUA | $99/mês | Inglês, sem contexto BR |
 | Localo | Global | $? | Sem foco em profissionais liberais BR |
 | Agências manuais BR | Brasil | R$250–800/mês | Manual, não escala, caro |
-| **GMM** | **Brasil** | **R$147–197/mês** | **Self-service, PT-BR, contexto local** |
+| **Destaka** | **Brasil** | **R$147–197/mês** | **Self-service, PT-BR, contexto local** |
 
 ---
 
@@ -103,18 +103,27 @@ Ver detalhes completos: `docs/guides/server-requirements.md`
 
 ---
 
-## 9. Links e Referências
+## 9. Branding
+
+- Nome: **Destaka**
+- Tagline: *"Apareça para quem precisa de você."*
+- Domínio: `destaka.com.br`
+- Arquétipo: O Mago (com influência do Cuidador)
+- Brand Guidelines: `docs/brand/brand-guidelines.md`
+
+## 10. Links e Referências
 
 - PRD: `docs/prd/gmm-prd.md`
 - Arquitetura: `docs/architecture/gmm-architecture.md`
 - Servidor: `docs/guides/server-requirements.md`
+- Brand Guidelines: `docs/brand/brand-guidelines.md`
 - Google Business Profile API: https://developers.google.com/my-business/reference/businessinformation/rest
 - Google OAuth Scopes: https://developers.google.com/my-business/reference/oauth-reference
 - Paige (referência): https://www.merchynt.com/paige
 
 ---
 
-## 10. Log de Sessões
+## 11. Log de Sessões
 
 ### 2026-03-28 — Sessão de Planejamento
 - Projeto criado e estruturado pelo AIOX (Orion)
@@ -123,3 +132,14 @@ Ver detalhes completos: `docs/guides/server-requirements.md`
 - Requisitos de servidor documentados
 - Epic 1 (7 stories) + Epic 2 (3 stories) planejados
 - Próximo passo: inicializar repositório e criar projeto Next.js
+
+### 2026-03-29 — Sessão de Branding
+- Brand Squad (Brand Chief + Emily Heyward + Naming Strategist + Archetype Consultant) convocados
+- Why Test executado: dor real = profissional invisível para quem precisa dele
+- Nome definido: **Destaka** (de "destaque" com grafia modificada QUE→KA)
+- Domínio `destaka.com.br` disponível e escolhido
+- Tagline: "Apareça para quem precisa de você."
+- Arquétipo: O Mago
+- Copy Chief (Cyrus) ativado — headlines e StoryBrand framework gerados
+- Brand Guidelines criados em `docs/brand/brand-guidelines.md`
+- Validação Hormozi realizada (sessão anterior): preço correto, nicho único (dentistas), garantia de resultado recomendada
