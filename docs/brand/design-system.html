@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Design System — Destaka</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green-950: #052E16;
+      --green-900: #14532D;
+      --green-800: #166534;
+      --green-600: #16A34A;
+      --green-100: #DCFCE7;
+      --green-50:  #F0FDF4;
+
+      --amber-900: #78350F;
+      --amber-700: #B45309;
+      --amber-600: #D97706;
+      --amber-500: #F59E0B;
+      --amber-100: #FEF3C7;
+      --amber-50:  #FFFBEB;
+
+      --dark:      #1C1917;
+      --dark-mid:  #292524;
+      --muted:     #57534E;
+      --border:    #E7E5E4;
+      --bg:        #FAFAF9;
+      --bg-warm:   #FEFCE8;
+      --white:     #FFFFFF;
+
+      --font-display: 'Plus Jakarta Sans', sans-serif;
+      --font-body:    'Inter', sans-serif;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--dark);
+      line-height: 1.6;
+    }
+
+    /* ── LAYOUT ── */
+    .page { max-width: 1100px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    /* ── HEADER ── */
+    .ds-header {
+      background: linear-gradient(135deg, #14532D 0%, #0F3D20 100%);
+      padding: 64px 48px;
+      border-radius: 20px;
+      margin-bottom: 64px;
+      position: relative;
+      overflow: hidden;
+    }
+    .ds-header::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 300px; height: 300px;
+      background: rgba(217,119,6,0.15);
+      border-radius: 50%;
+    }
+    .ds-header::after {
+      content: '';
+      position: absolute;
+      bottom: -60px; left: 20%;
+      width: 200px; height: 200px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 50%;
+    }
+    .ds-header h1 {
+      font-family: var(--font-display);
+      font-size: 48px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.02em;
+      position: relative;
+      z-index: 1;
+    }
+    .ds-header h1 span { color: var(--amber-600); }
+    .ds-header p {
+      color: rgba(255,255,255,0.7);
+      font-size: 16px;
+      margin-top: 8px;
+      position: relative;
+      z-index: 1;
+    }
+    .ds-header .badge {
+      display: inline-block;
+      background: rgba(217,119,6,0.25);
+      color: var(--amber-500);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* ── SECTION ── */
+    .section { margin-bottom: 72px; }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--green-600);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .section-heading {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 32px;
+      letter-spacing: -0.02em;
+    }
+
+    /* ── COLOR SWATCHES ── */
+    .color-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; }
+    .swatch {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(28,25,23,0.08);
+    }
+    .swatch-color { height: 80px; }
+    .swatch-info {
+      background: var(--white);
+      padding: 12px;
+      border-top: 1px solid var(--border);
+    }
+    .swatch-name { font-size: 12px; font-weight: 600; color: var(--dark); margin-bottom: 2px; }
+    .swatch-hex { font-size: 11px; color: var(--muted); font-family: monospace; margin-bottom: 4px; }
+    .swatch-use { font-size: 10px; color: var(--muted); line-height: 1.4; }
+
+    .color-group-label {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--muted);
+      margin: 32px 0 12px;
+    }
+
+    /* ── GRADIENT SWATCHES ── */
+    .gradient-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+    .gradient-card { border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(28,25,23,0.08); }
+    .gradient-preview { height: 100px; }
+    .gradient-info { background: var(--white); padding: 16px; border-top: 1px solid var(--border); }
+    .gradient-name { font-size: 13px; font-weight: 600; color: var(--dark); margin-bottom: 4px; }
+    .gradient-css { font-size: 10px; color: var(--muted); font-family: monospace; line-height: 1.5; }
+
+    /* ── TYPOGRAPHY ── */
+    .type-scale { display: flex; flex-direction: column; gap: 4px; }
+    .type-row {
+      display: flex;
+      align-items: baseline;
+      gap: 24px;
+      padding: 20px 24px;
+      background: var(--white);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .type-row:hover { border-color: var(--green-600); }
+    .type-meta { min-width: 180px; }
+    .type-label { font-size: 11px; font-weight: 600; color: var(--green-600); text-transform: uppercase; letter-spacing: 0.05em; }
+    .type-spec { font-size: 11px; color: var(--muted); margin-top: 2px; font-family: monospace; }
+    .type-sample { flex: 1; color: var(--dark); }
+
+    /* ── LOGO VARIATIONS ── */
+    .logo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+    .logo-card {
+      border-radius: 12px;
+      padding: 32px 24px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .logo-wordmark {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .logo-k-pin { position: relative; display: inline-block; }
+    .logo-pin {
+      position: absolute;
+      top: -5px;
+      right: -4px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+    }
+    .logo-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-align: center;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+    .logo-tagline {
+      font-family: var(--font-body);
+      font-size: 10px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* ── TOKENS ── */
+    .token-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 700px) { .token-grid { grid-template-columns: 1fr; } }
+    .token-card {
+      background: var(--dark);
+      border-radius: 12px;
+      padding: 24px;
+      overflow: auto;
+    }
+    .token-card pre {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 12px;
+      line-height: 1.8;
+      color: #DCFCE7;
+    }
+    .token-card pre .comment { color: #57534E; }
+    .token-card pre .var { color: #86EFAC; }
+    .token-card pre .val { color: var(--amber-500); }
+
+    /* ── WCAG TABLE ── */
+    .wcag-table { width: 100%; border-collapse: collapse; background: var(--white); border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(28,25,23,0.06); }
+    .wcag-table th { background: var(--green-900); color: #fff; font-size: 12px; font-weight: 600; padding: 14px 16px; text-align: left; letter-spacing: 0.03em; text-transform: uppercase; }
+    .wcag-table td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid var(--border); }
+    .wcag-table tr:last-child td { border-bottom: none; }
+    .wcag-table .combo { display: flex; align-items: center; gap: 10px; }
+    .wcag-sample { padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+    .wcag-pass { color: var(--green-600); font-weight: 700; }
+    .wcag-warn { color: var(--amber-600); font-weight: 700; }
+    .wcag-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .wcag-aaa { background: var(--green-100); color: var(--green-900); }
+    .wcag-aa  { background: var(--amber-100); color: var(--amber-700); }
+    .wcag-no  { background: #FEE2E2; color: #991B1B; }
+
+    /* ── TEMPLATES SOCIAL ── */
+    .template-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+    .template-card { border-radius: 16px; overflow: hidden; box-shadow: 0 4px 16px rgba(28,25,23,0.12); }
+    .template-preview {
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .template-preview.stories { aspect-ratio: 9/16; max-height: 320px; }
+    .template-footer { background: var(--white); padding: 14px 16px; border-top: 1px solid var(--border); }
+    .template-name { font-size: 13px; font-weight: 600; color: var(--dark); }
+    .template-dims { font-size: 11px; color: var(--muted); }
+
+    .pill {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    /* ── TONE OF VOICE ── */
+    .tov-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 600px) { .tov-grid { grid-template-columns: 1fr; } }
+    .tov-card { border-radius: 12px; padding: 24px; }
+    .tov-card.do { background: var(--green-50); border: 1px solid var(--green-100); }
+    .tov-card.dont { background: #FEF2F2; border: 1px solid #FECACA; }
+    .tov-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .tov-card.do h4 { color: var(--green-900); }
+    .tov-card.dont h4 { color: #991B1B; }
+    .tov-item { font-size: 14px; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.06); display: flex; align-items: flex-start; gap: 8px; }
+    .tov-item:last-child { border-bottom: none; }
+    .tov-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+
+    .principles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 32px; }
+    .principle-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      border-top: 3px solid var(--green-900);
+    }
+    .principle-num { font-family: var(--font-display); font-size: 24px; font-weight: 800; color: var(--green-100); margin-bottom: 8px; }
+    .principle-text { font-size: 13px; color: var(--dark); font-weight: 500; line-height: 1.5; }
+    .principle-text strong { color: var(--green-900); }
+
+    .banned-list { display: flex; flex-wrap: wrap; gap: 8px; }
+    .banned-tag {
+      background: #FEF2F2;
+      color: #991B1B;
+      border: 1px solid #FECACA;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: line-through;
+    }
+
+    .phrase-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+    .phrase-card {
+      background: linear-gradient(135deg, #14532D 0%, #0F3D20 100%);
+      border-radius: 12px;
+      padding: 20px 24px;
+      color: rgba(255,255,255,0.9);
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.4;
+      font-style: italic;
+    }
+    .phrase-card::before { content: '"'; color: var(--amber-500); font-size: 32px; display: block; line-height: 1; margin-bottom: 8px; font-style: normal; }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 48px 0;
+    }
+
+    /* ── CHANNEL CARDS ── */
+    .channel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+    .channel-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .channel-icon { font-size: 24px; margin-bottom: 10px; }
+    .channel-name { font-size: 13px; font-weight: 700; color: var(--dark); margin-bottom: 8px; }
+    .channel-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+    /* ── FOOTER ── */
+    .ds-footer {
+      text-align: center;
+      padding: 48px;
+      background: linear-gradient(135deg, #14532D 0%, #0F3D20 100%);
+      border-radius: 20px;
+      margin-top: 64px;
+    }
+    .ds-footer .logo-text {
+      font-family: var(--font-display);
+      font-size: 36px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+    .ds-footer .logo-text span { color: var(--amber-500); }
+    .ds-footer p { color: rgba(255,255,255,0.6); font-size: 14px; }
+    .ds-footer .version {
+      display: inline-block;
+      margin-top: 16px;
+      background: rgba(217,119,6,0.2);
+      color: var(--amber-500);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 999px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="ds-header">
+    <div class="badge">Design System · v1.1</div>
+    <h1>Desta<span>k</span>a</h1>
+    <p>Verde Floresta + Dourado Âmbar · Plus Jakarta Sans + Inter · 2026</p>
+  </div>
+
+  <!-- CORES -->
+  <div class="section">
+    <div class="section-title">01 · Paleta de Cores</div>
+
+    <div class="color-group-label">Verde Floresta — Primária</div>
+    <div class="color-grid">
+      <div class="swatch">
+        <div class="swatch-color" style="background:#14532D"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Floresta Profundo</div>
+          <div class="swatch-hex">#14532D</div>
+          <div class="swatch-use">CTAs, hero, header, autoridade</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#166534"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Floresta Médio</div>
+          <div class="swatch-hex">#166534</div>
+          <div class="swatch-use">Hover state do primário</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#16A34A"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Verde Vivo</div>
+          <div class="swatch-hex">#16A34A</div>
+          <div class="swatch-use">Score alto, sucesso, badges</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#DCFCE7; border:1px solid #E7E5E4"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Verde Claro</div>
+          <div class="swatch-hex">#DCFCE7</div>
+          <div class="swatch-use">Backgrounds de sucesso</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#F0FDF4; border:1px solid #E7E5E4"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Verde Mínimo</div>
+          <div class="swatch-hex">#F0FDF4</div>
+          <div class="swatch-use">Seções com tom verde sutil</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="color-group-label">Dourado Âmbar — Acento</div>
+    <div class="color-grid">
+      <div class="swatch">
+        <div class="swatch-color" style="background:#D97706"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Âmbar Queimado</div>
+          <div class="swatch-hex">#D97706</div>
+          <div class="swatch-use">Score, CTAs conversão, destaques</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#F59E0B"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Âmbar Claro</div>
+          <div class="swatch-hex">#F59E0B</div>
+          <div class="swatch-use">Warning, score médio</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#FFFBEB; border:1px solid #E7E5E4"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Âmbar BG</div>
+          <div class="swatch-hex">#FFFBEB</div>
+          <div class="swatch-use">Fundos quentes de CTA</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="color-group-label">Neutros Quentes</div>
+    <div class="color-grid">
+      <div class="swatch">
+        <div class="swatch-color" style="background:#1C1917"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Preto Quente</div>
+          <div class="swatch-hex">#1C1917</div>
+          <div class="swatch-use">Textos principais, dark mode</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#57534E"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Stone Médio</div>
+          <div class="swatch-hex">#57534E</div>
+          <div class="swatch-use">Subtítulos, metadados</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#E7E5E4; border:1px solid #ccc"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Stone Claro</div>
+          <div class="swatch-hex">#E7E5E4</div>
+          <div class="swatch-use">Bordas, divisores</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#FAFAF9; border:1px solid #E7E5E4"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Creme Sutil</div>
+          <div class="swatch-hex">#FAFAF9</div>
+          <div class="swatch-use">Background da plataforma</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#FEFCE8; border:1px solid #E7E5E4"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Creme Quente</div>
+          <div class="swatch-hex">#FEFCE8</div>
+          <div class="swatch-use">Hero, onboarding, landing</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRADIENTES -->
+  <div class="section">
+    <div class="section-title">02 · Gradientes</div>
+    <div class="gradient-grid">
+      <div class="gradient-card">
+        <div class="gradient-preview" style="background:linear-gradient(135deg,#14532D,#0F3D20)"></div>
+        <div class="gradient-info">
+          <div class="gradient-name">Hero — Principal</div>
+          <div class="gradient-css">#14532D → #0F3D20 · 135deg<br>Hero section, banners, cards de autoridade</div>
+        </div>
+      </div>
+      <div class="gradient-card">
+        <div class="gradient-preview" style="background:linear-gradient(135deg,#D97706,#B45309)"></div>
+        <div class="gradient-info">
+          <div class="gradient-name">Âmbar — Resultado</div>
+          <div class="gradient-css">#D97706 → #B45309 · 135deg<br>Score positivo alto, badges de conquista</div>
+        </div>
+      </div>
+      <div class="gradient-card">
+        <div class="gradient-preview" style="background:linear-gradient(135deg,#1C1917,#0C1A0F)"></div>
+        <div class="gradient-info">
+          <div class="gradient-name">Dark Quente</div>
+          <div class="gradient-css">#1C1917 → #0C1A0F · 135deg<br>Depoimentos, footer, CTA final dark</div>
+        </div>
+      </div>
+      <div class="gradient-card">
+        <div class="gradient-preview" style="background:linear-gradient(90deg,#14532D,#D97706)"></div>
+        <div class="gradient-info">
+          <div class="gradient-name">Verde → Dourado — Premium</div>
+          <div class="gradient-css">#14532D → #D97706 · 90deg<br>Separadores especiais, elementos premium</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIPOGRAFIA -->
+  <div class="section">
+    <div class="section-title">03 · Tipografia</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px;">
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:24px;border-top:3px solid var(--green-900);">
+        <div style="font-size:11px;font-weight:600;color:var(--green-600);letter-spacing:0.05em;text-transform:uppercase;margin-bottom:12px;">Display</div>
+        <div style="font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--dark);margin-bottom:8px;">Plus Jakarta Sans</div>
+        <div style="font-size:13px;color:var(--muted);">Pesos: 600 · 700 · 800<br>Headings, títulos, nome da marca<br><a href="https://fonts.google.com/specimen/Plus+Jakarta+Sans" style="color:var(--green-600);">Google Fonts — free</a></div>
+      </div>
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:24px;border-top:3px solid var(--amber-600);">
+        <div style="font-size:11px;font-weight:600;color:var(--amber-600);letter-spacing:0.05em;text-transform:uppercase;margin-bottom:12px;">Corpo</div>
+        <div style="font-family:var(--font-body);font-size:28px;font-weight:400;color:var(--dark);margin-bottom:8px;">Inter</div>
+        <div style="font-size:13px;color:var(--muted);">Pesos: 400 · 500 · 600<br>Parágrafos, labels, UI texto<br><a href="https://rsms.me/inter/" style="color:var(--amber-700);">rsms.me/inter — free</a></div>
+      </div>
+    </div>
+
+    <div class="type-scale">
+      <div class="type-row">
+        <div class="type-meta"><div class="type-label">Display Grande</div><div class="type-spec">Jakarta Sans 800 · 56px / 1.14</div></div>
+        <div class="type-sample" style="font-family:var(--font-display);font-size:42px;font-weight:800;letter-spacing:-0.02em;">Apareça primeiro</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><div class="type-label">Display Médio</div><div class="type-spec">Jakarta Sans 700 · 40px / 1.2</div></div>
+        <div class="type-sample" style="font-family:var(--font-display);font-size:30px;font-weight:700;letter-spacing:-0.02em;">Google Meu Negócio</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><div class="type-label">H1</div><div class="type-spec">Jakarta Sans 700 · 32px / 1.25</div></div>
+        <div class="type-sample" style="font-family:var(--font-display);font-size:24px;font-weight:700;letter-spacing:-0.02em;">Seu perfil em destaque</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><div class="type-label">H2</div><div class="type-spec">Jakarta Sans 600 · 24px / 1.33</div></div>
+        <div class="type-sample" style="font-family:var(--font-display);font-size:20px;font-weight:600;">Score de otimização</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><div class="type-label">Body LG</div><div class="type-spec">Inter 400 · 18px / 1.56</div></div>
+        <div class="type-sample" style="font-size:18px;">Você cuida dos pacientes. A Destaka cuida do Google.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><div class="type-label">Body MD</div><div class="type-spec">Inter 400 · 16px / 1.5</div></div>
+        <div class="type-sample" style="font-size:16px;color:var(--muted);">A Destaka lê seu perfil, calcula o score e já começa a corrigir automaticamente.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><div class="type-label">Caption</div><div class="type-spec">Inter 500 · 12px / 1.33</div></div>
+        <div class="type-sample" style="font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Última atualização: hoje às 14h32</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOGO -->
+  <div class="section">
+    <div class="section-title">04 · Logo — Variações</div>
+    <div class="logo-grid">
+      <!-- Principal -->
+      <div class="logo-card" style="background:var(--bg-warm);border:1px solid var(--border);">
+        <div class="logo-wordmark" style="color:#14532D;">
+          Desta<span class="logo-k-pin">k<span class="logo-pin" style="background:#D97706;top:-6px;right:-3px;width:7px;height:7px;"></span></span>a
+        </div>
+        <div class="logo-label" style="color:var(--muted);">Principal</div>
+        <div class="logo-tagline">#14532D sobre creme · Site, docs</div>
+      </div>
+      <!-- Negativo -->
+      <div class="logo-card" style="background:linear-gradient(135deg,#14532D,#0F3D20);">
+        <div class="logo-wordmark" style="color:#fff;">
+          Desta<span class="logo-k-pin">k<span class="logo-pin" style="background:#D97706;top:-6px;right:-3px;width:7px;height:7px;"></span></span>a
+        </div>
+        <div class="logo-label" style="color:rgba(255,255,255,0.6);">Negativo</div>
+        <div class="logo-tagline" style="color:rgba(255,255,255,0.5);">Branco sobre verde · Dark mode</div>
+      </div>
+      <!-- Âmbar -->
+      <div class="logo-card" style="background:#1C1917;">
+        <div class="logo-wordmark" style="color:#D97706;">
+          Desta<span class="logo-k-pin">k<span class="logo-pin" style="background:#fff;top:-6px;right:-3px;width:7px;height:7px;"></span></span>a
+        </div>
+        <div class="logo-label" style="color:rgba(255,255,255,0.5);">Âmbar</div>
+        <div class="logo-tagline" style="color:rgba(255,255,255,0.4);">#D97706 sobre preto · Uso especial</div>
+      </div>
+      <!-- Monocromático -->
+      <div class="logo-card" style="background:#fff;border:1px solid var(--border);">
+        <div class="logo-wordmark" style="color:#1C1917;">Destaka</div>
+        <div class="logo-label" style="color:var(--muted);">Monocromático</div>
+        <div class="logo-tagline">#1C1917 · Impressos, documentos</div>
+      </div>
+      <!-- Ícone -->
+      <div class="logo-card" style="background:var(--bg-warm);border:1px solid var(--border);">
+        <div style="width:64px;height:64px;background:var(--green-900);border-radius:14px;display:flex;align-items:center;justify-content:center;position:relative;">
+          <span style="font-family:var(--font-display);font-size:32px;font-weight:800;color:#fff;">D</span>
+          <span style="position:absolute;top:8px;right:8px;width:10px;height:10px;background:var(--amber-600);border-radius:50% 50% 50% 0;transform:rotate(-45deg);"></span>
+        </div>
+        <div class="logo-label" style="color:var(--muted);">Símbolo / Ícone</div>
+        <div class="logo-tagline">Favicon, app icon, avatar</div>
+      </div>
+      <!-- Com tagline -->
+      <div class="logo-card" style="background:#fff;border:1px solid var(--border);">
+        <div>
+          <div class="logo-wordmark" style="color:#14532D;font-size:22px;">
+            Desta<span class="logo-k-pin">k<span class="logo-pin" style="background:#D97706;top:-4px;right:-2px;width:6px;height:6px;"></span></span>a
+          </div>
+          <div style="font-size:10px;color:var(--muted);margin-top:4px;font-style:italic;">Apareça para quem precisa de você.</div>
+        </div>
+        <div class="logo-label" style="color:var(--muted);">Com Tagline</div>
+        <div class="logo-tagline">E-mail, pitch deck, rodapé</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WCAG -->
+  <div class="section">
+    <div class="section-title">05 · Acessibilidade — WCAG</div>
+    <table class="wcag-table">
+      <thead>
+        <tr><th>Combinação</th><th>Contraste</th><th>Nível</th><th>Uso</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><div class="combo"><span class="wcag-sample" style="background:#14532D;color:#fff;">Texto</span> Branco sobre #14532D</div></td>
+          <td><span class="wcag-pass">11.7:1</span></td>
+          <td><span class="wcag-badge wcag-aaa">AAA</span></td>
+          <td>Botões, CTAs, headings principais</td>
+        </tr>
+        <tr>
+          <td><div class="combo"><span class="wcag-sample" style="background:#16A34A;color:#fff;">Texto</span> Branco sobre #16A34A</div></td>
+          <td><span class="wcag-pass">5.3:1</span></td>
+          <td><span class="wcag-badge wcag-aa">AA</span></td>
+          <td>Texto normal em badges de sucesso</td>
+        </tr>
+        <tr>
+          <td><div class="combo"><span class="wcag-sample" style="background:#fff;color:#1C1917;border:1px solid #E7E5E4;">Texto</span> #1C1917 sobre branco</div></td>
+          <td><span class="wcag-pass">17.1:1</span></td>
+          <td><span class="wcag-badge wcag-aaa">AAA</span></td>
+          <td>Texto principal em toda plataforma</td>
+        </tr>
+        <tr>
+          <td><div class="combo"><span class="wcag-sample" style="background:#FEFCE8;color:#1C1917;border:1px solid #E7E5E4;">Texto</span> #1C1917 sobre creme</div></td>
+          <td><span class="wcag-pass">16.3:1</span></td>
+          <td><span class="wcag-badge wcag-aaa">AAA</span></td>
+          <td>Corpo de texto sobre hero/onboarding</td>
+        </tr>
+        <tr>
+          <td><div class="combo"><span class="wcag-sample" style="background:#D97706;color:#1C1917;">Texto</span> #1C1917 sobre âmbar</div></td>
+          <td><span class="wcag-pass">4.6:1</span></td>
+          <td><span class="wcag-badge wcag-aa">AA</span></td>
+          <td>Texto em botões âmbar — usar preto, nunca branco</td>
+        </tr>
+        <tr>
+          <td><div class="combo"><span class="wcag-sample" style="background:#D97706;color:#fff;">Texto</span> Branco sobre âmbar</div></td>
+          <td><span class="wcag-warn">2.9:1</span></td>
+          <td><span class="wcag-badge wcag-no">Fail</span></td>
+          <td>❌ Nunca usar — contraste insuficiente</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- TEMPLATES -->
+  <div class="section">
+    <div class="section-title">06 · Templates Sociais</div>
+
+    <div style="font-size:14px;font-weight:600;color:var(--muted);margin-bottom:16px;text-transform:uppercase;letter-spacing:0.05em;">Instagram Feed · 1080×1080px</div>
+    <div class="template-grid" style="margin-bottom:32px;">
+
+      <!-- Template 01 Educativo -->
+      <div class="template-card">
+        <div class="template-preview" style="background:linear-gradient(135deg,#14532D,#0F3D20);">
+          <div>
+            <span class="pill" style="background:#D97706;color:#1C1917;">VOCÊ SABIA?</span>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:var(--font-display);font-size:72px;font-weight:800;color:#fff;line-height:1;">7x</div>
+            <div style="font-family:var(--font-display);font-size:16px;font-weight:700;color:#fff;margin-top:8px;line-height:1.3;">mais chance de aparecer no Google com perfil completo</div>
+            <div style="width:40px;height:2px;background:rgba(255,255,255,0.3);margin:12px auto;"></div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.7);">A Destaka faz isso automaticamente.</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-family:var(--font-display);font-size:14px;font-weight:800;color:#fff;">Destaka</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.5);">@destaka</div>
+          </div>
+        </div>
+        <div class="template-footer">
+          <div class="template-name">01 · Educativo / Dado</div>
+          <div class="template-dims">Fundo verde hero · Badge âmbar</div>
+        </div>
+      </div>
+
+      <!-- Template 02 Dica -->
+      <div class="template-card">
+        <div class="template-preview" style="background:#FEFCE8;">
+          <div>
+            <div style="font-family:var(--font-display);font-size:13px;font-weight:700;color:#16A34A;letter-spacing:0.05em;text-transform:uppercase;">Dica 03</div>
+          </div>
+          <div>
+            <div style="font-family:var(--font-display);font-size:20px;font-weight:800;color:#1C1917;line-height:1.2;margin-bottom:10px;">Como responder avaliações negativas</div>
+            <div style="width:32px;height:3px;background:#14532D;border-radius:2px;margin-bottom:12px;"></div>
+            <div style="font-size:13px;color:#57534E;line-height:1.7;">
+              1. Responda em até 24h<br>
+              2. Não seja defensivo<br>
+              3. Convide para conversa<br>
+              4. Assine com seu nome
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-family:var(--font-display);font-size:13px;font-weight:800;color:#14532D;">Destaka</div>
+            <span class="pill" style="background:#14532D;color:#fff;font-size:10px;">destaka.com.br</span>
+          </div>
+        </div>
+        <div class="template-footer">
+          <div class="template-name">02 · Dica Rápida</div>
+          <div class="template-dims">Fundo creme quente · Borda verde</div>
+        </div>
+      </div>
+
+      <!-- Template 03 Depoimento -->
+      <div class="template-card">
+        <div class="template-preview" style="background:#1C1917;">
+          <div style="font-family:var(--font-display);font-size:56px;font-weight:800;color:#D97706;line-height:0.8;">"</div>
+          <div>
+            <div style="font-family:var(--font-display);font-size:17px;font-weight:700;color:#fff;line-height:1.4;margin-bottom:12px;">"Em 30 dias, saí de 4 para 47 avaliações e minha agenda lotou."</div>
+            <div style="font-size:12px;font-weight:600;color:#16A34A;">Dr. Carlos Lima — Dentista</div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:center;">
+            <div style="text-align:center;">
+              <div style="font-family:var(--font-display);font-size:24px;font-weight:800;color:#DC2626;">32</div>
+              <div style="font-size:10px;color:rgba(255,255,255,0.5);">antes</div>
+            </div>
+            <div style="color:rgba(255,255,255,0.4);">→</div>
+            <div style="text-align:center;">
+              <div style="font-family:var(--font-display);font-size:24px;font-weight:800;color:#16A34A;">87</div>
+              <div style="font-size:10px;color:rgba(255,255,255,0.5);">depois</div>
+            </div>
+            <div style="flex:1;text-align:right;font-family:var(--font-display);font-size:13px;font-weight:800;color:#fff;">Destaka</div>
+          </div>
+        </div>
+        <div class="template-footer">
+          <div class="template-name">03 · Depoimento</div>
+          <div class="template-dims">Fundo preto quente · Aspas âmbar</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- LinkedIn -->
+    <div style="font-size:14px;font-weight:600;color:var(--muted);margin-bottom:16px;text-transform:uppercase;letter-spacing:0.05em;">LinkedIn · 1200×628px</div>
+    <div style="max-width:580px;">
+      <div class="template-card">
+        <div style="background:#FEFCE8;padding:32px;display:flex;gap:0;border-left:4px solid #14532D;">
+          <div style="flex:1;">
+            <div style="font-size:11px;font-weight:700;color:#16A34A;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px;">Google Meu Negócio</div>
+            <div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:#1C1917;line-height:1.3;margin-bottom:16px;">Por que 9 em 10 dentistas brasileiros perdem pacientes no Google</div>
+            <div style="font-size:13px;color:#57534E;line-height:1.8;">
+              • 7× mais cliques com perfil completo<br>
+              • 51% dos perfis não reivindicados<br>
+              • R$0 de custo adicional para mudar isso
+            </div>
+            <div style="margin-top:16px;font-family:var(--font-display);font-size:13px;font-weight:800;color:#14532D;">Destaka · destaka.com.br</div>
+          </div>
+        </div>
+        <div class="template-footer">
+          <div class="template-name">LinkedIn Thought Leadership</div>
+          <div class="template-dims">Fundo creme · Borda verde 4px · Dados em bullets</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- TOM DE VOZ -->
+  <div class="section">
+    <div class="section-title">07 · Tom de Voz</div>
+
+    <div class="principles-grid">
+      <div class="principle-card">
+        <div class="principle-num">01</div>
+        <div class="principle-text"><strong>Claro</strong> antes de inteligente</div>
+      </div>
+      <div class="principle-card">
+        <div class="principle-num">02</div>
+        <div class="principle-text"><strong>Específico</strong> antes de vago</div>
+      </div>
+      <div class="principle-card">
+        <div class="principle-num">03</div>
+        <div class="principle-text"><strong>Ativo</strong> antes de passivo</div>
+      </div>
+      <div class="principle-card">
+        <div class="principle-num">04</div>
+        <div class="principle-text"><strong>Humano</strong> antes de técnico</div>
+      </div>
+      <div class="principle-card">
+        <div class="principle-num">05</div>
+        <div class="principle-text"><strong>Confiante</strong> sem ser arrogante</div>
+      </div>
+    </div>
+
+    <div class="tov-grid">
+      <div class="tov-card do">
+        <h4>✅ Use</h4>
+        <div class="tov-item"><span class="tov-icon">💬</span><span>"aparecer no Google"</span></div>
+        <div class="tov-item"><span class="tov-icon">💬</span><span>"pacientes novos"</span></div>
+        <div class="tov-item"><span class="tov-icon">💬</span><span>"a Destaka faz isso por você"</span></div>
+        <div class="tov-item"><span class="tov-icon">💬</span><span>"isso custa 1 consulta por mês"</span></div>
+        <div class="tov-item"><span class="tov-icon">💬</span><span>"saiu de nota 32 para 87"</span></div>
+        <div class="tov-item"><span class="tov-icon">💬</span><span>"agenda que encheu em 30 dias"</span></div>
+        <div class="tov-item"><span class="tov-icon">💬</span><span>"enquanto você atende, a Destaka trabalha"</span></div>
+      </div>
+      <div class="tov-card dont">
+        <h4>❌ Evite</h4>
+        <div class="tov-item"><span class="tov-icon">🚫</span><span>"ranquear no SERP"</span></div>
+        <div class="tov-item"><span class="tov-icon">🚫</span><span>"leads qualificados"</span></div>
+        <div class="tov-item"><span class="tov-icon">🚫</span><span>"nossa solução automatiza o processo"</span></div>
+        <div class="tov-item"><span class="tov-icon">🚫</span><span>"ROI comprovado"</span></div>
+        <div class="tov-item"><span class="tov-icon">🚫</span><span>"melhora expressiva no score"</span></div>
+        <div class="tov-item"><span class="tov-icon">🚫</span><span>"melhoria mensurável nos resultados"</span></div>
+        <div class="tov-item"><span class="tov-icon">🚫</span><span>"operamos de forma assíncrona"</span></div>
+      </div>
+    </div>
+
+    <div style="margin-top:32px;">
+      <div style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:16px;">Palavras banidas da comunicação Destaka</div>
+      <div class="banned-list">
+        <span class="banned-tag">Revolucionário</span>
+        <span class="banned-tag">Disruptivo</span>
+        <span class="banned-tag">Solução inovadora</span>
+        <span class="banned-tag">Plataforma robusta</span>
+        <span class="banned-tag">Ecossistema digital</span>
+        <span class="banned-tag">Potencialize</span>
+        <span class="banned-tag">Alavancar resultados</span>
+        <span class="banned-tag">De forma simples e eficaz</span>
+      </div>
+    </div>
+
+    <div style="margin-top:40px;">
+      <div style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:16px;">Frases de Marca</div>
+      <div class="phrase-grid">
+        <div class="phrase-card">Apareça para quem precisa de você.</div>
+        <div class="phrase-card">Você cuida dos pacientes. A Destaka cuida do resto.</div>
+        <div class="phrase-card">Cada horário vago é um paciente que não te encontrou.</div>
+        <div class="phrase-card">Seu Google Meu Negócio no piloto automático.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="ds-footer">
+    <div class="logo-text">Desta<span>k</span>a</div>
+    <p>Apareça para quem precisa de você.</p>
+    <div class="version">Design System v1.1 · 2026</div>
+  </div>
+
+</div>
+</body>
+</html>
