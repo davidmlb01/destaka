@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Destaka — Diagnóstico Gratuito</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --floresta: #14532D;
+    --verde-vivo: #16A34A;
+    --verde-claro: #DCFCE7;
+    --ambar: #D97706;
+    --ambar-claro: #F59E0B;
+    --ambar-bg: #FFFBEB;
+    --dark: #1C1917;
+    --stone: #57534E;
+    --stone-claro: #E7E5E4;
+    --creme: #FAFAF9;
+    --creme-quente: #FEFCE8;
+    --red: #DC2626;
+    --red-bg: #FEF2F2;
+    --font-d: 'Plus Jakarta Sans', sans-serif;
+    --font-b: 'Inter', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--font-b); background: var(--creme); color: var(--dark); min-height: 100vh; }
+
+  /* STEPS — controle de visibilidade */
+  .step { display: none; min-height: 100vh; }
+  .step.active { display: flex; flex-direction: column; }
+
+  /* ===== STEP 1: HERO / SEARCH ===== */
+  #step-hero {
+    background: linear-gradient(160deg, #14532D 0%, #0A2E18 100%);
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  #step-hero::before {
+    content: '';
+    position: absolute;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    border: 1px solid rgba(217,119,6,0.1);
+    top: -150px; right: -150px;
+    pointer-events: none;
+  }
+  #step-hero::after {
+    content: '';
+    position: absolute;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.04);
+    bottom: -80px; left: -80px;
+    pointer-events: none;
+  }
+
+  .hero-inner {
+    max-width: 560px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(217,119,6,0.15);
+    border: 1px solid rgba(217,119,6,0.3);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    color: var(--ambar-claro);
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+  .hero-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 40px;
+  }
+  .hero-logo-star { font-size: 22px; color: var(--ambar); }
+  .hero-logo-text { font-family: var(--font-d); font-weight: 800; font-size: 20px; color: white; letter-spacing: -0.5px; }
+  .hero-logo-text span { color: var(--ambar); }
+
+  .hero-h1 {
+    font-family: var(--font-d);
+    font-weight: 800;
+    font-size: clamp(32px, 5vw, 48px);
+    color: white;
+    line-height: 1.1;
+    letter-spacing: -1.5px;
+    margin-bottom: 16px;
+  }
+  .hero-h1 em { color: var(--ambar); font-style: normal; }
+  .hero-sub {
+    font-size: 17px;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.6;
+    margin-bottom: 40px;
+    max-width: 440px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .search-card {
+    background: white;
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.3);
+    text-align: left;
+  }
+  .search-card-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--stone);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .input-group { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
+  .input-wrap { position: relative; }
+  .input-wrap input {
+    width: 100%;
+    padding: 14px 16px 14px 44px;
+    border: 1.5px solid var(--stone-claro);
+    border-radius: 10px;
+    font-family: var(--font-b);
+    font-size: 15px;
+    color: var(--dark);
+    background: var(--creme);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .input-wrap input:focus { border-color: var(--floresta); background: white; }
+  .input-wrap input::placeholder { color: var(--stone); }
+  .input-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: var(--stone);
+    pointer-events: none;
+  }
+  .btn-primary {
+    width: 100%;
+    background: var(--floresta);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 16px;
+    font-family: var(--font-d);
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn-primary:hover { background: #166534; }
+  .btn-primary:active { transform: scale(0.99); }
+
+  .search-disclaimer {
+    text-align: center;
+    font-size: 11px;
+    color: var(--stone);
+    margin-top: 12px;
+  }
+
+  .hero-social-proof {
+    margin-top: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+  }
+  .proof-item { text-align: center; }
+  .proof-num { font-family: var(--font-d); font-weight: 800; font-size: 22px; color: var(--ambar-claro); }
+  .proof-lbl { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+  .proof-div { width: 1px; height: 32px; background: rgba(255,255,255,0.1); }
+
+  /* ===== STEP 2: LOADING ===== */
+  #step-loading {
+    background: var(--dark);
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+  }
+  .loading-inner {
+    max-width: 480px;
+    width: 100%;
+    text-align: center;
+  }
+  .loading-logo {
+    font-size: 40px;
+    color: var(--ambar);
+    margin-bottom: 32px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.92); }
+  }
+  .loading-h { font-family: var(--font-d); font-weight: 800; font-size: 28px; color: white; letter-spacing: -0.5px; margin-bottom: 12px; }
+  .loading-sub { font-size: 15px; color: rgba(255,255,255,0.5); margin-bottom: 48px; }
+  .loading-steps { display: flex; flex-direction: column; gap: 14px; text-align: left; }
+  .ls-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    transition: all 0.4s;
+  }
+  .ls-item.done { background: rgba(22,163,74,0.12); border: 1px solid rgba(22,163,74,0.2); }
+  .ls-item.active-item { background: rgba(217,119,6,0.1); border: 1px solid rgba(217,119,6,0.2); }
+  .ls-icon { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+  .ls-icon.wait { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.3); }
+  .ls-icon.active-icon { background: var(--ambar); color: var(--dark); }
+  .ls-icon.check { background: var(--verde-vivo); color: white; }
+  .ls-text { font-size: 14px; color: rgba(255,255,255,0.7); }
+  .ls-text.done-text { color: white; }
+
+  .loading-bar-wrap {
+    width: 100%;
+    height: 4px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+    margin-top: 32px;
+    overflow: hidden;
+  }
+  .loading-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--floresta), var(--ambar));
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.5s ease;
+  }
+
+  /* ===== STEP 3: SCORE REVEAL ===== */
+  #step-score {
+    background: var(--creme);
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  /* Score hero section */
+  .score-hero {
+    background: linear-gradient(160deg, #14532D 0%, #0A2E18 100%);
+    padding: 40px 24px 60px;
+    text-align: center;
+    position: relative;
+  }
+  .score-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 680px;
+    margin: 0 auto 40px;
+  }
+  .score-logo { display: flex; align-items: center; gap: 6px; }
+  .score-logo-star { font-size: 18px; color: var(--ambar); }
+  .score-logo-text { font-family: var(--font-d); font-weight: 800; font-size: 16px; color: white; letter-spacing: -0.3px; }
+  .score-logo-text span { color: var(--ambar); }
+  .score-clinic-name {
+    font-size: 12px;
+    color: rgba(255,255,255,0.4);
+    font-weight: 500;
+  }
+
+  .score-reveal-inner {
+    max-width: 560px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+  .score-label-top {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  /* Score circle */
+  .score-circle-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+  .score-circle {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    border: 6px solid rgba(255,255,255,0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: rgba(0,0,0,0.2);
+  }
+  .score-circle-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 6px solid transparent;
+    border-top-color: var(--ambar);
+    border-right-color: var(--ambar);
+    transform: rotate(-30deg);
+  }
+  .score-number {
+    font-family: var(--font-d);
+    font-weight: 800;
+    font-size: 64px;
+    color: var(--ambar);
+    letter-spacing: -4px;
+    line-height: 1;
+  }
+  .score-denom {
+    font-size: 14px;
+    color: rgba(255,255,255,0.3);
+    margin-top: 2px;
+  }
+
+  .score-verdict {
+    font-family: var(--font-d);
+    font-weight: 800;
+    font-size: clamp(22px, 4vw, 32px);
+    color: white;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+  .score-verdict em { color: var(--ambar); font-style: normal; }
+  .score-verdict-sub {
+    font-size: 15px;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.6;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  /* Score body */
+  .score-body {
+    max-width: 680px;
+    margin: -32px auto 0;
+    padding: 0 24px 80px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Breakdown card */
+  .breakdown-card {
+    background: white;
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+  }
+  .breakdown-title {
+    font-family: var(--font-d);
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--dark);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .breakdown-title::after { content: ''; flex: 1; height: 1px; background: var(--stone-claro); }
+
+  .category-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--stone-claro);
+  }
+  .category-row:last-child { border-bottom: none; }
+  .cat-icon { font-size: 18px; flex-shrink: 0; width: 28px; text-align: center; }
+  .cat-name { flex: 1; font-size: 14px; color: var(--dark); font-weight: 500; }
+  .cat-bar-wrap { width: 100px; height: 6px; background: var(--stone-claro); border-radius: 3px; overflow: hidden; flex-shrink: 0; }
+  .cat-bar { height: 100%; border-radius: 3px; }
+  .cat-score { font-family: var(--font-d); font-weight: 700; font-size: 13px; min-width: 32px; text-align: right; }
+
+  /* Problemas críticos */
+  .issues-card {
+    background: white;
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+  }
+  .issues-title {
+    font-family: var(--font-d);
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--dark);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .issues-title::after { content: ''; flex: 1; height: 1px; background: var(--stone-claro); }
+
+  .issue-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--stone-claro);
+  }
+  .issue-item:last-child { border-bottom: none; }
+  .issue-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 6px;
+  }
+  .dot-critical { background: var(--red); }
+  .dot-warning { background: var(--ambar); }
+  .dot-ok { background: var(--verde-vivo); }
+  .issue-text { font-size: 14px; color: var(--dark); line-height: 1.5; }
+  .issue-text strong { color: var(--dark); display: block; font-weight: 600; margin-bottom: 2px; }
+  .issue-text span { color: var(--stone); font-size: 13px; }
+
+  /* Custo real */
+  .cost-card {
+    background: linear-gradient(135deg, #1C1917, #0C1A0F);
+    border-radius: 20px;
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+  .cost-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--ambar);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .cost-headline {
+    font-family: var(--font-d);
+    font-weight: 800;
+    font-size: 22px;
+    color: white;
+    line-height: 1.3;
+    margin-bottom: 20px;
+    letter-spacing: -0.5px;
+  }
+  .cost-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .cost-item { background: rgba(255,255,255,0.07); border-radius: 12px; padding: 14px; text-align: center; }
+  .cost-num { font-family: var(--font-d); font-weight: 800; font-size: 24px; color: var(--ambar); letter-spacing: -1px; }
+  .cost-lbl { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 4px; line-height: 1.4; }
+
+  /* CTA card */
+  .cta-card {
+    background: var(--floresta);
+    border-radius: 20px;
+    padding: 32px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .cta-star { font-size: 32px; color: var(--ambar); margin-bottom: 12px; }
+  .cta-headline {
+    font-family: var(--font-d);
+    font-weight: 800;
+    font-size: 22px;
+    color: white;
+    letter-spacing: -0.5px;
+    line-height: 1.3;
+    margin-bottom: 8px;
+  }
+  .cta-sub { font-size: 14px; color: rgba(255,255,255,0.55); margin-bottom: 24px; line-height: 1.6; }
+
+  .btn-cta {
+    width: 100%;
+    background: var(--ambar);
+    color: var(--dark);
+    border: none;
+    border-radius: 12px;
+    padding: 18px;
+    font-family: var(--font-d);
+    font-weight: 800;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .btn-cta:hover { background: var(--ambar-claro); }
+  .btn-cta:active { transform: scale(0.99); }
+
+  .btn-secondary-cta {
+    width: 100%;
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.7);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 14px;
+    font-family: var(--font-b);
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-secondary-cta:hover { background: rgba(255,255,255,0.15); }
+
+  .cta-disclaimer { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 16px; }
+
+  /* ===== STEP 4: CAPTURA ===== */
+  #step-capture {
+    background: var(--creme-quente);
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+  }
+  .capture-inner {
+    max-width: 480px;
+    width: 100%;
+    text-align: center;
+  }
+  .capture-logo { font-size: 48px; color: var(--floresta); margin-bottom: 24px; }
+  .capture-h {
+    font-family: var(--font-d);
+    font-weight: 800;
+    font-size: clamp(26px, 4vw, 36px);
+    color: var(--dark);
+    letter-spacing: -1px;
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+  .capture-h em { color: var(--floresta); font-style: normal; }
+  .capture-sub { font-size: 16px; color: var(--stone); margin-bottom: 32px; line-height: 1.6; }
+
+  .capture-card {
+    background: white;
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.08);
+    text-align: left;
+    margin-bottom: 24px;
+  }
+  .capture-card-label { font-size: 12px; font-weight: 600; color: var(--stone); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+  .capture-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1.5px solid var(--stone-claro);
+    border-radius: 10px;
+    font-family: var(--font-b);
+    font-size: 15px;
+    color: var(--dark);
+    background: var(--creme);
+    outline: none;
+    margin-bottom: 12px;
+    transition: border-color 0.2s;
+  }
+  .capture-input:focus { border-color: var(--floresta); background: white; }
+
+  .btn-google {
+    width: 100%;
+    background: white;
+    color: var(--dark);
+    border: 1.5px solid var(--stone-claro);
+    border-radius: 10px;
+    padding: 14px;
+    font-family: var(--font-b);
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .btn-google:hover { border-color: var(--floresta); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .google-icon { font-size: 18px; }
+
+  .divider-or { display: flex; align-items: center; gap: 12px; margin: 4px 0 12px; }
+  .divider-or::before, .divider-or::after { content: ''; flex: 1; height: 1px; background: var(--stone-claro); }
+  .divider-or span { font-size: 12px; color: var(--stone); }
+
+  .capture-benefits { display: flex; flex-direction: column; gap: 8px; }
+  .capture-benefit { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--stone); }
+  .benefit-check { color: var(--verde-vivo); font-weight: 700; }
+</style>
+</head>
+<body>
+
+<!-- ===================== STEP 1: HERO / SEARCH ===================== -->
+<section id="step-hero" class="step active">
+  <div class="hero-inner">
+    <div class="hero-logo">
+      <span class="hero-logo-star">✦</span>
+      <span class="hero-logo-text">Desta<span>ka</span></span>
+    </div>
+
+    <div class="hero-badge">
+      <span>✦</span> Diagnóstico gratuito — sem cadastro
+    </div>
+
+    <h1 class="hero-h1">
+      Seu consultório aparece<br>quando o paciente <em>procura?</em>
+    </h1>
+    <p class="hero-sub">
+      Em 30 segundos a Destaka analisa seu perfil no Google e mostra exatamente quanto você está perdendo — e por quê.
+    </p>
+
+    <div class="search-card">
+      <div class="search-card-label">Buscar minha clínica</div>
+      <div class="input-group">
+        <div class="input-wrap">
+          <span class="input-icon">🏥</span>
+          <input type="text" id="input-clinic" placeholder="Nome do consultório ou clínica" autocomplete="off" />
+        </div>
+        <div class="input-wrap">
+          <span class="input-icon">📍</span>
+          <input type="text" id="input-city" placeholder="Cidade (ex: São Paulo, SP)" autocomplete="off" />
+        </div>
+      </div>
+      <button class="btn-primary" onclick="startDiagnostic()">
+        Ver a nota do meu perfil →
+      </button>
+      <p class="search-disclaimer">Grátis. Sem spam. Resultado em segundos.</p>
+    </div>
+
+    <div class="hero-social-proof">
+      <div class="proof-item">
+        <div class="proof-num">51%</div>
+        <div class="proof-lbl">dos perfis estão<br>incompletos</div>
+      </div>
+      <div class="proof-div"></div>
+      <div class="proof-item">
+        <div class="proof-num">3x</div>
+        <div class="proof-lbl">mais pacientes com<br>perfil otimizado</div>
+      </div>
+      <div class="proof-div"></div>
+      <div class="proof-item">
+        <div class="proof-num">5min</div>
+        <div class="proof-lbl">para a Destaka<br>corrigir tudo</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== STEP 2: LOADING ===================== -->
+<section id="step-loading" class="step">
+  <div class="loading-inner">
+    <div class="loading-logo">✦</div>
+    <h2 class="loading-h">Analisando seu perfil...</h2>
+    <p class="loading-sub" id="loading-clinic-name">Clínica · São Paulo</p>
+
+    <div class="loading-steps" id="loading-steps">
+      <div class="ls-item" id="ls1">
+        <div class="ls-icon wait" id="ls1-icon">○</div>
+        <div class="ls-text">Localizando perfil no Google</div>
+      </div>
+      <div class="ls-item" id="ls2">
+        <div class="ls-icon wait" id="ls2-icon">○</div>
+        <div class="ls-text">Verificando informações básicas</div>
+      </div>
+      <div class="ls-item" id="ls3">
+        <div class="ls-icon wait" id="ls3-icon">○</div>
+        <div class="ls-text">Analisando fotos e avaliações</div>
+      </div>
+      <div class="ls-item" id="ls4">
+        <div class="ls-icon wait" id="ls4-icon">○</div>
+        <div class="ls-text">Calculando score de visibilidade</div>
+      </div>
+    </div>
+
+    <div class="loading-bar-wrap">
+      <div class="loading-bar" id="loading-bar"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== STEP 3: SCORE ===================== -->
+<section id="step-score" class="step">
+
+  <!-- Hero do score -->
+  <div class="score-hero">
+    <div class="score-nav">
+      <div class="score-logo">
+        <span class="score-logo-star">✦</span>
+        <span class="score-logo-text">Desta<span>ka</span></span>
+      </div>
+      <span class="score-clinic-name" id="score-clinic-display">Clínica Saúde · São Paulo</span>
+    </div>
+
+    <div class="score-reveal-inner">
+      <div class="score-label-top">Resultado do diagnóstico</div>
+
+      <div class="score-circle-wrap">
+        <div class="score-circle">
+          <div class="score-circle-ring"></div>
+          <div class="score-number" id="score-num">55</div>
+          <div class="score-denom">de 100</div>
+        </div>
+      </div>
+
+      <h2 class="score-verdict" id="score-verdict">
+        Você está perdendo pacientes<br><em>todos os dias.</em>
+      </h2>
+      <p class="score-verdict-sub" id="score-verdict-sub">
+        Seu perfil está em 55% do potencial. Isso significa que quando um paciente pesquisa dentista na sua cidade, há uma chance real de ele não te encontrar — e ir para o concorrente.
+      </p>
+    </div>
+  </div>
+
+  <!-- Body do score -->
+  <div class="score-body">
+
+    <!-- Breakdown por categoria -->
+    <div class="breakdown-card">
+      <div class="breakdown-title">📊 Nota por categoria</div>
+
+      <div class="category-row">
+        <div class="cat-icon">📋</div>
+        <div class="cat-name">Informações básicas</div>
+        <div class="cat-bar-wrap"><div class="cat-bar" style="width:70%; background:#D97706;"></div></div>
+        <div class="cat-score" style="color:#D97706;">70</div>
+      </div>
+      <div class="category-row">
+        <div class="cat-icon">📸</div>
+        <div class="cat-name">Fotos</div>
+        <div class="cat-bar-wrap"><div class="cat-bar" style="width:30%; background:#DC2626;"></div></div>
+        <div class="cat-score" style="color:#DC2626;">30</div>
+      </div>
+      <div class="category-row">
+        <div class="cat-icon">⭐</div>
+        <div class="cat-name">Avaliações</div>
+        <div class="cat-bar-wrap"><div class="cat-bar" style="width:60%; background:#D97706;"></div></div>
+        <div class="cat-score" style="color:#D97706;">60</div>
+      </div>
+      <div class="category-row">
+        <div class="cat-icon">📝</div>
+        <div class="cat-name">Posts e atualizações</div>
+        <div class="cat-bar-wrap"><div class="cat-bar" style="width:20%; background:#DC2626;"></div></div>
+        <div class="cat-score" style="color:#DC2626;">20</div>
+      </div>
+      <div class="category-row">
+        <div class="cat-icon">🏷️</div>
+        <div class="cat-name">Serviços cadastrados</div>
+        <div class="cat-bar-wrap"><div class="cat-bar" style="width:55%; background:#D97706;"></div></div>
+        <div class="cat-score" style="color:#D97706;">55</div>
+      </div>
+      <div class="category-row">
+        <div class="cat-icon">✅</div>
+        <div class="cat-name">Atributos do perfil</div>
+        <div class="cat-bar-wrap"><div class="cat-bar" style="width:80%; background:#16A34A;"></div></div>
+        <div class="cat-score" style="color:#16A34A;">80</div>
+      </div>
+    </div>
+
+    <!-- Problemas encontrados -->
+    <div class="issues-card">
+      <div class="issues-title">🔴 O que está prejudicando você</div>
+
+      <div class="issue-item">
+        <div class="issue-dot dot-critical"></div>
+        <div class="issue-text">
+          <strong>Sem fotos do ambiente interno</strong>
+          <span>Perfis com fotos recebem 42% mais pedidos de rota. O Google penaliza perfis sem imagens atualizadas.</span>
+        </div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-dot dot-critical"></div>
+        <div class="issue-text">
+          <strong>Nenhum post nos últimos 30 dias</strong>
+          <span>O algoritmo do Google favorece perfis ativos. Sem posts, você perde posição para concorrentes que publicam semanalmente.</span>
+        </div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-dot dot-warning"></div>
+        <div class="issue-text">
+          <strong>4 avaliações sem resposta</strong>
+          <span>88% dos pacientes leem as respostas antes de escolher. Avaliações sem resposta reduzem a confiança no consultório.</span>
+        </div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-dot dot-warning"></div>
+        <div class="issue-text">
+          <strong>Descrição do negócio sem palavras-chave</strong>
+          <span>Pacientes buscam "dentista especialista em implante SP" — sua descrição não captura essas buscas.</span>
+        </div>
+      </div>
+      <div class="issue-item">
+        <div class="issue-dot dot-warning"></div>
+        <div class="issue-text">
+          <strong>Serviços incompletos</strong>
+          <span>Você tem 3 serviços cadastrados. Consultórios similares na sua cidade têm em média 11.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Custo real -->
+    <div class="cost-card">
+      <div class="cost-title">O que isso custa na prática</div>
+      <div class="cost-headline">
+        Com nota 55, você provavelmente está perdendo entre 3 e 5 pacientes novos por mês — só por invisibilidade no Google.
+      </div>
+      <div class="cost-grid">
+        <div class="cost-item">
+          <div class="cost-num">~4</div>
+          <div class="cost-lbl">pacientes perdidos por mês</div>
+        </div>
+        <div class="cost-item">
+          <div class="cost-num">R$800</div>
+          <div class="cost-lbl">ticket médio por paciente</div>
+        </div>
+        <div class="cost-item">
+          <div class="cost-num">R$3.200</div>
+          <div class="cost-lbl">receita invisível todo mês</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-card">
+      <div class="cta-star">✦</div>
+      <h3 class="cta-headline">
+        A Destaka corrige tudo isso.<br>Automaticamente.
+      </h3>
+      <p class="cta-sub">
+        Conecte seu Google Meu Negócio agora e a Destaka começa a otimizar em menos de 5 minutos — fotos, posts, respostas, serviços e tudo mais.
+      </p>
+      <button class="btn-cta" onclick="goToCapture()">
+        ✦ Corrigir meu perfil agora — é grátis
+      </button>
+      <button class="btn-secondary-cta" onclick="goToCapture()">
+        Receber relatório completo por e-mail
+      </button>
+      <p class="cta-disclaimer">Sem cartão de crédito. Sem compromisso. Resultado em 5 minutos.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===================== STEP 4: CAPTURA ===================== -->
+<section id="step-capture" class="step">
+  <div class="capture-inner">
+    <div class="capture-logo">✦</div>
+    <h2 class="capture-h">
+      Pronto para <em>aparecer primeiro?</em>
+    </h2>
+    <p class="capture-sub">
+      Conecte seu Google e a Destaka começa a corrigir os 5 problemas encontrados agora.
+    </p>
+
+    <div class="capture-card">
+      <div class="capture-card-label">Criar conta grátis</div>
+      <button class="btn-google">
+        <span class="google-icon">G</span>
+        Continuar com Google
+      </button>
+      <div class="divider-or"><span>ou</span></div>
+      <input class="capture-input" type="email" placeholder="Seu e-mail profissional" />
+      <button class="btn-primary" style="border-radius:10px; font-size:15px; padding:14px;">
+        Receber diagnóstico completo →
+      </button>
+    </div>
+
+    <div class="capture-benefits">
+      <div class="capture-benefit">
+        <span class="benefit-check">✓</span>
+        Diagnóstico completo de 50+ pontos
+      </div>
+      <div class="capture-benefit">
+        <span class="benefit-check">✓</span>
+        Otimização automática em 5 minutos
+      </div>
+      <div class="capture-benefit">
+        <span class="benefit-check">✓</span>
+        Sem cartão de crédito no teste grátis
+      </div>
+      <div class="capture-benefit">
+        <span class="benefit-check">✓</span>
+        Cancele quando quiser
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // ============================================================
+  // ESTADO GLOBAL (mock — será substituído pela API real)
+  // ============================================================
+  const state = {
+    clinicName: '',
+    city: '',
+    score: 55,
+  }
+
+  // ============================================================
+  // NAVEGAÇÃO ENTRE STEPS
+  // ============================================================
+  function showStep(id) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'))
+    document.getElementById(id).classList.add('active')
+    window.scrollTo(0, 0)
+  }
+
+  // ============================================================
+  // STEP 1 → STEP 2: Inicia diagnóstico
+  // ============================================================
+  function startDiagnostic() {
+    const clinic = document.getElementById('input-clinic').value.trim()
+    const city = document.getElementById('input-city').value.trim()
+
+    if (!clinic || !city) {
+      const firstEmpty = !clinic
+        ? document.getElementById('input-clinic')
+        : document.getElementById('input-city')
+      firstEmpty.style.borderColor = '#DC2626'
+      firstEmpty.focus()
+      setTimeout(() => firstEmpty.style.borderColor = '', 2000)
+      return
+    }
+
+    state.clinicName = clinic
+    state.city = city
+    document.getElementById('loading-clinic-name').textContent = `${clinic} · ${city}`
+    showStep('step-loading')
+    runLoadingSequence()
+  }
+
+  // ============================================================
+  // STEP 2: Animação de loading
+  // ============================================================
+  function runLoadingSequence() {
+    const steps = [
+      { id: 'ls1', delay: 800 },
+      { id: 'ls2', delay: 1800 },
+      { id: 'ls3', delay: 3000 },
+      { id: 'ls4', delay: 4200 },
+    ]
+    const bar = document.getElementById('loading-bar')
+    const barTargets = [25, 50, 75, 95]
+
+    steps.forEach((s, i) => {
+      // Ativa o item
+      setTimeout(() => {
+        const item = document.getElementById(s.id)
+        const icon = document.getElementById(s.id + '-icon')
+        item.classList.add('active-item')
+        icon.classList.remove('wait')
+        icon.classList.add('active-icon')
+        icon.textContent = '⟳'
+        bar.style.width = barTargets[i] + '%'
+
+        // Completa o item
+        setTimeout(() => {
+          item.classList.remove('active-item')
+          item.classList.add('done')
+          icon.classList.remove('active-icon')
+          icon.classList.add('check')
+          icon.textContent = '✓'
+          item.querySelector('.ls-text').classList.add('done-text')
+        }, 800)
+      }, s.delay)
+    })
+
+    // Vai para score após loading
+    setTimeout(() => {
+      bar.style.width = '100%'
+      setTimeout(() => {
+        document.getElementById('score-clinic-display').textContent = `${state.clinicName} · ${state.city}`
+        document.getElementById('score-num').textContent = state.score
+        updateScoreVerdict(state.score)
+        showStep('step-score')
+      }, 400)
+    }, 5400)
+  }
+
+  // ============================================================
+  // STEP 3: Verdict dinâmico por faixa de score
+  // ============================================================
+  function updateScoreVerdict(score) {
+    const verdict = document.getElementById('score-verdict')
+    const sub = document.getElementById('score-verdict-sub')
+
+    if (score < 40) {
+      verdict.innerHTML = 'Situação crítica.<br><em>Pacientes não te encontram.</em>'
+      sub.textContent = `Com nota ${score}, seu perfil está quase invisível no Google. A maioria dos pacientes que busca na sua cidade não chega até você.`
+    } else if (score < 60) {
+      verdict.innerHTML = 'Você está perdendo pacientes<br><em>todos os dias.</em>'
+      sub.textContent = `Seu perfil está em ${score}% do potencial. Quando um paciente pesquisa na sua cidade, há uma chance real de ele ir para o concorrente.`
+    } else if (score < 80) {
+      verdict.innerHTML = 'Bom começo.<br><em>Mas ainda há dinheiro na mesa.</em>'
+      sub.textContent = `Nota ${score} é melhor do que a maioria — mas os ${100 - score} pontos restantes representam pacientes que você ainda não captura.`
+    } else {
+      verdict.innerHTML = 'Perfil forte.<br><em>Vamos chegar nos 100%.</em>'
+      sub.textContent = `Nota ${score} coloca você acima da média. Com os ajustes finais, você maximiza sua presença e fecha as brechas dos concorrentes.`
+    }
+  }
+
+  // ============================================================
+  // STEP 3 → STEP 4: CTA
+  // ============================================================
+  function goToCapture() {
+    showStep('step-capture')
+  }
+
+  // ============================================================
+  // ENTER nos inputs = submit
+  // ============================================================
+  document.getElementById('input-clinic').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('input-city').focus()
+  })
+  document.getElementById('input-city').addEventListener('keydown', e => {
+    if (e.key === 'Enter') startDiagnostic()
+  })
+</script>
+
+</body>
+</html>

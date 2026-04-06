@@ -20,6 +20,10 @@ SaaS para automatizar otimização do Google Business Profile para profissionais
 - Servidor: `docs/guides/server-requirements.md`
 - Stories: `docs/stories/`
 
+## Regras de Copy
+
+- **NUNCA usar travessão** (—) em nenhum texto corrido, copy, labels ou UI. Substituir por vírgula, ponto, dois-pontos ou reescrever a frase.
+
 ## Processos de Sessão
 Ao fim de cada sessão importante:
 1. Atualizar `docs/MASTER-BACKUP.md`

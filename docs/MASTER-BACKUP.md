@@ -1,6 +1,6 @@
 # MASTER BACKUP — Destaka (Projeto GMM)
-**Atualizado:** 2026-03-29
-**Status:** Planejamento completo + Branding definido — pronto para desenvolvimento
+**Atualizado:** 2026-04-05
+**Status:** Infraestrutura de dev configurada — pendente Google OAuth + Stripe
 
 ---
 
@@ -38,10 +38,14 @@
 - [x] Requisitos de servidor documentados (`docs/guides/server-requirements.md`)
 - [x] Epic 1 (Core Platform) — 7 stories planejadas
 - [x] Epic 2 (Monetização) — 3 stories planejadas
-- [ ] Repositório git inicializado
-- [ ] Projeto Next.js criado
-- [ ] Banco de dados Supabase criado
-- [ ] Google Cloud project + APIs ativadas
+- [x] Repositório git inicializado
+- [x] Projeto Next.js criado (packages/web/)
+- [x] Banco de dados Supabase criado (sa-east-1, São Paulo)
+- [x] Migração SQL executada (8 tabelas + RLS)
+- [x] Upstash Redis criado (sa-east-1)
+- [x] .env.local preenchido: NextAuth, Anthropic, Resend, Supabase, Upstash
+- [ ] Google Cloud project + OAuth configurado (amanhã)
+- [ ] Stripe: 3 produtos + price IDs + webhook
 
 ---
 
@@ -132,6 +136,14 @@ Ver detalhes completos: `docs/guides/server-requirements.md`
 - Requisitos de servidor documentados
 - Epic 1 (7 stories) + Epic 2 (3 stories) planejados
 - Próximo passo: inicializar repositório e criar projeto Next.js
+
+### 2026-04-05 — Sessão de Infraestrutura (Block 1)
+- .env.local preenchido com: NextAuth secret, Anthropic API key, Resend API key
+- Supabase criado em São Paulo (sa-east-1) + migração 001_initial_schema.sql executada
+- Upstash Redis criado em São Paulo (sa-east-1), Free Tier
+- Pendente para amanhã: Google OAuth (console.cloud.google.com) + Stripe
+- Atenção: Business Profile API requer verificação Google (pode demorar semanas) — testar com Test User enquanto aguarda
+- Resend: restringir para domínio destaka.com.br quando ir para produção
 
 ### 2026-03-29 — Sessão de Branding
 - Brand Squad (Brand Chief + Emily Heyward + Naming Strategist + Archetype Consultant) convocados

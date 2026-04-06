@@ -1,0 +1,146 @@
+// =============================================================================
+// DESTAKA — Review Service
+// Story 1.6 — Gestão de Avaliações
+// =============================================================================
+
+import Anthropic from '@anthropic-ai/sdk'
+
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+export interface Review {
+  id: string
+  profile_id: string
+  google_review_id: string
+  author: string
+  rating: number
+  text: string | null
+  reply: string | null
+  reply_status: 'pending' | 'replied' | 'ignored'
+  review_date: string
+  created_at: string
+}
+
+export type ReviewFilter = 'all' | 'pending' | 'negative'
+
+// ---------------------------------------------------------------------------
+// Mock reviews (usados em dev enquanto API não está aprovada)
+// ---------------------------------------------------------------------------
+
+export const MOCK_REVIEWS: Omit<Review, 'id' | 'profile_id' | 'created_at'>[] = [
+  {
+    google_review_id: 'mock-1',
+    author: 'Ana Paula Souza',
+    rating: 5,
+    text: 'Excelente atendimento! A equipe foi muito atenciosa e o procedimento foi rápido e indolor. Com certeza voltarei.',
+    reply: null,
+    reply_status: 'pending',
+    review_date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    google_review_id: 'mock-2',
+    author: 'Carlos Mendes',
+    rating: 5,
+    text: 'Profissional excelente, muito cuidadoso e explica tudo com calma. Recomendo demais!',
+    reply: 'Obrigado pela avaliação, Carlos! Fico feliz que tenha gostado do atendimento. Até a próxima consulta!',
+    reply_status: 'replied',
+    review_date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    google_review_id: 'mock-3',
+    author: 'Fernanda Lima',
+    rating: 2,
+    text: 'Esperei mais de 1 hora além do horário marcado sem nenhuma explicação. O atendimento em si foi ok, mas a organização precisa melhorar.',
+    reply: null,
+    reply_status: 'pending',
+    review_date: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    google_review_id: 'mock-4',
+    author: 'Roberto Alves',
+    rating: 4,
+    text: 'Bom atendimento e ambiente agradável. Só achei um pouco caro comparado a outros locais.',
+    reply: null,
+    reply_status: 'pending',
+    review_date: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    google_review_id: 'mock-5',
+    author: 'Juliana Costa',
+    rating: 1,
+    text: 'Péssima experiência. Fui marcada para às 14h e só fui atendida às 16h. Não retornarei.',
+    reply: null,
+    reply_status: 'pending',
+    review_date: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    google_review_id: 'mock-6',
+    author: 'Marcos Oliveira',
+    rating: 5,
+    text: 'Melhor clínica que já fui! Equipe super atenciosa e instalações modernas. Recomendo.',
+    reply: 'Muito obrigado, Marcos! Sua satisfação é o que nos motiva. Conte conosco sempre!',
+    reply_status: 'replied',
+    review_date: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+]
+
+// ---------------------------------------------------------------------------
+// Gerar resposta via Claude
+// ---------------------------------------------------------------------------
+
+export async function generateReviewReply(
+  review: Pick<Review, 'author' | 'rating' | 'text'>,
+  segment: string,
+  businessName: string
+): Promise<string> {
+  const tone = review.rating <= 2
+    ? 'empático e não defensivo, reconheça o problema e convide para contato direto'
+    : review.rating === 3
+    ? 'agradecido e construtivo, mostre que o feedback foi recebido'
+    : 'caloroso e agradecido, personalize para o comentário específico'
+
+  const message = await client.messages.create({
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 300,
+    messages: [
+      {
+        role: 'user',
+        content: `Você é o(a) responsável por ${businessName}, um(a) ${segment} brasileiro(a).
+
+Escreva uma resposta para esta avaliação do Google:
+
+Autor: ${review.author}
+Nota: ${review.rating}/5
+Texto: "${review.text ?? '(sem comentário)'}"
+
+Tom: ${tone}
+Regras:
+- Máximo 300 caracteres
+- Sem travessão (use vírgula ou dois-pontos)
+- Sem emojis
+- Comece com o primeiro nome do autor(a)
+- Para notas 1-2: não mencione o nome do estabelecimento, convide para contato por telefone
+- Para notas 4-5: mencione brevemente o serviço se citado na avaliação
+- Apenas o texto da resposta, sem aspas`,
+      },
+    ],
+  })
+
+  const content = message.content[0]
+  return content.type === 'text' ? content.text.trim() : ''
+}
+
+// ---------------------------------------------------------------------------
+// Seeder de reviews mock no banco (chamado uma vez no setup do perfil)
+// ---------------------------------------------------------------------------
+
+export function buildMockReviews(profileId: string): Omit<Review, 'id'>[] {
+  return MOCK_REVIEWS.map(r => ({
+    ...r,
+    profile_id: profileId,
+    created_at: r.review_date,
+  }))
+}

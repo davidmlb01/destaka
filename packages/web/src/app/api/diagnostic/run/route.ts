@@ -1,0 +1,106 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { decrypt } from '@/lib/crypto'
+import { runDiagnosis } from '@/lib/gmb/diagnosis'
+import { sendDiagnosticReadyEmail } from '@/lib/email/diagnostic-ready'
+
+// POST /api/diagnostic/run
+// Roda o diagnóstico completo de um perfil GMB e salva no banco.
+// Body: { profileId: string }
+export async function POST(request: NextRequest) {
+  const supabase = await createClient()
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+  if (authError || !user) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+  }
+
+  const { profileId } = await request.json()
+  if (!profileId) {
+    return NextResponse.json({ error: 'profileId obrigatório' }, { status: 400 })
+  }
+
+  const serviceClient = await createServiceClient()
+
+  // Busca o perfil e verifica que pertence ao usuário
+  const { data: profile, error: profileError } = await serviceClient
+    .from('gmb_profiles')
+    .select('*')
+    .eq('id', profileId)
+    .eq('user_id', user.id)
+    .single()
+
+  if (profileError || !profile) {
+    return NextResponse.json({ error: 'Perfil não encontrado' }, { status: 404 })
+  }
+
+  // Busca token de acesso do usuário
+  const { data: userData } = await serviceClient
+    .from('users')
+    .select('google_access_token_enc, email, name')
+    .eq('id', user.id)
+    .single()
+
+  let accessToken: string | null = null
+  if (userData?.google_access_token_enc) {
+    try {
+      accessToken = decrypt(userData.google_access_token_enc)
+    } catch {
+      // token inválido, roda com mock
+    }
+  }
+
+  // Roda o diagnóstico
+  const result = await runDiagnosis(
+    profile.google_location_id,
+    profile.category ?? 'dentista',
+    accessToken
+  )
+
+  const { score, aiDiagnosis } = result
+
+  // Salva no banco
+  const { data: diagnostic, error: saveError } = await serviceClient
+    .from('diagnostics')
+    .insert({
+      profile_id: profileId,
+      score_total: score.total,
+      score_info_basica: score.categories.info.score,
+      score_fotos: score.categories.photos.score,
+      score_avaliacoes: score.categories.reviews.score,
+      score_posts: score.categories.posts.score,
+      score_servicos: score.categories.services.score,
+      score_atributos: score.categories.attributes.score,
+      issues: Object.values(score.categories).flatMap(c => c.issues),
+    })
+    .select()
+    .single()
+
+  if (saveError) {
+    console.error('[diagnostic/run] save error:', saveError)
+    return NextResponse.json({ error: 'Erro ao salvar diagnóstico' }, { status: 500 })
+  }
+
+  // Atualiza score no perfil
+  await serviceClient
+    .from('gmb_profiles')
+    .update({ score: score.total, last_synced_at: new Date().toISOString() })
+    .eq('id', profileId)
+
+  // Envia email de notificação
+  if (userData?.email) {
+    await sendDiagnosticReadyEmail({
+      to: userData.email,
+      name: userData.name ?? 'Doutor(a)',
+      profileName: profile.name,
+      score: score.total,
+    }).catch(err => console.error('[diagnostic/run] email error:', err))
+  }
+
+  return NextResponse.json({
+    diagnosticId: diagnostic.id,
+    score: score.total,
+    categories: score.categories,
+    aiDiagnosis,
+  })
+}
