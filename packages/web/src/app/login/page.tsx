@@ -12,7 +12,7 @@ function createClient() {
 export default function LoginPage() {
   async function handleGoogleSignIn() {
     const supabase = createClient()
-    await supabase.auth.signInWithOAuth({
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: `${window.location.origin}/api/auth/callback`,
@@ -23,6 +23,12 @@ export default function LoginPage() {
         },
       },
     })
+    if (error) {
+      console.error('OAuth error:', error.message)
+      alert('Erro ao iniciar login: ' + error.message)
+    } else {
+      console.log('OAuth redirect URL:', data?.url)
+    }
   }
 
   return (

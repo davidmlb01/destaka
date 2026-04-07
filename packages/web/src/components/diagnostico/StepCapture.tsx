@@ -1,19 +1,32 @@
 'use client'
 
 import { useState } from 'react'
+import { createBrowserClient } from '@supabase/ssr'
 
 export function StepCapture() {
   const [email, setEmail] = useState('')
 
   function handleEmailSubmit(e: React.FormEvent) {
     e.preventDefault()
-    // TODO: conectar ao Supabase/Resend após Block 1
-    console.log('Email capture:', email)
+    window.location.href = '/login'
   }
 
-  function handleGoogleAuth() {
-    // TODO: redirecionar para /api/auth/signin?provider=google após Block 1
-    console.log('Google OAuth initiated')
+  async function handleGoogleAuth() {
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/api/auth/callback`,
+        scopes: 'email profile https://www.googleapis.com/auth/business.manage',
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+      },
+    })
   }
 
   const benefits = [
