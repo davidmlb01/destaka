@@ -526,9 +526,17 @@ function Footer() {
         <p className="text-[13px]" style={{ color: 'rgba(255,255,255,0.25)' }}>
           Google Business Profile no piloto automático. Para dentistas e médicos que merecem aparecer primeiro.
         </p>
-        <p className="text-[12px]" style={{ color: 'rgba(255,255,255,0.15)' }}>
-          © 2026 Destaka
-        </p>
+        <div className="flex items-center gap-5">
+          <Link href="/privacidade" className="text-[12px] hover:text-white transition-colors" style={{ color: 'rgba(255,255,255,0.25)' }}>
+            Privacidade
+          </Link>
+          <Link href="/termos" className="text-[12px] hover:text-white transition-colors" style={{ color: 'rgba(255,255,255,0.25)' }}>
+            Termos
+          </Link>
+          <p className="text-[12px]" style={{ color: 'rgba(255,255,255,0.15)' }}>
+            © 2026 Destaka
+          </p>
+        </div>
       </div>
     </footer>
   )
