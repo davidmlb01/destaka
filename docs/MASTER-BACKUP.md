@@ -6,7 +6,9 @@
 
 ## 1. Visão
 
-**Destaka** é um SaaS que automatiza a otimização do Google Business Profile para profissionais liberais brasileiros. Tagline: *"Apareça para quem precisa de você."*
+**Destaka** é um SaaS que cuida do Google Business Profile para profissionais de saúde brasileiros. Tagline: *"Seu consultório no topo do Google. Automático."*
+
+> Tagline anterior "Apareça para quem precisa de você." substituída em 2026-04-09 após sessão C-Level + Copy Squad.
 
 **Por que vai funcionar:**
 - 51% dos negócios têm perfis incompletos no Google
@@ -76,13 +78,17 @@
 
 ## 6. Modelo de Receita
 
-| Plano | Valor | Diferencial |
-|-------|-------|-------------|
-| Setup Único | R$497 | Entrada sem fricção |
-| Essencial | R$147/mês | 1 perfil, monitoramento |
-| Pro | R$197/mês | + respostas automáticas + relatório PDF |
-| Agência | R$497–997/mês | Multi-perfil, white label |
-| Anual Pro | R$1.497/ano | Desconto ~37% |
+> Decisão 2026-04-09: Simplificar para UM plano no lançamento. Plano Agência congelado até 20 clientes Pro validados.
+
+| Plano | Valor | Status |
+|-------|-------|--------|
+| **Pro** | **R$197/mês** | **ATIVO — plano único de lançamento** |
+| Essencial | R$147/mês | Congelado — adicionar só se houver demanda |
+| Agência | R$497–997/mês | Congelado até 20 clientes Pro |
+| Anual Pro | R$1.497/ano | Futuro |
+
+**Âncora de preço aprovada:** "Uma única consulta cobre 6 meses de Destaka."
+**Garantia:** 30 dias. Se o score não subir, devolve o primeiro mês.
 
 ---
 
@@ -110,10 +116,18 @@ Ver detalhes completos: `docs/guides/server-requirements.md`
 ## 9. Branding
 
 - Nome: **Destaka**
-- Tagline: *"Apareça para quem precisa de você."*
+- Tagline: *"Seu consultório no topo do Google. Automático."*
+- Tagline operacional: *"Mais pacientes pelo Google, sem você precisar entender o Google."*
 - Domínio: `destaka.com.br`
-- Arquétipo: O Mago (com influência do Cuidador)
+- Arquétipo: Assistente Competente (o dentista é o herói, a Destaka é o sistema)
+- Tom: direto, provocativo. "Com pimenta. Sem grosseria."
 - Brand Guidelines: `docs/brand/brand-guidelines.md`
+- Copy GTM completo: `docs/brand/copy-gtm.md`
+
+**Regras de copy inegociáveis:**
+- NUNCA usar "otimizar/otimização" — usar: cuidar, arrumar, colocar em ordem, resolver
+- NUNCA usar prova social até ter depoimentos reais
+- NUNCA usar jargão técnico (algoritmo, SEO)
 
 ## 10. Links e Referências
 
@@ -144,6 +158,53 @@ Ver detalhes completos: `docs/guides/server-requirements.md`
 - Pendente para amanhã: Google OAuth (console.cloud.google.com) + Stripe
 - Atenção: Business Profile API requer verificação Google (pode demorar semanas) — testar com Test User enquanto aguarda
 - Resend: restringir para domínio destaka.com.br quando ir para produção
+
+### 2026-04-09 — Sessão de GTM Estratégico (C-Level + Squads)
+
+Primeira sessão executiva completa. Fluxo: CEO → CMO → Brand → Story → Copy → Hormozi → Traffic.
+
+**Decisões do CEO (Vision Chief):**
+- ICP: dentistas como canal de entrada (médicos depois)
+- Plano único no lançamento: Pro (R$197/mês). Agência congelado até 20 clientes.
+- Horizonte 18 meses precisa ser definido antes de escalar aquisição
+
+**Decisões do CMO:**
+- Canal inicial: indicações de conhecidos + orgânico Instagram/LinkedIn
+- Dashboard precisa mostrar métricas de visibilidade: visualizações do perfil, cliques para ligar, cliques para rota
+- Sequência de onboarding por e-mail: dias 1, 3 e 7
+- Fluxo de indicação estruturado no e-mail dia 30
+
+**Decisões de Brand:**
+- Tagline revisada: "Seu consultório no topo do Google. Automático."
+- Arquétipo: Assistente Competente (não Mago)
+- Tom calibrado por touchpoint (ver copy-gtm.md)
+
+**Arco narrativo (StoryBrand):** Definido e documentado em copy-gtm.md
+
+**Decisões de Copy:**
+- 9 peças de copy produzidas (landing, dor, como funciona, checkout, diagnóstico, e-mails, posts, hooks de ads)
+- Vocabulário proibido: "otimizar", "algoritmo", "SEO"
+- Prova social: zero até ter depoimentos reais
+
+**Decisões do Hormozi:**
+- Diagnóstico gratuito = principal ativo de aquisição (não bônus de produto)
+- Oferta Pro inclui: setup feito por nós (bônus) + garantia 30 dias
+- Âncora de preço: "Uma única consulta cobre 6 meses de Destaka."
+- CTA principal aprovado: "Quero mais pacientes pelo Google"
+- Linha crítica do diagnóstico: "Com esse score, você está perdendo pacientes para os seus concorrentes. Todo dia."
+
+**Decisões do Traffic:**
+- Fase 1 (agora): 3 posts/semana Instagram + indicação estruturada dia 30
+- Fase 2 (após 10 clientes): Meta Ads, R$1.500/mês, foco em dentistas 30-55 anos
+- Estrutura: topo (diagnóstico grátis) + retargeting diagnóstico + retargeting checkout
+- Meta CAC: abaixo de R$120
+
+**Próximos passos:**
+1. Atualizar dashboard para mostrar visualizações e cliques (CMO)
+2. Implementar Stripe com a oferta revisada (bônus setup + garantia)
+3. Criar sequência de e-mail onboarding (dias 1, 3, 7)
+4. Criar fluxo de indicação (e-mail dia 30)
+5. Iniciar conteúdo orgânico Instagram com estrutura definida
 
 ### 2026-03-29 — Sessão de Branding
 - Brand Squad (Brand Chief + Emily Heyward + Naming Strategist + Archetype Consultant) convocados

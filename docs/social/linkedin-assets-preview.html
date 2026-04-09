@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Destaka — LinkedIn Assets Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #1a1a1a;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      padding: 60px 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 60px;
+    }
+
+    .label {
+      color: #888;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .asset-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ─── PROFILE PHOTO 300×300 ─── */
+    .profile {
+      width: 300px;
+      height: 300px;
+      background: #14532D;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    }
+
+    .star-icon {
+      color: #FFFFFF;
+      font-size: 130px;
+      line-height: 1;
+      letter-spacing: -2px;
+      user-select: none;
+    }
+
+    /* ─── BANNER 1128×191 ─── */
+    .banner {
+      width: 1128px;
+      height: 191px;
+      background: #14532D;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 64px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    }
+
+    /* Decoração sutil no fundo */
+    .banner::before {
+      content: '';
+      position: absolute;
+      right: -80px;
+      top: -80px;
+      width: 380px;
+      height: 380px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .banner::after {
+      content: '';
+      position: absolute;
+      right: 60px;
+      bottom: -120px;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: rgba(217, 119, 6, 0.06);
+    }
+
+    /* Logo lado esquerdo */
+    .banner-logo {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-shrink: 0;
+      z-index: 1;
+    }
+
+    .banner-star {
+      color: #FFFFFF;
+      font-size: 52px;
+      line-height: 1;
+    }
+
+    .banner-name {
+      color: #FFFFFF;
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    /* Divisor */
+    .banner-divider {
+      width: 1px;
+      height: 60px;
+      background: rgba(255,255,255,0.2);
+      flex-shrink: 0;
+      z-index: 1;
+    }
+
+    /* Tagline lado direito */
+    .banner-tagline {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      z-index: 1;
+    }
+
+    .tagline-line1 {
+      color: #FFFFFF;
+      font-size: 22px;
+      font-weight: 500;
+      line-height: 1.3;
+      letter-spacing: -0.2px;
+    }
+
+    .tagline-line2 {
+      color: #D97706;
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.5px;
+    }
+
+    /* ─── VARIAÇÃO BANNER — com URL ─── */
+    .banner-url {
+      position: absolute;
+      bottom: 18px;
+      right: 64px;
+      color: rgba(255,255,255,0.4);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      z-index: 1;
+    }
+
+    /* ─── SAFE ZONE INDICATOR ─── */
+    .safe-zone-note {
+      color: #555;
+      font-size: 11px;
+      margin-top: 10px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* ─── EXPORT INSTRUCTIONS ─── */
+    .instructions {
+      background: #222;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 24px 32px;
+      max-width: 700px;
+      width: 100%;
+    }
+
+    .instructions h3 {
+      color: #D97706;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .instructions p {
+      color: #aaa;
+      font-size: 13px;
+      line-height: 1.7;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .instructions code {
+      background: #333;
+      color: #fff;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 12px;
+    }
+
+    hr.divider {
+      border: none;
+      border-top: 1px solid #333;
+      width: 100%;
+      max-width: 1128px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- FOTO DE PERFIL -->
+  <div class="asset-group">
+    <p class="label">Foto de perfil — 300 × 300px</p>
+    <div class="profile">
+      <span class="star-icon">✦</span>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- BANNER -->
+  <div class="asset-group">
+    <p class="label">Banner / Capa — 1128 × 191px</p>
+    <div class="banner">
+      <!-- Logo -->
+      <div class="banner-logo">
+        <span class="banner-star">✦</span>
+        <span class="banner-name">Destaka</span>
+      </div>
+
+      <!-- Divisor -->
+      <div class="banner-divider"></div>
+
+      <!-- Tagline -->
+      <div class="banner-tagline">
+        <span class="tagline-line2">Seu consultório no topo do Google.</span>
+      </div>
+
+    </div>
+    <p class="safe-zone-note">Zona segura: conteúdo entre x:100 e x:1028 — laterais podem ser cortadas em mobile</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- INSTRUÇÕES DE EXPORT -->
+  <div class="instructions">
+    <h3>Como exportar</h3>
+    <p>
+      <strong style="color:#fff">Opção 1 — Screenshot direto:</strong><br>
+      Abra este arquivo no Chrome. Use uma extensão de screenshot de tela cheia
+      (ex: <code>GoFullPage</code>) e recorte cada asset individualmente.
+      <br><br>
+      <strong style="color:#fff">Opção 2 — Canva (recomendado para edição futura):</strong><br>
+      Crie um design customizado com as dimensões exatas:<br>
+      • Perfil: <code>300 × 300px</code><br>
+      • Banner: <code>1128 × 191px</code><br>
+      Fundo: <code>#14532D</code> — Texto branco + acento <code>#D97706</code><br>
+      Fonte: Plus Jakarta Sans (disponível no Canva)
+      <br><br>
+      <strong style="color:#fff">Opção 3 — Figma:</strong><br>
+      Importe as specs acima. Exporte em PNG 1x (sem escala extra).
+    </p>
+  </div>
+
+</body>
+</html>
