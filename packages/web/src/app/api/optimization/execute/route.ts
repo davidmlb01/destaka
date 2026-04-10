@@ -3,6 +3,7 @@ import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { executeAction } from '@/lib/gmb/optimizer'
 import { calculateScore } from '@/lib/gmb/scorer'
 import { MOCK_PROFILE_DATA } from '@/lib/gmb/profile-mock'
+import { trackEvent, recordScore } from '@/lib/analytics'
 import type { OptimizationAction, ExecutionResult } from '@/lib/gmb/optimizer'
 import type { GmbProfileData } from '@/lib/gmb/scorer'
 
@@ -88,6 +89,13 @@ export async function POST(req: NextRequest) {
       ...newScore.categories.attributes.issues,
     ],
   })
+
+  // Aha Moment: first_optimization (one-time) + score_history (North Star)
+  trackEvent(serviceClient, user.id, 'first_optimization', {
+    profileId: body.profileId,
+    metadata: { score_before: scoreBefore, score_after: newScore.total },
+  })
+  recordScore(serviceClient, body.profileId, newScore.total)
 
   return NextResponse.json({ results, scoreBefore, scoreAfter: newScore.total })
 }

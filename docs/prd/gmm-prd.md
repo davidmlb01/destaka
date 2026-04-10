@@ -152,11 +152,84 @@ Profissionais liberais perdem clientes todos os dias porque seu perfil no Google
 
 ## 7. Métricas de Sucesso (V1)
 
-- 50 usuários pagantes em 60 dias do lançamento
-- Score médio dos perfis gerenciados: +30 pontos em 30 dias
-- Churn mensal: < 5%
-- NPS: > 50
-- CAC payback: < 3 meses
+> Versão 2.0 — atualizada com framework Peter Fader (CLV) + Sean Ellis (Activation). Versão anterior apenas listava outcome metrics sem instrumentação.
+
+### 7.1 North Star Metric
+
+**Perfis ativos com score aumentando semana a semana**
+
+Captura ativação + retenção + valor entregue em uma métrica. MRR é lagging indicator, North Star guia decisões de produto em tempo real.
+
+### 7.2 Aha Moment
+
+**Definição:** Usuário vê o score subir pela primeira vez após uma otimização automática executada pelo sistema.
+
+- Acontece no primeiro acesso, na tela de dashboard
+- Deve ocorrer em < 5 minutos do cadastro
+- Se o usuário sair sem ver o score melhorar, probabilidade de retorno cai drasticamente
+- Implicação de produto: onboarding deve forçar essa experiência antes de qualquer outra tela
+
+### 7.3 Activation Rate
+
+**Definição de "Activated":** Usuário que (a) conectou GMB + (b) visualizou o score + (c) executou ao menos 1 otimização automática.
+
+| Métrica | Meta V1 |
+|---------|---------|
+| Activation Rate | > 60% dos cadastros |
+| Tempo até Aha Moment | < 5 minutos |
+| Usuários pagantes em 60 dias | 50 |
+| Score médio após otimização | +30 pontos em 30 dias |
+| Churn mensal | < 5% |
+| NPS | > 50 |
+| CAC payback | < 3 meses |
+
+### 7.4 CLV por Segmento
+
+Baseado em ticket médio, margem ~65% e churn esperado por segmento:
+
+| Segmento | Ticket | Churn esperado | LTV estimado | Prioridade |
+|---------|--------|---------------|-------------|-----------|
+| Agência | R$697/mês | 2–3% | R$17.000–27.000 | **Alta** |
+| Dentista | R$197/mês | 3–4% | R$3.900–4.900 | Alta |
+| Médico | R$197/mês | 4–6% | R$2.500–3.900 | Média |
+| Advogado | R$197/mês | 6–8% | R$1.800–2.500 | Baixa |
+
+Implicação: 1 cliente Agência = LTV equivalente a 30–60 dentistas. O Epic 2 deve priorizar o plano Agência.
+
+**CAC máximo sustentável:** R$197 × 3 meses × 0.65 margem = **R$384 por dentista**. Indica que tráfego pago direto é arriscado — canais de indicação, parcerias com distribuidoras odonto e SEO têm melhor ROI.
+
+### 7.5 Churn Triggers
+
+| Trigger | Sinal a monitorar | Ação preventiva |
+|---------|------------------|----------------|
+| Score estagnado | Score flat por 2+ semanas | Email automático com nova ação disponível |
+| Usuário sumiu | Sem login há 14 dias | Lembrete com novo insight do perfil |
+| Avaliação negativa ignorada | Alert não atendido em 48h | Push proativo com resposta sugerida |
+| Pagamento falhou | Falha Stripe | 3 tentativas + sequência de email |
+| Score alto atingido | Usuário "chegou lá" | Upsell Agência ou cross-sell novo perfil |
+
+### 7.6 Must-Have Survey (PMF Gate)
+
+Na semana 2 pós-lançamento, perguntar a usuários ativos: "Quão decepcionado você ficaria se não pudesse mais usar a Destaka?"
+
+- Meta de Product-Market Fit: > 40% respondendo "muito decepcionado" (threshold Sean Ellis)
+- Se abaixo de 40%: pausar aquisição e focar em ajustar o produto antes de escalar
+
+### 7.7 Requisitos de Schema (pré-Epic 2)
+
+As tabelas abaixo devem existir antes do desenvolvimento do Epic 2:
+
+```sql
+-- Activation events (rastrear aha moment e funil)
+user_events (user_id, event_type, created_at)
+-- event_types: gmb_connected, score_viewed, first_optimization, checklist_started
+
+-- Score history (North Star Metric)
+score_history (profile_id, score, measured_at)
+
+-- Engagement signals (churn prevention)
+user_sessions (user_id, last_seen_at)
+```
 
 ---
 

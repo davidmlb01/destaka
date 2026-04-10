@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { trackEvent } from '@/lib/analytics'
 
 // PATCH /api/reviews/[id]
 // Body: { reply, action: 'publish' | 'ignore' }
@@ -41,6 +42,9 @@ export async function PATCH(
       .from('gmb_reviews')
       .update({ reply: body.reply, reply_status: 'replied' })
       .eq('id', id)
+
+    // Evento de engajamento: resposta a avaliação publicada
+    trackEvent(serviceClient, user.id, 'review_responded', { profileId: review.profile_id })
 
     return NextResponse.json({ success: true, status: 'replied' })
   }

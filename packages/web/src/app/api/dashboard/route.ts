@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { trackEvent, upsertSession } from '@/lib/analytics'
 
 export const dynamic = 'force-dynamic'
 
@@ -27,6 +28,10 @@ export async function GET() {
   if (!profile) {
     return NextResponse.json({ error: 'Nenhum perfil conectado' }, { status: 404 })
   }
+
+  // Engagement: score_viewed (one-time) + session (churn prevention)
+  trackEvent(serviceClient, user.id, 'score_viewed', { profileId: profile.id })
+  upsertSession(serviceClient, user.id)
 
   // Diagnóstico mais recente
   const { data: diagnostic } = await serviceClient

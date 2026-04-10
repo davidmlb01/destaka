@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/server'
+import { trackEvent } from '@/lib/analytics'
 
 // POST /api/gmb/select
 // Salva o perfil GMB selecionado pelo usuário.
@@ -56,6 +57,9 @@ export async function POST(request: NextRequest) {
     console.error('[gmb/select] insert error:', error)
     return NextResponse.json({ error: 'Erro ao salvar perfil.' }, { status: 500 })
   }
+
+  // Evento de ativação: perfil GMB conectado (one-time)
+  trackEvent(serviceClient, user.id, 'gmb_connected', { profileId: data.id })
 
   // Dispara diagnóstico em background (fire-and-forget)
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'

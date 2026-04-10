@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { buildChecklist, projectedScore } from '@/lib/gmb/checklist'
+import { trackEvent } from '@/lib/analytics'
 
 // GET /api/checklist
 export async function GET() {
@@ -19,6 +20,9 @@ export async function GET() {
     .single()
 
   if (!profile) return NextResponse.json({ error: 'Nenhum perfil encontrado' }, { status: 404 })
+
+  // Evento de ativação: checklist_started (one-time)
+  trackEvent(serviceClient, user.id, 'checklist_started', { profileId: profile.id })
 
   const { data: progress } = await serviceClient
     .from('checklist_progress')

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { trackEvent } from '@/lib/analytics'
 
 export const dynamic = 'force-dynamic'
 
@@ -34,6 +35,9 @@ export async function POST(
     .eq('id', id)
 
   if (updateError) return NextResponse.json({ error: 'Erro ao publicar' }, { status: 500 })
+
+  // Evento de engajamento: post publicado
+  trackEvent(serviceClient, user.id, 'post_published', { profileId: post.profile_id })
 
   return NextResponse.json({ success: true })
 }
