@@ -1,6 +1,6 @@
 # MASTER BACKUP — Destaka (Projeto GMM)
-**Atualizado:** 2026-04-05
-**Status:** Infraestrutura de dev configurada — pendente Google OAuth + Stripe
+**Atualizado:** 2026-04-09
+**Status:** MVP em produção + instrumentação de produto completa — pendente supabase db push + Epic 2 Stripe
 
 ---
 
@@ -205,6 +205,31 @@ Primeira sessão executiva completa. Fluxo: CEO → CMO → Brand → Story → 
 3. Criar sequência de e-mail onboarding (dias 1, 3, 7)
 4. Criar fluxo de indicação (e-mail dia 30)
 5. Iniciar conteúdo orgânico Instagram com estrutura definida
+
+### 2026-04-09 — Sessão de Instrumentação de Produto
+
+**Data Squad Diagnosis (Peter Fader + Sean Ellis):**
+- PRD Seção 7 reescrita com framework completo de métricas SaaS
+- North Star Metric definida: "Perfis ativos com score aumentando semana a semana"
+- Aha Moment definido: usuário vê score subir após primeira otimização (< 5min)
+- Activation Rate meta: > 60% chegam a `first_optimization`
+- CLV por segmento calculado: Agência (R$17k-27k) vs Dentista (R$3.9k-4.9k)
+- 5 churn triggers mapeados com ação preventiva
+- Must-Have Survey planejado (PMF gate: 40%+ "muito decepcionado")
+- Decisao: priorizar plano Agência no Epic 2 por LTV 7x maior
+
+**Instrumentação técnica (commit 9f594b0):**
+- Migration 005: `user_events`, `score_history`, `user_sessions` com RLS e indexes
+- `lib/analytics.ts`: `trackEvent` (one-time e engagement), `recordScore`, `upsertSession`
+- 6 routes conectadas: gmb/select, optimization/execute, dashboard, checklist, posts/publish, reviews
+- TypeScript: zero erros
+
+**Próximos passos atualizados:**
+1. `supabase db push` — URGENTE, ativa as tabelas de analytics
+2. Epic 2: Story 2.1 (Stripe checkout) — priorizar plano Agência
+3. Dashboard: métricas de visibilidade (visualizações, cliques, rotas)
+4. Onboarding: sequência de e-mail dias 1, 3, 7
+5. Conteúdo: 3 posts/semana Instagram
 
 ### 2026-03-29 — Sessão de Branding
 - Brand Squad (Brand Chief + Emily Heyward + Naming Strategist + Archetype Consultant) convocados
