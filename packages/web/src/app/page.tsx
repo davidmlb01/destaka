@@ -298,21 +298,6 @@ function Recursos() {
 function Pricing() {
   const plans = [
     {
-      name: 'Essencial',
-      price: 'R$147',
-      period: '/mês',
-      desc: 'Para quem quer começar a aparecer no Google sem complicação.',
-      features: [
-        '1 perfil Google Meu Negócio',
-        'Diagnóstico mensal completo',
-        'Monitoramento de avaliações',
-        'Sugestões de otimização',
-        'Relatório mensal',
-      ],
-      cta: 'Começar agora',
-      highlight: false,
-    },
-    {
       name: 'Pro',
       price: 'R$197',
       period: '/mês',
@@ -323,24 +308,10 @@ function Pricing() {
         'Posts automáticos semanais',
         'Respostas automáticas a avaliações',
         'Relatório PDF mensal',
+        'Setup feito pela Destaka nos primeiros 7 dias',
       ],
-      cta: 'Escolher Pro',
+      cta: 'Começar agora',
       highlight: true,
-    },
-    {
-      name: 'Agência',
-      price: 'R$497',
-      period: '/mês',
-      desc: 'Para clínicas com múltiplas unidades ou agências de saúde.',
-      features: [
-        'Até 10 perfis Google Meu Negócio',
-        'Tudo do plano Pro',
-        'Dashboard multi-cliente',
-        'White label disponível',
-        'Suporte prioritário',
-      ],
-      cta: 'Falar com vendas',
-      highlight: false,
     },
   ]
 
@@ -353,7 +324,7 @@ function Pricing() {
             className="font-display font-extrabold leading-[1.1] tracking-[-1.5px] mb-4"
             style={{ fontSize: 'clamp(28px, 4vw, 44px)', color: '#1C1917' }}
           >
-            R$147/mês por 3 novos pacientes.<br />
+            R$197/mês por 3 novos pacientes.<br />
             <span style={{ color: '#14532D' }}>As contas fecham sozinhas.</span>
           </h2>
           <p className="text-[16px]" style={{ color: '#78716C' }}>
@@ -361,11 +332,11 @@ function Pricing() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="flex justify-center">
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className="rounded-2xl p-7 flex flex-col gap-5 relative"
+              className="w-full max-w-sm rounded-2xl p-7 flex flex-col gap-5 relative"
               style={plan.highlight ? {
                 background: '#14532D',
                 boxShadow: '0 24px 64px rgba(20,83,45,0.3)',
@@ -437,7 +408,7 @@ function Pricing() {
         </div>
 
         <p className="text-center text-[13px] mt-8" style={{ color: '#9CA3AF' }}>
-          Todos os planos incluem 14 dias grátis. Sem cartão de crédito no teste.
+          Garantia de 30 dias. Se o score não subir, devolvemos tudo.
         </p>
       </div>
     </section>

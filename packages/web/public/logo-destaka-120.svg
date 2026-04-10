@@ -1,0 +1,6 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <rect width="120" height="120" rx="20" fill="#14532D"/>
+  <circle cx="90" cy="20" r="50" fill="#D97706" opacity="0.2"/>
+  <text x="60" y="58" font-family="Georgia, serif" font-size="52" font-weight="900" text-anchor="middle" dominant-baseline="middle" fill="#F59E0B">✦</text>
+  <text x="60" y="95" font-family="Arial Black, Arial, sans-serif" font-size="18" font-weight="900" text-anchor="middle" fill="white" letter-spacing="-0.5">Desta<tspan fill="#F59E0B">ka</tspan></text>
+</svg>

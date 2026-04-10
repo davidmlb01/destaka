@@ -10,7 +10,7 @@
 -- Permite calcular activation rate, aha moment e funil de conversão
 -- =============================================================================
 create table if not exists public.user_events (
-  id          uuid primary key default uuid_generate_v4(),
+  id          uuid primary key default gen_random_uuid(),
   user_id     uuid not null references public.users(id) on delete cascade,
   profile_id  uuid references public.gmb_profiles(id) on delete set null,
   event_type  text not null check (event_type in (
@@ -37,7 +37,7 @@ comment on column public.user_events.metadata is 'Dados contextuais: score_antes
 -- "Perfis ativos com score aumentando semana a semana"
 -- =============================================================================
 create table if not exists public.score_history (
-  id          uuid primary key default uuid_generate_v4(),
+  id          uuid primary key default gen_random_uuid(),
   profile_id  uuid not null references public.gmb_profiles(id) on delete cascade,
   score       integer not null check (score >= 0 and score <= 100),
   measured_at timestamptz not null default now(),

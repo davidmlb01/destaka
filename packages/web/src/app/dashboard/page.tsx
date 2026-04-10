@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { DashboardContent } from '@/components/dashboard/DashboardContent'
 import { MobileNav } from '@/components/dashboard/MobileNav'
+import { UpgradeBanner } from '@/components/dashboard/UpgradeBanner'
 
 const NAV_ITEMS = [
   { label: 'Dashboard', icon: '📊', href: '/dashboard', active: true },
@@ -17,12 +18,19 @@ export default async function DashboardPage() {
 
   if (!user) redirect('/login')
 
-  const { data: profiles } = await supabase
-    .from('gmb_profiles')
-    .select('id, name')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
-    .limit(1)
+  const [{ data: profiles }, { data: dbUser }] = await Promise.all([
+    supabase
+      .from('gmb_profiles')
+      .select('id, name')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(1),
+    supabase
+      .from('users')
+      .select('plan')
+      .eq('id', user.id)
+      .single(),
+  ])
 
   if (!profiles?.length) redirect('/onboarding')
 
@@ -117,6 +125,7 @@ export default async function DashboardPage() {
             </h1>
           </div>
 
+          {dbUser?.plan === 'free' && <UpgradeBanner />}
           <DashboardContent />
         </div>
       </main>

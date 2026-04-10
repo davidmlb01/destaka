@@ -281,7 +281,7 @@ export function StepScore({ clinicName, city, score, onCapture }: StepScoreProps
                   boxShadow: '0 8px 32px rgba(217,119,6,0.5)',
                 }}
               >
-                <span>✦</span> Corrigir meu perfil agora. É grátis.
+                <span>✦</span> Quero mais pacientes pelo Google.
               </button>
 
               {/* Botão secundário */}
@@ -299,7 +299,7 @@ export function StepScore({ clinicName, city, score, onCapture }: StepScoreProps
 
               {/* Trust badges */}
               <div className="flex items-center justify-center gap-4 mt-5 flex-wrap">
-                {['Sem cartão de crédito', 'Sem compromisso', 'Resultado em 5 minutos'].map((t) => (
+                {['Garantia de 30 dias', 'Cancele quando quiser', 'Resultado em 5 minutos'].map((t) => (
                   <div key={t} className="flex items-center gap-1.5 text-[11px]" style={{ color: 'rgba(255,255,255,0.35)' }}>
                     <span style={{ color: '#16A34A' }}>✓</span> {t}
                   </div>
