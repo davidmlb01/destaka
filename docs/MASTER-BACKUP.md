@@ -1,6 +1,6 @@
 # MASTER BACKUP — Destaka (Projeto GMM)
-**Atualizado:** 2026-04-09
-**Status:** MVP em produção + instrumentação de produto completa — pendente supabase db push + Epic 2 Stripe
+**Atualizado:** 2026-04-10
+**Status:** MVP em produção + Stripe integrado + analytics ativos — pendente: Google OAuth + onboarding email + tráfego
 
 ---
 
@@ -46,8 +46,13 @@
 - [x] Migração SQL executada (8 tabelas + RLS)
 - [x] Upstash Redis criado (sa-east-1)
 - [x] .env.local preenchido: NextAuth, Anthropic, Resend, Supabase, Upstash
-- [ ] Google Cloud project + OAuth configurado (amanhã)
-- [ ] Stripe: 3 produtos + price IDs + webhook
+- [ ] Google Cloud project + OAuth configurado
+- [x] Stripe: produto Pro R$197 criado + chaves + webhook configurado (2026-04-10)
+- [x] Migration 005 aplicada: user_events, score_history, user_sessions (2026-04-10)
+- [x] Vercel CLI instalado + projeto linkado + envs Stripe adicionadas (2026-04-10)
+- [x] API routes: /api/stripe/checkout, /api/stripe/webhook, /api/stripe/portal (2026-04-10)
+- [x] UpgradeBanner no dashboard para usuários free (2026-04-10)
+- [x] Landing: plano único Pro R$197, copy corrigida, sem "grátis" (2026-04-10)
 
 ---
 
@@ -99,7 +104,7 @@
 | Paige (Merchynt) | EUA | $99/mês | Inglês, sem contexto BR |
 | Localo | Global | $? | Sem foco em profissionais liberais BR |
 | Agências manuais BR | Brasil | R$250–800/mês | Manual, não escala, caro |
-| **Destaka** | **Brasil** | **R$147–197/mês** | **Self-service, PT-BR, contexto local** |
+| **Destaka** | **Brasil** | **R$197/mês** | **Self-service, PT-BR, contexto local** |
 
 ---
 
@@ -206,6 +211,42 @@ Primeira sessão executiva completa. Fluxo: CEO → CMO → Brand → Story → 
 4. Criar fluxo de indicação (e-mail dia 30)
 5. Iniciar conteúdo orgânico Instagram com estrutura definida
 
+### 2026-04-10 — Sessão de Stripe + Analytics
+
+**Migration 005 aplicada:**
+- uuid_generate_v4 corrigido para gen_random_uuid (extensão não instalada)
+- 3 tabelas ativas em produção: `user_events`, `score_history`, `user_sessions`
+- Analytics começando a capturar eventos imediatamente
+
+**Stripe 100% configurado:**
+- Produto "Destaka Pro" criado no Stripe (modo teste): `prod_UJOq671eTLWmlp`
+- Price ID Pro: `price_1TKm3DB2sbrnNSqU2o6jXuKk`
+- Webhook criado: `https://destaka.com.br/api/stripe/webhook` (3 eventos)
+- Envs adicionadas via Vercel CLI: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY, STRIPE_PRICE_PRO, STRIPE_WEBHOOK_SECRET
+
+**Código implementado (commit 7d5d052):**
+- `/api/stripe/checkout` — gera Checkout Session, redireciona para Stripe
+- `/api/stripe/webhook` — recebe eventos, atualiza `plan` no Supabase
+- `/api/stripe/portal` — abre portal do cliente (cancelar, trocar cartão)
+- `UpgradeBanner` — aparece no dashboard quando `plan === 'free'`
+
+**Landing corrigida:**
+- Pricing: 3 planos → só Pro R$197/mês
+- Botão StepScore: "É grátis" removido → "Quero mais pacientes pelo Google."
+- Trust badges: "Sem cartão de crédito" → "Garantia de 30 dias"
+- Rodapé pricing: "14 dias grátis" → "Garantia de 30 dias. Score não sobe, devolvemos tudo."
+
+**Infraestrutura:**
+- Vercel CLI instalado e autenticado
+- Projeto linkado: `david-8558s-projects/destaka`
+- Deploy automático via git push
+
+**Próximos passos:**
+1. Ativar modo produção no Stripe (quando pronto para cobrar de verdade)
+2. Google OAuth: Business Profile API + Test User
+3. Dashboard: métricas de visibilidade
+4. Onboarding email: dias 1, 3, 7
+
 ### 2026-04-09 — Sessão de Instrumentação de Produto
 
 **Data Squad Diagnosis (Peter Fader + Sean Ellis):**
@@ -225,11 +266,12 @@ Primeira sessão executiva completa. Fluxo: CEO → CMO → Brand → Story → 
 - TypeScript: zero erros
 
 **Próximos passos atualizados:**
-1. `supabase db push` — URGENTE, ativa as tabelas de analytics
-2. Epic 2: Story 2.1 (Stripe checkout) — priorizar plano Agência
-3. Dashboard: métricas de visibilidade (visualizações, cliques, rotas)
-4. Onboarding: sequência de e-mail dias 1, 3, 7
-5. Conteúdo: 3 posts/semana Instagram
+1. ~~supabase db push~~ — FEITO (2026-04-10)
+2. ~~Stripe checkout~~ — FEITO (2026-04-10)
+3. Google OAuth: Business Profile API + Test User (console.cloud.google.com)
+4. Dashboard: métricas de visibilidade (visualizações, cliques, rotas)
+5. Onboarding: sequência de e-mail dias 1, 3, 7
+6. Conteúdo: 3 posts/semana Instagram
 
 ### 2026-03-29 — Sessão de Branding
 - Brand Squad (Brand Chief + Emily Heyward + Naming Strategist + Archetype Consultant) convocados
