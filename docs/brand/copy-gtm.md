@@ -242,7 +242,7 @@ Obrigado pela confiança.
 
 ---
 
-### PEÇA 8 — Posts Instagram (orgânico)
+### PEÇA 8 — Posts Instagram (orgânico) — 5 posts/semana
 
 ```
 POST 1 — Hook de dor (segunda-feira)
@@ -263,7 +263,28 @@ Link na bio para ver o diagnóstico gratuito do seu perfil.
 
 ---
 
-POST 2 — Educação (quarta-feira)
+POST 2 — Objeção respondida (terça-feira)
+"Não tenho tempo para ficar mexendo no Google."
+
+Nem precisa.
+
+A maioria dos dentistas que aparecem na frente de você
+não mexem no Google Meu Negócio por conta própria.
+
+Alguém cuida disso para eles.
+
+Perfil atualizado. Posts publicados toda semana.
+Avaliações com resposta. Fotos novas.
+
+Tudo isso enquanto eles atendem pacientes.
+
+É exatamente o que a Destaka faz.
+
+Link na bio.
+
+---
+
+POST 3 — Educação (quarta-feira)
 Por que ter 5 estrelas no Google não é suficiente.
 
 [slide 1] Você pode ter as melhores avaliações do bairro.
@@ -277,7 +298,31 @@ Por que ter 5 estrelas no Google não é suficiente.
 
 ---
 
-POST 3 — Prova de mecanismo (sexta-feira)
+POST 4 — Dado + curiosidade (quinta-feira)
+Quantas pessoas pesquisaram "dentista perto de mim"
+na sua cidade hoje?
+
+A resposta vai te surpreender.
+
+No Brasil, essa pesquisa acontece milhares de vezes por dia,
+em todas as cidades com mais de 50 mil habitantes.
+
+Cada pesquisa é um paciente em potencial escolhendo
+entre você e o consultório do lado.
+
+O critério de escolha? O perfil que aparecer primeiro,
+com mais informações e avaliações respondidas.
+
+Não é o melhor dentista que ganha.
+É o mais visível.
+
+A Destaka coloca você nessa posição.
+
+Link na bio para ver seu diagnóstico gratuito.
+
+---
+
+POST 5 — Prova de mecanismo (sexta-feira)
 Score 38 → Score 81. Em 7 dias.
 
 [antes/depois do painel Destaka]
