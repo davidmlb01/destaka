@@ -5,6 +5,7 @@
 
 const ACCOUNT_MGMT_URL = 'https://mybusinessaccountmanagement.googleapis.com/v1'
 const BUSINESS_INFO_URL = 'https://mybusinessbusinessinformation.googleapis.com/v1'
+const PERFORMANCE_URL = 'https://businessprofileperformance.googleapis.com/v1'
 
 export interface GmbLocation {
   name: string           // "accounts/{accountId}/locations/{locationId}"
@@ -90,4 +91,100 @@ export async function listGmbLocations(accessToken: string): Promise<GmbLocation
   }
 
   return allLocations
+}
+
+export interface GmbMetrics {
+  viewsSearch: number
+  viewsMaps: number
+  clicksWebsite: number
+  clicksCall: number
+  clicksDirections: number
+  period: string
+}
+
+interface DailyMetricTimeSeries {
+  dailyMetric: string
+  timeSeries: {
+    datedValues?: Array<{
+      date: { year: number; month: number; day: number }
+      value?: string
+    }>
+  }
+}
+
+interface MultiDailyMetricsResponse {
+  multiDailyMetricTimeSeries?: Array<{
+    dailyMetrics: string[]
+    dailySubEntityType?: unknown
+    timeSeries: {
+      datedValues?: Array<{
+        date: { year: number; month: number; day: number }
+        values?: Array<{ metric: string; value?: string }>
+      }>
+    }
+  }>
+}
+
+function sumTimeSeries(series: DailyMetricTimeSeries['timeSeries']): number {
+  return (series.datedValues ?? []).reduce((acc, d) => acc + (parseInt(d.value ?? '0', 10) || 0), 0)
+}
+
+export async function getGmbMetrics(
+  accessToken: string,
+  locationName: string // "locations/{locationId}"
+): Promise<GmbMetrics> {
+  const endDate = new Date()
+  const startDate = new Date()
+  startDate.setDate(endDate.getDate() - 29)
+
+  const fmt = (d: Date) => ({
+    year: d.getFullYear(),
+    month: d.getMonth() + 1,
+    day: d.getDate(),
+  })
+
+  const METRICS = [
+    'BUSINESS_IMPRESSIONS_DESKTOP_SEARCH',
+    'BUSINESS_IMPRESSIONS_MOBILE_SEARCH',
+    'BUSINESS_IMPRESSIONS_DESKTOP_MAPS',
+    'BUSINESS_IMPRESSIONS_MOBILE_MAPS',
+    'CALL_CLICKS',
+    'WEBSITE_CLICKS',
+    'BUSINESS_DIRECTION_REQUESTS',
+  ]
+
+  const params = new URLSearchParams({
+    'dailyRange.startDate.year': String(fmt(startDate).year),
+    'dailyRange.startDate.month': String(fmt(startDate).month),
+    'dailyRange.startDate.day': String(fmt(startDate).day),
+    'dailyRange.endDate.year': String(fmt(endDate).year),
+    'dailyRange.endDate.month': String(fmt(endDate).month),
+    'dailyRange.endDate.day': String(fmt(endDate).day),
+  })
+  METRICS.forEach(m => params.append('dailyMetrics', m))
+
+  const url = `${PERFORMANCE_URL}/${locationName}:fetchMultiDailyMetricsTimeSeries?${params}`
+  const data = await fetchJson<MultiDailyMetricsResponse>(url, accessToken)
+
+  const totals: Record<string, number> = {}
+  for (const group of data.multiDailyMetricTimeSeries ?? []) {
+    for (const entry of group.timeSeries.datedValues ?? []) {
+      for (const v of entry.values ?? []) {
+        totals[v.metric] = (totals[v.metric] ?? 0) + (parseInt(v.value ?? '0', 10) || 0)
+      }
+    }
+  }
+
+  return {
+    viewsSearch:
+      (totals['BUSINESS_IMPRESSIONS_DESKTOP_SEARCH'] ?? 0) +
+      (totals['BUSINESS_IMPRESSIONS_MOBILE_SEARCH'] ?? 0),
+    viewsMaps:
+      (totals['BUSINESS_IMPRESSIONS_DESKTOP_MAPS'] ?? 0) +
+      (totals['BUSINESS_IMPRESSIONS_MOBILE_MAPS'] ?? 0),
+    clicksWebsite: totals['WEBSITE_CLICKS'] ?? 0,
+    clicksCall: totals['CALL_CLICKS'] ?? 0,
+    clicksDirections: totals['BUSINESS_DIRECTION_REQUESTS'] ?? 0,
+    period: 'Últimos 30 dias',
+  }
 }

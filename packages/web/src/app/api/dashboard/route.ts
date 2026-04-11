@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { trackEvent, upsertSession } from '@/lib/analytics'
+import { getGmbMetrics, type GmbMetrics } from '@/lib/gmb/client'
+import { decrypt } from '@/lib/crypto'
 
 export const dynamic = 'force-dynamic'
 
@@ -58,8 +60,30 @@ export async function GET() {
     .order('created_at', { ascending: false })
     .limit(5)
 
-  // Métricas do GMB (mock em dev, real via API em produção)
-  const metrics = getMockMetrics()
+  // Métricas do GMB: real em produção, mock em dev
+  let metrics: GmbMetrics
+  if (process.env.NODE_ENV === 'development' && process.env.GMB_MOCK === 'true') {
+    metrics = { viewsSearch: 847, viewsMaps: 312, clicksWebsite: 43, clicksCall: 28, clicksDirections: 19, period: 'Últimos 30 dias' }
+  } else {
+    try {
+      const { data: userData } = await serviceClient
+        .from('users')
+        .select('google_access_token_enc')
+        .eq('id', user.id)
+        .single()
+
+      const accessToken = userData?.google_access_token_enc
+        ? decrypt(userData.google_access_token_enc)
+        : null
+
+      metrics = accessToken && profile.google_location_id
+        ? await getGmbMetrics(accessToken, `locations/${profile.google_location_id}`)
+        : { viewsSearch: 0, viewsMaps: 0, clicksWebsite: 0, clicksCall: 0, clicksDirections: 0, period: 'Últimos 30 dias' }
+    } catch (err) {
+      console.error('[dashboard] getGmbMetrics error:', err)
+      metrics = { viewsSearch: 0, viewsMaps: 0, clicksWebsite: 0, clicksCall: 0, clicksDirections: 0, period: 'Últimos 30 dias' }
+    }
+  }
 
   // Próximas ações (derivadas dos issues do diagnóstico)
   const nextActions = diagnostic
@@ -74,17 +98,6 @@ export async function GET() {
     metrics,
     nextActions,
   })
-}
-
-function getMockMetrics() {
-  return {
-    viewsSearch: 847,
-    viewsMaps: 312,
-    clicksWebsite: 43,
-    clicksCall: 28,
-    clicksDirections: 19,
-    period: 'Últimos 30 dias',
-  }
 }
 
 function getNextActions(issues: Array<{ field: string; severity: string; message: string; impact: number }>) {
