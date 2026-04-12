@@ -2,7 +2,11 @@ import Anthropic from '@anthropic-ai/sdk'
 import { calculateScore, type GmbProfileData, type ScoreResult } from './scorer'
 import { MOCK_PROFILE_DATA } from './profile-mock'
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
+let _anthropic: Anthropic | null = null
+function getAnthropic(): Anthropic {
+  if (!_anthropic) _anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
+  return _anthropic
+}
 
 const SEGMENT_LABELS: Record<string, string> = {
   dentista: 'dentista',
@@ -82,7 +86,7 @@ Tamanho: 150 a 200 palavras.
 Sem usar travessão (use vírgulas ou dois-pontos).
 Sem bullet points.`
 
-  const message = await client.messages.create({
+  const message = await getAnthropic().messages.create({
     model: 'claude-opus-4-6',
     max_tokens: 600,
     messages: [{ role: 'user', content: prompt }],
