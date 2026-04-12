@@ -5,10 +5,7 @@ import { inngest } from '@/lib/inngest/client'
 export async function POST(request: NextRequest) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-
-  if (!user) {
-    return NextResponse.json({ error: 'Nao autorizado' }, { status: 401 })
-  }
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { data: professional } = await supabase
     .from('professionals')
@@ -17,12 +14,11 @@ export async function POST(request: NextRequest) {
     .single()
 
   if (!professional?.organization_id) {
-    return NextResponse.json({ error: 'Organizacao nao encontrada' }, { status: 404 })
+    return NextResponse.json({ error: 'Organização não encontrada' }, { status: 404 })
   }
 
-  // Enfileira auditoria via Inngest (processa de forma assíncrona)
   await inngest.send({
-    name: 'destaka/gbp.audit.requested',
+    name: 'destaka/report.monthly.requested',
     data: { organization_id: professional.organization_id },
   })
 

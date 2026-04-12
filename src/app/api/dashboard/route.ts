@@ -1,16 +1,11 @@
+// API de dados do dashboard — busca tudo em uma chamada para < 2s de carregamento
+import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
-import { ScoreHero } from './components/ScoreHero'
-import { ReviewsCard } from './components/ReviewsCard'
-import { PostsCard } from './components/PostsCard'
-import { AuditGapsCard } from './components/AuditGapsCard'
-import { CompetitorsCard } from './components/CompetitorsCard'
-import { PendingActions } from './components/PendingActions'
 
-async function getDashboardData() {
+export async function GET() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return null
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { data: professional } = await supabase
     .from('professionals')
@@ -18,12 +13,15 @@ async function getDashboardData() {
     .eq('user_id', user.id)
     .single()
 
-  if (!professional?.organization_id) return null
+  if (!professional?.organization_id) {
+    return NextResponse.json({ error: 'Organização não encontrada' }, { status: 404 })
+  }
 
   const orgId = professional.organization_id
   const thirtyDaysAgo = new Date()
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
+  // Busca paralela de todos os dados
   const [
     { data: org },
     { data: latestScore },
@@ -63,7 +61,7 @@ async function getDashboardData() {
     ? (publishedResponses?.length ?? 0) / totalReviews
     : 0
 
-  return {
+  return NextResponse.json({
     organization: { id: orgId, name: org?.name, specialty: org?.specialty },
     professional: { name: professional.name, role: professional.role },
     score: latestScore ?? null,
@@ -84,59 +82,5 @@ async function getDashboardData() {
       recent: recentPosts ?? [],
     },
     competitors: competitors ?? [],
-  }
-}
-
-export default async function DashboardPage() {
-  const data = await getDashboardData()
-
-  if (!data) redirect('/login')
-
-  const hasPending =
-    (data.pending.responses.length) + (data.pending.posts.length) > 0
-
-  return (
-    <main className="min-h-screen bg-slate-50">
-      {/* Header */}
-      <div className="bg-white border-b border-slate-100">
-        <div className="max-w-3xl mx-auto px-6 py-5 flex items-center justify-between">
-          <div>
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Destaka</p>
-            <h1 className="text-base font-semibold text-slate-900">{data.organization.name}</h1>
-          </div>
-          <div className="text-right">
-            <p className="text-xs text-slate-400">{data.professional.name}</p>
-            <p className="text-xs text-slate-400 capitalize">{data.professional.role}</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-3xl mx-auto px-6 py-8 space-y-4">
-
-        {/* Ações pendentes aparecem primeiro quando existem */}
-        {hasPending && (
-          <PendingActions
-            responses={data.pending.responses}
-            posts={data.pending.posts}
-          />
-        )}
-
-        {/* Score */}
-        <ScoreHero score={data.score} history={data.score_history} />
-
-        {/* Diagnóstico */}
-        <AuditGapsCard auditReport={data.profile?.audit_report ?? null} />
-
-        {/* Avaliações */}
-        <ReviewsCard reviews={data.reviews} />
-
-        {/* Concorrentes */}
-        <CompetitorsCard competitors={data.competitors} />
-
-        {/* Posts recentes */}
-        <PostsCard posts={data.posts.recent} />
-
-      </div>
-    </main>
-  )
+  })
 }

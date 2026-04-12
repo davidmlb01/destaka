@@ -20,9 +20,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Organizacao nao encontrada' }, { status: 404 })
   }
 
-  // Enfileira auditoria via Inngest (processa de forma assíncrona)
   await inngest.send({
-    name: 'destaka/gbp.audit.requested',
+    name: 'destaka/competitors.discover.requested',
     data: { organization_id: professional.organization_id },
   })
 

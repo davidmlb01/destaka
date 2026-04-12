@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
+import { inngest } from '@/lib/inngest/client'
 
 function createServiceClient() {
   return createAdminClient(
@@ -50,6 +51,25 @@ export async function POST(request: NextRequest) {
   if (profError) {
     return NextResponse.json({ error: profError.message }, { status: 500 })
   }
+
+  // Recupera token do Google armazenado nos metadados durante o callback
+  const { data: userData } = await admin.auth.admin.getUserById(user.id)
+  const meta = userData?.user?.user_metadata ?? {}
+
+  if (meta.gbp_access_token) {
+    await admin.from('google_tokens').insert({
+      organization_id: org.id,
+      access_token: meta.gbp_access_token,
+      refresh_token: meta.gbp_refresh_token ?? null,
+      expires_at: meta.gbp_token_expires_at ?? null,
+    })
+  }
+
+  // Dispara importação + auditoria GBP via Inngest
+  await inngest.send({
+    name: 'destaka/gbp.audit.requested',
+    data: { organization_id: org.id },
+  })
 
   return NextResponse.json({ organization_id: org.id })
 }

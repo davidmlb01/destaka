@@ -1,0 +1,2 @@
+-- Migração 002: aplicada diretamente no Supabase em sessão anterior
+-- Arquivo local mantido para sincronizar histórico com o remoto
