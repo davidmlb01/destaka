@@ -57,7 +57,10 @@
 - [x] Zero Touch SaaS: review auto-reply (IA) + post generator semanal + monthly report email (2026-04-12)
 - [x] Crons Vercel: review-monitor 8h, post-generator 10h, monthly-report dia 1 (2026-04-12)
 - [x] Lazy init SDKs — build estável Vercel: Anthropic, Stripe, Resend (2026-04-12)
+- [x] Google OAuth end-to-end: Supabase URL Configuration corrigida para destaka.com.br (2026-04-12)
+- [~] LinkedIn: enxoval completo criado (docs/social/linkedin-setup.html) — criar pagina amanha
 - [ ] GBP real vinculado para teste end-to-end
+- [ ] Debugar My Business Account Management API (100% errors)
 - [ ] Stripe modo produção ativado
 - [ ] Primeiros clientes pagantes
 

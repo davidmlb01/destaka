@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Destaka — Setup LinkedIn</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0f1a12; color: #e5e7eb; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.6; }
+
+  .header { background: linear-gradient(160deg, #14532D 0%, #0A2E18 100%); padding: 40px 32px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .header-inner { max-width: 860px; margin: 0 auto; display: flex; align-items: center; gap: 16px; }
+  .logo { font-size: 28px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+  .logo span { color: #F59E0B; }
+  .star { color: #F59E0B; font-size: 22px; }
+  .badge { background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3); color: #F59E0B; font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 20px; margin-left: 12px; }
+  .subtitle { color: rgba(255,255,255,0.5); font-size: 14px; margin-top: 4px; }
+
+  .main { max-width: 860px; margin: 0 auto; padding: 32px 24px; }
+
+  .section { margin-bottom: 40px; }
+  .section-title { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #F59E0B; margin-bottom: 16px; }
+
+  .steps { counter-reset: step; }
+  .step { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 20px 24px; margin-bottom: 12px; display: flex; gap: 16px; align-items: flex-start; }
+  .step-num { background: #14532D; color: #F59E0B; font-weight: 800; font-size: 13px; min-width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+  .step-content { flex: 1; }
+  .step-title { font-weight: 700; color: #fff; margin-bottom: 4px; font-size: 15px; }
+  .step-desc { color: rgba(255,255,255,0.55); font-size: 14px; }
+  .step-desc strong { color: rgba(255,255,255,0.85); }
+  .step-note { display: inline-block; margin-top: 6px; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); color: #F59E0B; font-size: 12px; padding: 2px 8px; border-radius: 4px; }
+
+  .copy-block { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden; margin-bottom: 16px; }
+  .copy-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .copy-label { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.5); letter-spacing: 0.5px; }
+  .copy-meta { font-size: 11px; color: rgba(255,255,255,0.3); }
+  .copy-btn { background: #14532D; border: none; color: #F59E0B; font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: 6px; cursor: pointer; transition: all 0.2s; letter-spacing: 0.3px; }
+  .copy-btn:hover { background: #166534; }
+  .copy-btn.copied { background: #166534; color: #86efac; }
+  .copy-text { padding: 16px; font-size: 14px; color: #d1fae5; line-height: 1.7; white-space: pre-wrap; font-family: inherit; }
+
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  @media (max-width: 600px) { .field-row { grid-template-columns: 1fr; } }
+
+  .field { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px 16px; }
+  .field-name { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.4); letter-spacing: 0.5px; margin-bottom: 6px; text-transform: uppercase; }
+  .field-value { font-size: 14px; color: #fff; font-weight: 500; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .field-value span { flex: 1; }
+  .mini-btn { background: transparent; border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.5); font-size: 11px; padding: 3px 10px; border-radius: 4px; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+  .mini-btn:hover { border-color: #F59E0B; color: #F59E0B; }
+  .mini-btn.copied { border-color: #86efac; color: #86efac; }
+
+  .visual-section { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  @media (max-width: 600px) { .visual-section { grid-template-columns: 1fr; } }
+
+  .visual-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden; }
+  .visual-card-header { padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: space-between; }
+  .visual-card-label { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.5); }
+  .visual-card-spec { font-size: 11px; color: rgba(255,255,255,0.3); }
+  .visual-preview { padding: 16px; display: flex; align-items: center; justify-content: center; }
+
+  .logo-preview { width: 140px; height: 140px; background: linear-gradient(160deg, #14532D, #0A2E18); border-radius: 16px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 6px; border: 1px solid rgba(255,255,255,0.1); }
+  .logo-preview-star { color: #F59E0B; font-size: 32px; }
+  .logo-preview-text { color: #fff; font-size: 18px; font-weight: 800; letter-spacing: -0.5px; }
+  .logo-preview-text span { color: #F59E0B; }
+
+  .banner-preview { width: 100%; height: 80px; background: linear-gradient(160deg, #14532D 0%, #0A2E18 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 10px; position: relative; overflow: hidden; }
+  .banner-orb { position: absolute; border-radius: 50%; }
+  .banner-preview-star { color: #F59E0B; font-size: 18px; position: relative; z-index: 1; }
+  .banner-preview-text { color: #fff; font-size: 16px; font-weight: 800; letter-spacing: -0.3px; position: relative; z-index: 1; }
+  .banner-preview-text span { color: #F59E0B; }
+  .banner-preview-tag { color: rgba(255,255,255,0.45); font-size: 11px; position: relative; z-index: 1; }
+
+  .download-btn { display: block; width: 100%; background: rgba(20,83,45,0.4); border: 1px solid rgba(20,83,45,0.8); color: #86efac; font-size: 12px; font-weight: 700; padding: 10px; text-align: center; cursor: pointer; transition: all 0.2s; letter-spacing: 0.3px; }
+  .download-btn:hover { background: rgba(20,83,45,0.7); }
+
+  canvas { display: none; }
+
+  .divider { border: none; border-top: 1px solid rgba(255,255,255,0.07); margin: 32px 0; }
+
+  .tag { display: inline-block; background: rgba(20,83,45,0.4); border: 1px solid rgba(20,83,45,0.8); color: #86efac; font-size: 12px; padding: 3px 10px; border-radius: 20px; margin: 3px; }
+
+  .checklist { list-style: none; }
+  .checklist li { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); color: rgba(255,255,255,0.7); font-size: 14px; }
+  .checklist li:last-child { border-bottom: none; }
+  .check { color: #F59E0B; font-size: 16px; margin-top: 1px; }
+
+  .alert { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); border-radius: 10px; padding: 14px 16px; font-size: 13px; color: rgba(255,255,255,0.65); margin-top: 12px; }
+  .alert strong { color: #F59E0B; }
+
+  .version-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+  .v-tab { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 20px; cursor: pointer; transition: all 0.2s; }
+  .v-tab.active { background: rgba(20,83,45,0.5); border-color: #14532D; color: #86efac; }
+  .v-panel { display: none; }
+  .v-panel.active { display: block; }
+
+  .post-meta { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="star">✦</span>
+        <span class="logo">Desta<span>ka</span></span>
+        <span class="badge">LinkedIn Setup</span>
+      </div>
+      <div class="subtitle">Tudo pronto para criar a pagina amanha de manha</div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- PASSO A PASSO -->
+  <div class="section">
+    <div class="section-title">Passo a passo</div>
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">Acessa a criacao de pagina</div>
+          <div class="step-desc">Vai em <strong>linkedin.com/company/new</strong> logado com o email da Destaka (nao o pessoal). Clica em <strong>"Empresa"</strong>.</div>
+          <span class="step-note">Usar email destaka, nao pessoal</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">Preenche os dados basicos</div>
+          <div class="step-desc">Nome, URL, setor, tamanho e tipo. Todos os valores estao na secao <strong>Dados da pagina</strong> abaixo com botao copiar.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">Faz upload do logo</div>
+          <div class="step-desc">Baixa o logo pela secao <strong>Visuais</strong> abaixo (300x300px PNG). Sobe no campo "Logo".</div>
+          <span class="step-note">Logo quadrado, fundo verde escuro</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">Faz upload do banner</div>
+          <div class="step-desc">Baixa o banner pela secao <strong>Visuais</strong> abaixo (1128x191px PNG). Sobe no campo "Imagem de capa".</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <div class="step-title">Preenche o "Sobre"</div>
+          <div class="step-desc">Copia o texto da secao <strong>Sobre a empresa</strong> abaixo (versao discreta, pre-lancamento). Adiciona as especialidades uma a uma no campo "Especialidades".</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-content">
+          <div class="step-title">Publica o primeiro post</div>
+          <div class="step-desc">Assim que a pagina estiver criada, copia e posta o <strong>Post de lancamento</strong> abaixo. Ativa o algoritmo desde o primeiro dia.</div>
+          <span class="step-note">Faz no mesmo dia da criacao</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">7</div>
+        <div class="step-content">
+          <div class="step-title">Segue os hashtags e convida conexoes</div>
+          <div class="step-desc">Segue os hashtags listados abaixo pela pagina. Convida as primeiras conexoes a seguir pelo botao "Convidar conexoes" no painel da pagina.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- DADOS DA PAGINA -->
+  <div class="section">
+    <div class="section-title">Dados da pagina</div>
+
+    <div class="field-row">
+      <div class="field">
+        <div class="field-name">Nome da empresa</div>
+        <div class="field-value"><span>Destaka</span><button class="mini-btn" onclick="copyField(this,'Destaka')">Copiar</button></div>
+      </div>
+      <div class="field">
+        <div class="field-name">URL da pagina</div>
+        <div class="field-value"><span>destaka</span><button class="mini-btn" onclick="copyField(this,'destaka')">Copiar</button></div>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <div class="field-name">Website</div>
+        <div class="field-value"><span>https://destaka.com.br</span><button class="mini-btn" onclick="copyField(this,'https://destaka.com.br')">Copiar</button></div>
+      </div>
+      <div class="field">
+        <div class="field-name">Setor</div>
+        <div class="field-value"><span>Tecnologia da Informacao e Servicos</span><button class="mini-btn" onclick="copyField(this,'Tecnologia da Informação e Serviços')">Copiar</button></div>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <div class="field-name">Tamanho</div>
+        <div class="field-value"><span>1 a 10 funcionarios</span></div>
+      </div>
+      <div class="field">
+        <div class="field-name">Tipo</div>
+        <div class="field-value"><span>Empresa privada</span></div>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <div class="field-name">Localizacao</div>
+        <div class="field-value"><span>Brasil</span><button class="mini-btn" onclick="copyField(this,'Brasil')">Copiar</button></div>
+      </div>
+      <div class="field">
+        <div class="field-name">Ano de fundacao</div>
+        <div class="field-value"><span>2026</span></div>
+      </div>
+    </div>
+
+    <div class="copy-block">
+      <div class="copy-header">
+        <div>
+          <div class="copy-label">Tagline</div>
+          <div class="copy-meta">63 chars — aparece abaixo do nome na pagina</div>
+        </div>
+        <button class="copy-btn" onclick="copyBlock(this)">Copiar</button>
+      </div>
+      <div class="copy-text">Mais pacientes pelo Google, sem você precisar entender o Google.</div>
+    </div>
+
+    <div class="copy-block">
+      <div class="copy-header">
+        <div>
+          <div class="copy-label">Botao CTA</div>
+          <div class="copy-meta">Tipo: Visitar site</div>
+        </div>
+        <button class="copy-btn" onclick="copyBlock(this)">Copiar</button>
+      </div>
+      <div class="copy-text">https://destaka.com.br</div>
+    </div>
+
+  </div>
+
+  <hr class="divider">
+
+  <!-- SOBRE A EMPRESA -->
+  <div class="section">
+    <div class="section-title">Sobre a empresa</div>
+
+    <div class="version-tabs">
+      <button class="v-tab active" onclick="showTab('discreta', this)">Versao discreta (usar agora)</button>
+      <button class="v-tab" onclick="showTab('lancamento', this)">Versao lancamento (quando Stripe prod)</button>
+    </div>
+
+    <div id="tab-discreta" class="v-panel active">
+      <div class="copy-block">
+        <div class="copy-header">
+          <div>
+            <div class="copy-label">Sobre — versao pre-lancamento</div>
+            <div class="copy-meta">Cole no campo "Sobre" da pagina</div>
+          </div>
+          <button class="copy-btn" onclick="copyBlock(this)">Copiar</button>
+        </div>
+        <div class="copy-text">Profissionais de saúde perdem pacientes todo dia para concorrentes que aparecem antes deles no Google.
+
+Não por falta de qualidade. Por falta de visibilidade.
+
+A Destaka existe para mudar isso.
+
+Ajudamos dentistas e médicos a aparecerem onde seus pacientes estão procurando, sem precisar entender de tecnologia.
+
+Em breve.
+
+destaka.com.br</div>
+      </div>
+    </div>
+
+    <div id="tab-lancamento" class="v-panel">
+      <div class="copy-block">
+        <div class="copy-header">
+          <div>
+            <div class="copy-label">Sobre — versao pos-lancamento</div>
+            <div class="copy-meta">Trocar quando Stripe estiver em producao</div>
+          </div>
+          <button class="copy-btn" onclick="copyBlock(this)">Copiar</button>
+        </div>
+        <div class="copy-text">Profissionais de saúde perdem pacientes todo dia para concorrentes que aparecem antes deles no Google.
+
+Não por falta de qualidade. Por falta de visibilidade.
+
+A Destaka cuida do Google Meu Negócio de dentistas e médicos enquanto eles cuidam dos pacientes.
+
+Em 5 minutos, conectamos o consultório ao Google e começamos a trabalhar: posts semanais publicados automaticamente, avaliações respondidas, informações sempre atualizadas, relatório mensal com visualizações e cliques reais.
+
+Sem o profissional precisar tocar em nada.
+
+O resultado: mais visibilidade nas buscas locais, mais pacientes encontrando o consultório, mais cliques para ligar.
+
+Para dentistas e médicos que trabalham duro e merecem ser encontrados por quem precisa deles.
+
+destaka.com.br</div>
+      </div>
+    </div>
+
+    <div class="copy-block">
+      <div class="copy-header">
+        <div>
+          <div class="copy-label">Especialidades (10)</div>
+          <div class="copy-meta">Adicione uma por uma no campo "Especialidades"</div>
+        </div>
+        <button class="copy-btn" onclick="copyBlock(this)">Copiar</button>
+      </div>
+      <div class="copy-text">Google Meu Negócio
+Marketing para Saúde
+Captação de Pacientes
+Marketing Odontológico
+Marketing Médico
+Visibilidade Local
+Google Business Profile
+Automação de Marketing
+SaaS
+Saúde Digital</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- VISUAIS -->
+  <div class="section">
+    <div class="section-title">Visuais para upload</div>
+
+    <div class="visual-section">
+
+      <!-- Logo -->
+      <div class="visual-card">
+        <div class="visual-card-header">
+          <span class="visual-card-label">Logo</span>
+          <span class="visual-card-spec">300x300px PNG</span>
+        </div>
+        <div class="visual-preview">
+          <div class="logo-preview">
+            <div class="logo-preview-star">✦</div>
+            <div class="logo-preview-text">Desta<span>ka</span></div>
+          </div>
+        </div>
+        <canvas id="logoCanvas"></canvas>
+        <button class="download-btn" onclick="downloadLogo()">Baixar Logo (300x300)</button>
+      </div>
+
+      <!-- Banner -->
+      <div class="visual-card">
+        <div class="visual-card-header">
+          <span class="visual-card-label">Banner / Capa</span>
+          <span class="visual-card-spec">1128x191px PNG</span>
+        </div>
+        <div class="visual-preview" style="padding:12px;">
+          <div class="banner-preview">
+            <div class="banner-orb" style="width:180px;height:180px;background:rgba(245,158,11,0.08);top:-60px;right:-40px;"></div>
+            <div class="banner-orb" style="width:120px;height:120px;background:rgba(22,163,74,0.06);bottom:-60px;left:-30px;"></div>
+            <span class="banner-preview-star">✦</span>
+            <span class="banner-preview-text">Desta<span>ka</span></span>
+            <span class="banner-preview-tag">Seu consultorio no topo do Google. Automatico.</span>
+          </div>
+        </div>
+        <canvas id="bannerCanvas"></canvas>
+        <button class="download-btn" onclick="downloadBanner()">Baixar Banner (1128x191)</button>
+      </div>
+
+    </div>
+
+    <div class="alert">
+      <strong>Dica:</strong> Se o LinkedIn pedir ajuste na hora do upload, usa o recorte deles e centraliza o logo. O banner preenche automaticamente.
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- POSTS -->
+  <div class="section">
+    <div class="section-title">Posts prontos para publicar</div>
+
+    <div class="alert" style="margin-bottom:16px;">
+      <strong>Primeira semana completa:</strong> 10 posts (manha e tarde, seg a sex) prontos em <code style="color:#F59E0B;">docs/social/linkedin-semana-14-18-abril.md</code>. Os posts abaixo sao para o lancamento da pagina.
+    </div>
+
+    <!-- Post 1: Lancamento -->
+    <div class="copy-block">
+      <div class="copy-header">
+        <div>
+          <div class="copy-label">Post de lancamento</div>
+          <div class="copy-meta">Publicar no mesmo dia da criacao da pagina</div>
+        </div>
+        <button class="copy-btn" onclick="copyBlock(this)">Copiar</button>
+      </div>
+      <div class="copy-text">Quem nao aparece nas buscas locais perde 70% dos pacientes em potencial.
+
+70%.
+
+Quando alguem pesquisa "profissional de saude perto de mim", nao vai procurar mais fundo.
+
+Liga para quem apareceu primeiro.
+
+Tres fatores decidem quem aparece:
+Relevancia: o perfil tem as informacoes certas.
+Distancia: voce esta perto de quem esta buscando.
+Popularidade: avaliacoes recentes e frequentes.
+
+Distancia voce nao controla.
+Relevancia e popularidade, sim.
+
+Criamos o Destaka para cuidar disso automaticamente.
+
+Dentistas e medicos conectam o Google Meu Negocio uma vez. O Destaka cuida do resto: posts semanais, respostas automaticas para avaliacoes, relatorio mensal.
+
+Sem o profissional precisar tocar em nada.
+
+destaka.com.br
+
+#GoogleMeuNegocio #ProfissionaisDeSaude #MarketingMedico</div>
+    </div>
+
+    <!-- Post 2: Segunda manha -->
+    <div class="copy-block">
+      <div class="copy-header">
+        <div>
+          <div class="copy-label">Post — Segunda 14/04, manha</div>
+          <div class="copy-meta">Horario recomendado: 07h-08h</div>
+        </div>
+        <button class="copy-btn" onclick="copyBlock(this)">Copiar</button>
+      </div>
+      <div class="copy-text">Quem nao aparece nas buscas locais perde 70% dos pacientes em potencial.
+
+70%.
+
+Quando alguem pesquisa "profissional de saude perto de mim", nao vai procurar mais fundo.
+
+Liga para quem apareceu primeiro.
+
+Tres fatores decidem quem aparece:
+Relevancia: o perfil tem as informacoes certas
+Distancia: voce esta perto de quem esta buscando
+Popularidade: avaliacoes recentes e frequentes
+
+Distancia voce nao controla.
+Relevancia e popularidade, sim.
+
+Um dentista em Sao Paulo me mostrou o perfil dele semana passada. Score 38 de 100. Sete avaliacoes. A ultima resposta: 2022. Ele atende ha 14 anos no mesmo endereco.
+
+Aparecia na quarta posicao, atras de um consultorio com 2 anos.
+
+Qual dos tres fatores esta faltando no seu perfil?
+
+#GoogleMeuNegocio #ProfissionaisDeSaude #MarketingMedico</div>
+    </div>
+
+    <!-- Post 3: Quarta resultado concreto -->
+    <div class="copy-block">
+      <div class="copy-header">
+        <div>
+          <div class="copy-label">Post — Quarta 16/04, manha</div>
+          <div class="copy-meta">Horario recomendado: 07h-08h</div>
+        </div>
+        <button class="copy-btn" onclick="copyBlock(this)">Copiar</button>
+      </div>
+      <div class="copy-text">Era uma terca de manha.
+
+Um dentista com 11 anos de consultorio pesquisou o proprio nome no Google.
+
+Nao apareceu.
+
+Pesquisou "dentista" mais o nome do bairro onde atende ha mais de uma decada.
+
+Apareceu na quarta posicao. Atras de um consultorio que abriu ha 8 meses.
+
+O perfil tinha informacoes de 2019. Sem fotos novas. Tres avaliacoes sem resposta. Nenhum post em dois anos.
+
+Score: 38 de 100.
+
+Sete dias depois, com o perfil em dia: fotos atualizadas, avaliacoes respondidas, posts publicados, informacoes certas.
+
+Score: 81 de 100.
+
+Mesma qualidade de atendimento. Mesma localizacao. Mesmo dentista.
+
+O que mudou foi o que o Google conseguia ver.
+
+O que o Google esta vendo do seu consultorio hoje?
+
+#GoogleMeuNegocio #ProfissionaisDeSaude #MarketingMedico</div>
+    </div>
+
+    <!-- Post 4: Sexta inspiracional -->
+    <div class="copy-block">
+      <div class="copy-header">
+        <div>
+          <div class="copy-label">Post — Sexta 18/04, tarde</div>
+          <div class="copy-meta">Horario recomendado: 12h-13h</div>
+        </div>
+        <button class="copy-btn" onclick="copyBlock(this)">Copiar</button>
+      </div>
+      <div class="copy-text">Formou em seis anos.
+
+Fez residencia. Depois especializacao. Investiu em equipamento, em atualizacao constante, em oferecer o melhor diagnostico possivel.
+
+Atende com cuidado. Ouve antes de falar. Trata o paciente, nao so a doenca.
+
+E mesmo assim, quando alguem pesquisa "medico perto de mim" no Google, outro consultorio aparece primeiro.
+
+Nao porque o outro e melhor.
+
+Porque o outro esta mais visivel.
+
+Qualidade de atendimento nao aparece no Google.
+
+O que aparece e o que voce publica, como voce responde as avaliacoes, e se o seu perfil esta em dia.
+
+Voce merece ser encontrado por quem precisa de voce.
+
+O Google so precisa saber que voce existe.
+
+#GoogleMeuNegocio #ProfissionaisDeSaude #MarketingMedico</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- HASHTAGS -->
+  <div class="section">
+    <div class="section-title">Hashtags para seguir na pagina</div>
+    <div style="margin-bottom:8px;">
+      <span class="tag">#GoogleMeuNegocio</span>
+      <span class="tag">#ProfissionaisDeSaude</span>
+      <span class="tag">#MarketingMedico</span>
+    </div>
+    <div class="alert" style="margin-top:12px;">
+      <strong>Regra dos posts:</strong> maximo 3 hashtags por post. Sem emojis decorativos. Nao editar os textos aprovados, foram calibrados para o algoritmo.
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- CHECKLIST FINAL -->
+  <div class="section">
+    <div class="section-title">Checklist antes de publicar</div>
+    <ul class="checklist">
+      <li><span class="check">◆</span> Nome: Destaka</li>
+      <li><span class="check">◆</span> URL: linkedin.com/company/destaka</li>
+      <li><span class="check">◆</span> Logo 300x300 enviado</li>
+      <li><span class="check">◆</span> Banner 1128x191 enviado</li>
+      <li><span class="check">◆</span> Tagline preenchida</li>
+      <li><span class="check">◆</span> Sobre preenchido (versao discreta)</li>
+      <li><span class="check">◆</span> Website: https://destaka.com.br</li>
+      <li><span class="check">◆</span> Especialidades adicionadas (10)</li>
+      <li><span class="check">◆</span> Localizacao: Brasil</li>
+      <li><span class="check">◆</span> Botao CTA: Visitar site</li>
+      <li><span class="check">◆</span> Post de lancamento publicado no mesmo dia</li>
+      <li><span class="check">◆</span> Hashtags seguidos pela pagina</li>
+      <li><span class="check">◆</span> Primeiras conexoes convidadas a seguir</li>
+    </ul>
+  </div>
+
+</div>
+
+<script>
+function copyBlock(btn) {
+  const block = btn.closest('.copy-block');
+  const text = block.querySelector('.copy-text').innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copiado!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function copyField(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copiado!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function showTab(id, btn) {
+  document.querySelectorAll('.v-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.v-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function downloadLogo() {
+  const canvas = document.getElementById('logoCanvas');
+  canvas.width = 300;
+  canvas.height = 300;
+  const ctx = canvas.getContext('2d');
+
+  // Background
+  ctx.fillStyle = '#14532D';
+  ctx.beginPath();
+  ctx.roundRect(0, 0, 300, 300, 32);
+  ctx.fill();
+
+  // Star
+  ctx.fillStyle = '#F59E0B';
+  ctx.font = 'bold 90px serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('\u2736', 150, 130);
+
+  // Destaka text
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 46px Arial';
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillText('Desta', 105, 215);
+  ctx.fillStyle = '#F59E0B';
+  ctx.fillText('ka', 207, 215);
+
+  const link = document.createElement('a');
+  link.download = 'destaka-logo-300x300.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+function downloadBanner() {
+  const canvas = document.getElementById('bannerCanvas');
+  canvas.width = 1128;
+  canvas.height = 191;
+  const ctx = canvas.getContext('2d');
+
+  // Background
+  const grad = ctx.createLinearGradient(0, 0, 1128, 191);
+  grad.addColorStop(0, '#14532D');
+  grad.addColorStop(1, '#0A2E18');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 1128, 191);
+
+  // Orb right
+  const orbR = ctx.createRadialGradient(980, 20, 0, 980, 20, 220);
+  orbR.addColorStop(0, 'rgba(245,158,11,0.15)');
+  orbR.addColorStop(1, 'rgba(245,158,11,0)');
+  ctx.fillStyle = orbR;
+  ctx.fillRect(0, 0, 1128, 191);
+
+  // Star
+  ctx.fillStyle = '#F59E0B';
+  ctx.font = 'bold 60px serif';
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('\u2736', 490, 95);
+
+  // Destaka text
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 72px Arial';
+  ctx.textAlign = 'left';
+  ctx.fillText('Desta', 510, 120);
+  ctx.fillStyle = '#F59E0B';
+  const desta = ctx.measureText('Desta');
+  ctx.fillText('ka', 510 + desta.width, 120);
+
+  // Tagline
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.font = '22px Arial';
+  ctx.textBaseline = 'alphabetic';
+  ctx.textAlign = 'center';
+  ctx.fillText('Seu consultorio no topo do Google.', 564, 152);
+
+  ctx.fillStyle = '#D97706';
+  ctx.font = 'bold 22px Arial';
+  ctx.fillText('Automatico.', 564, 177);
+
+  const link = document.createElement('a');
+  link.download = 'destaka-banner-1128x191.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+</script>
+
+</body>
+</html>
