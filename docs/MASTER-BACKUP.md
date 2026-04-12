@@ -1,6 +1,6 @@
 # MASTER BACKUP — Destaka (Projeto GMM)
-**Atualizado:** 2026-04-10
-**Status:** MVP em produção + Stripe integrado + analytics ativos — pendente: Google OAuth + onboarding email + tráfego
+**Atualizado:** 2026-04-12
+**Status:** Zero Touch SaaS em produção — review auto-reply + post generator + monthly report ativos — Google OAuth funcionando — pendente: GBP real para teste end-to-end + tráfego
 
 ---
 
@@ -46,13 +46,20 @@
 - [x] Migração SQL executada (8 tabelas + RLS)
 - [x] Upstash Redis criado (sa-east-1)
 - [x] .env.local preenchido: NextAuth, Anthropic, Resend, Supabase, Upstash
-- [ ] Google Cloud project + OAuth configurado
+- [x] Google OAuth: Cloud Console + Supabase provider + URL Configuration (2026-04-12)
 - [x] Stripe: produto Pro R$197 criado + chaves + webhook configurado (2026-04-10)
 - [x] Migration 005 aplicada: user_events, score_history, user_sessions (2026-04-10)
 - [x] Vercel CLI instalado + projeto linkado + envs Stripe adicionadas (2026-04-10)
 - [x] API routes: /api/stripe/checkout, /api/stripe/webhook, /api/stripe/portal (2026-04-10)
 - [x] UpgradeBanner no dashboard para usuários free (2026-04-10)
 - [x] Landing: plano único Pro R$197, copy corrigida, sem "grátis" (2026-04-10)
+- [x] Migration 006: gmb_reviews.ai_reply_draft + competitors + monthly_reports (2026-04-12)
+- [x] Zero Touch SaaS: review auto-reply (IA) + post generator semanal + monthly report email (2026-04-12)
+- [x] Crons Vercel: review-monitor 8h, post-generator 10h, monthly-report dia 1 (2026-04-12)
+- [x] Lazy init SDKs — build estável Vercel: Anthropic, Stripe, Resend (2026-04-12)
+- [ ] GBP real vinculado para teste end-to-end
+- [ ] Stripe modo produção ativado
+- [ ] Primeiros clientes pagantes
 
 ---
 
@@ -155,6 +162,41 @@ Ver detalhes completos: `docs/guides/server-requirements.md`
 - Requisitos de servidor documentados
 - Epic 1 (7 stories) + Epic 2 (3 stories) planejados
 - Próximo passo: inicializar repositório e criar projeto Next.js
+
+### 2026-04-12 — Sessão Zero Touch SaaS + Google OAuth
+
+**Zero Touch SaaS (automation engine) — PR mergeado em main:**
+- Migration 006: `gmb_reviews.ai_reply_draft`, tabela `competitors`, tabela `monthly_reports`
+- `lib/gmb/review-automation.ts`: processa fila de reviews pendentes, gera rascunho ou publica via IA
+- `lib/report/compiler.ts`: compila dados mensais (score, reviews, posts) por usuário
+- `lib/email/monthly-report.ts`: template HTML + envio via Resend
+- Crons Vercel: `review-monitor` (8h diário), `post-generator` (10h diário), `monthly-report` (8h dia 1)
+- Fix crítico: lazy init de todos os SDKs com module-level instantiation (Anthropic x5, Stripe x1) que crashavam o build Vercel durante page data collection
+
+**Google OAuth — configurado e funcionando em produção:**
+- Google Cloud Console: OAuth client "Destaka" já existia com redirect URI correto
+- Supabase: provider Google habilitado com Client ID + Secret
+- URL Configuration: Site URL atualizado para `https://destaka.com.br`, redirect `https://destaka.com.br/**`
+- Fluxo testado: login, consent screen GBP, callback, onboarding — tudo funcional
+- Bloqueador atual: nenhuma conta do David tem GBP real para testar onboarding completo
+
+**Kanban atual:**
+
+| Concluído | Em andamento | A fazer |
+|-----------|-------------|---------|
+| Stripe + webhook | — | GBP real para teste |
+| Analytics + instrumentação | — | Stripe modo produção |
+| Onboarding emails (dias 1, 3, 7) | — | Primeiros clientes |
+| Google OAuth end-to-end | — | My Business Account Mgmt API errors (100%) |
+| Zero Touch SaaS (review, posts, report) | — | Tráfego orgânico Instagram |
+| Build estável Vercel (lazy SDKs) | — | Fluxo de indicação (email dia 30) |
+| Migration 006 em produção | — | |
+
+**Próximos passos:**
+1. Criar GBP de teste (UNLMTD ou conta de teste) para validar onboarding completo
+2. Debugar My Business Account Management API (100% erros — provavelmente token scope)
+3. Ativar Stripe modo produção quando pronto para cobrar
+4. Iniciar conteúdo orgânico Instagram (3 posts/semana)
 
 ### 2026-04-05 — Sessão de Infraestrutura (Block 1)
 - .env.local preenchido com: NextAuth secret, Anthropic API key, Resend API key
