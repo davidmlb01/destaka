@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // cache bust: lazy-init anthropic sdk
 };
 
 export default nextConfig;
