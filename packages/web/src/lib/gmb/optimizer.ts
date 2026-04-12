@@ -7,7 +7,11 @@ import Anthropic from '@anthropic-ai/sdk'
 import type { GmbProfileData, ScoreResult } from './scorer'
 import { calculateScore } from './scorer'
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
+let _anthropic: Anthropic | null = null
+function getAnthropic(): Anthropic {
+  if (!_anthropic) _anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
+  return _anthropic
+}
 
 // ---------------------------------------------------------------------------
 // Types
@@ -221,7 +225,7 @@ export function scoreAfterOptimizations(
 async function generateDescription(profile: GmbProfileData): Promise<string> {
   const segment = detectSegment(profile.category)
 
-  const message = await client.messages.create({
+  const message = await getAnthropic().messages.create({
     model: 'claude-haiku-4-5-20251001',
     max_tokens: 300,
     messages: [
@@ -250,7 +254,7 @@ Requisitos:
 async function generateServices(profile: GmbProfileData): Promise<Array<{ name: string; description: string }>> {
   const segment = detectSegment(profile.category)
 
-  const message = await client.messages.create({
+  const message = await getAnthropic().messages.create({
     model: 'claude-haiku-4-5-20251001',
     max_tokens: 400,
     messages: [
