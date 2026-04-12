@@ -5,7 +5,11 @@
 
 import Anthropic from '@anthropic-ai/sdk'
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
+let _anthropic: Anthropic | null = null
+function getAnthropic(): Anthropic {
+  if (!_anthropic) _anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
+  return _anthropic
+}
 
 export type PostType = 'update' | 'event' | 'offer'
 
@@ -95,7 +99,7 @@ export async function generateWeeklyPost(
   const topics = SEGMENT_TOPICS[segment] ?? SEGMENT_TOPICS['médico']
   const topic = topics[Math.floor(Math.random() * topics.length)]
 
-  const message = await client.messages.create({
+  const message = await getAnthropic().messages.create({
     model: 'claude-haiku-4-5-20251001',
     max_tokens: 400,
     messages: [
