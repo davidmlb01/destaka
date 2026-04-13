@@ -73,6 +73,34 @@ export function VerifyTool() {
   const [result, setResult] = useState<VerifyResult | null>(null)
   const [error, setError] = useState('')
   const [expandedCat, setExpandedCat] = useState<string | null>(null)
+  const [captureEmail, setCaptureEmail] = useState('')
+  const [lgpdConsent, setLgpdConsent] = useState(false)
+  const [capturing, setCapturing] = useState(false)
+  const [captureMsg, setCaptureMsg] = useState('')
+
+  async function handleCapture() {
+    if (!captureEmail.includes('@') || !lgpdConsent || !result) return
+    setCapturing(true)
+    setCaptureMsg('')
+    const res = await fetch('/api/public/capture-lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: captureEmail,
+        placeName: result.place.name,
+        score: result.score.total,
+        categories: result.score.categories,
+        lgpdConsent: true,
+      }),
+    })
+    const data = await res.json() as { ok?: boolean; emailSent?: boolean; error?: string }
+    if (data.ok) {
+      setCaptureMsg(data.emailSent ? 'Relatorio enviado! Confira sua caixa de entrada.' : 'Email registrado com sucesso.')
+    } else {
+      setCaptureMsg(data.error ?? 'Erro ao enviar. Tente novamente.')
+    }
+    setCapturing(false)
+  }
 
   async function handleVerify() {
     if (!input.trim()) return
@@ -282,6 +310,69 @@ export function VerifyTool() {
               <span style={{ fontSize: 14 }}>→</span>
             </a>
           </div>
+
+          {/* Captura de email */}
+          {!captureMsg ? (
+            <div
+              className="rounded-2xl px-6 py-5"
+              style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.07)' }}
+            >
+              <p className="font-display font-bold text-white mb-1" style={{ fontSize: 14 }}>
+                Receba este relatório no seu email
+              </p>
+              <p className="text-xs mb-4" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                Sem cadastro. Só o relatório.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 mb-3">
+                <input
+                  type="email"
+                  value={captureEmail}
+                  onChange={e => setCaptureEmail(e.target.value)}
+                  placeholder="seu@email.com"
+                  className="flex-1 rounded-xl px-4 py-3 text-sm"
+                  style={{
+                    background: 'rgba(0,0,0,0.3)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    color: 'white',
+                    outline: 'none',
+                  }}
+                />
+                <button
+                  onClick={handleCapture}
+                  disabled={capturing || !captureEmail.includes('@') || !lgpdConsent}
+                  className="shrink-0 rounded-xl px-6 py-3 text-sm font-bold"
+                  style={{
+                    background: capturing || !captureEmail.includes('@') || !lgpdConsent
+                      ? 'rgba(255,255,255,0.06)'
+                      : 'rgba(20,83,45,0.7)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    color: 'rgba(255,255,255,0.6)',
+                    cursor: capturing || !captureEmail.includes('@') || !lgpdConsent ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  {capturing ? 'Enviando...' : 'Enviar'}
+                </button>
+              </div>
+              <label className="flex items-start gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={lgpdConsent}
+                  onChange={e => setLgpdConsent(e.target.checked)}
+                  className="mt-0.5 shrink-0"
+                />
+                <span className="text-xs" style={{ color: 'rgba(255,255,255,0.3)', lineHeight: 1.5 }}>
+                  Concordo em receber o relatório e comunicações da Destaka. Seus dados são protegidos conforme a LGPD e não serão compartilhados.
+                </span>
+              </label>
+            </div>
+          ) : (
+            <div
+              className="rounded-2xl px-6 py-4 text-center"
+              style={{ background: 'rgba(52,211,153,0.08)', border: '1px solid rgba(52,211,153,0.15)' }}
+            >
+              <p className="text-sm font-medium" style={{ color: '#34D399' }}>{captureMsg}</p>
+            </div>
+          )}
 
         </div>
       )}

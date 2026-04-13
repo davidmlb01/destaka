@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { label: 'Avaliações', icon: '⭐', href: '/dashboard/reviews', active: true },
   { label: 'Posts', icon: '📝', href: '/dashboard/posts', active: false },
   { label: 'Otimizações', icon: '⚡', href: '/dashboard/optimizations', active: false },
+  { label: 'Concorrentes', icon: '🎯', href: '/dashboard/competitors', active: false },
   { label: 'Plano', icon: '💎', href: '/dashboard/plan', active: false },
 ]
 
