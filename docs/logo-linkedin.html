@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Destaka Logo LinkedIn</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #1a1a1a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      gap: 32px;
+      font-family: sans-serif;
+    }
+
+    #logo-canvas {
+      width: 400px;
+      height: 400px;
+      background: linear-gradient(145deg, #14532D 0%, #0A2E18 100%);
+      border-radius: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .orb {
+      position: absolute;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(217,119,6,0.2) 0%, transparent 70%);
+      top: -80px; right: -80px;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .star {
+      font-size: 72px;
+      color: #F59E0B;
+      filter: drop-shadow(0 0 20px rgba(245,158,11,0.6));
+      line-height: 1;
+      position: relative;
+      z-index: 1;
+    }
+
+    .wordmark {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 72px;
+      font-weight: 900;
+      letter-spacing: -3px;
+      color: #fff;
+      line-height: 1;
+      position: relative;
+      z-index: 1;
+    }
+    .wordmark span { color: #F59E0B; }
+
+    .btn {
+      padding: 12px 28px;
+      background: #F59E0B;
+      color: #1C1917;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: sans-serif;
+    }
+    .btn:hover { background: #D97706; }
+
+    p { color: rgba(255,255,255,0.4); font-size: 13px; }
+  </style>
+</head>
+<body>
+
+  <div id="logo-canvas">
+    <div class="orb"></div>
+    <div class="star">✦</div>
+    <div class="wordmark">Desta<span>ka</span></div>
+  </div>
+
+  <button class="btn" onclick="download()">Baixar PNG (400x400)</button>
+  <p>Tamanho ideal para LinkedIn: 300x300px mínimo</p>
+
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <script>
+    function download() {
+      const el = document.getElementById('logo-canvas');
+      html2canvas(el, {
+        width: 400,
+        height: 400,
+        scale: 3,
+        backgroundColor: null,
+        useCORS: true,
+        logging: false
+      }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'destaka-logo-linkedin.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    }
+  </script>
+
+</body>
+</html>
