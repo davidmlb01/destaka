@@ -14,6 +14,30 @@ export async function GET() {
     return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
   }
 
+  // Mock: retorna locais simulados sem exigir token Google
+  if (process.env.GMB_MOCK === 'true') {
+    return NextResponse.json({
+      locations: [
+        {
+          name: 'accounts/123456/locations/789012',
+          title: 'Clínica Odontológica Sorriso',
+          address: 'Rua das Flores, 123, São Paulo, SP',
+          phone: '(11) 99999-9999',
+          website: 'https://clinicasorriso.com.br',
+          category: 'Dentista',
+        },
+        {
+          name: 'accounts/123456/locations/345678',
+          title: 'Consultório Dr. Silva',
+          address: 'Av. Paulista, 1000, São Paulo, SP',
+          phone: '(11) 88888-8888',
+          website: null,
+          category: 'Clínica médica',
+        },
+      ],
+    })
+  }
+
   const serviceClient = await createServiceClient()
   const { data: userData, error: userError } = await serviceClient
     .from('users')
@@ -33,30 +57,6 @@ export async function GET() {
     accessToken = decrypt(userData.google_access_token_enc)
   } catch {
     return NextResponse.json({ error: 'Erro ao descriptografar token.' }, { status: 500 })
-  }
-
-  // Mock de desenvolvimento para testar o fluxo sem perfil GMB real
-  if (process.env.NODE_ENV === 'development' && process.env.GMB_MOCK === 'true') {
-    return NextResponse.json({
-      locations: [
-        {
-          name: 'accounts/123456/locations/789012',
-          title: 'Clínica Odontológica Teste',
-          address: 'Rua das Flores, 123, São Paulo, SP',
-          phone: '(11) 99999-9999',
-          website: 'https://clinicateste.com.br',
-          category: 'Dentista',
-        },
-        {
-          name: 'accounts/123456/locations/345678',
-          title: 'Consultório Dr. Silva',
-          address: 'Av. Paulista, 1000, São Paulo, SP',
-          phone: '(11) 88888-8888',
-          website: null,
-          category: 'Clínica médica',
-        },
-      ],
-    })
   }
 
   try {

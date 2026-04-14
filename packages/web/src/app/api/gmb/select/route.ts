@@ -52,6 +52,14 @@ export async function POST(request: NextRequest) {
 
   if (error) {
     if (error.code === '23505') {
+      // Perfil já existe — em modo mock, reatribui ao usuário atual
+      if (process.env.GMB_MOCK === 'true') {
+        await serviceClient
+          .from('gmb_profiles')
+          .update({ user_id: user.id })
+          .eq('google_location_id', locationId)
+        return NextResponse.json({ reassigned: true }, { status: 200 })
+      }
       return NextResponse.json({ error: 'Este perfil já está conectado.' }, { status: 409 })
     }
     console.error('[gmb/select] insert error:', error)

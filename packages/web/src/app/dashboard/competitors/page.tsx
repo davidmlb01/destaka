@@ -5,9 +5,9 @@ import { CompetitorsContent } from '@/components/dashboard/CompetitorsContent'
 
 const NAV_ITEMS = [
   { label: 'Dashboard', icon: '📊', href: '/dashboard', active: false },
-  { label: 'Avaliacoes', icon: '⭐', href: '/dashboard/reviews', active: false },
+  { label: 'Avaliações', icon: '⭐', href: '/dashboard/reviews', active: false },
   { label: 'Posts', icon: '📝', href: '/dashboard/posts', active: false },
-  { label: 'Otimizacoes', icon: '⚡', href: '/dashboard/optimizations', active: false },
+  { label: 'Otimizações', icon: '⚡', href: '/dashboard/optimizations', active: false },
   { label: 'Concorrentes', icon: '🎯', href: '/dashboard/competitors', active: true },
   { label: 'Plano', icon: '💎', href: '/dashboard/plan', active: false },
 ]
@@ -47,50 +47,55 @@ export default async function CompetitorsPage() {
           backdropFilter: 'blur(16px)',
         }}
       >
+        {/* Logo */}
         <div className="flex items-center gap-2 px-2 mb-8">
-          <span style={{ fontSize: 20 }}>🎯</span>
-          <span style={{ color: '#fff', fontWeight: 700, fontSize: 16, letterSpacing: '-0.3px' }}>Destaka</span>
+          <span style={{ color: '#F59E0B', fontSize: 20 }}>✦</span>
+          <span className="font-display font-extrabold text-white" style={{ fontSize: 18 }}>
+            Desta<span style={{ color: '#F59E0B' }}>ka</span>
+          </span>
         </div>
+
+        {/* Perfil ativo */}
+        <div
+          className="rounded-xl px-3 py-2.5 mb-6"
+          style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.07)' }}
+        >
+          <p className="text-xs font-medium text-white truncate">{profile.name}</p>
+          <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>Perfil ativo</p>
+        </div>
+
+        {/* Nav */}
         <nav className="flex flex-col gap-1 flex-1">
           {NAV_ITEMS.map(item => (
             <a
               key={item.href}
               href={item.href}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all"
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 10,
-                padding: '9px 12px',
-                borderRadius: 10,
+                background: item.active ? 'rgba(217,119,6,0.15)' : 'transparent',
+                color: item.active ? '#FCD34D' : 'rgba(255,255,255,0.5)',
+                border: item.active ? '1px solid rgba(217,119,6,0.2)' : '1px solid transparent',
                 textDecoration: 'none',
-                fontSize: 14,
-                fontWeight: item.active ? 600 : 400,
-                color: item.active ? '#fff' : 'rgba(255,255,255,0.5)',
-                background: item.active ? 'rgba(255,255,255,0.08)' : 'transparent',
-                transition: 'all 0.15s',
               }}
             >
-              <span>{item.icon}</span>
+              <span style={{ fontSize: 16 }}>{item.icon}</span>
               {item.label}
             </a>
           ))}
         </nav>
-        <a
-          href="/api/auth/logout"
-          style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12, textDecoration: 'none', padding: '8px 12px' }}
-        >
-          Sair
-        </a>
+
+        {/* Email */}
+        <div className="px-2 pt-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+          <p className="text-xs truncate" style={{ color: 'rgba(255,255,255,0.3)' }}>{user.email}</p>
+        </div>
       </aside>
 
       {/* Mobile nav */}
       <MobileNav profileName={profile.name} userEmail={user.email ?? ''} />
 
       {/* Content */}
-      <main className="flex-1 lg:ml-56 p-6 pb-24 lg:pb-6 relative z-10">
-        <div style={{ maxWidth: 640, margin: '0 auto' }}>
-          <CompetitorsContent />
-        </div>
+      <main className="flex-1 lg:ml-56 relative z-10 px-6 py-8 max-w-5xl">
+        <CompetitorsContent />
       </main>
     </div>
   )

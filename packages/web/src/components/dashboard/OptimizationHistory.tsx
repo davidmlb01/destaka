@@ -12,10 +12,13 @@ const TYPE_LABELS: Record<string, string> = {
   add_photo: 'Foto adicionada',
   add_post: 'Post publicado',
   add_service: 'Serviço cadastrado',
+  add_services: 'Serviços adicionados',
   reply_review: 'Avaliação respondida',
   update_hours: 'Horário atualizado',
   update_category: 'Categoria atualizada',
   add_attribute: 'Atributo configurado',
+  update_attributes: 'Atributos atualizados',
+  update_description: 'Descrição atualizada',
 }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; dot: string }> = {

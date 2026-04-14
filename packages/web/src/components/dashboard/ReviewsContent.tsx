@@ -82,7 +82,8 @@ export function ReviewsContent() {
       const { reply } = await res.json() as { reply: string }
       setModal(m => m ? { ...m, draft: reply, generating: false } : m)
     } else {
-      setModal(m => m ? { ...m, generating: false } : m)
+      const err = await res.json().catch(() => ({})) as { error?: string }
+      setModal(m => m ? { ...m, draft: `Erro ao gerar: ${err.error ?? res.status}`, generating: false } : m)
     }
   }
 

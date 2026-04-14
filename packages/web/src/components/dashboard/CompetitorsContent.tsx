@@ -89,17 +89,17 @@ function CompetitorCard({ comp, profile }: { comp: Competitor; profile: Profile 
           <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11, margin: '4px 0 0' }}>nota</p>
           {comp.avg_rating !== null && profile.avg_rating !== null && (
             <p style={{ fontSize: 11, margin: '2px 0 0', color: ratingDiff > 0 ? '#34D399' : ratingDiff < 0 ? '#F87171' : 'rgba(255,255,255,0.4)' }}>
-              {ratingDiff > 0 ? `+${ratingDiff.toFixed(1)} voce` : ratingDiff < 0 ? `${ratingDiff.toFixed(1)} voce` : 'igual'}
+              {ratingDiff > 0 ? `+${ratingDiff.toFixed(1)} você` : ratingDiff < 0 ? `${ratingDiff.toFixed(1)} você` : 'igual'}
             </p>
           )}
         </div>
 
         <div style={{ textAlign: 'center', padding: '8px 0', background: 'rgba(0,0,0,0.2)', borderRadius: 8 }}>
           <p style={{ color: '#fff', fontSize: 16, fontWeight: 700, margin: 0 }}>{comp.review_count}</p>
-          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11, margin: '4px 0 0' }}>avaliacoes</p>
+          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11, margin: '4px 0 0' }}>avaliações</p>
           {profile.review_count !== null && (
             <p style={{ fontSize: 11, margin: '2px 0 0', color: reviewDiff > 0 ? '#34D399' : reviewDiff < 0 ? '#F87171' : 'rgba(255,255,255,0.4)' }}>
-              {reviewDiff > 0 ? `+${reviewDiff} voce` : reviewDiff < 0 ? `${reviewDiff} voce` : 'igual'}
+              {reviewDiff > 0 ? `+${reviewDiff} você` : reviewDiff < 0 ? `${reviewDiff} você` : 'igual'}
             </p>
           )}
         </div>
@@ -137,7 +137,8 @@ export function CompetitorsContent() {
       body: JSON.stringify({ benchmark: true }),
     })
     const json = await res.json() as { discovered: number; errors: string[] }
-    setMsg(`${json.discovered} concorrente(s) encontrado(s)${json.errors.length ? ` (${json.errors.length} erro(s))` : ''}.`)
+    const n = json.discovered
+    setMsg(`${n} ${n === 1 ? 'concorrente encontrado' : 'concorrentes encontrados'}${json.errors.length ? ` (${json.errors.length} ${json.errors.length === 1 ? 'erro' : 'erros'})` : ''}.`)
     await load()
     setDiscovering(false)
   }
@@ -158,7 +159,7 @@ export function CompetitorsContent() {
         <div>
           <h2 style={{ color: '#fff', fontSize: 18, fontWeight: 700, margin: 0 }}>Concorrentes</h2>
           <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13, margin: '4px 0 0' }}>
-            Top 3 na sua especialidade e regiao
+            Top 3 na sua especialidade e região
           </p>
         </div>
         <button

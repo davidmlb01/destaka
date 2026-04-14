@@ -98,7 +98,7 @@ export function DashboardContent() {
     <div className="flex flex-col gap-8">
 
       {/* Linha 1: Score gauge + métricas */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
 
         {/* Gauge */}
         <div
@@ -133,7 +133,7 @@ export function DashboardContent() {
         </div>
 
         {/* Métricas */}
-        <div className="lg:col-span-2 grid grid-cols-2 gap-3">
+        <div className="lg:col-span-2 grid grid-cols-2 gap-3 content-start">
           <MetricCard label="Buscas no Google" value={metrics.viewsSearch} icon="🔍" hint={metrics.period} />
           <MetricCard label="Visualizações no Maps" value={metrics.viewsMaps} icon="📍" hint={metrics.period} />
           <MetricCard label="Cliques no site" value={metrics.clicksWebsite} icon="🌐" hint={metrics.period} />

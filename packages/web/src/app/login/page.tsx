@@ -1,6 +1,9 @@
 'use client'
 
+import { useState } from 'react'
 import { createBrowserClient } from '@supabase/ssr'
+
+const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true'
 
 function createClient() {
   return createBrowserClient(
@@ -10,6 +13,25 @@ function createClient() {
 }
 
 export default function LoginPage() {
+  const [demoLoading, setDemoLoading] = useState(false)
+
+  async function handleDemoLogin() {
+    setDemoLoading(true)
+    try {
+      const res = await fetch('/api/auth/demo-login', { method: 'POST' })
+      if (res.ok) {
+        window.location.href = '/onboarding'
+      } else {
+        const data = await res.json()
+        alert('Erro no login demo: ' + (data.error ?? 'tente novamente'))
+        setDemoLoading(false)
+      }
+    } catch {
+      alert('Erro de conexão. Verifique se o servidor está rodando.')
+      setDemoLoading(false)
+    }
+  }
+
   async function handleGoogleSignIn() {
     const supabase = createClient()
     const { data, error } = await supabase.auth.signInWithOAuth({
@@ -95,12 +117,43 @@ export default function LoginPage() {
             Entrar com Google
           </button>
 
-          <p
-            className="text-center mt-6"
-            style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12, lineHeight: 1.6 }}
-          >
-            Ao entrar, você autoriza a Destaka a acessar e otimizar seu perfil no Google Meu Negócio.
-          </p>
+          {isDemoMode && (
+            <>
+              <div className="flex items-center gap-3 my-5">
+                <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
+                <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 12 }}>ou</span>
+                <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
+              </div>
+              <button
+                onClick={handleDemoLogin}
+                disabled={demoLoading}
+                className="w-full flex items-center justify-center gap-2 rounded-xl font-display font-bold transition-all"
+                style={{
+                  background: 'rgba(245,158,11,0.12)',
+                  border: '1px solid rgba(245,158,11,0.3)',
+                  color: '#F59E0B',
+                  padding: '13px 24px',
+                  fontSize: 14,
+                  opacity: demoLoading ? 0.6 : 1,
+                  cursor: demoLoading ? 'not-allowed' : 'pointer',
+                }}
+              >
+                {demoLoading ? 'Entrando...' : '✦ Entrar como Demo'}
+              </button>
+              <p className="text-center mt-3" style={{ color: 'rgba(255,255,255,0.2)', fontSize: 11 }}>
+                Dados simulados. Sem necessidade de conta Google.
+              </p>
+            </>
+          )}
+
+          {!isDemoMode && (
+            <p
+              className="text-center mt-6"
+              style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12, lineHeight: 1.6 }}
+            >
+              Ao entrar, você autoriza a Destaka a acessar e otimizar seu perfil no Google Meu Negócio.
+            </p>
+          )}
         </div>
 
         {/* Rodapé */}

@@ -106,10 +106,10 @@ function scorePhotos(p: GmbProfileData): CategoryScore {
   else issues.push({ field: 'logo', severity: 'warning', message: 'Sem foto de logotipo — passa menos credibilidade', impact: 5 })
 
   if (p.spacePhotosCount >= 3) score += 5
-  else issues.push({ field: 'space_photos', severity: 'warning', message: `Só ${p.spacePhotosCount} foto(s) do espaço — ideal: 3+`, impact: 5 })
+  else issues.push({ field: 'space_photos', severity: 'warning', message: `Só ${p.spacePhotosCount} ${p.spacePhotosCount === 1 ? 'foto' : 'fotos'} do espaço — ideal: 3+`, impact: 5 })
 
   if (p.totalPhotosCount >= 5) score += 5
-  else issues.push({ field: 'total_photos', severity: 'warning', message: `Apenas ${p.totalPhotosCount} foto(s) no total — ideal: 5+`, impact: 5 })
+  else issues.push({ field: 'total_photos', severity: 'warning', message: `Apenas ${p.totalPhotosCount} ${p.totalPhotosCount === 1 ? 'foto' : 'fotos'} no total — ideal: 5+`, impact: 5 })
 
   if (p.hasCoverPhoto) score += 5
   else issues.push({ field: 'cover', severity: 'info', message: 'Sem foto de capa personalizada', impact: 5 })
@@ -122,7 +122,7 @@ function scoreReviews(p: GmbProfileData): CategoryScore {
   let score = 0
 
   if (p.reviewsCount >= 10) score += 10
-  else issues.push({ field: 'reviews_count', severity: 'critical', message: `Apenas ${p.reviewsCount} avaliação(ões) — ideal: 10+`, impact: 10 })
+  else issues.push({ field: 'reviews_count', severity: 'critical', message: `Apenas ${p.reviewsCount} ${p.reviewsCount === 1 ? 'avaliação' : 'avaliações'} — ideal: 10+`, impact: 10 })
 
   if (p.reviewsAvgRating >= 4.0) score += 10
   else issues.push({ field: 'rating', severity: 'critical', message: `Nota média ${p.reviewsAvgRating.toFixed(1)} — meta: 4.0+`, impact: 10 })
@@ -155,7 +155,7 @@ function scoreServices(p: GmbProfileData): CategoryScore {
   let score = 0
 
   if (p.servicesCount >= 3) score += 5
-  else issues.push({ field: 'services_count', severity: 'warning', message: `Apenas ${p.servicesCount} serviço(s) listado(s) — ideal: 3+`, impact: 5 })
+  else issues.push({ field: 'services_count', severity: 'warning', message: `Apenas ${p.servicesCount} ${p.servicesCount === 1 ? 'serviço listado' : 'serviços listados'} — ideal: 3+`, impact: 5 })
 
   if (p.servicesWithDescCount >= p.servicesCount && p.servicesCount > 0) score += 5
   else issues.push({ field: 'services_desc', severity: 'info', message: 'Serviços sem descrição detalhada', impact: 5 })
@@ -168,7 +168,7 @@ function scoreAttributes(p: GmbProfileData): CategoryScore {
   let score = 0
 
   if (p.attributesCount >= 5) score += 5
-  else issues.push({ field: 'attributes', severity: 'info', message: `Apenas ${p.attributesCount} atributo(s) — ideal: 5+ (ex: Wi-Fi, estacionamento, acessível)`, impact: 5 })
+  else issues.push({ field: 'attributes', severity: 'info', message: `Apenas ${p.attributesCount} ${p.attributesCount === 1 ? 'atributo' : 'atributos'} — ideal: 5+ (ex: Wi-Fi, estacionamento, acessível)`, impact: 5 })
 
   return makeCategory('attributes', 'Atributos', score, 5, issues)
 }
