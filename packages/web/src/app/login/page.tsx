@@ -20,7 +20,7 @@ export default function LoginPage() {
     try {
       const res = await fetch('/api/auth/demo-login', { method: 'POST' })
       if (res.ok) {
-        window.location.href = '/onboarding'
+        window.location.href = '/dashboard'
       } else {
         const data = await res.json()
         alert('Erro no login demo: ' + (data.error ?? 'tente novamente'))
@@ -97,9 +97,9 @@ export default function LoginPage() {
           </h1>
           <p
             className="text-center mb-8"
-            style={{ color: 'rgba(255,255,255,0.5)', fontSize: 15 }}
+            style={{ color: 'rgba(255,255,255,0.5)', fontSize: 15, lineHeight: 1.6 }}
           >
-            Acesse com o Google para conectar seu perfil no Google Meu Negócio.
+            Conecte-se com o mesmo email que você usou para criar o seu Google Meu Negócio.
           </p>
 
           <button
@@ -151,7 +151,7 @@ export default function LoginPage() {
               className="text-center mt-6"
               style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12, lineHeight: 1.6 }}
             >
-              Ao entrar, você autoriza a Destaka a acessar e otimizar seu perfil no Google Meu Negócio.
+              Ao entrar, você autoriza a Destaka a acessar o seu perfil no Google Meu Negócio.
             </p>
           )}
         </div>

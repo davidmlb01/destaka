@@ -40,6 +40,9 @@ export function ScoreGauge({ score }: { score: number }) {
 
   return (
     <div className="flex flex-col items-center gap-2">
+      <p className="text-xs font-bold tracking-widest uppercase" style={{ color: 'rgba(255,255,255,0.35)' }}>
+        Seu Score
+      </p>
       <svg width="160" height="145" viewBox="0 0 160 145">
         {/* Track */}
         <path

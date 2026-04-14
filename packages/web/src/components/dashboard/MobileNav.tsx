@@ -91,8 +91,8 @@ export function MobileNav({ profileName, userEmail }: MobileNavProps) {
 
         {/* Perfil ativo */}
         <div
-          className="rounded-xl px-3 py-2.5 mb-6"
-          style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.07)' }}
+          className="rounded-xl px-3 py-3 mb-6"
+          style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.14)' }}
         >
           <p className="text-xs font-medium text-white truncate">{profileName}</p>
           <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>Perfil ativo</p>

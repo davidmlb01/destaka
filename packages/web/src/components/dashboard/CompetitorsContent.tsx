@@ -159,7 +159,7 @@ export function CompetitorsContent() {
         <div>
           <h2 style={{ color: '#fff', fontSize: 18, fontWeight: 700, margin: 0 }}>Concorrentes</h2>
           <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13, margin: '4px 0 0' }}>
-            Top 3 na sua especialidade e região
+            Esses são seus Top 3 concorrentes na sua especialidade e região
           </p>
         </div>
         <button
