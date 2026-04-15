@@ -10,8 +10,8 @@ function Nav() {
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-[22px]" style={{ color: '#F59E0B', filter: 'drop-shadow(0 0 6px rgba(245,158,11,0.4))' }}>✦</span>
-          <span className="font-display font-extrabold text-[20px] text-white tracking-tight">
+          <span className="text-[31px]" style={{ color: '#F59E0B', filter: 'drop-shadow(0 0 6px rgba(245,158,11,0.4))' }}>✦</span>
+          <span className="font-display font-extrabold text-[28px] text-white tracking-tight">
             Desta<span style={{ color: '#F59E0B' }}>ka</span>
           </span>
         </div>
@@ -19,13 +19,6 @@ function Nav() {
           <a href="#como-funciona" className="hover:text-white transition-colors">Como funciona</a>
           <a href="#recursos" className="hover:text-white transition-colors">Recursos</a>
         </div>
-        <Link
-          href="/login"
-          className="font-display font-bold text-[14px] px-5 py-2.5 rounded-xl transition-all"
-          style={{ background: '#D97706', color: '#1C1917' }}
-        >
-          Ver minha nota
-        </Link>
       </div>
     </nav>
   )
@@ -50,15 +43,15 @@ function Hero() {
           style={{ background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', color: '#FCD34D' }}
         >
           <span style={{ color: '#F59E0B' }}>✦</span>
-          Para dentistas e médicos que merecem aparecer primeiro
+          Para profissionais de saúde que merecem aparecer primeiro
         </div>
 
         <h1
           className="font-display font-extrabold text-white leading-[1.05] tracking-[-2.5px] mb-6"
           style={{ fontSize: 'clamp(40px, 6vw, 68px)' }}
         >
-          Sua clínica deveria<br />
-          aparecer primeiro.<br />
+          Você deveria<br />
+          aparecer primeiro no Google.<br />
           <em className="not-italic" style={{ color: '#F59E0B' }}>A gente faz isso acontecer.</em>
         </h1>
 
@@ -66,7 +59,7 @@ function Hero() {
           className="leading-relaxed mb-10 max-w-2xl mx-auto"
           style={{ color: 'rgba(255,255,255,0.6)', fontSize: 'clamp(16px, 2vw, 19px)' }}
         >
-          O Google decide quem seu paciente vai ligar.<br />
+          O Google decide quem o seu paciente vai ligar.<br />
           A Destaka decide o que o Google vai ver.
         </p>
 
@@ -78,7 +71,7 @@ function Hero() {
           <span>✦</span> Ver a nota do meu perfil
         </Link>
 
-        <p className="mt-5 text-[12px]" style={{ color: 'rgba(255,255,255,0.3)' }}>
+        <p className="mt-5 text-[12px]" style={{ color: '#ffffff' }}>
           Diagnóstico gratuito. Sem cadastro. Resultado em 30 segundos.
         </p>
       </div>
@@ -131,13 +124,13 @@ function Problema() {
               Perde porque eles não te encontram.
             </p>
             <p className="text-[16px] leading-relaxed" style={{ color: '#78716C' }}>
-              O dentista que aparece em primeiro não é necessariamente o melhor. É o mais visível. Quando alguém digita "dentista perto de mim", o Google decide quem aparece. E na maioria das vezes, não é quem merece mais.
+              O profissional que aparece em primeiro não é necessariamente o melhor. É o mais visível. Quando alguém digita "médico perto de mim", o Google decide quem aparece. E na maioria das vezes, não é quem merece mais.
             </p>
           </div>
           <div className="flex flex-col gap-4">
             {[
-              { icon: '🔍', title: 'O paciente pesquisa', desc: 'Todo dia, dezenas de pessoas na sua cidade buscam pelo profissional que você é. O Google escolhe quem mostrar.' },
-              { icon: '📉', title: 'Perfis incompletos são penalizados', desc: '51% dos perfis no Google estão incompletos. Cada campo vazio é uma penalidade silenciosa que você nunca vai ver.' },
+              { icon: '🔍', title: 'O paciente pesquisa', desc: 'Todo dia, dezenas de pessoas na sua cidade buscam pelo profissional que você é. O Google escolhe quem mostrar, não quem merece mais.' },
+              { icon: '📉', title: 'Perfis incompletos são penalizados', desc: '51% dos perfis de saúde no Google estão incompletos. Cada campo vazio é uma penalidade silenciosa que você nunca vai ver.' },
               { icon: '🏥', title: 'O concorrente aparece', desc: 'Não porque atende melhor. Porque o perfil está otimizado. Fotos atualizadas, posts recentes, avaliações respondidas.' },
             ].map((item) => (
               <div
@@ -258,7 +251,7 @@ function Recursos() {
             <span style={{ color: '#14532D' }}>Sem reunião. Sem espera. Sem mensalidade de agência.</span>
           </h2>
           <p className="text-[17px] max-w-2xl mx-auto" style={{ color: '#78716C' }}>
-            A Destaka cuida do Google enquanto você cuida dos pacientes. Cada um no que sabe fazer melhor.
+            A Destaka cuida da sua visibilidade enquanto você cuida dos pacientes. Cada um no que sabe fazer melhor.
           </p>
         </div>
 
@@ -305,13 +298,13 @@ function Manifesto() {
           style={{ fontSize: 'clamp(24px, 4vw, 38px)' }}
         >
           Você passou anos se formando.<br />
-          Fez especialização. Aprendeu a cuidar<br />
-          de pessoas melhor do que qualquer um na sua rua.
+          Fez residência. Aprendeu a cuidar<br />
+          de pessoas melhor do que qualquer um na sua cidade.
         </h2>
 
         <div className="text-left max-w-xl mx-auto space-y-5 mb-12">
           {[
-            'E hoje, quando alguém digita "dentista perto de mim", aparece o consultório do lado. O que faz menos. O que cobra mais caro. O que tem metade da sua experiência.',
+            'E hoje, quando alguém digita "médico perto de mim", aparece o consultório do lado. O que faz menos. O que cobra mais caro. O que tem metade da sua experiência.',
             'Não é injusto. É técnico. O Google não conhece você. Ainda.',
             'A Destaka existe para isso. Para traduzir a sua competência em linguagem que o algoritmo entende. Para fazer o invisível aparecer.',
             'Para garantir que, quando o paciente certo estiver buscando, ele vai te encontrar primeiro.',
@@ -330,7 +323,7 @@ function Manifesto() {
           className="font-display font-bold text-[18px] mb-10"
           style={{ color: '#FCD34D' }}
         >
-          Quem cuida de pessoas não deveria perder<br />por causa de burocracia digital.
+          Quem salva vidas não deveria perder pacientes<br />por causa de burocracia digital.
         </p>
 
         <Link
@@ -362,7 +355,7 @@ function Footer() {
           </span>
         </div>
         <p className="text-[13px]" style={{ color: 'rgba(255,255,255,0.25)' }}>
-          Google Business Profile no piloto automático. Para dentistas e médicos que merecem aparecer primeiro.
+          Google Business Profile no piloto automático. Para profissionais de saúde que merecem aparecer primeiro.
         </p>
         <div className="flex items-center gap-5">
           <Link href="/privacidade" className="text-[12px] hover:text-white transition-colors" style={{ color: 'rgba(255,255,255,0.25)' }}>
