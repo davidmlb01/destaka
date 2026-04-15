@@ -18,14 +18,13 @@ function Nav() {
         <div className="hidden md:flex items-center gap-8 text-[14px] font-medium" style={{ color: 'rgba(255,255,255,0.6)' }}>
           <a href="#como-funciona" className="hover:text-white transition-colors">Como funciona</a>
           <a href="#recursos" className="hover:text-white transition-colors">Recursos</a>
-          <a href="#planos" className="hover:text-white transition-colors">Planos</a>
         </div>
         <Link
           href="/login"
           className="font-display font-bold text-[14px] px-5 py-2.5 rounded-xl transition-all"
           style={{ background: '#D97706', color: '#1C1917' }}
         >
-          Começar agora
+          Ver minha nota
         </Link>
       </div>
     </nav>
@@ -40,7 +39,6 @@ function Hero() {
       className="relative min-h-screen flex items-center justify-center px-6 pt-24 pb-20 overflow-hidden"
       style={{ background: 'linear-gradient(160deg, #14532D 0%, #0A2E18 100%)' }}
     >
-      {/* Orbs */}
       <div className="absolute rounded-full pointer-events-none blur-[140px]" style={{ width: 600, height: 600, background: 'rgba(217,119,6,0.16)', top: -200, right: -200 }} />
       <div className="absolute rounded-full pointer-events-none blur-[100px]" style={{ width: 350, height: 350, background: 'rgba(22,163,74,0.10)', bottom: -80, left: -100 }} />
       <div className="absolute rounded-full pointer-events-none" style={{ width: 520, height: 520, border: '1px solid rgba(217,119,6,0.12)', top: -160, right: -160 }} />
@@ -65,29 +63,20 @@ function Hero() {
         </h1>
 
         <p
-          className="text-[18px] leading-relaxed mb-10 max-w-2xl mx-auto"
+          className="leading-relaxed mb-10 max-w-2xl mx-auto"
           style={{ color: 'rgba(255,255,255,0.6)', fontSize: 'clamp(16px, 2vw, 19px)' }}
         >
           O Google decide quem seu paciente vai ligar.<br />
           A Destaka decide o que o Google vai ver.
         </p>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link
-            href="/login"
-            className="font-display font-extrabold text-[16px] px-8 py-4 rounded-xl flex items-center gap-2 transition-all"
-            style={{ background: '#D97706', color: '#1C1917', boxShadow: '0 6px 32px rgba(217,119,6,0.45)' }}
-          >
-            <span>✦</span> Ver a nota do meu perfil
-          </Link>
-          <a
-            href="#planos"
-            className="font-body font-medium text-[15px] px-6 py-4 rounded-xl transition-all"
-            style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.75)', border: '1px solid rgba(255,255,255,0.12)' }}
-          >
-            Ver planos e preços
-          </a>
-        </div>
+        <Link
+          href="/login"
+          className="font-display font-extrabold text-[16px] px-8 py-4 rounded-xl inline-flex items-center gap-2 transition-all"
+          style={{ background: '#D97706', color: '#1C1917', boxShadow: '0 6px 32px rgba(217,119,6,0.45)' }}
+        >
+          <span>✦</span> Ver a nota do meu perfil
+        </Link>
 
         <p className="mt-5 text-[12px]" style={{ color: 'rgba(255,255,255,0.3)' }}>
           Diagnóstico gratuito. Sem cadastro. Resultado em 30 segundos.
@@ -176,7 +165,7 @@ function ComoFunciona() {
   const steps = [
     {
       num: '01',
-      title: 'Diagnóstico gratuito',
+      title: 'Ver a nota do meu perfil',
       desc: 'Em 30 segundos, a Destaka analisa seu perfil no Google e gera uma nota de 0 a 100. Você vê exatamente onde está perdendo visibilidade.',
       cta: 'Ver minha nota agora',
       href: '/login',
@@ -198,10 +187,10 @@ function ComoFunciona() {
   ]
 
   return (
-    <section id="como-funciona" className="px-6 py-24" style={{ background: '#1C1917' }}>
+    <section id="como-funciona" className="px-6 py-24" style={{ background: 'linear-gradient(160deg, #0A2E18 0%, #14532D 100%)' }}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
-          <p className="text-[11px] font-bold tracking-[2px] uppercase mb-4" style={{ color: '#D97706' }}>Como funciona</p>
+          <p className="text-[11px] font-bold tracking-[2px] uppercase mb-4" style={{ color: '#F59E0B' }}>Como funciona</p>
           <h2
             className="font-display font-extrabold text-white leading-[1.1] tracking-[-1.5px]"
             style={{ fontSize: 'clamp(28px, 4vw, 44px)' }}
@@ -211,7 +200,7 @@ function ComoFunciona() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
-          {steps.map((step, i) => (
+          {steps.map((step) => (
             <div
               key={step.num}
               className="relative p-7 rounded-2xl flex flex-col gap-4"
@@ -225,7 +214,7 @@ function ComoFunciona() {
               </div>
               <div>
                 <h3 className="font-display font-bold text-[20px] text-white mb-2">{step.title}</h3>
-                <p className="text-[15px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>{step.desc}</p>
+                <p className="text-[15px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.55)' }}>{step.desc}</p>
               </div>
               {step.cta && step.href && (
                 <Link
@@ -288,128 +277,6 @@ function Recursos() {
             </div>
           ))}
         </div>
-      </div>
-    </section>
-  )
-}
-
-// ─── PRICING ────────────────────────────────────────────────────────────────
-
-function Pricing() {
-  const plans = [
-    {
-      name: 'Pro',
-      price: 'R$197',
-      period: '/mês',
-      desc: 'Para quem quer crescimento consistente e automatizado.',
-      features: [
-        '1 perfil Google Meu Negócio',
-        'Diagnóstico semanal',
-        'Posts automáticos semanais',
-        'Respostas automáticas a avaliações',
-        'Relatório PDF mensal',
-        'Setup feito pela Destaka nos primeiros 7 dias',
-      ],
-      cta: 'Começar agora',
-      highlight: true,
-    },
-  ]
-
-  return (
-    <section id="planos" className="px-6 py-24" style={{ background: '#FAFAF9' }}>
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <p className="text-[11px] font-bold tracking-[2px] uppercase mb-4" style={{ color: '#D97706' }}>Planos</p>
-          <h2
-            className="font-display font-extrabold leading-[1.1] tracking-[-1.5px] mb-4"
-            style={{ fontSize: 'clamp(28px, 4vw, 44px)', color: '#1C1917' }}
-          >
-            R$197/mês por 3 novos pacientes.<br />
-            <span style={{ color: '#14532D' }}>As contas fecham sozinhas.</span>
-          </h2>
-          <p className="text-[16px]" style={{ color: '#78716C' }}>
-            Um horário vago na sua agenda tem um custo. A Destaka existe para esse horário nunca ficar vago por falta de visibilidade.
-          </p>
-        </div>
-
-        <div className="flex justify-center">
-          {plans.map((plan) => (
-            <div
-              key={plan.name}
-              className="w-full max-w-sm rounded-2xl p-7 flex flex-col gap-5 relative"
-              style={plan.highlight ? {
-                background: '#14532D',
-                boxShadow: '0 24px 64px rgba(20,83,45,0.3)',
-                border: '1px solid rgba(217,119,6,0.4)',
-              } : {
-                background: '#fff',
-                border: '1px solid #E7E5E4',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
-              }}
-            >
-              {plan.highlight && (
-                <div
-                  className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-[11px] font-bold tracking-widest uppercase"
-                  style={{ background: '#D97706', color: '#1C1917' }}
-                >
-                  Mais popular
-                </div>
-              )}
-
-              <div>
-                <h3
-                  className="font-display font-bold text-[16px] mb-1"
-                  style={{ color: plan.highlight ? 'rgba(255,255,255,0.6)' : '#57534E' }}
-                >
-                  {plan.name}
-                </h3>
-                <div className="flex items-end gap-1">
-                  <span
-                    className="font-display font-extrabold tracking-[-2px]"
-                    style={{ fontSize: 48, lineHeight: 1, color: plan.highlight ? '#FCD34D' : '#14532D' }}
-                  >
-                    {plan.price}
-                  </span>
-                  <span className="pb-1 text-[14px]" style={{ color: plan.highlight ? 'rgba(255,255,255,0.4)' : '#9CA3AF' }}>
-                    {plan.period}
-                  </span>
-                </div>
-                <p className="text-[14px] mt-2" style={{ color: plan.highlight ? 'rgba(255,255,255,0.5)' : '#78716C' }}>
-                  {plan.desc}
-                </p>
-              </div>
-
-              <ul className="flex flex-col gap-2.5">
-                {plan.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2.5 text-[14px]">
-                    <span className="mt-0.5 flex-shrink-0" style={{ color: plan.highlight ? '#FCD34D' : '#16A34A' }}>✓</span>
-                    <span style={{ color: plan.highlight ? 'rgba(255,255,255,0.8)' : '#57534E' }}>{f}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <Link
-                href="/login"
-                className="mt-auto w-full text-center font-display font-bold text-[15px] py-3.5 rounded-xl transition-all"
-                style={plan.highlight ? {
-                  background: '#D97706',
-                  color: '#1C1917',
-                  boxShadow: '0 4px 20px rgba(217,119,6,0.4)',
-                } : {
-                  background: '#F0FDF4',
-                  color: '#14532D',
-                  border: '1px solid #BBF7D0',
-                }}
-              >
-                {plan.cta}
-              </Link>
-            </div>
-          ))}
-        </div>
-
-        <p className="text-center text-[13px] mt-8" style={{ color: '#9CA3AF' }}>
-          Garantia de 30 dias. Se o score não subir, devolvemos tudo.
-        </p>
       </div>
     </section>
   )
@@ -486,7 +353,7 @@ function Manifesto() {
 
 function Footer() {
   return (
-    <footer className="px-6 py-10" style={{ background: '#1C1917', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+    <footer className="px-6 py-10" style={{ background: '#0A2E18', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <span className="text-[18px]" style={{ color: '#F59E0B' }}>✦</span>
@@ -524,7 +391,6 @@ export default function Home() {
       <Problema />
       <ComoFunciona />
       <Recursos />
-      <Pricing />
       <Manifesto />
       <Footer />
     </>
