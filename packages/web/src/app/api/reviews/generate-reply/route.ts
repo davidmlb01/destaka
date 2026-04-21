@@ -29,13 +29,19 @@ export async function POST(req: NextRequest) {
   }
 
   const segment = detectSegment(profileData.category ?? '')
-  const reply = await generateReviewReply(
-    { author: review.author, rating: review.rating, text: review.text },
-    segment,
-    profileData.name
-  )
 
-  return NextResponse.json({ reply })
+  try {
+    const reply = await generateReviewReply(
+      { author: review.author, rating: review.rating, text: review.text },
+      segment,
+      profileData.name
+    )
+    return NextResponse.json({ reply })
+  } catch (err) {
+    console.error('[generate-reply] Claude API error:', err)
+    const message = err instanceof Error ? err.message : 'Erro desconhecido'
+    return NextResponse.json({ error: `Falha ao gerar resposta: ${message}` }, { status: 502 })
+  }
 }
 
 function detectSegment(category: string): string {
