@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { trackEvent, upsertSession } from '@/lib/analytics'
 import { getGmbMetrics, type GmbMetrics } from '@/lib/gmb/client'
-import { decrypt } from '@/lib/crypto'
+import { getValidGmbToken } from '@/lib/gmb/auth'
 
 export const dynamic = 'force-dynamic'
 
@@ -66,15 +66,7 @@ export async function GET() {
     metrics = { viewsSearch: 847, viewsMaps: 312, clicksWebsite: 43, clicksCall: 28, clicksDirections: 19, period: 'Últimos 30 dias' }
   } else {
     try {
-      const { data: userData } = await serviceClient
-        .from('users')
-        .select('google_access_token_enc')
-        .eq('id', user.id)
-        .single()
-
-      const accessToken = userData?.google_access_token_enc
-        ? decrypt(userData.google_access_token_enc)
-        : null
+      const accessToken = await getValidGmbToken(user.id).catch(() => null)
 
       metrics = accessToken && profile.google_location_id
         ? await getGmbMetrics(accessToken, `locations/${profile.google_location_id}`)

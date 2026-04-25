@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
-import { decrypt } from '@/lib/crypto'
 import { runDiagnosis } from '@/lib/gmb/diagnosis'
 import { sendDiagnosticReadyEmail } from '@/lib/email/diagnostic-ready'
+import { getValidGmbToken } from '@/lib/gmb/auth'
 
 // POST /api/diagnostic/run
 // Roda o diagnóstico completo de um perfil GMB e salva no banco.
@@ -34,20 +34,18 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Perfil não encontrado' }, { status: 404 })
   }
 
-  // Busca token de acesso do usuário
+  // Busca dados do usuário para email
   const { data: userData } = await serviceClient
     .from('users')
-    .select('google_access_token_enc, email, name')
+    .select('email, name')
     .eq('id', user.id)
     .single()
 
   let accessToken: string | null = null
-  if (userData?.google_access_token_enc) {
-    try {
-      accessToken = decrypt(userData.google_access_token_enc)
-    } catch {
-      // token inválido, roda com mock
-    }
+  try {
+    accessToken = await getValidGmbToken(user.id)
+  } catch {
+    // token expirado sem refresh disponível — roda diagnóstico com dados do banco
   }
 
   // Roda o diagnóstico

@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { createServiceClient } from '@/lib/supabase/server'
-import { decrypt } from '@/lib/crypto'
 import { listGmbLocations } from '@/lib/gmb/client'
+import { getValidGmbToken } from '@/lib/gmb/auth'
 
 // GET /api/gmb/locations
 // Retorna todos os perfis GMB do usuário autenticado.
@@ -38,25 +37,15 @@ export async function GET() {
     })
   }
 
-  const serviceClient = await createServiceClient()
-  const { data: userData, error: userError } = await serviceClient
-    .from('users')
-    .select('google_access_token_enc')
-    .eq('id', user.id)
-    .single()
-
-  if (userError || !userData?.google_access_token_enc) {
-    return NextResponse.json(
-      { error: 'Token Google não encontrado. Refaça a conexão.' },
-      { status: 400 }
-    )
-  }
-
   let accessToken: string
   try {
-    accessToken = decrypt(userData.google_access_token_enc)
-  } catch {
-    return NextResponse.json({ error: 'Erro ao descriptografar token.' }, { status: 500 })
+    accessToken = await getValidGmbToken(user.id)
+  } catch (err) {
+    console.error('[gmb/locations] token error:', err)
+    return NextResponse.json(
+      { error: 'Sessão Google expirada. Faça login novamente.' },
+      { status: 401 }
+    )
   }
 
   try {

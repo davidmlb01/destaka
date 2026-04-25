@@ -41,6 +41,7 @@ export async function POST(request: Request) {
     customer: dbUser?.stripe_customer_id || undefined,
     customer_email: !dbUser?.stripe_customer_id ? user.email! : undefined,
     line_items: [{ price: planConfig.priceId, quantity: 1 }],
+    allow_promotion_codes: true,
     success_url: `${appUrl}/dashboard?checkout=success`,
     cancel_url: `${appUrl}/dashboard?checkout=cancelled`,
     metadata: { user_id: user.id, plan },
