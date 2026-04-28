@@ -50,11 +50,11 @@ export async function GET() {
 
   try {
     const locations = await listGmbLocations(accessToken)
-    return NextResponse.json({ locations })
+    return NextResponse.json({ locations, noProfiles: locations.length === 0 })
   } catch (err) {
     console.error('[gmb/locations] GMB API error:', err)
     return NextResponse.json(
-      { error: 'Erro ao buscar perfis no Google. Verifique se sua conta tem um Google Meu Negócio.' },
+      { error: 'Erro ao comunicar com a API do Google. Tente novamente em instantes.', type: 'api_error' },
       { status: 502 }
     )
   }

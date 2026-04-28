@@ -73,20 +73,26 @@ export async function listGmbLocations(accessToken: string): Promise<GmbLocation
   const allLocations: GmbLocation[] = []
 
   for (const account of accounts) {
-    const locData = await fetchJson<{ locations?: RawLocation[] }>(
-      `${BUSINESS_INFO_URL}/${account.name}/locations?readMask=${READ_MASK}`,
-      accessToken
-    )
+    try {
+      const locData = await fetchJson<{ locations?: RawLocation[] }>(
+        `${BUSINESS_INFO_URL}/${account.name}/locations?readMask=${READ_MASK}`,
+        accessToken
+      )
 
-    for (const loc of locData.locations ?? []) {
-      allLocations.push({
-        name: loc.name,
-        title: loc.title,
-        address: formatAddress(loc),
-        phone: loc.phoneNumbers?.primaryPhone ?? null,
-        website: loc.websiteUri ?? null,
-        category: loc.categories?.primaryCategory?.displayName ?? null,
-      })
+      for (const loc of locData.locations ?? []) {
+        allLocations.push({
+          name: loc.name,
+          title: loc.title,
+          address: formatAddress(loc),
+          phone: loc.phoneNumbers?.primaryPhone ?? null,
+          website: loc.websiteUri ?? null,
+          category: loc.categories?.primaryCategory?.displayName ?? null,
+        })
+      }
+    } catch (err) {
+      // Uma conta com erro (ex: tipo PERSONAL retornando 404) não deve
+      // bloquear as demais. Loga e continua.
+      console.warn(`[gmb/client] Erro ao buscar locations de ${account.name}:`, err)
     }
   }
 

@@ -19,10 +19,10 @@ export default function OnboardingPage() {
       .then(data => {
         if (data.error) {
           setErrorMsg(data.error)
-          setStep(data.error.includes('Meu Negócio') ? 'no_profiles' : 'error')
+          setStep('error')
           return
         }
-        if (!data.locations || data.locations.length === 0) {
+        if (data.noProfiles || !data.locations || data.locations.length === 0) {
           setStep('no_profiles')
           return
         }
