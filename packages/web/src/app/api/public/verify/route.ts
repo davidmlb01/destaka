@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
   }
 
   const input = body.input.trim()
-  const query = extractQueryFromUrl(input)
+  const query = await extractQueryFromUrl(input)
 
   let placeDetails = null
   const usingMock = !isPlacesAvailable()

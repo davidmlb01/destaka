@@ -49,35 +49,6 @@ export function scoreFromPlaceDetails(place: PlaceDetails) {
 
 // Mock para quando a Places API não está configurada
 export function getMockPlaceDetails(query: string): PlaceDetails {
-  const isAndreAlvim = query.toLowerCase().includes('andre') || query.toLowerCase().includes('alvim') || query.includes('goo.gl') || query.includes('maps.app')
-
-  if (isAndreAlvim) {
-    return {
-      place_id: 'mock-andre-alvim',
-      name: 'Clínica Odontológica Andre Alvim',
-      formatted_address: 'R. Bambina, 74 - Botafogo, Rio de Janeiro - RJ, 22251-050',
-      formatted_phone_number: '(21) 2537-1890',
-      website: null,
-      rating: 4.6,
-      user_ratings_total: 38,
-      opening_hours: {
-        weekday_text: [
-          'Segunda-feira: 08:00–18:00',
-          'Terça-feira: 08:00–18:00',
-          'Quarta-feira: 08:00–18:00',
-          'Quinta-feira: 08:00–18:00',
-          'Sexta-feira: 08:00–17:00',
-          'Sábado: Fechado',
-          'Domingo: Fechado',
-        ],
-      },
-      photos: Array(4).fill({ photo_reference: 'mock' }),
-      types: ['dentist', 'health', 'point_of_interest', 'establishment'],
-      business_status: 'OPERATIONAL',
-    }
-  }
-
-  // Genérico
   return {
     place_id: 'mock-generic',
     name: query,

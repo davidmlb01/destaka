@@ -35,18 +35,45 @@ export function isPlacesAvailable(): boolean {
   return !!API_KEY
 }
 
+// Detecta se é uma URL curta do Google Maps (maps.app.goo.gl, goo.gl/maps)
+function isShortUrl(input: string): boolean {
+  return input.includes('maps.app.goo.gl') || input.includes('goo.gl/maps')
+}
+
+// Resolve URL curta seguindo o redirect e retorna a URL final
+async function resolveShortUrl(input: string): Promise<string> {
+  try {
+    const res = await fetch(input, { method: 'GET', redirect: 'follow' })
+    return res.url || input
+  } catch {
+    return input
+  }
+}
+
 // Extrai nome legível de uma URL do Google Maps
-export function extractQueryFromUrl(input: string): string {
+export async function extractQueryFromUrl(input: string): Promise<string> {
+  let url = input.trim()
+
+  if (isShortUrl(url)) {
+    url = await resolveShortUrl(url)
+  }
+
   try {
     // Formato: /maps/place/Nome+do+Local/@...
-    const placeMatch = input.match(/\/maps\/place\/([^/@]+)/)
+    const placeMatch = url.match(/\/maps\/place\/([^/@?]+)/)
     if (placeMatch) {
       return decodeURIComponent(placeMatch[1].replace(/\+/g, ' '))
+    }
+    // Formato: ?q=Nome+do+Local
+    const qMatch = url.match(/[?&]q=([^&]+)/)
+    if (qMatch) {
+      return decodeURIComponent(qMatch[1].replace(/\+/g, ' '))
     }
   } catch {
     // ignora erros de parsing
   }
-  // Se não é URL, usa o input direto como query de busca
+
+  // Se não é URL reconhecível, usa o input direto como query de busca
   return input
 }
 
