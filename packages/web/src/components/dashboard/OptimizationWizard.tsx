@@ -119,7 +119,7 @@ export function OptimizationWizard({ profileId, diagnosticId, onComplete }: {
     >
       <div
         className="w-full max-w-md rounded-2xl p-6"
-        style={{ background: '#0D2B1A', border: '1px solid rgba(255,255,255,0.1)' }}
+        style={{ background: 'var(--modal-bg)', border: '1px solid var(--border-card)' }}
       >
 
         {/* Cabeçalho */}

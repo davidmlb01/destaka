@@ -31,6 +31,9 @@ export default async function DashboardPage() {
           <h1 className="font-display font-extrabold text-white" style={{ fontSize: 28, letterSpacing: '-0.5px' }}>
             {profile.name}
           </h1>
+          <p className="mt-2" style={{ color: 'rgba(255,255,255,0.55)', fontSize: 15, lineHeight: 1.6 }}>
+            Seu Google Meu Negócio no piloto automático. Veja seu score e as próximas ações para subir no ranking.
+          </p>
         </div>
         {dbUser?.plan === 'free' && <UpgradeBanner />}
         <DashboardContent />

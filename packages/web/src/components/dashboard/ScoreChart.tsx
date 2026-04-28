@@ -22,7 +22,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   return (
     <div
       className="rounded-xl px-3 py-2 text-sm"
-      style={{ background: '#1C2E1C', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }}
+      style={{ background: 'var(--modal-bg)', border: '1px solid var(--border-card)', color: '#fff' }}
     >
       <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11 }}>{label}</p>
       <p className="font-display font-bold" style={{ color: '#4ADE80' }}>{payload[0].value} pts</p>

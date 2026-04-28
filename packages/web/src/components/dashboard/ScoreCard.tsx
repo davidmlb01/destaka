@@ -50,8 +50,12 @@ export function ScoreCard({ category }: { category: CategoryScore }) {
           style={{ background: 'rgba(255,255,255,0.08)' }}
         >
           <div
-            className="h-1.5 rounded-full transition-all"
-            style={{ width: `${category.percentage}%`, background: color }}
+            className="h-1.5 rounded-full transition-all duration-500"
+            style={{
+              width: `${category.percentage}%`,
+              background: color,
+              boxShadow: category.percentage > 0 ? `0 0 6px ${color}88` : 'none',
+            }}
           />
         </div>
 

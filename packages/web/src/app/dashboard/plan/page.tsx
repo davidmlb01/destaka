@@ -136,7 +136,7 @@ export default async function PlanPage() {
                           height: 18,
                           background: 'rgba(52,211,153,0.12)',
                           border: '1px solid rgba(52,211,153,0.25)',
-                          color: '#34D399',
+                          color: 'var(--success)',
                           fontSize: 10,
                           marginTop: 1,
                           fontWeight: 700,
@@ -270,7 +270,7 @@ export default async function PlanPage() {
                   </p>
                   <p
                     className="font-display font-extrabold"
-                    style={{ color: '#34D399', fontSize: 29, letterSpacing: '-0.5px', lineHeight: 1.2 }}
+                    style={{ color: 'var(--success)', fontSize: 29, letterSpacing: '-0.5px', lineHeight: 1.2 }}
                   >
                     R$197/mês
                   </p>
@@ -281,7 +281,7 @@ export default async function PlanPage() {
               <div className="mt-4">
                 <div className="flex items-center justify-between mb-1.5">
                   <span style={{ color: 'rgba(255,255,255,0.55)', fontSize: 17 }}>Economia mensal</span>
-                  <span className="font-bold" style={{ color: '#34D399', fontSize: 17 }}>82% de desconto</span>
+                  <span className="font-bold" style={{ color: 'var(--success)', fontSize: 17 }}>82% de desconto</span>
                 </div>
                 <div
                   className="rounded-full overflow-hidden"
@@ -291,7 +291,7 @@ export default async function PlanPage() {
                     className="h-full rounded-full"
                     style={{
                       width: '82%',
-                      background: 'linear-gradient(90deg, #34D399 0%, #6EE7B7 100%)',
+                      background: 'linear-gradient(90deg, var(--success) 0%, #86EFAC 100%)',
                       boxShadow: '0 0 8px rgba(52,211,153,0.5)',
                     }}
                   />

@@ -28,6 +28,9 @@ export default async function ReviewsPage() {
           <h1 className="font-display font-extrabold text-white" style={{ fontSize: 28, letterSpacing: '-0.5px' }}>
             Gestão de Avaliações
           </h1>
+          <p className="mt-2" style={{ color: 'rgba(255,255,255,0.55)', fontSize: 15, lineHeight: 1.6 }}>
+            Responder avaliações rápido melhora seu ranking no Google. O Destaka gera respostas com IA, você revisa e publica.
+          </p>
         </div>
         <ReviewsContent />
       </div>

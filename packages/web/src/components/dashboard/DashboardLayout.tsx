@@ -60,11 +60,14 @@ export function DashboardLayout({ children, activeHref, profileName, userEmail }
               <Link
                 key={item.href}
                 href={item.href}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150"
+                className="group flex items-center gap-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150"
                 style={{
+                  paddingLeft: isActive ? '10px' : '12px',
+                  paddingRight: '12px',
                   background: isActive ? 'var(--accent-bg)' : 'transparent',
                   color: isActive ? 'var(--accent-bright)' : 'var(--text-tertiary)',
-                  border: isActive ? '1px solid var(--border-accent-soft)' : '1px solid transparent',
+                  borderLeft: isActive ? '2px solid var(--accent)' : '2px solid transparent',
+                  borderRadius: isActive ? '0 12px 12px 0' : '12px',
                   textDecoration: 'none',
                 }}
                 onMouseEnter={e => {

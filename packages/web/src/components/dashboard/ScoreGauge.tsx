@@ -1,13 +1,12 @@
 'use client'
 
 function scoreTheme(score: number) {
-  if (score >= 70) return { color: '#4ADE80', label: 'Seu perfil está ótimo!' }
-  if (score >= 40) return { color: '#FBBF24', label: 'Tem espaço para melhorar' }
-  return { color: '#FB923C', label: 'Precisa de atenção' }
+  if (score >= 70) return { color: '#4ADE80', label: 'Seu perfil está ótimo!', glow: 'rgba(74,222,128,0.6)' }
+  if (score >= 40) return { color: '#FBBF24', label: 'Tem espaço para melhorar', glow: 'rgba(251,191,36,0.6)' }
+  return { color: '#FB923C', label: 'Precisa de atenção', glow: 'rgba(251,146,60,0.55)' }
 }
 
 // Gauge estilo speedometer: arco de 270° de 225° a 135° (sentido horário)
-// Nunca passa pelo ponto inferior (180°), então não corta no SVG
 const R = 60
 const CX = 80
 const CY = 82
@@ -35,50 +34,71 @@ function arcPath(fromDeg: number, sweep: number) {
 }
 
 export function ScoreGauge({ score }: { score: number }) {
-  const { color, label } = scoreTheme(score)
+  const { color, label, glow } = scoreTheme(score)
   const fillSweep = (score / 100) * TOTAL_DEG
+  const glowId = `gauge-glow-${score}`
 
   return (
-    <div className="flex flex-col items-center gap-2">
-      <p className="text-xs font-bold tracking-widest uppercase" style={{ color: 'rgba(255,255,255,0.35)' }}>
-        Seu Score
+    <div className="flex flex-col items-center gap-2 w-full">
+      <p
+        className="text-xs font-bold tracking-[0.15em] uppercase"
+        style={{ color: 'rgba(255,255,255,0.35)' }}
+      >
+        Score Destaka
       </p>
-      <svg width="160" height="145" viewBox="0 0 160 145">
+
+      <svg width="160" height="145" viewBox="0 0 160 145" style={{ overflow: 'visible' }}>
+        <defs>
+          <filter id={glowId} x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
         {/* Track */}
         <path
           d={arcPath(START_DEG, TOTAL_DEG)}
           fill="none"
-          stroke="rgba(255,255,255,0.1)"
-          strokeWidth="13"
+          stroke="rgba(255,255,255,0.08)"
+          strokeWidth="12"
           strokeLinecap="round"
         />
-        {/* Fill */}
+
+        {/* Fill com glow */}
         {fillSweep > 0 && (
           <path
             d={arcPath(START_DEG, fillSweep)}
             fill="none"
             stroke={color}
-            strokeWidth="13"
+            strokeWidth="12"
             strokeLinecap="round"
+            filter={`url(#${glowId})`}
+            style={{ filter: `drop-shadow(0 0 8px ${glow})` }}
           />
         )}
-        {/* Score */}
+
+        {/* Score número */}
         <text
           x={CX}
           y={CY + 8}
           textAnchor="middle"
           fill="white"
-          fontSize="32"
+          fontSize="34"
           fontWeight="800"
           fontFamily="var(--font-display, sans-serif)"
         >
           {score}
         </text>
+
+        {/* "de 100" */}
         <text
           x={CX}
-          y={CY + 26}
+          y={CY + 27}
           textAnchor="middle"
-          fill="rgba(255,255,255,0.35)"
+          fill="rgba(255,255,255,0.3)"
           fontSize="11"
           fontFamily="var(--font-body, sans-serif)"
         >
@@ -86,7 +106,10 @@ export function ScoreGauge({ score }: { score: number }) {
         </text>
       </svg>
 
-      <p className="font-display font-bold text-sm text-center -mt-2" style={{ color }}>
+      <p
+        className="font-display font-bold text-sm text-center -mt-2"
+        style={{ color, textShadow: `0 0 20px ${glow}` }}
+      >
         {label}
       </p>
     </div>

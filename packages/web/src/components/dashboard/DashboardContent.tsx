@@ -12,6 +12,20 @@ import { OptimizationWizard } from './OptimizationWizard'
 import { DashboardSkeleton } from './Skeletons'
 import type { CategoryScore } from '@/lib/gmb/scorer'
 
+function SectionTitle({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex items-center gap-3 mb-4">
+      <p
+        className="text-xs font-bold tracking-[0.12em] uppercase shrink-0"
+        style={{ color: 'rgba(255,255,255,0.38)' }}
+      >
+        {children}
+      </p>
+      <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
+    </div>
+  )
+}
+
 const FIELD_MAP: Record<string, string[]> = {
   info: ['name', 'phone', 'address', 'hours', 'website', 'category'],
   photos: ['logo', 'space_photos', 'total_photos', 'cover'],
@@ -143,9 +157,7 @@ export function DashboardContent() {
 
       {/* Linha 2: Cards de categoria */}
       <div>
-        <p className="font-display font-bold text-white text-sm mb-3" style={{ opacity: 0.7 }}>
-          Score por categoria
-        </p>
+        <SectionTitle>Score por categoria</SectionTitle>
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
           {categories.map(cat => <ScoreCard key={cat.name} category={cat} />)}
         </div>
@@ -156,9 +168,7 @@ export function DashboardContent() {
 
         {/* Próximas ações */}
         <div>
-          <p className="font-display font-bold text-white text-sm mb-3" style={{ opacity: 0.7 }}>
-            Próximas ações
-          </p>
+          <SectionTitle>Próximas ações</SectionTitle>
           <NextActionsPanel actions={nextActions} />
         </div>
 
@@ -167,18 +177,14 @@ export function DashboardContent() {
           className="rounded-2xl p-5"
           style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.08)' }}
         >
-          <p className="font-display font-bold text-white text-sm mb-4" style={{ opacity: 0.7 }}>
-            Evolução do score
-          </p>
+          <SectionTitle>Evolução do score</SectionTitle>
           <ScoreChart data={scoreHistory} />
         </div>
       </div>
 
       {/* Linha 4: Histórico de otimizações */}
       <div>
-        <p className="font-display font-bold text-white text-sm mb-3" style={{ opacity: 0.7 }}>
-          Histórico de otimizações
-        </p>
+        <SectionTitle>Histórico de otimizações</SectionTitle>
         <OptimizationHistory actions={data.recentActions} />
       </div>
 
