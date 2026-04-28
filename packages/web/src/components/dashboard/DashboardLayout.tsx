@@ -1,7 +1,8 @@
 import { ReactNode } from 'react'
+import Link from 'next/link'
 import { MobileNav } from './MobileNav'
 
-const NAV_ITEMS = [
+export const NAV_ITEMS = [
   { label: 'Dashboard', icon: '📊', href: '/dashboard' },
   { label: 'Avaliações', icon: '⭐', href: '/dashboard/reviews' },
   { label: 'Posts', icon: '📝', href: '/dashboard/posts' },
@@ -33,21 +34,21 @@ export function DashboardLayout({ children, activeHref, profileName, userEmail }
       <aside
         className="hidden lg:flex flex-col w-56 shrink-0 fixed top-0 left-0 bottom-0 z-40 px-4 py-6"
         style={{
-          background: 'rgba(10,46,24,0.95)',
-          borderRight: '1px solid rgba(255,255,255,0.06)',
+          background: 'var(--sidebar-bg)',
+          borderRight: '1px solid var(--border-subtle)',
           backdropFilter: 'blur(16px)',
         }}
       >
         {/* Logo */}
         <div className="flex items-center gap-2.5 px-2 mb-4">
-          <span style={{ color: '#F59E0B', fontSize: 24 }}>✦</span>
+          <span style={{ color: 'var(--accent)', fontSize: 24 }}>✦</span>
           <span className="font-display font-extrabold text-white" style={{ fontSize: 22 }}>
-            Desta<span style={{ color: '#F59E0B' }}>ka</span>
+            Desta<span style={{ color: 'var(--accent)' }}>ka</span>
           </span>
         </div>
 
         {/* Perfil */}
-        <p className="px-2 mb-6 text-sm truncate font-semibold" style={{ color: '#ffffff' }}>
+        <p className="px-2 mb-6 text-sm truncate font-semibold text-white">
           {profileName}
         </p>
 
@@ -56,33 +57,54 @@ export function DashboardLayout({ children, activeHref, profileName, userEmail }
           {NAV_ITEMS.map(item => {
             const isActive = item.href === activeHref
             return (
-              <a
+              <Link
                 key={item.href}
                 href={item.href}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150"
                 style={{
-                  background: isActive ? 'rgba(217,119,6,0.15)' : 'transparent',
-                  color: isActive ? '#FCD34D' : 'rgba(255,255,255,0.5)',
-                  border: isActive ? '1px solid rgba(217,119,6,0.2)' : '1px solid transparent',
+                  background: isActive ? 'var(--accent-bg)' : 'transparent',
+                  color: isActive ? 'var(--accent-bright)' : 'var(--text-tertiary)',
+                  border: isActive ? '1px solid var(--border-accent-soft)' : '1px solid transparent',
                   textDecoration: 'none',
                 }}
+                onMouseEnter={e => {
+                  if (!isActive) {
+                    (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.05)'
+                    ;(e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.75)'
+                  }
+                }}
+                onMouseLeave={e => {
+                  if (!isActive) {
+                    (e.currentTarget as HTMLElement).style.background = 'transparent'
+                    ;(e.currentTarget as HTMLElement).style.color = 'var(--text-tertiary)'
+                  }
+                }}
               >
-                <span style={{ fontSize: 16 }}>{item.icon}</span>
+                <span style={{ fontSize: 15 }}>{item.icon}</span>
                 {item.label}
-              </a>
+              </Link>
             )
           })}
         </nav>
 
-        {/* Email */}
-        <div className="px-2 pt-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-          <p className="text-xs truncate" style={{ color: 'rgba(255,255,255,0.45)' }}>{userEmail}</p>
+        {/* Email + logout */}
+        <div className="px-2 pt-4" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+          <p className="text-xs truncate mb-2" style={{ color: 'var(--text-muted)' }}>{userEmail}</p>
+          <a
+            href="/api/auth/signout"
+            className="text-xs transition-colors"
+            style={{ color: 'var(--text-muted)' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.6)' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--text-muted)' }}
+          >
+            Sair
+          </a>
         </div>
       </aside>
 
       {/* Main */}
       <main className="flex-1 lg:ml-56 relative z-10">
-        <MobileNav profileName={profileName} userEmail={userEmail} />
+        <MobileNav profileName={profileName} userEmail={userEmail} activeHref={activeHref} />
         {children}
       </main>
     </div>

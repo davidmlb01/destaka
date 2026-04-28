@@ -38,7 +38,7 @@ export default function Home() {
   return (
     <main
       className="min-h-screen relative overflow-x-hidden"
-      style={{ background: '#0A2E18', color: '#fff', fontFamily: 'var(--font-geist-sans, sans-serif)' }}
+      style={{ background: '#0A2E18', color: '#fff' }}
     >
       {/* Orbs */}
       <div className="fixed rounded-full pointer-events-none" style={{ width: 700, height: 700, background: 'radial-gradient(circle, rgba(217,119,6,0.18) 0%, transparent 70%)', top: -300, right: -200 }} />

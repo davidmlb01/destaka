@@ -112,7 +112,7 @@ export function ChecklistContent() {
         <div className="w-full rounded-full h-2" style={{ background: 'rgba(255,255,255,0.08)' }}>
           <div
             className="h-2 rounded-full transition-all duration-500"
-            style={{ width: `${progressPct}%`, background: 'linear-gradient(90deg, #4ADE80, #22D3EE)' }}
+            style={{ width: `${progressPct}%`, background: 'var(--success)' }}
           />
         </div>
       </div>

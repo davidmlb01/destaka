@@ -25,7 +25,7 @@ interface PostsData {
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   draft: { label: 'Aguardando aprovação', color: '#FBBF24' },
   published: { label: 'Publicado', color: '#4ADE80' },
-  scheduled: { label: 'Agendado', color: '#60A5FA' },
+  scheduled: { label: 'Agendado', color: '#FCD34D' },
   failed: { label: 'Falhou', color: '#FB923C' },
 }
 
@@ -150,7 +150,7 @@ export function PostsContent() {
                 {data.scheduledNext.content}
               </p>
               {data.scheduledNext.scheduled_for && (
-                <p className="text-xs mt-1" style={{ color: '#60A5FA' }}>
+                <p className="text-xs mt-1" style={{ color: 'var(--accent-bright)' }}>
                   Agendado para {formatDate(data.scheduledNext.scheduled_for)}
                 </p>
               )}

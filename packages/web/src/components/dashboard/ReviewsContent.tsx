@@ -197,7 +197,7 @@ export function ReviewsContent() {
                     <span className="text-sm font-bold text-white">{review.author}</span>
                     <StarRow rating={review.rating} />
                   </div>
-                  <p className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                  <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
                     {formatDate(review.review_date)}
                   </p>
                 </div>
@@ -291,7 +291,7 @@ export function ReviewsContent() {
         >
           <div
             className="w-full max-w-lg rounded-2xl p-6"
-            style={{ background: '#0D2B1A', border: '1px solid rgba(255,255,255,0.1)' }}
+            style={{ background: 'var(--modal-bg)', border: '1px solid var(--border-card)' }}
           >
             {/* Header modal */}
             <div className="flex items-start justify-between gap-3 mb-4">
@@ -299,12 +299,17 @@ export function ReviewsContent() {
                 <p className="font-display font-bold text-white mb-0.5">{modal.review.author}</p>
                 <div className="flex items-center gap-2">
                   <StarRow rating={modal.review.rating} />
-                  <span className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                  <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
                     {formatDate(modal.review.review_date)}
                   </span>
                 </div>
               </div>
-              <button onClick={() => setModal(null)} style={{ color: 'rgba(255,255,255,0.35)', fontSize: 18 }}>✕</button>
+              <button
+            onClick={() => setModal(null)}
+            className="transition-colors"
+            style={{ color: 'var(--text-tertiary)', fontSize: 18 }}
+            aria-label="Fechar"
+          >✕</button>
             </div>
 
             {/* Texto da avaliação */}

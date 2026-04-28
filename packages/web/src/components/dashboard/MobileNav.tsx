@@ -1,23 +1,23 @@
 'use client'
 
 import { useState } from 'react'
-
-const NAV_ITEMS = [
-  { label: 'Dashboard', icon: '📊', href: '/dashboard', active: true },
-  { label: 'Avaliações', icon: '⭐', href: '/dashboard/reviews', active: false },
-  { label: 'Posts', icon: '📝', href: '/dashboard/posts', active: false },
-  { label: 'Otimizações', icon: '⚡', href: '/dashboard/optimizations', active: false },
-  { label: 'Concorrentes', icon: '🎯', href: '/dashboard/competitors', active: false },
-  { label: 'Plano', icon: '💎', href: '/dashboard/plan', active: false },
-]
+import { usePathname } from 'next/navigation'
+import Link from 'next/link'
+import { NAV_ITEMS } from './DashboardLayout'
 
 interface MobileNavProps {
   profileName: string
   userEmail: string
+  activeHref?: string
 }
 
-export function MobileNav({ profileName, userEmail }: MobileNavProps) {
+export function MobileNav({ profileName, userEmail, activeHref }: MobileNavProps) {
   const [open, setOpen] = useState(false)
+  const pathname = usePathname()
+
+  function isActive(href: string) {
+    return activeHref ? href === activeHref : pathname === href
+  }
 
   return (
     <>
@@ -25,20 +25,20 @@ export function MobileNav({ profileName, userEmail }: MobileNavProps) {
       <div
         className="lg:hidden sticky top-0 z-40 flex items-center justify-between px-5 py-4"
         style={{
-          background: 'rgba(10,46,24,0.95)',
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
+          background: 'var(--sidebar-bg)',
+          borderBottom: '1px solid var(--border-subtle)',
           backdropFilter: 'blur(16px)',
         }}
       >
         <div className="flex items-center gap-2">
-          <span style={{ color: '#F59E0B', fontSize: 18 }}>✦</span>
+          <span style={{ color: 'var(--accent)', fontSize: 18 }}>✦</span>
           <span className="font-display font-extrabold text-white" style={{ fontSize: 16 }}>
-            Desta<span style={{ color: '#F59E0B' }}>ka</span>
+            Desta<span style={{ color: 'var(--accent)' }}>ka</span>
           </span>
         </div>
 
         <div className="flex items-center gap-3">
-          <p className="text-xs truncate max-w-[120px]" style={{ color: 'rgba(255,255,255,0.4)' }}>
+          <p className="text-xs truncate max-w-[120px]" style={{ color: 'var(--text-tertiary)' }}>
             {profileName}
           </p>
           <button
@@ -66,23 +66,23 @@ export function MobileNav({ profileName, userEmail }: MobileNavProps) {
       <div
         className="lg:hidden fixed top-0 left-0 bottom-0 z-50 w-64 flex flex-col px-4 py-6 transition-transform duration-300"
         style={{
-          background: 'rgba(10,46,24,0.98)',
-          borderRight: '1px solid rgba(255,255,255,0.06)',
+          background: 'var(--modal-bg)',
+          borderRight: '1px solid var(--border-subtle)',
           transform: open ? 'translateX(0)' : 'translateX(-100%)',
         }}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-2 mb-8">
           <div className="flex items-center gap-2">
-            <span style={{ color: '#F59E0B', fontSize: 20 }}>✦</span>
+            <span style={{ color: 'var(--accent)', fontSize: 20 }}>✦</span>
             <span className="font-display font-extrabold text-white" style={{ fontSize: 18 }}>
-              Desta<span style={{ color: '#F59E0B' }}>ka</span>
+              Desta<span style={{ color: 'var(--accent)' }}>ka</span>
             </span>
           </div>
           <button
             onClick={() => setOpen(false)}
-            className="text-lg leading-none"
-            style={{ color: 'rgba(255,255,255,0.4)' }}
+            className="text-lg leading-none transition-colors"
+            style={{ color: 'var(--text-muted)' }}
             aria-label="Fechar menu"
           >
             ✕
@@ -92,35 +92,42 @@ export function MobileNav({ profileName, userEmail }: MobileNavProps) {
         {/* Perfil ativo */}
         <div
           className="rounded-xl px-3 py-3 mb-6"
-          style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.14)' }}
+          style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-light)' }}
         >
           <p className="text-xs font-medium text-white truncate">{profileName}</p>
-          <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>Perfil ativo</p>
+          <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>Perfil ativo</p>
         </div>
 
         {/* Nav */}
         <nav className="flex flex-col gap-1 flex-1">
-          {NAV_ITEMS.map(item => (
-            <a
-              key={item.href}
-              href={item.href}
-              onClick={() => setOpen(false)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium"
-              style={{
-                background: item.active ? 'rgba(217,119,6,0.15)' : 'transparent',
-                color: item.active ? '#FCD34D' : 'rgba(255,255,255,0.5)',
-                border: item.active ? '1px solid rgba(217,119,6,0.2)' : '1px solid transparent',
-              }}
-            >
-              <span style={{ fontSize: 16 }}>{item.icon}</span>
-              {item.label}
-            </a>
-          ))}
+          {NAV_ITEMS.map(item => {
+            const active = isActive(item.href)
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150"
+                style={{
+                  background: active ? 'var(--accent-bg)' : 'transparent',
+                  color: active ? 'var(--accent-bright)' : 'var(--text-tertiary)',
+                  border: active ? '1px solid var(--border-accent-soft)' : '1px solid transparent',
+                  textDecoration: 'none',
+                }}
+              >
+                <span style={{ fontSize: 15 }}>{item.icon}</span>
+                {item.label}
+              </Link>
+            )
+          })}
         </nav>
 
-        {/* User */}
-        <div className="px-2 pt-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-          <p className="text-xs truncate" style={{ color: 'rgba(255,255,255,0.3)' }}>{userEmail}</p>
+        {/* User + logout */}
+        <div className="px-2 pt-4" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+          <p className="text-xs truncate mb-2" style={{ color: 'var(--text-muted)' }}>{userEmail}</p>
+          <a href="/api/auth/signout" className="text-xs" style={{ color: 'var(--text-muted)' }}>
+            Sair
+          </a>
         </div>
       </div>
     </>
