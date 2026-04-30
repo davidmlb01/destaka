@@ -52,7 +52,23 @@ export async function GET() {
     const locations = await listGmbLocations(accessToken)
     return NextResponse.json({ locations, noProfiles: locations.length === 0 })
   } catch (err) {
-    console.error('[gmb/locations] GMB API error:', err)
+    const msg = err instanceof Error ? err.message : String(err)
+    console.error('[gmb/locations] GMB API error:', msg)
+
+    // 403 = scope business.manage não foi concedido no OAuth
+    if (msg.includes('403')) {
+      return NextResponse.json(
+        { error: 'Permissão negada pelo Google. Faça login novamente e autorize o acesso ao Google Meu Negócio.', type: 'permission_denied' },
+        { status: 403 }
+      )
+    }
+    // 401 = token inválido mesmo após refresh
+    if (msg.includes('401')) {
+      return NextResponse.json(
+        { error: 'Sessão Google expirada. Faça login novamente.' },
+        { status: 401 }
+      )
+    }
     return NextResponse.json(
       { error: 'Erro ao comunicar com a API do Google. Tente novamente em instantes.', type: 'api_error' },
       { status: 502 }

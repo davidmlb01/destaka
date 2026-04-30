@@ -35,9 +35,13 @@ export function isPlacesAvailable(): boolean {
   return !!API_KEY
 }
 
-// Detecta se é uma URL curta do Google Maps (maps.app.goo.gl, goo.gl/maps)
+// Detecta se é uma URL curta ou de compartilhamento do Google Maps
 function isShortUrl(input: string): boolean {
-  return input.includes('maps.app.goo.gl') || input.includes('goo.gl/maps')
+  return (
+    input.includes('maps.app.goo.gl') ||
+    input.includes('goo.gl/maps') ||
+    input.includes('share.google')
+  )
 }
 
 // Resolve URL curta seguindo o redirect e retorna a URL final
@@ -68,6 +72,11 @@ export async function extractQueryFromUrl(input: string): Promise<string> {
     const qMatch = url.match(/[?&]q=([^&]+)/)
     if (qMatch) {
       return decodeURIComponent(qMatch[1].replace(/\+/g, ' '))
+    }
+    // Formato: /maps/search/Nome+do+Local
+    const searchMatch = url.match(/\/maps\/search\/([^/@?]+)/)
+    if (searchMatch) {
+      return decodeURIComponent(searchMatch[1].replace(/\+/g, ' '))
     }
   } catch {
     // ignora erros de parsing

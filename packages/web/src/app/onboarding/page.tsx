@@ -15,8 +15,13 @@ export default function OnboardingPage() {
 
   useEffect(() => {
     fetch('/api/gmb/locations')
-      .then(res => res.json())
-      .then(data => {
+      .then(async (res) => {
+        // 403 = scope não concedido — redireciona para login para reconectar
+        if (res.status === 403) {
+          window.location.href = '/login'
+          return
+        }
+        const data = await res.json() as { error?: string; locations?: GmbLocation[]; noProfiles?: boolean }
         if (data.error) {
           setErrorMsg(data.error)
           setStep('error')

@@ -23,9 +23,13 @@ export async function POST(req: NextRequest) {
     if (placeId) {
       placeDetails = await getPlaceDetails(placeId)
     }
-  }
-
-  if (!placeDetails) {
+    if (!placeDetails) {
+      return NextResponse.json(
+        { error: 'Estabelecimento não encontrado. Verifique o link ou tente pesquisar pelo nome e cidade.' },
+        { status: 404 }
+      )
+    }
+  } else {
     placeDetails = getMockPlaceDetails(query)
   }
 
