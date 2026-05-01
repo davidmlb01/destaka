@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { buildOptimizationPlan } from '@/lib/gmb/optimizer'
-import { calculateScore } from '@/lib/gmb/scorer'
+import { calculateScore, type GmbProfileData } from '@/lib/gmb/scorer'
 import { MOCK_PROFILE_DATA } from '@/lib/gmb/profile-mock'
+import { logger } from '@/lib/logger'
 
 // GET /api/optimization/plan
 // Retorna o plano de otimização derivado do último diagnóstico
@@ -40,8 +41,17 @@ export async function GET() {
     return NextResponse.json({ error: 'Nenhum diagnóstico encontrado. Execute o diagnóstico primeiro.' }, { status: 404 })
   }
 
-  // Em modo mock usamos os dados mock; em produção virão do diagnostic
-  const profileData = { ...MOCK_PROFILE_DATA, category: profile.category ?? 'dentista' }
+  // Usa snapshot real do diagnóstico; fallback para mock em diagnostics antigos
+  const profileData: GmbProfileData = (diagnostic.profile_snapshot as GmbProfileData | null)
+    ?? { ...MOCK_PROFILE_DATA, category: profile.category ?? 'dentista' }
+
+  const usingSnapshot = !!diagnostic.profile_snapshot
+  logger.info('optimization/plan', 'plano gerado', {
+    profileId: profile.id,
+    diagnosticId: diagnostic.id,
+    usingSnapshot,
+  })
+
   const score = calculateScore(profileData)
   const plan = buildOptimizationPlan(profileData, score)
 

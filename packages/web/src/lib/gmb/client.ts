@@ -194,3 +194,55 @@ export async function getGmbMetrics(
     period: 'Últimos 30 dias',
   }
 }
+
+// ---------------------------------------------------------------------------
+// Location detail (inclui horários, serviços, atributos)
+// ---------------------------------------------------------------------------
+
+export interface RawLocationDetail {
+  name?: string
+  title?: string
+  phoneNumbers?: { primaryPhone?: string }
+  storefrontAddress?: { addressLines?: string[]; locality?: string; administrativeArea?: string }
+  websiteUri?: string
+  categories?: { primaryCategory?: { displayName?: string } }
+  regularHours?: { periods?: Array<{ openDay?: string; openTime?: string; closeTime?: string }> }
+  openInfo?: { status?: string }
+  serviceItems?: Array<{
+    freeFormServiceItem?: { label?: { displayName?: string; description?: string } }
+    structuredServiceItem?: { serviceTypeId?: string; description?: string }
+  }>
+  attributes?: Array<{ name?: string; values?: string[] }>
+}
+
+export async function getLocationDetails(
+  accessToken: string,
+  locationName: string // "accounts/{id}/locations/{id}"
+): Promise<RawLocationDetail> {
+  const READ_MASK = 'name,title,phoneNumbers,storefrontAddress,websiteUri,categories,regularHours,openInfo,serviceItems,attributes'
+  return fetchJson<RawLocationDetail>(
+    `${BUSINESS_INFO_URL}/${locationName}?readMask=${encodeURIComponent(READ_MASK)}`,
+    accessToken
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Location media (fotos)
+// ---------------------------------------------------------------------------
+
+export interface RawMediaItem {
+  name?: string
+  mediaFormat?: string
+  locationAssociation?: { category?: string }
+}
+
+export async function getLocationMedia(
+  accessToken: string,
+  locationName: string
+): Promise<RawMediaItem[]> {
+  const data = await fetchJson<{ mediaItems?: RawMediaItem[] }>(
+    `${BUSINESS_INFO_URL}/${locationName}/media`,
+    accessToken
+  ).catch(() => ({ mediaItems: [] as RawMediaItem[] }))
+  return data.mediaItems ?? []
+}

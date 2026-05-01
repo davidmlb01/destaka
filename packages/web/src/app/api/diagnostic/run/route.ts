@@ -57,16 +57,18 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // Roda o diagnóstico
+  // Roda o diagnóstico com dados reais do GBP
   const result = await runDiagnosis(
     profile.google_location_id,
     profile.category ?? 'dentista',
-    accessToken
+    accessToken,
+    serviceClient,
+    profileId
   )
 
-  const { score, aiDiagnosis } = result
+  const { score, aiDiagnosis, profileData } = result
 
-  // Salva no banco
+  // Salva no banco (inclui snapshot dos dados reais para uso posterior em otimizações)
   const { data: diagnostic, error: saveError } = await serviceClient
     .from('diagnostics')
     .insert({
@@ -79,6 +81,7 @@ export async function POST(request: NextRequest) {
       score_servicos: score.categories.services.score,
       score_atributos: score.categories.attributes.score,
       issues: Object.values(score.categories).flatMap(c => c.issues),
+      profile_snapshot: profileData,
     })
     .select()
     .single()

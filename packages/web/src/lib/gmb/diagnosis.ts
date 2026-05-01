@@ -1,6 +1,8 @@
+import type { SupabaseClient } from '@supabase/supabase-js'
 import { calculateScore, type GmbProfileData, type ScoreResult } from './scorer'
 import { MOCK_PROFILE_DATA } from './profile-mock'
 import { getAnthropic, AI_MODEL } from '@/lib/ai'
+import { getLocationDetails, getLocationMedia } from './client'
 
 const SEGMENT_LABELS: Record<string, string> = {
   dentista: 'dentista',
@@ -27,13 +29,15 @@ export interface DiagnosisResult {
 export async function runDiagnosis(
   locationId: string,
   category: string,
-  accessToken: string | null
+  accessToken: string | null,
+  db?: SupabaseClient,
+  profileId?: string
 ): Promise<DiagnosisResult> {
   const useMock = process.env.GMB_MOCK === 'true' || !accessToken
 
-  const profileData: GmbProfileData = useMock
+  const profileData: GmbProfileData = (useMock || !db || !profileId)
     ? { ...MOCK_PROFILE_DATA, category, locationName: locationId }
-    : await fetchRealProfileData(locationId, accessToken!)
+    : await fetchRealProfileData(locationId, accessToken!, profileId, db)
 
   const score = calculateScore(profileData)
   const segment = detectSegment(category)
@@ -91,11 +95,73 @@ Sem bullet points.`
 }
 
 async function fetchRealProfileData(
-  locationId: string,
-  accessToken: string
+  locationName: string,
+  accessToken: string,
+  profileId: string,
+  db: SupabaseClient
 ): Promise<GmbProfileData> {
-  // Implementação real será conectada quando o Business Profile API
-  // estiver aprovado para o scope business.manage em produção.
-  // Por ora retorna mock mesmo com token real.
-  return { ...MOCK_PROFILE_DATA }
+  // 1. Dados básicos + horários + serviços + atributos via Business Profile API
+  const location = await getLocationDetails(accessToken, locationName)
+
+  // 2. Fotos (fail gracioso se endpoint não disponível)
+  const mediaItems = await getLocationMedia(accessToken, locationName)
+  const photoItems = mediaItems.filter(m => m.mediaFormat === 'PHOTO')
+  const hasLogoPhoto = photoItems.some(m => m.locationAssociation?.category === 'PROFILE')
+  const hasCoverPhoto = photoItems.some(m => m.locationAssociation?.category === 'COVER')
+  const spacePhotosCount = photoItems.filter(m =>
+    ['INTERIOR', 'EXTERIOR', 'AT_WORK', 'COMMON_AREA', 'ROOMS'].includes(m.locationAssociation?.category ?? '')
+  ).length
+  const totalPhotosCount = photoItems.length
+
+  // 3. Estatísticas de reviews do banco (sincronizadas pelo cron)
+  const { data: reviews } = await db
+    .from('gmb_reviews')
+    .select('rating, reply_status')
+    .eq('profile_id', profileId)
+  const reviewsCount = reviews?.length ?? 0
+  const reviewsAvgRating = reviewsCount > 0
+    ? reviews!.reduce((s: number, r: { rating?: number }) => s + (r.rating ?? 0), 0) / reviewsCount
+    : 0
+  const reviewsRepliedCount = reviews?.filter((r: { reply_status?: string }) => r.reply_status === 'replied').length ?? 0
+
+  // 4. Último post publicado do banco
+  const { data: lastPost } = await db
+    .from('gmb_posts')
+    .select('published_at')
+    .eq('profile_id', profileId)
+    .eq('status', 'published')
+    .order('published_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  const lastPostDaysAgo = lastPost?.published_at
+    ? Math.floor((Date.now() - new Date(lastPost.published_at).getTime()) / 86_400_000)
+    : null
+
+  // 5. Mapear para GmbProfileData
+  const services = location.serviceItems ?? []
+  const attributes = location.attributes ?? []
+
+  return {
+    hasName: !!location.title,
+    hasPhone: !!location.phoneNumbers?.primaryPhone,
+    hasAddress: !!(location.storefrontAddress?.addressLines?.length || location.storefrontAddress?.locality),
+    hasHours: !!(location.regularHours?.periods?.length || location.openInfo?.status === 'OPEN'),
+    hasWebsite: !!location.websiteUri,
+    hasCategory: !!location.categories?.primaryCategory?.displayName,
+    hasLogoPhoto,
+    spacePhotosCount,
+    totalPhotosCount,
+    hasCoverPhoto,
+    reviewsCount,
+    reviewsAvgRating,
+    reviewsRepliedCount,
+    lastPostDaysAgo,
+    servicesCount: services.length,
+    servicesWithDescCount: services.filter((s: { freeFormServiceItem?: { label?: { description?: string } }; structuredServiceItem?: { description?: string } }) =>
+      s.freeFormServiceItem?.label?.description || s.structuredServiceItem?.description
+    ).length,
+    attributesCount: attributes.length,
+    category: location.categories?.primaryCategory?.displayName ?? 'saúde',
+    locationName: location.title ?? locationName,
+  }
 }

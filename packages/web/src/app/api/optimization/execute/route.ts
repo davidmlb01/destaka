@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { executeAction } from '@/lib/gmb/optimizer'
-import { calculateScore } from '@/lib/gmb/scorer'
+import { calculateScore, type GmbProfileData } from '@/lib/gmb/scorer'
 import { MOCK_PROFILE_DATA } from '@/lib/gmb/profile-mock'
 import { trackEvent, recordScore } from '@/lib/analytics'
+import { logger } from '@/lib/logger'
 import type { OptimizationAction, ExecutionResult } from '@/lib/gmb/optimizer'
-import type { GmbProfileData } from '@/lib/gmb/scorer'
 
 export const dynamic = 'force-dynamic'
 
@@ -44,8 +44,27 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Perfil não encontrado' }, { status: 404 })
   }
 
-  const profileData = { ...MOCK_PROFILE_DATA, category: profile.category ?? 'dentista' }
+  // Usa snapshot real do diagnóstico; fallback para mock em diagnostics antigos
+  let profileData: GmbProfileData = { ...MOCK_PROFILE_DATA, category: profile.category ?? 'dentista' }
+  if (body.diagnosticId) {
+    const { data: diag } = await serviceClient
+      .from('diagnostics')
+      .select('profile_snapshot')
+      .eq('id', body.diagnosticId)
+      .single()
+    if (diag?.profile_snapshot) {
+      profileData = diag.profile_snapshot as GmbProfileData
+    }
+  }
+
   const scoreBefore = calculateScore(profileData).total
+  logger.info('optimization/execute', 'iniciando execução', {
+    profileId: body.profileId,
+    diagnosticId: body.diagnosticId,
+    actionsCount: body.actions.length,
+    scoreBefore,
+    usingSnapshot: body.diagnosticId ? !!profileData : false,
+  })
 
   // Executar ações com delay de 300ms entre chamadas (evita rate limit)
   const results = []
