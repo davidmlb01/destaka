@@ -12,8 +12,19 @@ function createClient() {
   )
 }
 
+function getErrorMessage(): string | null {
+  if (typeof window === 'undefined') return null
+  const params = new URLSearchParams(window.location.search)
+  const err = params.get('error')
+  if (err === 'missing_scope') return 'Para usar a Destaka, você precisa autorizar o acesso ao Google Meu Negócio. Clique em "Entrar com Google" e aceite todas as permissões.'
+  if (err === 'db_error') return 'Erro ao salvar sua conta. Tente novamente.'
+  if (err === 'auth_failed') return 'Falha na autenticação. Tente novamente.'
+  return null
+}
+
 export default function LoginPage() {
   const [demoLoading, setDemoLoading] = useState(false)
+  const errorMessage = getErrorMessage()
 
   async function handleDemoLogin() {
     setDemoLoading(true)
@@ -95,6 +106,15 @@ export default function LoginPage() {
           >
             Conecte sua clínica
           </h1>
+
+          {errorMessage && (
+            <div
+              className="rounded-xl px-4 py-3 mb-4 text-sm text-center"
+              style={{ background: 'rgba(251,146,60,0.1)', border: '1px solid rgba(251,146,60,0.3)', color: '#FCD34D', lineHeight: 1.5 }}
+            >
+              {errorMessage}
+            </div>
+          )}
           <p
             className="text-center mb-8"
             style={{ color: 'rgba(255,255,255,0.5)', fontSize: 15, lineHeight: 1.6 }}

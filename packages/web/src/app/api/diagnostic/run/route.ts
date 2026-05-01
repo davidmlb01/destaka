@@ -44,8 +44,17 @@ export async function POST(request: NextRequest) {
   let accessToken: string | null = null
   try {
     accessToken = await getValidGmbToken(user.id)
-  } catch {
-    // token expirado sem refresh disponível — roda diagnóstico com dados do banco
+  } catch (tokenErr) {
+    console.error('[diagnostic/run] token indisponível:', tokenErr)
+  }
+
+  // Sem token não é possível buscar dados reais do GBP.
+  // Retorna erro para que o onboarding possa pedir reconexão.
+  if (!accessToken) {
+    return NextResponse.json(
+      { error: 'Sessão Google expirada. Faça login novamente para rodar o diagnóstico.' },
+      { status: 401 }
+    )
   }
 
   // Roda o diagnóstico

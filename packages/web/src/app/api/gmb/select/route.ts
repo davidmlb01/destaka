@@ -69,13 +69,27 @@ export async function POST(request: NextRequest) {
   // Evento de ativação: perfil GMB conectado (one-time)
   trackEvent(serviceClient, user.id, 'gmb_connected', { profileId: data.id })
 
-  // Dispara diagnóstico em background (fire-and-forget)
+  // Dispara diagnóstico — com timeout e log de falha
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
+  const diagController = new AbortController()
+  const diagTimeout = setTimeout(() => diagController.abort(), 30000)
   fetch(`${appUrl}/api/diagnostic/run`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Cookie: request.headers.get('cookie') ?? '' },
     body: JSON.stringify({ profileId: data.id }),
-  }).catch(err => console.error('[gmb/select] diagnostic trigger error:', err))
+    signal: diagController.signal,
+  })
+    .then(async (res) => {
+      clearTimeout(diagTimeout)
+      if (!res.ok) {
+        const body = await res.text().catch(() => '')
+        console.error(`[gmb/select] diagnostic falhou (${res.status}):`, body)
+      }
+    })
+    .catch(err => {
+      clearTimeout(diagTimeout)
+      console.error('[gmb/select] diagnostic trigger error:', err)
+    })
 
   return NextResponse.json({ profile: data }, { status: 201 })
 }

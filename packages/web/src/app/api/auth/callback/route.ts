@@ -28,6 +28,13 @@ export async function GET(request: NextRequest) {
   const accessToken = session.provider_token ?? null
   const refreshToken = session.provider_refresh_token ?? null
 
+  // Se o token do Google não foi retornado, o usuário não autorizou o escopo
+  // business.manage. Redireciona para login para forçar nova tentativa com consent.
+  if (!accessToken) {
+    console.error('[auth/callback] provider_token ausente — escopo não concedido, user:', user.id)
+    return NextResponse.redirect(`${origin}/login?error=missing_scope`)
+  }
+
   const serviceClient = await createServiceClient()
 
   const { error: upsertError } = await serviceClient.from('users').upsert(
@@ -36,7 +43,7 @@ export async function GET(request: NextRequest) {
       email: user.email!,
       name: user.user_metadata?.full_name ?? null,
       avatar_url: user.user_metadata?.avatar_url ?? null,
-      ...(accessToken && { google_access_token_enc: encrypt(accessToken) }),
+      google_access_token_enc: encrypt(accessToken),
       ...(refreshToken && { google_refresh_token_enc: encrypt(refreshToken) }),
     },
     { onConflict: 'id' }
@@ -44,7 +51,7 @@ export async function GET(request: NextRequest) {
 
   if (upsertError) {
     console.error('[auth/callback] upsert user error:', upsertError)
-    // Não bloqueia o login, só loga o erro
+    return NextResponse.redirect(`${origin}/login?error=db_error`)
   }
 
   return NextResponse.redirect(`${origin}${next}`)
