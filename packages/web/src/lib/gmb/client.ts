@@ -246,3 +246,30 @@ export async function getLocationMedia(
   ).catch(() => ({ mediaItems: [] as RawMediaItem[] }))
   return data.mediaItems ?? []
 }
+
+// ---------------------------------------------------------------------------
+// Location PATCH (escrita na GBP API)
+// ---------------------------------------------------------------------------
+
+export async function patchLocation(
+  accessToken: string,
+  locationName: string, // "accounts/{id}/locations/{id}"
+  updateMask: string,
+  body: Record<string, unknown>
+): Promise<void> {
+  const res = await fetch(
+    `${BUSINESS_INFO_URL}/${locationName}?updateMask=${encodeURIComponent(updateMask)}`,
+    {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    }
+  )
+  if (!res.ok) {
+    const text = await res.text()
+    throw new Error(`GBP PATCH [${updateMask}] ${res.status}: ${text}`)
+  }
+}

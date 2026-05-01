@@ -6,6 +6,7 @@
 import type { GmbProfileData, ScoreResult } from './scorer'
 import { calculateScore } from './scorer'
 import { getAnthropic, AI_MODEL_FAST } from '@/lib/ai'
+import { patchLocation } from './client'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -43,6 +44,12 @@ export interface OptimizationResult {
   results: ExecutionResult[]
   scoreBefore: number
   scoreAfter: number
+}
+
+/** Contexto para escrita real na GBP API. Quando ausente, apenas gera conteúdo. */
+export interface GmbWriteContext {
+  accessToken: string
+  locationName: string  // "accounts/{id}/locations/{id}"
 }
 
 // ---------------------------------------------------------------------------
@@ -117,44 +124,72 @@ export function buildOptimizationPlan(
 
 export async function executeAction(
   action: OptimizationAction,
-  profile: GmbProfileData
+  profile: GmbProfileData,
+  gmbWrite?: GmbWriteContext
 ): Promise<ExecutionResult> {
   try {
     switch (action.type) {
       case 'update_description': {
         const text = await generateDescription(profile)
-        return { action, status: 'done', payload: { description: text } }
+        if (gmbWrite) {
+          await patchLocation(gmbWrite.accessToken, gmbWrite.locationName, 'description', {
+            description: text,
+          })
+        }
+        return { action, status: 'done', payload: { description: text, applied: !!gmbWrite } }
+      }
+
+      case 'update_hours': {
+        const hours: Record<string, string> = {
+          monday: '08:00-18:00',
+          tuesday: '08:00-18:00',
+          wednesday: '08:00-18:00',
+          thursday: '08:00-18:00',
+          friday: '08:00-18:00',
+          saturday: '08:00-12:00',
+          sunday: 'closed',
+        }
+        if (gmbWrite) {
+          await patchLocation(gmbWrite.accessToken, gmbWrite.locationName, 'regularHours', {
+            regularHours: { periods: hoursToGbpPeriods(hours) },
+          })
+        }
+        return { action, status: 'done', payload: { hours, applied: !!gmbWrite } }
       }
 
       case 'add_services': {
         const services = await generateServices(profile)
-        return { action, status: 'done', payload: { services } }
+        if (gmbWrite) {
+          const serviceItems = services.map(s => ({
+            freeFormServiceItem: {
+              label: {
+                displayName: s.name,
+                description: s.description,
+                languageCode: 'pt',
+              },
+            },
+          }))
+          await patchLocation(gmbWrite.accessToken, gmbWrite.locationName, 'serviceItems', {
+            serviceItems,
+          })
+        }
+        return { action, status: 'done', payload: { services, applied: !!gmbWrite } }
       }
 
-      case 'update_hours':
-        return {
-          action,
-          status: 'done',
-          payload: {
-            hours: {
-              monday: '08:00-18:00',
-              tuesday: '08:00-18:00',
-              wednesday: '08:00-18:00',
-              thursday: '08:00-18:00',
-              friday: '08:00-18:00',
-              saturday: '08:00-12:00',
-              sunday: 'closed',
-            },
-          },
-        }
-
+      // Requer IDs do catálogo GBP (gcid:*) — gera sugestão para ação manual
       case 'update_categories':
         return {
           action,
           status: 'done',
-          payload: { categories: categoriesForSegment(profile.category) },
+          payload: {
+            categories: categoriesForSegment(profile.category),
+            applied: false,
+            manual: true,
+            note: 'Adicione as categorias sugeridas manualmente no painel do Google Meu Negócio.',
+          },
         }
 
+      // Requer IDs de atributos específicos por categoria — gera sugestão para ação manual
       case 'update_attributes':
         return {
           action,
@@ -167,6 +202,9 @@ export async function executeAction(
               'Aceita cartão de débito',
               'Wi-Fi gratuito',
             ],
+            applied: false,
+            manual: true,
+            note: 'Ative os atributos sugeridos manualmente em Informações > Mais > Atributos no GMN.',
           },
         }
 
@@ -180,6 +218,29 @@ export async function executeAction(
       error: err instanceof Error ? err.message : 'Erro desconhecido',
     }
   }
+}
+
+// Converte formato interno { monday: '08:00-18:00' } para GBP periods
+const GBP_DAYS: Record<string, string> = {
+  monday: 'MONDAY', tuesday: 'TUESDAY', wednesday: 'WEDNESDAY',
+  thursday: 'THURSDAY', friday: 'FRIDAY', saturday: 'SATURDAY', sunday: 'SUNDAY',
+}
+
+function hoursToGbpPeriods(hours: Record<string, string>) {
+  const periods = []
+  for (const [day, time] of Object.entries(hours)) {
+    if (time === 'closed' || !GBP_DAYS[day]) continue
+    const [open, close] = time.split('-')
+    const [openH, openM] = open.split(':').map(Number)
+    const [closeH, closeM] = close.split(':').map(Number)
+    periods.push({
+      openDay: GBP_DAYS[day],
+      openTime: { hours: openH, minutes: openM },
+      closeDay: GBP_DAYS[day],
+      closeTime: { hours: closeH, minutes: closeM },
+    })
+  }
+  return periods
 }
 
 // Recalcula score simulando o perfil após otimizações aplicadas

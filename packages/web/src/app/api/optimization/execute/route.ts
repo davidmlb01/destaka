@@ -5,7 +5,8 @@ import { calculateScore, type GmbProfileData } from '@/lib/gmb/scorer'
 import { MOCK_PROFILE_DATA } from '@/lib/gmb/profile-mock'
 import { trackEvent, recordScore } from '@/lib/analytics'
 import { logger } from '@/lib/logger'
-import type { OptimizationAction, ExecutionResult } from '@/lib/gmb/optimizer'
+import { getValidGmbToken } from '@/lib/gmb/auth'
+import type { OptimizationAction, ExecutionResult, GmbWriteContext } from '@/lib/gmb/optimizer'
 
 export const dynamic = 'force-dynamic'
 
@@ -35,7 +36,7 @@ export async function POST(req: NextRequest) {
   // Verificar ownership
   const { data: profile } = await serviceClient
     .from('gmb_profiles')
-    .select('id, category')
+    .select('id, category, google_location_id')
     .eq('id', body.profileId)
     .eq('user_id', user.id)
     .single()
@@ -57,19 +58,30 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // Token GMB para escrever de volta na GBP API (fail gracioso — ainda gera conteúdo sem token)
+  let gmbWrite: GmbWriteContext | undefined
+  try {
+    const accessToken = await getValidGmbToken(user.id)
+    if (accessToken && profile.google_location_id) {
+      gmbWrite = { accessToken, locationName: profile.google_location_id }
+    }
+  } catch {
+    logger.warn('optimization/execute', 'token GMB indisponível — ações gerarão conteúdo sem aplicar na API')
+  }
+
   const scoreBefore = calculateScore(profileData).total
   logger.info('optimization/execute', 'iniciando execução', {
     profileId: body.profileId,
     diagnosticId: body.diagnosticId,
     actionsCount: body.actions.length,
     scoreBefore,
-    usingSnapshot: body.diagnosticId ? !!profileData : false,
+    hasGmbWrite: !!gmbWrite,
   })
 
-  // Executar ações com delay de 300ms entre chamadas (evita rate limit)
+  // Executar ações com delay de 300ms entre chamadas (evita rate limit GBP API)
   const results = []
   for (const action of body.actions) {
-    const result = await executeAction(action, profileData)
+    const result = await executeAction(action, profileData, gmbWrite)
     results.push(result)
 
     // Persistir no banco
