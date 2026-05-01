@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { trackEvent } from '@/lib/analytics'
+import { logger } from '@/lib/logger'
 
 // POST /api/gmb/select
 // Salva o perfil GMB selecionado pelo usuário.
@@ -62,7 +63,7 @@ export async function POST(request: NextRequest) {
       }
       return NextResponse.json({ error: 'Este perfil já está conectado.' }, { status: 409 })
     }
-    console.error('[gmb/select] insert error:', error)
+    logger.error('gmb/select', 'erro ao inserir perfil', { userId: user.id, err: error.message })
     return NextResponse.json({ error: 'Erro ao salvar perfil.' }, { status: 500 })
   }
 
@@ -83,12 +84,12 @@ export async function POST(request: NextRequest) {
       clearTimeout(diagTimeout)
       if (!res.ok) {
         const body = await res.text().catch(() => '')
-        console.error(`[gmb/select] diagnostic falhou (${res.status}):`, body)
+        logger.error('gmb/select', 'diagnostic falhou', { profileId: data.id, status: res.status, body })
       }
     })
     .catch(err => {
       clearTimeout(diagTimeout)
-      console.error('[gmb/select] diagnostic trigger error:', err)
+      logger.error('gmb/select', 'diagnostic trigger error', { profileId: data.id, err: String(err) })
     })
 
   return NextResponse.json({ profile: data }, { status: 201 })

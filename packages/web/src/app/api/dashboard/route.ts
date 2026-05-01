@@ -3,6 +3,7 @@ import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { trackEvent, upsertSession } from '@/lib/analytics'
 import { getGmbMetrics, type GmbMetrics } from '@/lib/gmb/client'
 import { getValidGmbToken } from '@/lib/gmb/auth'
+import { logger } from '@/lib/logger'
 
 export const dynamic = 'force-dynamic'
 
@@ -68,11 +69,17 @@ export async function GET() {
     try {
       const accessToken = await getValidGmbToken(user.id).catch(() => null)
 
-      metrics = accessToken && profile.google_location_id
-        ? await getGmbMetrics(accessToken, `locations/${profile.google_location_id}`)
-        : { viewsSearch: 0, viewsMaps: 0, clicksWebsite: 0, clicksCall: 0, clicksDirections: 0, period: 'Últimos 30 dias' }
+      if (accessToken && profile.google_location_id) {
+        // google_location_id = "accounts/{id}/locations/{id}"
+        // getGmbMetrics espera "locations/{id}" — extrair os últimos 2 segmentos
+        const parts = profile.google_location_id.split('/')
+        const locationPath = parts.length >= 2 ? parts.slice(-2).join('/') : profile.google_location_id
+        metrics = await getGmbMetrics(accessToken, locationPath)
+      } else {
+        metrics = { viewsSearch: 0, viewsMaps: 0, clicksWebsite: 0, clicksCall: 0, clicksDirections: 0, period: 'Últimos 30 dias' }
+      }
     } catch (err) {
-      console.error('[dashboard] getGmbMetrics error:', err)
+      logger.error('dashboard', 'erro ao buscar métricas GMB', { userId: user.id, err: String(err) })
       metrics = { viewsSearch: 0, viewsMaps: 0, clicksWebsite: 0, clicksCall: 0, clicksDirections: 0, period: 'Últimos 30 dias' }
     }
   }

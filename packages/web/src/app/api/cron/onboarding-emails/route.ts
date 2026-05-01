@@ -1,17 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient as createServiceClient } from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js'
 import { sendOnboardingDay1, sendOnboardingDay3, sendOnboardingDay7 } from '@/lib/email/onboarding'
+import { validateCronAuth } from '@/lib/cron-auth'
+import { logger } from '@/lib/logger'
 
 // POST /api/cron/onboarding-emails
 // Chamado diariamente pelo Vercel Cron.
 // Verifica quem está no dia 1, 3 ou 7 desde gmb_connected e envia o e-mail certo.
 export async function POST(request: NextRequest) {
-  const authHeader = request.headers.get('authorization')
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const authError = validateCronAuth(request)
+  if (authError) return authError
 
-  const supabase = createServiceClient(
+  const startedAt = Date.now()
+  const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
@@ -29,7 +30,7 @@ export async function POST(request: NextRequest) {
     .gte('created_at', since.toISOString())
 
   if (error) {
-    console.error('[cron/onboarding] query error:', error)
+    logger.error('cron/onboarding-emails', 'erro na query de eventos', { err: error.message })
     return NextResponse.json({ error: 'DB error' }, { status: 500 })
   }
 
@@ -71,11 +72,11 @@ export async function POST(request: NextRequest) {
         results.day7++
       }
     } catch (err) {
-      console.error(`[cron/onboarding] email error user=${event.user_id} day=${daysElapsed}:`, err)
+      logger.error('cron/onboarding-emails', 'erro ao enviar email', { userId: event.user_id, day: daysElapsed, err: String(err) })
       results.errors++
     }
   }
 
-  console.log('[cron/onboarding] done:', results)
+  logger.info('cron/onboarding-emails', 'concluído', { ...results, duration_ms: Date.now() - startedAt })
   return NextResponse.json({ ok: true, results })
 }
