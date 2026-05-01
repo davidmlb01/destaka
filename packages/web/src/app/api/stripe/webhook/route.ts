@@ -63,6 +63,22 @@ export async function POST(request: Request) {
       break
     }
 
+    case 'customer.subscription.updated': {
+      const subscription = event.data.object as Stripe.Subscription
+      const customerId = subscription.customer as string
+      const status = subscription.status
+
+      // Se assinatura foi cancelada ou inadimplente, rebaixa para free
+      if (status === 'canceled' || status === 'unpaid' || status === 'past_due') {
+        await serviceClient
+          .from('users')
+          .update({ plan: 'free', updated_at: new Date().toISOString() })
+          .eq('stripe_customer_id', customerId)
+      }
+
+      break
+    }
+
     case 'invoice.payment_failed': {
       // Apenas loga — não rebaixa o plano imediatamente
       // O Stripe tentará mais vezes antes de cancelar

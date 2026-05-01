@@ -10,7 +10,9 @@ const REQUIRED_ENV_VARS = [
   'GOOGLE_PLACES_API_KEY',
   'STRIPE_SECRET_KEY',
   'STRIPE_WEBHOOK_SECRET',
+  'STRIPE_PRICE_ESSENCIAL',
   'STRIPE_PRICE_PRO',
+  'STRIPE_PRICE_AGENCIA',
   'SUPABASE_SERVICE_ROLE_KEY',
   'NEXT_PUBLIC_SUPABASE_URL',
   'NEXT_PUBLIC_SUPABASE_ANON_KEY',
@@ -37,5 +39,12 @@ export function assertEnvVars(): void {
     if (process.env.NODE_ENV === 'production') {
       throw new Error(msg)
     }
+  }
+
+  // GMB_MOCK=true em produção serve dados falsos para clientes reais — bloqueia
+  if (process.env.NODE_ENV === 'production' && process.env.GMB_MOCK === 'true') {
+    const msg = '[env-check] GMB_MOCK=true está ativo em produção. Defina GMB_MOCK=false no Vercel.'
+    console.error(msg)
+    throw new Error(msg)
   }
 }

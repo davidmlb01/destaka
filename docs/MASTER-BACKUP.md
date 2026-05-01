@@ -1,6 +1,6 @@
 # MASTER BACKUP — Destaka (Projeto GMM)
-**Atualizado:** 2026-04-12
-**Status:** Zero Touch SaaS em produção — review auto-reply + post generator + monthly report ativos — Google OAuth funcionando — pendente: GBP real para teste end-to-end + tráfego
+**Atualizado:** 2026-05-01
+**Status:** Pronto para primeiro cliente real — Stripe live configurado, checkout + webhook funcionando, 4 fixes críticos aplicados
 
 ---
 
@@ -317,6 +317,58 @@ Primeira sessão executiva completa. Fluxo: CEO → CMO → Brand → Story → 
 4. Dashboard: métricas de visibilidade (visualizações, cliques, rotas)
 5. Onboarding: sequência de e-mail dias 1, 3, 7
 6. Conteúdo: 3 posts/semana Instagram
+
+### 2026-05-01 — Sessão 9: Checkout Live + Fixes Críticos
+
+**Objetivo:** Configurar Stripe live e testar fluxo completo onboarding → dashboard → assinatura.
+
+**Problemas resolvidos:**
+
+| Problema | Causa | Fix |
+|---|---|---|
+| "Algo deu errado" no onboarding | `GMB_MOCK` env var com trailing newline via `echo` | Recriar com `printf` |
+| Perfil clicado voltava para mesma tela | Perfis mock `789012`/`345678` pertenciam a `demo@destaka.com.br`; insert 23505 falhava | Deletar perfis conflitantes via Supabase REST |
+| Dashboard "This page couldn't load" | `DashboardLayout.tsx` sem `'use client'` — event handlers em Server Component | Adicionar `'use client'` como primeira linha |
+| Stripe 500 `ERR_INVALID_CHAR` | `STRIPE_SECRET_KEY` salva com newline via `echo` | Recriar com `printf` |
+| Stripe `Invalid API Key` | OCR de screenshot com caractere errado (`BF6HA8` vs `bF6HA8`) | Chave colada manualmente |
+| `No such price: 'price_1TKm3D...'` | Price ID de outra conta/sessão Stripe | Criar novo Price ID via API: `price_1TSNSQAwJUjY0HfeZWbXkVAB` |
+| Webhook nunca disparado | `STRIPE_WEBHOOK_SECRET` era do live (`whsec_oogZ...`), test mode precisa do próprio | Criar test webhook via API: `whsec_rA2nZ3faUmG4mk3V7wX0QCvXy3Ud6xyf` |
+| Live mode: `Invalid API Key sk_live_` | Stripe bloqueia revelação de `sk_live_` sem verificação de identidade | Usar restricted key `rk_live_...` com permissões equivalentes |
+| Plano não atualiza após pagamento live | Webhook live com secret do test mode | Criar live webhook via API + atualizar `STRIPE_WEBHOOK_SECRET` |
+
+**Variáveis Vercel (estado atual 2026-05-01):**
+- `STRIPE_SECRET_KEY`: `rk_live_...` (restricted live key, permissões checkout + webhook)
+- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`: `pk_live_51TGkL0AwJUjY0Hfe...`
+- `STRIPE_PRICE_PRO`: `price_1TPvryAwJUjY0HfeFRDVSnVe` (live, R$197/mês)
+- `STRIPE_PRICE_ESSENCIAL`: `price_1TPvryAwJUjY0HfeFRDVSnVe` (mesmo Price ID por ora)
+- `STRIPE_PRICE_AGENCIA`: `price_1TPvryAwJUjY0HfeFRDVSnVe` (mesmo Price ID por ora)
+- `STRIPE_WEBHOOK_SECRET`: `whsec_jn84441qwAkc2eJxoDeC4269JAT4BFlQ` (live webhook `we_1TSOH5AwJUjY0HfebemQY7Hb`)
+- `GMB_MOCK`: `false` (corrigido — era `true` e serviria dados falsos para clientes reais)
+
+**Fixes de código deployados (2026-05-01):**
+- `DashboardLayout.tsx`: `'use client'` adicionado (fix crash Server Component)
+- `webhook/route.ts`: handler `customer.subscription.updated` adicionado (C-1)
+- `env-check.ts`: `STRIPE_PRICE_ESSENCIAL` + `STRIPE_PRICE_AGENCIA` adicionados (C-4)
+- `env-check.ts`: guard que bloqueia startup se `GMB_MOCK=true` em produção (C-3)
+- `demo-login/route.ts`: já estava gateado por `GMB_MOCK !== 'true'` (C-2 — sem mudança necessária)
+
+**Webhooks Stripe:**
+- Live: `we_1TSOH5AwJUjY0HfebemQY7Hb` — destaka.com.br/api/stripe/webhook
+  - Events: `checkout.session.completed`, `customer.subscription.deleted`, `customer.subscription.updated`
+- Test (descontinuado): `whsec_rA2nZ3faUmG4mk3V7wX0QCvXy3Ud6xyf`
+
+**Estado do fluxo (testado):**
+- Login Google: funcionando
+- Onboarding GMB (com mock): funcionando
+- Dashboard Score: funcionando
+- Checkout Stripe (test mode): funcionando — plano atualizado manualmente após teste
+- Checkout Stripe (live mode): flow abre, pagamento processa, webhook ativo
+
+**Pendências restantes:**
+1. Testar webhook live end-to-end (confirmar que plano atualiza após pagamento real)
+2. Ativar conta Stripe (bank account) para receber transferências
+3. Adicionar webhook event `customer.subscription.updated` no painel Stripe (dashboard — já no código)
+4. Primeiro cliente real com GBP real (sem GMB_MOCK)
 
 ### 2026-03-29 — Sessão de Branding
 - Brand Squad (Brand Chief + Emily Heyward + Naming Strategist + Archetype Consultant) convocados
