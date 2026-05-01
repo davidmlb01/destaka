@@ -13,4 +13,7 @@ export const anthropic = new Proxy({} as Anthropic, {
   },
 })
 
+/** Tarefas complexas de raciocínio (ex: diagnóstico de perfil) */
 export const AI_MODEL = 'claude-opus-4-6'
+/** Tarefas de alta frequência (ex: posts, reviews, optimizer) */
+export const AI_MODEL_FAST = 'claude-haiku-4-5-20251001'

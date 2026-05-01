@@ -3,13 +3,7 @@
 // Story 1.7 — Posts Automáticos Semanais
 // =============================================================================
 
-import Anthropic from '@anthropic-ai/sdk'
-
-let _anthropic: Anthropic | null = null
-function getAnthropic(): Anthropic {
-  if (!_anthropic) _anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
-  return _anthropic
-}
+import { getAnthropic, AI_MODEL_FAST } from '@/lib/ai'
 
 export type PostType = 'update' | 'event' | 'offer'
 
@@ -100,7 +94,7 @@ export async function generateWeeklyPost(
   const topic = topics[Math.floor(Math.random() * topics.length)]
 
   const message = await getAnthropic().messages.create({
-    model: 'claude-haiku-4-5-20251001',
+    model: AI_MODEL_FAST,
     max_tokens: 400,
     messages: [
       {

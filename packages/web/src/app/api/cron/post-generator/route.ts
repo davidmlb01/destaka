@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { generateWeeklyPost } from '@/lib/gmb/posts'
 import { validateCronAuth } from '@/lib/cron-auth'
+import { logger } from '@/lib/logger'
 
 // POST /api/cron/post-generator
 // Vercel Cron: seg/qua/sex às 10h
@@ -68,14 +69,14 @@ export async function POST(request: NextRequest) {
       })
 
       if (insertError) {
-        console.error(`[cron/post-generator] insert error profile=${profile.id}:`, insertError)
+        logger.error('cron/post-generator', 'erro ao inserir post', { profileId: profile.id, err: insertError.message })
         results.push({ profileId: profile.id, status: 'error', error: insertError.message })
       } else {
         results.push({ profileId: profile.id, status })
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err)
-      console.error(`[cron/post-generator] error profile=${profile.id}:`, err)
+      logger.error('cron/post-generator', 'erro ao gerar post', { profileId: profile.id, err: message })
       results.push({ profileId: profile.id, status: 'error', error: message })
     }
   }
@@ -89,6 +90,6 @@ export async function POST(request: NextRequest) {
     errors: results.filter(r => r.status === 'error').length,
   }
 
-  console.log('[cron/post-generator] done:', summary)
+  logger.info('cron/post-generator', 'concluído', summary)
   return NextResponse.json(summary)
 }

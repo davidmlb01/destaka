@@ -3,13 +3,7 @@
 // Story 1.6 — Gestão de Avaliações
 // =============================================================================
 
-import Anthropic from '@anthropic-ai/sdk'
-
-let _anthropic: Anthropic | null = null
-function getAnthropic(): Anthropic {
-  if (!_anthropic) _anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
-  return _anthropic
-}
+import { getAnthropic, AI_MODEL_FAST } from '@/lib/ai'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -107,7 +101,7 @@ export async function generateReviewReply(
     : 'caloroso e agradecido, personalize para o comentário específico'
 
   const message = await getAnthropic().messages.create({
-    model: 'claude-haiku-4-5-20251001',
+    model: AI_MODEL_FAST,
     max_tokens: 300,
     messages: [
       {

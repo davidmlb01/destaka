@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import { processReviewQueue } from '@/lib/gmb/review-automation'
 import { validateCronAuth } from '@/lib/cron-auth'
 import { getValidGmbToken } from '@/lib/gmb/auth'
+import { logger } from '@/lib/logger'
 
 // POST /api/cron/review-monitor
 // Vercel Cron: a cada 6 horas
@@ -40,7 +41,7 @@ export async function POST(request: NextRequest) {
     try {
       await getValidGmbToken(profile.user_id)
     } catch (tokenErr) {
-      console.warn(`[cron/review-monitor] token expirado para user=${profile.user_id}, profile=${profile.id}:`, tokenErr)
+      logger.warn('cron/review-monitor', 'token expirado', { userId: profile.user_id, profileId: profile.id, err: String(tokenErr) })
       results.push({ profileId: profile.id, drafted: 0, published: 0, errors: 1 })
       continue
     }
@@ -55,7 +56,7 @@ export async function POST(request: NextRequest) {
       )
       results.push({ profileId: profile.id, ...stats })
     } catch (err) {
-      console.error(`[cron/review-monitor] error profile=${profile.id}:`, err)
+      logger.error('cron/review-monitor', 'erro ao processar reviews', { profileId: profile.id, err: String(err) })
       results.push({ profileId: profile.id, drafted: 0, published: 0, errors: 1 })
     }
   }
@@ -69,6 +70,6 @@ export async function POST(request: NextRequest) {
     total_errors: results.reduce((s, r) => s + r.errors, 0),
   }
 
-  console.log('[cron/review-monitor] done:', summary)
+  logger.info('cron/review-monitor', 'concluído', summary)
   return NextResponse.json(summary)
 }
