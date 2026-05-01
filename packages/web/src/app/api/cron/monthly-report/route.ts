@@ -2,15 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { compileMonthlyReport } from '@/lib/report/compiler'
 import { sendMonthlyReport } from '@/lib/email/monthly-report'
+import { validateCronAuth } from '@/lib/cron-auth'
 
 // POST /api/cron/monthly-report
 // Vercel Cron: dia 1 de cada mês às 8h
 // Compila dados do mês anterior e envia relatório por email
 export async function POST(request: NextRequest) {
-  const authHeader = request.headers.get('authorization')
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const authError = validateCronAuth(request)
+  if (authError) return authError
 
   const startedAt = Date.now()
   const db = createClient(

@@ -1,0 +1,40 @@
+// =============================================================================
+// DESTAKA — Redis client com graceful fallback
+// Se Upstash estiver offline ou env vars ausentes, retorna null
+// e o chamador decide se continua (fail-open) ou bloqueia (fail-closed).
+// =============================================================================
+
+import { Redis } from '@upstash/redis'
+
+let _redis: Redis | null = null
+
+export function getRedis(): Redis | null {
+  if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+    return null
+  }
+  if (!_redis) {
+    _redis = new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    })
+  }
+  return _redis
+}
+
+/**
+ * Incrementa um contador de rate limit.
+ * Retorna o valor atual ou null se Redis indisponível.
+ */
+export async function rateLimit(key: string, ttlSeconds: number): Promise<number | null> {
+  const redis = getRedis()
+  if (!redis) return null
+
+  try {
+    const count = await redis.incr(key)
+    if (count === 1) await redis.expire(key, ttlSeconds)
+    return count
+  } catch (err) {
+    console.error('[redis] rateLimit error:', err)
+    return null
+  }
+}

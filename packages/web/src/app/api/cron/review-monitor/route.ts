@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { processReviewQueue } from '@/lib/gmb/review-automation'
+import { validateCronAuth } from '@/lib/cron-auth'
+import { getValidGmbToken } from '@/lib/gmb/auth'
 
 // POST /api/cron/review-monitor
 // Vercel Cron: a cada 6 horas
 // Gera rascunhos de resposta para reviews pendentes
 export async function POST(request: NextRequest) {
-  const authHeader = request.headers.get('authorization')
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const authError = validateCronAuth(request)
+  if (authError) return authError
 
   const startedAt = Date.now()
   const db = createClient(
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
 
   const { data: profiles, error: profilesError } = await db
     .from('gmb_profiles')
-    .select('id, name, category, auto_post_mode')
+    .select('id, name, category, auto_post_mode, user_id')
 
   if (profilesError) {
     console.error('[cron/review-monitor] profiles query error:', profilesError)
@@ -35,6 +35,15 @@ export async function POST(request: NextRequest) {
 
   for (const profile of profiles) {
     const autoPublish = profile.auto_post_mode === 'automatic'
+
+    // Valida token do usuário antes de processar reviews
+    try {
+      await getValidGmbToken(profile.user_id)
+    } catch (tokenErr) {
+      console.warn(`[cron/review-monitor] token expirado para user=${profile.user_id}, profile=${profile.id}:`, tokenErr)
+      results.push({ profileId: profile.id, drafted: 0, published: 0, errors: 1 })
+      continue
+    }
 
     try {
       const stats = await processReviewQueue(

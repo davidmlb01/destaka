@@ -1,18 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { Redis } from '@upstash/redis'
 import { createClient } from '@supabase/supabase-js'
 import { sendLeadMagnetEmail } from '@/lib/email/lead-magnet'
+import { rateLimit } from '@/lib/redis'
 import type { CategoryScore } from '@/lib/gmb/scorer'
 import { createHash } from 'crypto'
 
 const MAX_PER_IP_PER_DAY = 5
-
-function getRedis() {
-  return new Redis({
-    url: process.env.UPSTASH_REDIS_REST_URL!,
-    token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-  })
-}
 
 function getServiceDb() {
   return createClient(
@@ -31,13 +24,10 @@ export async function POST(req: NextRequest) {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
   const ipHash = hashIp(ip)
 
-  // Rate limiting por IP
-  const redis = getRedis()
+  // Rate limiting por IP — fail-open se Redis indisponível
   const key = `ratelimit:lead:${ipHash}`
-  const count = await redis.incr(key)
-  if (count === 1) await redis.expire(key, 86400)
-
-  if (count > MAX_PER_IP_PER_DAY) {
+  const count = await rateLimit(key, 86400)
+  if (count !== null && count > MAX_PER_IP_PER_DAY) {
     return NextResponse.json(
       { error: 'Limite de auditorias diarias atingido. Tente novamente amanha.' },
       { status: 429 }

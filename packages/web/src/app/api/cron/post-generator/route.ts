@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { generateWeeklyPost } from '@/lib/gmb/posts'
+import { validateCronAuth } from '@/lib/cron-auth'
 
 // POST /api/cron/post-generator
 // Vercel Cron: seg/qua/sex às 10h
 // Gera posts automáticos para perfis com auto_post_mode = 'automatic' ou guarda como rascunho
 export async function POST(request: NextRequest) {
-  const authHeader = request.headers.get('authorization')
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const authError = validateCronAuth(request)
+  if (authError) return authError
 
   const startedAt = Date.now()
   const db = createClient(
