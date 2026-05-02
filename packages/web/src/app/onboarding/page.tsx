@@ -59,13 +59,17 @@ export default function OnboardingPage() {
       }),
     })
 
-    if (res.ok || res.status === 409) {
+    if (res.ok) {
       router.push('/dashboard')
       return
     }
 
     const data = await res.json()
-    setErrorMsg(data.error ?? 'Erro ao salvar perfil.')
+    if (res.status === 409) {
+      setErrorMsg('Este perfil já está sendo monitorado por outro usuário. Entre em contato com o suporte.')
+    } else {
+      setErrorMsg(data.error ?? 'Erro ao salvar perfil.')
+    }
     setStep('error')
   }
 

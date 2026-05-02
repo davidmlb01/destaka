@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { runDiagnosis } from '@/lib/gmb/diagnosis'
+import { syncProfileReviews } from '@/lib/gmb/reviews'
 import { sendDiagnosticReadyEmail } from '@/lib/email/diagnostic-ready'
 import { getValidGmbToken } from '@/lib/gmb/auth'
 
@@ -56,6 +57,10 @@ export async function POST(request: NextRequest) {
       { status: 401 }
     )
   }
+
+  // Sincroniza reviews reais da GBP antes do diagnóstico (dados frescos)
+  await syncProfileReviews(serviceClient, profileId, profile.google_location_id, accessToken)
+    .catch(err => console.error('[diagnostic/run] sync reviews error:', err))
 
   // Roda o diagnóstico com dados reais do GBP
   const result = await runDiagnosis(

@@ -4,6 +4,8 @@
 // =============================================================================
 
 import { getAnthropic, AI_MODEL_FAST } from '@/lib/ai'
+import { listGmbReviews } from './client'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -141,4 +143,54 @@ export function buildMockReviews(profileId: string): Omit<Review, 'id'>[] {
     profile_id: profileId,
     created_at: r.review_date,
   }))
+}
+
+// ---------------------------------------------------------------------------
+// Sincronização de reviews reais da GBP API para o banco
+// Chamado no início de cada diagnóstico para manter reviews atualizadas.
+// ---------------------------------------------------------------------------
+
+export async function syncProfileReviews(
+  db: SupabaseClient,
+  profileId: string,
+  locationName: string, // "accounts/{id}/locations/{id}"
+  accessToken: string
+): Promise<{ synced: number; errors: number }> {
+  let synced = 0
+  let errors = 0
+
+  try {
+    const reviews = await listGmbReviews(accessToken, locationName)
+
+    for (const r of reviews) {
+      const replyStatus = r.hasReply ? 'replied' : 'pending'
+
+      const { error } = await db
+        .from('gmb_reviews')
+        .upsert(
+          {
+            profile_id: profileId,
+            google_review_id: r.name, // caminho completo: usado para reply via API
+            author: r.reviewer,
+            rating: r.starRating,
+            text: r.comment,
+            reply_status: replyStatus,
+            review_date: r.createTime,
+          },
+          { onConflict: 'google_review_id', ignoreDuplicates: false }
+        )
+
+      if (error) {
+        console.error('[reviews/sync] erro ao upsert review:', error.message)
+        errors++
+      } else {
+        synced++
+      }
+    }
+  } catch (err) {
+    console.error('[reviews/sync] erro ao buscar reviews da GBP API:', err)
+    errors++
+  }
+
+  return { synced, errors }
 }

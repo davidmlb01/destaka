@@ -300,6 +300,66 @@ export async function createLocalPost(
 }
 
 // ---------------------------------------------------------------------------
+// Reviews — leitura da GBP API v4
+// ---------------------------------------------------------------------------
+
+export interface GmbReview {
+  name: string       // "accounts/{id}/locations/{id}/reviews/{id}" — usado como google_review_id
+  reviewer: string   // displayName
+  starRating: number // 1-5
+  comment: string | null
+  createTime: string
+  hasReply: boolean
+}
+
+interface RawReview {
+  name?: string
+  reviewer?: { displayName?: string; isAnonymous?: boolean }
+  starRating?: string
+  comment?: string
+  createTime?: string
+  reviewReply?: { comment?: string }
+}
+
+const STAR_RATING_MAP: Record<string, number> = {
+  ONE: 1, TWO: 2, THREE: 3, FOUR: 4, FIVE: 5,
+}
+
+export async function listGmbReviews(
+  accessToken: string,
+  locationName: string // "accounts/{id}/locations/{id}"
+): Promise<GmbReview[]> {
+  const allReviews: GmbReview[] = []
+  let pageToken: string | undefined
+
+  do {
+    const params = new URLSearchParams({ pageSize: '50' })
+    if (pageToken) params.set('pageToken', pageToken)
+
+    const data = await fetchJson<{ reviews?: RawReview[]; nextPageToken?: string }>(
+      `${MYBUSINESS_V4_URL}/${locationName}/reviews?${params}`,
+      accessToken
+    )
+
+    for (const r of data.reviews ?? []) {
+      if (!r.name) continue
+      allReviews.push({
+        name: r.name,
+        reviewer: r.reviewer?.isAnonymous ? 'Usuário anônimo' : (r.reviewer?.displayName ?? 'Usuário'),
+        starRating: STAR_RATING_MAP[r.starRating ?? ''] ?? 3,
+        comment: r.comment ?? null,
+        createTime: r.createTime ?? new Date().toISOString(),
+        hasReply: !!r.reviewReply?.comment,
+      })
+    }
+
+    pageToken = data.nextPageToken
+  } while (pageToken)
+
+  return allReviews
+}
+
+// ---------------------------------------------------------------------------
 // Reviews Reply (resposta a review na GBP API v4)
 // ---------------------------------------------------------------------------
 
