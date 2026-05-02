@@ -58,35 +58,67 @@ export function PostsContent() {
 
   async function handleGenerate() {
     setGenerating(true)
-    await fetch('/api/posts/generate', { method: 'POST' })
-    await load()
-    setGenerating(false)
+    try {
+      const res = await fetch('/api/posts/generate', { method: 'POST' })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({})) as { error?: string }
+        alert(err.error ?? 'Erro ao gerar post. Tente novamente.')
+        return
+      }
+      await load()
+    } finally {
+      setGenerating(false)
+    }
   }
 
   async function handlePublish(postId: string) {
     setPublishingId(postId)
-    await fetch(`/api/posts/${postId}/publish`, { method: 'POST' })
-    await load()
-    setPublishingId(null)
+    try {
+      const res = await fetch(`/api/posts/${postId}/publish`, { method: 'POST' })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({})) as { error?: string }
+        alert(err.error ?? 'Erro ao publicar. Tente novamente.')
+        return
+      }
+      await load()
+    } finally {
+      setPublishingId(null)
+    }
   }
 
   async function handleDiscard(postId: string) {
     setDeletingId(postId)
-    await fetch(`/api/posts/${postId}/publish`, { method: 'DELETE' })
-    await load()
-    setDeletingId(null)
+    try {
+      const res = await fetch(`/api/posts/${postId}`, { method: 'DELETE' })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({})) as { error?: string }
+        alert(err.error ?? 'Erro ao descartar. Tente novamente.')
+        return
+      }
+      await load()
+    } finally {
+      setDeletingId(null)
+    }
   }
 
   async function handleModeChange(mode: 'automatic' | 'approval') {
     if (!data || mode === data.autoPostMode) return
     setSavingMode(true)
-    await fetch('/api/posts/settings', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ autoPostMode: mode }),
-    })
-    setData(d => d ? { ...d, autoPostMode: mode } : d)
-    setSavingMode(false)
+    try {
+      const res = await fetch('/api/posts/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ autoPostMode: mode }),
+      })
+      if (res.ok) {
+        setData(d => d ? { ...d, autoPostMode: mode } : d)
+      } else {
+        const err = await res.json().catch(() => ({})) as { error?: string }
+        alert(err.error ?? 'Erro ao salvar configuração.')
+      }
+    } finally {
+      setSavingMode(false)
+    }
   }
 
   if (loading) {

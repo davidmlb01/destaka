@@ -168,7 +168,7 @@ function scoreAttributes(p: GmbProfileData): CategoryScore {
   let score = 0
 
   if (p.attributesCount >= 5) score += 5
-  else issues.push({ field: 'attributes', severity: 'info', message: `Apenas ${p.attributesCount} ${p.attributesCount === 1 ? 'atributo' : 'atributos'} — ideal: 5+ (ex: Wi-Fi, estacionamento, acessível)`, impact: 5 })
+  else issues.push({ field: 'attributes', severity: 'warning', message: `Apenas ${p.attributesCount} ${p.attributesCount === 1 ? 'atributo' : 'atributos'} — ideal: 5+ (ex: Wi-Fi, estacionamento, acessível)`, impact: 5 })
 
   return makeCategory('attributes', 'Atributos', score, 5, issues)
 }

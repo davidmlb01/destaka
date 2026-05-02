@@ -157,6 +157,12 @@ export function CompetitorsContent() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ benchmark: true }),
     })
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({})) as { error?: string }
+      setMsg(err.error ?? 'Erro ao buscar concorrentes. Tente novamente.')
+      setDiscovering(false)
+      return
+    }
     const json = await res.json() as { discovered: number; errors: string[] }
     const n = json.discovered
     setMsg(`${n} ${n === 1 ? 'concorrente encontrado' : 'concorrentes encontrados'}${json.errors.length ? ` (${json.errors.length} ${json.errors.length === 1 ? 'erro' : 'erros'})` : ''}.`)

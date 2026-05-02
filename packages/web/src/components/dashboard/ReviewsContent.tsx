@@ -101,17 +101,19 @@ export function ReviewsContent() {
       setModal(null)
       load()
     } else {
+      const err = await res.json().catch(() => ({})) as { error?: string }
+      alert(err.error ?? 'Erro ao publicar resposta. Tente novamente.')
       setModal(m => m ? { ...m, publishing: false } : m)
     }
   }
 
   async function ignoreReview(reviewId: string) {
-    await fetch(`/api/reviews/${reviewId}`, {
+    const res = await fetch(`/api/reviews/${reviewId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'ignore' }),
     })
-    load()
+    if (res.ok) load()
   }
 
   const totalPages = data ? Math.ceil(data.total / data.pageSize) : 1

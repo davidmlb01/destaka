@@ -61,11 +61,20 @@ export function ChecklistContent() {
       doneCount: d.doneCount + (newDone ? 1 : -1),
     } : d)
 
-    await fetch(`/api/checklist/${item.key}`, {
+    const res = await fetch(`/api/checklist/${item.key}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ done: newDone }),
     })
+
+    if (!res.ok) {
+      // Reverte o optimistic update em caso de erro
+      setData(d => d ? {
+        ...d,
+        items: d.items.map(i => i.key === item.key ? { ...i, done: item.done, done_at: item.done_at ?? null } : i),
+        doneCount: d.doneCount + (newDone ? -1 : 1),
+      } : d)
+    }
 
     setToggling(null)
   }

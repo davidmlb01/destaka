@@ -14,7 +14,7 @@ export async function POST() {
 
   const { data: profile } = await serviceClient
     .from('gmb_profiles')
-    .select('id, name, category')
+    .select('id, name, category, auto_post_mode')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
     .limit(1)
@@ -25,7 +25,7 @@ export async function POST() {
   const segment = detectSegment(profile.category ?? '')
   const generated = await generateWeeklyPost(segment, profile.name)
 
-  const isAutomatic = false // auto_post_mode via settings (migration 003)
+  const isAutomatic = profile.auto_post_mode === 'automatic'
 
   const { data: post, error: insertError } = await serviceClient
     .from('gmb_posts')

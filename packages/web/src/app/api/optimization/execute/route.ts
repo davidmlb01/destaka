@@ -139,7 +139,12 @@ function applyResults(profile: GmbProfileData, results: ExecutionResult[]): GmbP
       case 'update_hours': updated.hasHours = true; break
       case 'update_categories': updated.hasCategory = true; break
       case 'update_attributes': updated.attributesCount = 5; break
-      case 'add_services': updated.servicesCount = 3; updated.servicesWithDescCount = 3; break
+      case 'add_services': {
+        const added = (r.payload?.services as Array<{ description?: string }> | null) ?? []
+        updated.servicesCount = (updated.servicesCount ?? 0) + Math.max(added.length, 1)
+        updated.servicesWithDescCount = (updated.servicesWithDescCount ?? 0) + added.filter(s => s.description).length
+        break
+      }
     }
   }
   return updated

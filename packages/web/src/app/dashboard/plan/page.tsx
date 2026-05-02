@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
+import { CheckoutButton } from './CheckoutButton'
 
 const VALUE_STACK = [
   { label: 'Gestão do Google Meu Negócio', value: 'R$400/mês', desc: 'O que uma agência cobraria para fazer o mesmo', icon: '📍' },
@@ -150,20 +151,7 @@ export default async function PlanPage() {
                 </ul>
 
                 {/* CTA */}
-                <button
-                  className="w-full rounded-xl font-display font-bold py-4 transition-all hover:brightness-110 active:scale-95"
-                  style={{
-                    background: 'linear-gradient(135deg, #D97706 0%, #F59E0B 100%)',
-                    color: '#fff',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: 16,
-                    letterSpacing: '-0.2px',
-                    boxShadow: '0 0 24px rgba(217,119,6,0.45), 0 4px 12px rgba(0,0,0,0.3)',
-                  }}
-                >
-                  Ativar meu plano
-                </button>
+                <CheckoutButton />
 
                 <p
                   className="text-center mt-3 text-xs"
