@@ -48,14 +48,18 @@ export async function POST(request: NextRequest) {
       if (sendError) {
         console.error(`[cron/monthly-report] send error user=${user.id}:`, sendError)
 
-        await db.from('monthly_reports').upsert({
-          user_id: user.id,
-          profile_id: (await db.from('gmb_profiles').select('id').eq('user_id', user.id).single()).data?.id,
-          month,
-          year,
-          data: reportData,
-          email_status: `error: ${sendError.message}`,
-        }, { onConflict: 'profile_id,month,year' })
+        // maybeSingle evita exceção se usuário não tem perfil
+        const { data: profileErr } = await db.from('gmb_profiles').select('id').eq('user_id', user.id).maybeSingle()
+        if (profileErr) {
+          await db.from('monthly_reports').upsert({
+            user_id: user.id,
+            profile_id: profileErr.id,
+            month,
+            year,
+            data: reportData,
+            email_status: `error: ${sendError.message}`,
+          }, { onConflict: 'profile_id,month,year' })
+        }
 
         results.push({ userId: user.id, status: 'error', error: sendError.message })
       } else {
@@ -63,7 +67,7 @@ export async function POST(request: NextRequest) {
           .from('gmb_profiles')
           .select('id')
           .eq('user_id', user.id)
-          .single()
+          .maybeSingle()
 
         if (profile) {
           await db.from('monthly_reports').upsert({

@@ -45,11 +45,11 @@ export async function POST(request: NextRequest) {
       continue
     }
 
-    // Busca dados do usuário e perfil
-    const { data: user } = await supabase.from('users').select('email, name').eq('id', event.user_id).single()
-    const { data: profile } = await supabase.from('gmb_profiles').select('id, name, score').eq('user_id', event.user_id).order('created_at', { ascending: false }).limit(1).single()
+    // Busca dados do usuário e perfil (maybeSingle evita exceção se não encontrar)
+    const { data: user } = await supabase.from('users').select('email, name').eq('id', event.user_id).maybeSingle()
+    const { data: profile } = await supabase.from('gmb_profiles').select('id, name, score').eq('user_id', event.user_id).order('created_at', { ascending: false }).limit(1).maybeSingle()
     const { data: diagnostic } = profile
-      ? await supabase.from('diagnostics').select('score_total').eq('profile_id', profile.id).order('created_at', { ascending: false }).limit(1).single()
+      ? await supabase.from('diagnostics').select('score_total').eq('profile_id', profile.id).order('created_at', { ascending: false }).limit(1).maybeSingle()
       : { data: null }
 
     if (!user?.email || !profile?.name) {

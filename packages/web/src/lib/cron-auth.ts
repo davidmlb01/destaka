@@ -3,6 +3,7 @@
 // =============================================================================
 
 import { NextRequest, NextResponse } from 'next/server'
+import { timingSafeEqual } from 'crypto'
 
 export function validateCronAuth(request: NextRequest): NextResponse | null {
   const secret = process.env.CRON_SECRET
@@ -11,8 +12,19 @@ export function validateCronAuth(request: NextRequest): NextResponse | null {
     return NextResponse.json({ error: 'Cron não configurado' }, { status: 500 })
   }
 
-  const authHeader = request.headers.get('authorization')
-  if (authHeader !== `Bearer ${secret}`) {
+  const authHeader = request.headers.get('authorization') ?? ''
+  const expected = `Bearer ${secret}`
+
+  let isValid = false
+  try {
+    // timingSafeEqual previne timing attacks (comparação bit a bit em tempo constante)
+    isValid = authHeader.length === expected.length &&
+      timingSafeEqual(Buffer.from(authHeader), Buffer.from(expected))
+  } catch {
+    isValid = false
+  }
+
+  if (!isValid) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

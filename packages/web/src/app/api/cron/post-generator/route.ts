@@ -19,9 +19,14 @@ export async function POST(request: NextRequest) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
 
+  // Filtra apenas usuários pro — evita gerar posts para plano free
+  const { data: proUsers } = await db.from('users').select('id').neq('plan', 'free')
+  const proUserIds = (proUsers ?? []).map((u: { id: string }) => u.id)
+
   const { data: profiles, error: profilesError } = await db
     .from('gmb_profiles')
     .select('id, name, category, auto_post_mode, user_id, google_location_id')
+    .in('user_id', proUserIds.length ? proUserIds : ['00000000-0000-0000-0000-000000000000'])
 
   if (profilesError) {
     console.error('[cron/post-generator] profiles query error:', profilesError)

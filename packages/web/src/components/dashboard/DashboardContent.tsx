@@ -61,14 +61,19 @@ export function DashboardContent() {
   const [diagnosticId, setDiagnosticId] = useState<string>('')
 
   async function load() {
-    const res = await fetch('/api/dashboard', { cache: 'no-store' })
-    if (res.ok) {
-      const json = await res.json()
-      setData(json)
-      setDiagnosticId(json.diagnostic?.id ?? '')
-      router.refresh()
+    try {
+      const res = await fetch('/api/dashboard', { cache: 'no-store' })
+      if (res.ok) {
+        const json = await res.json()
+        setData(json)
+        setDiagnosticId(json.diagnostic?.id ?? '')
+        router.refresh()
+      }
+    } catch {
+      // erro de rede — loading para, skeleton some
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   async function handleSync() {

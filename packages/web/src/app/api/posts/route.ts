@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
 
   const { data: profile } = await serviceClient
     .from('gmb_profiles')
-    .select('id, name, category')
+    .select('id, name, category, auto_post_mode')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
     .limit(1)
@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
     page,
     pageSize,
     scheduledNext: scheduled ?? null,
-    autoPostMode: 'approval',
+    autoPostMode: profile.auto_post_mode ?? 'approval',
     profile: { id: profile.id, name: profile.name, category: profile.category },
   })
 }
