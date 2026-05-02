@@ -59,8 +59,6 @@ export default function LoginPage() {
     if (error) {
       console.error('OAuth error:', error.message)
       alert('Erro ao iniciar login: ' + error.message)
-    } else {
-      console.log('OAuth redirect URL:', data?.url)
     }
   }
 
