@@ -30,6 +30,15 @@ export async function POST(request: Request) {
 
   const serviceClient = await createServiceClient()
 
+  // Idempotência: ignora eventos já processados
+  const { error: dupError } = await serviceClient
+    .from('stripe_webhook_log')
+    .insert({ stripe_event_id: event.id })
+  if (dupError) {
+    // Duplicate key = evento já processado — retorna 200 para o Stripe não retentar
+    return NextResponse.json({ received: true, duplicate: true })
+  }
+
   switch (event.type) {
     case 'checkout.session.completed': {
       const session = event.data.object as Stripe.Checkout.Session
