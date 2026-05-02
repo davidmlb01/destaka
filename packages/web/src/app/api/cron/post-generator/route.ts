@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { generateWeeklyPost } from '@/lib/gmb/posts'
+import { createLocalPost } from '@/lib/gmb/client'
+import { getValidGmbToken } from '@/lib/gmb/auth'
 import { validateCronAuth } from '@/lib/cron-auth'
 import { logger } from '@/lib/logger'
 
@@ -19,7 +21,7 @@ export async function POST(request: NextRequest) {
 
   const { data: profiles, error: profilesError } = await db
     .from('gmb_profiles')
-    .select('id, name, category, auto_post_mode')
+    .select('id, name, category, auto_post_mode, user_id, google_location_id')
 
   if (profilesError) {
     console.error('[cron/post-generator] profiles query error:', profilesError)
@@ -57,9 +59,23 @@ export async function POST(request: NextRequest) {
         profile.name
       )
 
-      const status = profile.auto_post_mode === 'automatic' ? 'published' : 'draft'
-      const now = new Date().toISOString()
+      // Tenta publicar na GBP API quando modo automático
+      let status: 'published' | 'draft' = 'draft'
+      if (profile.auto_post_mode === 'automatic' && profile.user_id && profile.google_location_id) {
+        try {
+          const accessToken = await getValidGmbToken(profile.user_id)
+          await createLocalPost(accessToken, profile.google_location_id, generated.content)
+          status = 'published'
+        } catch (gbpErr) {
+          // Token inválido ou API falhou — salva como rascunho para publicação manual
+          logger.warn('cron/post-generator', 'falha ao publicar na GBP, salvando como rascunho', {
+            profileId: profile.id,
+            err: String(gbpErr),
+          })
+        }
+      }
 
+      const now = new Date().toISOString()
       const { error: insertError } = await db.from('gmb_posts').insert({
         profile_id: profile.id,
         content: generated.content,

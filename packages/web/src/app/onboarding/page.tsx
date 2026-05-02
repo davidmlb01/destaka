@@ -44,7 +44,7 @@ export default function OnboardingPage() {
     setSelected(location)
     setStep('saving')
 
-    const locationId = location.name.split('/').pop() ?? location.name
+    const locationId = location.name // caminho completo: "accounts/{accountId}/locations/{locationId}"
 
     const res = await fetch('/api/gmb/select', {
       method: 'POST',

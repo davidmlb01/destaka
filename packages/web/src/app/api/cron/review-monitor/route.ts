@@ -37,13 +37,13 @@ export async function POST(request: NextRequest) {
   for (const profile of profiles) {
     const autoPublish = profile.auto_post_mode === 'automatic'
 
-    // Valida token do usuário antes de processar reviews
+    // Obtém token do usuário — necessário para publicar respostas na GBP API
+    let accessToken: string | null = null
     try {
-      await getValidGmbToken(profile.user_id)
+      accessToken = await getValidGmbToken(profile.user_id)
     } catch (tokenErr) {
-      logger.warn('cron/review-monitor', 'token expirado', { userId: profile.user_id, profileId: profile.id, err: String(tokenErr) })
-      results.push({ profileId: profile.id, drafted: 0, published: 0, errors: 1 })
-      continue
+      logger.warn('cron/review-monitor', 'token expirado, processando apenas rascunhos', { userId: profile.user_id, profileId: profile.id, err: String(tokenErr) })
+      // Continua sem token — processReviewQueue salvará como rascunho em vez de publicar
     }
 
     try {
@@ -52,7 +52,8 @@ export async function POST(request: NextRequest) {
         profile.id,
         profile.category ?? 'profissional de saúde',
         profile.name,
-        autoPublish
+        autoPublish,
+        accessToken
       )
       results.push({ profileId: profile.id, ...stats })
     } catch (err) {

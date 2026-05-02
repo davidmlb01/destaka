@@ -22,9 +22,15 @@ export async function POST(request: NextRequest) {
   const results: Array<{ profileId: string; refreshed: number; errors: string[] }> = []
 
   for (const profile of profiles) {
-    const { refreshed, errors } = await refreshCompetitors(db, profile.id)
-    if (refreshed > 0) await generateBenchmark(db, profile.id)
-    results.push({ profileId: profile.id, refreshed, errors })
+    try {
+      const { refreshed, errors } = await refreshCompetitors(db, profile.id)
+      if (refreshed > 0) await generateBenchmark(db, profile.id)
+      results.push({ profileId: profile.id, refreshed, errors })
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err)
+      console.error(`[cron/competitor-tracker] erro no perfil=${profile.id}:`, err)
+      results.push({ profileId: profile.id, refreshed: 0, errors: [message] })
+    }
   }
 
   const totalRefreshed = results.reduce((sum, r) => sum + r.refreshed, 0)

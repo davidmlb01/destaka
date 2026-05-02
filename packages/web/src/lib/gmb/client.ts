@@ -273,3 +273,51 @@ export async function patchLocation(
     throw new Error(`GBP PATCH [${updateMask}] ${res.status}: ${text}`)
   }
 }
+
+// ---------------------------------------------------------------------------
+// Local Posts (criação de post na GBP API v4)
+// ---------------------------------------------------------------------------
+
+const MYBUSINESS_V4_URL = 'https://mybusiness.googleapis.com/v4'
+
+export async function createLocalPost(
+  accessToken: string,
+  locationName: string, // "accounts/{id}/locations/{id}"
+  content: string
+): Promise<void> {
+  const res = await fetch(`${MYBUSINESS_V4_URL}/${locationName}/localPosts`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ topicType: 'STANDARD', summary: content }),
+  })
+  if (!res.ok) {
+    const text = await res.text()
+    throw new Error(`GBP createLocalPost ${res.status}: ${text}`)
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Reviews Reply (resposta a review na GBP API v4)
+// ---------------------------------------------------------------------------
+
+export async function replyToReview(
+  accessToken: string,
+  reviewName: string, // "accounts/{id}/locations/{id}/reviews/{id}"
+  comment: string
+): Promise<void> {
+  const res = await fetch(`${MYBUSINESS_V4_URL}/${reviewName}/reply`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ comment }),
+  })
+  if (!res.ok) {
+    const text = await res.text()
+    throw new Error(`GBP replyToReview ${res.status}: ${text}`)
+  }
+}

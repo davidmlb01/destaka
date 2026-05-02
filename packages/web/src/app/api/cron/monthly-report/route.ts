@@ -25,6 +25,7 @@ export async function POST(request: NextRequest) {
     .from('users')
     .select('id, email')
     .not('email', 'is', null)
+    .neq('plan', 'free')
 
   if (usersError) {
     console.error('[cron/monthly-report] users query error:', usersError)
