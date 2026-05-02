@@ -1,6 +1,6 @@
 # MASTER BACKUP — Destaka (Projeto GMM)
-**Atualizado:** 2026-05-01
-**Status:** Pronto para primeiro cliente real — Stripe live configurado, checkout + webhook funcionando, 4 fixes críticos aplicados
+**Atualizado:** 2026-05-02
+**Status:** Pronto para primeiro cliente real — auditoria completa pré-prod executada, 7 fixes aplicados, zero blockers
 
 ---
 
@@ -353,8 +353,9 @@ Primeira sessão executiva completa. Fluxo: CEO → CMO → Brand → Story → 
 - `demo-login/route.ts`: já estava gateado por `GMB_MOCK !== 'true'` (C-2 — sem mudança necessária)
 
 **Webhooks Stripe:**
-- Live: `we_1TSOH5AwJUjY0HfebemQY7Hb` — destaka.com.br/api/stripe/webhook
-  - Events: `checkout.session.completed`, `customer.subscription.deleted`, `customer.subscription.updated`
+- Live webhook 1: `we_1TSOH5AwJUjY0HfebemQY7Hb` — destaka.com.br/api/stripe/webhook
+- Live webhook 2: segundo webhook no mesmo endpoint (criado anteriormente)
+  - Ambos ouvindo: `checkout.session.completed`, `customer.subscription.deleted`, `customer.subscription.updated`, `invoice.payment_failed`
 - Test (descontinuado): `whsec_rA2nZ3faUmG4mk3V7wX0QCvXy3Ud6xyf`
 
 **Estado do fluxo (testado):**
@@ -369,6 +370,47 @@ Primeira sessão executiva completa. Fluxo: CEO → CMO → Brand → Story → 
 2. Ativar conta Stripe (bank account) para receber transferências
 3. Adicionar webhook event `customer.subscription.updated` no painel Stripe (dashboard — já no código)
 4. Primeiro cliente real com GBP real (sem GMB_MOCK)
+
+### 2026-05-02 — Sessão 10: Auditoria Pré-Prod + 7 Fixes Críticos
+
+**Objetivo:** Auditar e debugar antes de onboardar o primeiro cliente real.
+
+**Problemas identificados e corrigidos:**
+
+| Severity | Problema | Fix aplicado |
+|----------|----------|-------------|
+| B1 — Bloqueador | Posts gerados mas nunca publicados na GBP | Implementado `createLocalPost` em `client.ts`, integrado ao cron `post-generator` com fallback draft |
+| B2 — Bloqueador | Respostas de reviews geradas mas nunca publicadas na GBP | Implementado `replyToReview` em `client.ts`, `review-automation` agora passa reply real para GBP API |
+| G1 — Grave | Reviews nunca sincronizavam do Google (banco usava só dados mock) | Implementado `listGmbReviews` (paginado) + `syncProfileReviews`, chamado automaticamente antes de cada diagnóstico |
+| I1 — Importante | Relatório mensal enviado para usuários free | Filtro `.neq('plan', 'free')` em `monthly-report/route.ts` |
+| I2 — Importante | `competitor-tracker` crashava ao processar qualquer perfil com erro | try/catch por perfil, erros isolados sem derrubar os demais |
+| G2 — Grave | 4 env vars críticas não validadas no startup | `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` adicionadas a `env-check.ts` |
+| Bug | Onboarding 409 tratado como sucesso, loop infinito | Fix status handling, agora exibe mensagem de erro correta |
+
+**Descoberta crítica — `google_location_id`:**
+- Estava armazenando apenas ID numérico (`789012`) em vez do caminho completo (`accounts/{id}/locations/{id}`)
+- APIs de escrita da GBP exigem caminho completo — sem isso, posts e replies nunca chegariam ao Google
+- Fix: onboarding agora salva `location.name` completo (uma linha alterada)
+
+**Commits:**
+- `230949c` — fix(gbp): publicar posts e respostas reais na GBP API, filtrar relatório por plano
+- `51610fb` — fix(audit): review sync, env-check, 409 handling
+
+**TypeScript:** zero erros em ambas as rodadas de auditoria.
+
+**Estado do fluxo pós-fixes:**
+- Posts automáticos: gerados + publicados na GBP (modo `automatic`) ou salvos como draft (modo `draft`)
+- Respostas de reviews: geradas + publicadas na GBP quando `auto_reply=true` e token válido
+- Diagnóstico: sincroniza reviews reais antes de rodar (dados sempre frescos)
+- Relatório mensal: só usuários Pro recebem
+- Competitor tracker: resiliente a falhas por perfil
+- Env check: bloqueia startup se qualquer var crítica faltar
+
+**Pendências:**
+- Push para Vercel (2 commits locais aguardando)
+- Testar end-to-end com GBP real (primeiro cliente)
+- Stripe webhook idempotência (tabela `stripe_events`) — não bloqueador agora
+- Error pages (`error.tsx`, `not-found.tsx`) — melhoria de UX
 
 ### 2026-03-29 — Sessão de Branding
 - Brand Squad (Brand Chief + Emily Heyward + Naming Strategist + Archetype Consultant) convocados
