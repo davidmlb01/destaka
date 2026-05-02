@@ -68,8 +68,9 @@ export async function POST(request: Request) {
       const customerId = subscription.customer as string
       const status = subscription.status
 
-      // Se assinatura foi cancelada ou inadimplente, rebaixa para free
-      if (status === 'canceled' || status === 'unpaid' || status === 'past_due') {
+      // Rebaixa para free apenas em cancelamento definitivo ou inadimplência confirmada.
+      // past_due = pagamento atrasado, Stripe retentar automaticamente — NÃO downgrader ainda.
+      if (status === 'canceled' || status === 'unpaid') {
         await serviceClient
           .from('users')
           .update({ plan: 'free', updated_at: new Date().toISOString() })

@@ -47,11 +47,16 @@ export async function processReviewQueue(
         } catch (gbpErr) {
           // API falhou — salva como rascunho para publicação manual
           console.warn(`[review-automation] falha ao publicar resposta na GBP review=${review.id}:`, gbpErr)
-          await db
-            .from('gmb_reviews')
-            .update({ ai_reply_draft: reply })
-            .eq('id', review.id)
-          result.drafted++
+          try {
+            await db
+              .from('gmb_reviews')
+              .update({ ai_reply_draft: reply })
+              .eq('id', review.id)
+            result.drafted++
+          } catch (dbErr) {
+            console.error(`[review-automation] falha ao salvar draft review=${review.id}:`, dbErr)
+            result.errors++
+          }
         }
       } else {
         await db

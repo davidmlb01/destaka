@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { trackEvent } from '@/lib/analytics'
+import { getValidGmbToken } from '@/lib/gmb/auth'
+import { replyToReview } from '@/lib/gmb/client'
 
 // PATCH /api/reviews/[id]
 // Body: { reply, action: 'publish' | 'ignore' }
@@ -17,10 +19,10 @@ export async function PATCH(
 
   const serviceClient = await createServiceClient()
 
-  // Verify ownership
+  // Verify ownership — inclui google_review_id para reply via API
   const { data: review } = await serviceClient
     .from('gmb_reviews')
-    .select('id, profile_id, gmb_profiles(user_id)')
+    .select('id, profile_id, google_review_id, gmb_profiles(user_id)')
     .eq('id', id)
     .single()
 
@@ -36,17 +38,27 @@ export async function PATCH(
       return NextResponse.json({ error: 'Resposta não pode estar vazia' }, { status: 400 })
     }
 
-    // Em produção: chamar GMB API para publicar a resposta
-    // Por ora persiste no banco e marca como replied
+    // Publica resposta na GBP API (fail gracioso — se API falhar, salva no banco mesmo assim)
+    let gbpPublished = false
+    if (review.google_review_id) {
+      try {
+        const accessToken = await getValidGmbToken(user.id)
+        await replyToReview(accessToken, review.google_review_id, body.reply)
+        gbpPublished = true
+      } catch (gbpErr) {
+        console.warn(`[reviews/${id}] falha ao publicar na GBP, salvando no banco:`, gbpErr)
+      }
+    }
+
     await serviceClient
       .from('gmb_reviews')
-      .update({ reply: body.reply, reply_status: 'replied' })
+      .update({ reply: body.reply, reply_status: 'replied', ai_reply_draft: null })
       .eq('id', id)
 
     // Evento de engajamento: resposta a avaliação publicada
     trackEvent(serviceClient, user.id, 'review_responded', { profileId: review.profile_id })
 
-    return NextResponse.json({ success: true, status: 'replied' })
+    return NextResponse.json({ success: true, status: 'replied', gbpPublished })
   }
 
   if (body.action === 'ignore') {

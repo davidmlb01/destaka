@@ -15,7 +15,12 @@ export async function POST(request: NextRequest) {
     .from('gmb_profiles')
     .select('id, name')
 
-  if (error || !profiles?.length) {
+  if (error) {
+    console.error('[cron/competitor-tracker] erro ao buscar perfis:', error.message)
+    return NextResponse.json({ error: 'DB query failed' }, { status: 500 })
+  }
+
+  if (!profiles?.length) {
     return NextResponse.json({ ok: true, processed: 0 })
   }
 
