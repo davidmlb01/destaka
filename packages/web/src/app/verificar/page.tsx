@@ -1,3 +1,6 @@
+import { Logo } from '@/components/ui/Logo'
+import { Badge } from '@/components/ui/Badge'
+import { Button } from '@/components/ui/Button'
 import { VerifyTool } from '@/components/verificar/VerifyTool'
 
 export const metadata = {
@@ -23,23 +26,10 @@ export default function VerificarPage() {
 
       {/* Header */}
       <header className="relative z-10 px-6 py-5 flex items-center justify-between max-w-4xl mx-auto">
-        <a href="/" className="flex items-center gap-2">
-          <span style={{ color: '#F59E0B', fontSize: 20 }}>✦</span>
-          <span className="font-display font-extrabold text-white" style={{ fontSize: 18 }}>
-            Desta<span style={{ color: '#F59E0B' }}>ka</span>
-          </span>
-        </a>
-        <a
-          href="/login"
-          className="text-xs font-medium px-4 py-2 rounded-xl transition-all"
-          style={{
-            background: 'rgba(255,255,255,0.08)',
-            color: 'rgba(255,255,255,0.6)',
-            border: '1px solid rgba(255,255,255,0.12)',
-          }}
-        >
+        <Logo size="sm" href="/" />
+        <Button variant="ghost" size="sm" href="/login">
           Entrar na plataforma
-        </a>
+        </Button>
       </header>
 
       {/* Conteúdo */}
@@ -47,17 +37,7 @@ export default function VerificarPage() {
 
         {/* Hero */}
         <div className="text-center pt-8 pb-10">
-          <div
-            className="inline-flex items-center gap-2 rounded-full px-3 py-1 mb-5 text-xs font-bold tracking-widest uppercase"
-            style={{
-              background: 'rgba(245,158,11,0.12)',
-              border: '1px solid rgba(245,158,11,0.25)',
-              color: '#FCD34D',
-            }}
-          >
-            <span style={{ color: '#F59E0B', fontSize: 10 }}>✦</span>
-            Diagnóstico gratuito
-          </div>
+          <Badge variant="subtle" className="mb-5">Diagnóstico gratuito</Badge>
 
           <h1
             className="font-display font-extrabold text-white mb-4"

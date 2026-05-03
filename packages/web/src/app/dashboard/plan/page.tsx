@@ -1,3 +1,4 @@
+import { Badge } from '@/components/ui/Badge'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
@@ -38,18 +39,7 @@ export default async function PlanPage() {
 
         {/* Header */}
         <div className="mb-12">
-          <div
-            className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-4 text-xs font-bold tracking-widest uppercase"
-            style={{
-              background: 'rgba(245,158,11,0.12)',
-              border: '1px solid rgba(245,158,11,0.3)',
-              color: '#FCD34D',
-            }}
-          >
-            <span style={{ color: '#F59E0B', fontSize: 9 }}>✦</span>
-            Plano Destaka
-            <span style={{ color: '#F59E0B', fontSize: 9 }}>✦</span>
-          </div>
+          <Badge variant="subtle" className="mb-4">Plano Destaka <span style={{ color: '#F59E0B' }}>✦</span></Badge>
 
           <h1
             className="font-display font-extrabold text-white"

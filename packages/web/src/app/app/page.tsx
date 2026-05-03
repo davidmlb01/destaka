@@ -1,4 +1,7 @@
 import Link from 'next/link'
+import { Logo } from '@/components/ui/Logo'
+import { Button } from '@/components/ui/Button'
+import { Badge } from '@/components/ui/Badge'
 
 // ─── NAV ────────────────────────────────────────────────────────────────────
 
@@ -9,12 +12,7 @@ function Nav() {
       style={{ background: 'rgba(20,83,45,0.92)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-[31px]" style={{ color: '#F59E0B', filter: 'drop-shadow(0 0 6px rgba(245,158,11,0.4))' }}>✦</span>
-          <span className="font-display font-extrabold text-[28px] text-white tracking-tight">
-            Desta<span style={{ color: '#F59E0B' }}>ka</span>
-          </span>
-        </div>
+        <Logo size="lg" glow href="/" />
         <div className="hidden md:flex items-center gap-8 text-[14px] font-medium" style={{ color: 'rgba(255,255,255,0.6)' }}>
           <a href="#como-funciona" className="hover:text-white transition-colors">Como funciona</a>
           <a href="#recursos" className="hover:text-white transition-colors">Recursos</a>
@@ -38,13 +36,9 @@ function Hero() {
 
       <div className="max-w-3xl w-full text-center relative z-10">
 
-        <div
-          className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-8 text-[11px] font-bold tracking-[1.8px] uppercase"
-          style={{ background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', color: '#FCD34D' }}
-        >
-          <span style={{ color: '#F59E0B' }}>✦</span>
+        <Badge className="mb-8">
           Para profissionais de saúde que merecem aparecer primeiro
-        </div>
+        </Badge>
 
         <h1
           className="font-display font-extrabold text-white leading-[1.05] tracking-[-2.5px] mb-6"
@@ -63,13 +57,9 @@ function Hero() {
           A Destaka decide o que o Google vai ver.
         </p>
 
-        <Link
-          href="/login"
-          className="font-display font-extrabold text-[16px] px-8 py-4 rounded-xl inline-flex items-center gap-2 transition-all"
-          style={{ background: '#D97706', color: '#1C1917', boxShadow: '0 6px 32px rgba(217,119,6,0.45)' }}
-        >
+        <Button variant="primary" size="lg" href="/login">
           <span>✦</span> Ver a nota do meu perfil
-        </Link>
+        </Button>
 
         <p className="mt-5 text-[12px]" style={{ color: '#ffffff' }}>
           Diagnóstico gratuito. Sem cadastro. Resultado em 30 segundos.
@@ -210,13 +200,9 @@ function ComoFunciona() {
                 <p className="text-[15px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.55)' }}>{step.desc}</p>
               </div>
               {step.cta && step.href && (
-                <Link
-                  href={step.href}
-                  className="mt-auto font-display font-bold text-[14px] px-5 py-3 rounded-xl self-start transition-all"
-                  style={{ background: '#D97706', color: '#1C1917' }}
-                >
+                <Button variant="primary" size="md" href={step.href} className="mt-auto self-start">
                   {step.cta} →
-                </Link>
+                </Button>
               )}
             </div>
           ))}
@@ -326,13 +312,9 @@ function Manifesto() {
           Quem salva vidas não deveria perder pacientes<br />por causa de burocracia digital.
         </p>
 
-        <Link
-          href="/login"
-          className="inline-flex items-center gap-2 font-display font-extrabold text-[16px] px-8 py-4 rounded-xl transition-all"
-          style={{ background: '#D97706', color: '#1C1917', boxShadow: '0 6px 32px rgba(217,119,6,0.45)' }}
-        >
+        <Button variant="primary" size="lg" href="/login">
           <span>✦</span> Descobrir minha nota no Google
-        </Link>
+        </Button>
 
         <p className="mt-5 text-[12px]" style={{ color: 'rgba(255,255,255,0.25)' }}>
           Grátis. Sem cadastro. Resultado em 30 segundos.
@@ -348,12 +330,7 @@ function Footer() {
   return (
     <footer className="px-6 py-10" style={{ background: '#0A2E18', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
-          <span className="text-[18px]" style={{ color: '#F59E0B' }}>✦</span>
-          <span className="font-display font-extrabold text-[16px] text-white tracking-tight">
-            Desta<span style={{ color: '#F59E0B' }}>ka</span>
-          </span>
-        </div>
+        <Logo size="sm" />
         <p className="text-[13px]" style={{ color: 'rgba(255,255,255,0.25)' }}>
           Google Business Profile no piloto automático. Para profissionais de saúde que merecem aparecer primeiro.
         </p>

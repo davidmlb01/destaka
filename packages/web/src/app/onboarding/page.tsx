@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Logo } from '@/components/ui/Logo'
+import { Button } from '@/components/ui/Button'
+import { Card } from '@/components/ui/Card'
 import type { GmbLocation } from '@/lib/gmb/client'
 
 type Step = 'loading' | 'select' | 'no_profiles' | 'error' | 'saving'
@@ -85,11 +88,8 @@ export default function OnboardingPage() {
 
       <div className="relative z-10 w-full max-w-2xl">
         {/* Logo */}
-        <div className="flex items-center justify-center gap-2 mb-10">
-          <span style={{ color: '#F59E0B', fontSize: 24 }}>✦</span>
-          <span className="font-display font-extrabold text-white" style={{ fontSize: 22 }}>
-            Desta<span style={{ color: '#F59E0B' }}>ka</span>
-          </span>
+        <div className="flex justify-center mb-10">
+          <Logo size="md" />
         </div>
 
         {step === 'loading' && <LoadingState />}
@@ -131,10 +131,7 @@ function SavingState({ name }: { name: string }) {
 
 function NoProfilesState() {
   return (
-    <div
-      className="rounded-2xl p-8 text-center"
-      style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
-    >
+    <Card variant="subtle" padding="lg" className="text-center">
       <div className="text-4xl mb-4">🔍</div>
       <h2 className="font-display font-extrabold text-white text-xl mb-3">
         Nenhum perfil encontrado
@@ -143,27 +140,20 @@ function NoProfilesState() {
         Sua conta Google não tem um perfil no Google Meu Negócio.
         Crie um em <a href="https://business.google.com" target="_blank" rel="noopener noreferrer" style={{ color: '#F59E0B' }}>business.google.com</a> e volte aqui.
       </p>
-    </div>
+    </Card>
   )
 }
 
 function ErrorState({ message }: { message: string }) {
   return (
-    <div
-      className="rounded-2xl p-8 text-center"
-      style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(239,68,68,0.3)' }}
-    >
+    <Card variant="subtle" padding="lg" className="text-center" style={{ border: '1px solid rgba(239,68,68,0.3)' }}>
       <div className="text-4xl mb-4">⚠️</div>
       <h2 className="font-display font-extrabold text-white text-xl mb-3">Algo deu errado</h2>
       <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 15, marginBottom: 24 }}>{message}</p>
-      <a
-        href="/login"
-        className="inline-block font-display font-bold rounded-xl px-6 py-3 text-sm transition-all"
-        style={{ background: '#D97706', color: '#1C1917' }}
-      >
+      <Button variant="primary" size="md" href="/login">
         Tentar novamente
-      </a>
-    </div>
+      </Button>
+    </Card>
   )
 }
 

@@ -1,4 +1,7 @@
 import Link from 'next/link'
+import { Logo } from '@/components/ui/Logo'
+import { Button } from '@/components/ui/Button'
+import { Badge } from '@/components/ui/Badge'
 
 export const metadata = {
   title: 'Politica de Privacidade | Destaka',
@@ -12,19 +15,10 @@ function Nav() {
       style={{ background: 'rgba(20,83,45,0.92)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <span className="text-[22px]" style={{ color: '#F59E0B', filter: 'drop-shadow(0 0 6px rgba(245,158,11,0.4))' }}>✦</span>
-          <span className="font-display font-extrabold text-[20px] text-white tracking-tight">
-            Desta<span style={{ color: '#F59E0B' }}>ka</span>
-          </span>
-        </Link>
-        <Link
-          href="/diagnostico"
-          className="font-display font-bold text-[14px] px-5 py-2.5 rounded-xl transition-all"
-          style={{ background: '#D97706', color: '#1C1917' }}
-        >
+        <Logo size="md" glow href="/" />
+        <Button variant="primary" size="md" href="/diagnostico">
           Diagnostico gratis
-        </Link>
+        </Button>
       </div>
     </nav>
   )
@@ -59,13 +53,7 @@ export default function PrivacidadePage() {
 
         {/* Header */}
         <div className="mb-12">
-          <div
-            className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-6 text-[11px] font-bold tracking-[1.8px] uppercase"
-            style={{ background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', color: '#FCD34D' }}
-          >
-            <span style={{ color: '#F59E0B' }}>✦</span>
-            Documento legal
-          </div>
+          <Badge className="mb-6">Documento legal</Badge>
           <h1
             className="font-display font-extrabold text-white tracking-tight mb-3"
             style={{ fontSize: 'clamp(32px, 5vw, 48px)', letterSpacing: '-1.5px' }}

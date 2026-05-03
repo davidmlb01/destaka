@@ -1,5 +1,9 @@
 'use client'
 
+import { Logo } from '@/components/ui/Logo'
+import { Button } from '@/components/ui/Button'
+import { Badge } from '@/components/ui/Badge'
+
 interface StepHeroProps {
   onStart: (clinicName: string, city: string) => void
 }
@@ -48,30 +52,12 @@ export function StepHero({ onStart }: StepHeroProps) {
       <div className="max-w-[580px] w-full text-center relative z-10">
 
         {/* Logo */}
-        <div className="flex items-center justify-center gap-2 mb-8">
-          <span
-            className="text-[30px]"
-            style={{ color: '#F59E0B', filter: 'drop-shadow(0 0 8px rgba(245,158,11,0.5))' }}
-          >
-            ✦
-          </span>
-          <span className="font-display font-extrabold text-[28px] text-white tracking-tight">
-            Desta<span style={{ color: '#F59E0B' }}>ka</span>
-          </span>
+        <div className="flex justify-center mb-8">
+          <Logo size="lg" glow />
         </div>
 
         {/* Badge */}
-        <div
-          className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-8 text-[11px] font-bold tracking-[1.8px] uppercase"
-          style={{
-            background: 'rgba(245,158,11,0.15)',
-            border: '1px solid rgba(245,158,11,0.35)',
-            color: '#FCD34D',
-          }}
-        >
-          <span style={{ color: '#F59E0B' }}>✦</span>
-          Diagnóstico gratuito, sem cadastro
-        </div>
+        <Badge className="mb-8">Diagnóstico gratuito, sem cadastro</Badge>
 
         {/* Headline */}
         <h1
@@ -174,20 +160,10 @@ export function StepHero({ onStart }: StepHeroProps) {
           </div>
 
           {/* CTA button */}
-          <button
-            type="submit"
-            className="w-full rounded-xl py-4 font-display font-extrabold text-[16px] flex items-center justify-center gap-2 transition-all active:scale-[0.99]"
-            style={{
-              background: 'linear-gradient(135deg, #14532D 0%, #166534 100%)',
-              color: '#fff',
-              boxShadow: '0 4px 24px rgba(20,83,45,0.4)',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 6px 32px rgba(20,83,45,0.55)' }}
-            onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 4px 24px rgba(20,83,45,0.4)' }}
-          >
+          <Button type="submit" variant="green" size="lg" fullWidth>
             <span style={{ color: '#FCD34D' }}>✦</span>
             Ver a nota do meu perfil
-          </button>
+          </Button>
 
           <p className="text-center text-[12px] mt-3" style={{ color: '#9CA3AF' }}>
             Grátis. Sem spam. Resultado em segundos.

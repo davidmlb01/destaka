@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
+import { Logo } from '@/components/ui/Logo'
 import { NAV_ITEMS } from './DashboardLayout'
 
 interface MobileNavProps {
@@ -30,12 +31,7 @@ export function MobileNav({ profileName, userEmail, activeHref }: MobileNavProps
           backdropFilter: 'blur(16px)',
         }}
       >
-        <div className="flex items-center gap-2">
-          <span style={{ color: 'var(--accent)', fontSize: 18 }}>✦</span>
-          <span className="font-display font-extrabold text-white" style={{ fontSize: 16 }}>
-            Desta<span style={{ color: 'var(--accent)' }}>ka</span>
-          </span>
-        </div>
+        <Logo size="sm" />
 
         <div className="flex items-center gap-3">
           <p className="text-xs truncate max-w-[120px]" style={{ color: 'var(--text-tertiary)' }}>
@@ -73,12 +69,7 @@ export function MobileNav({ profileName, userEmail, activeHref }: MobileNavProps
       >
         {/* Header */}
         <div className="flex items-center justify-between px-2 mb-8">
-          <div className="flex items-center gap-2">
-            <span style={{ color: 'var(--accent)', fontSize: 20 }}>✦</span>
-            <span className="font-display font-extrabold text-white" style={{ fontSize: 18 }}>
-              Desta<span style={{ color: 'var(--accent)' }}>ka</span>
-            </span>
-          </div>
+          <Logo size="sm" />
           <button
             onClick={() => setOpen(false)}
             className="text-lg leading-none transition-colors"

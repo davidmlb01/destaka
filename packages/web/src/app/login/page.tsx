@@ -1,6 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import { Logo } from '@/components/ui/Logo'
+import { Button } from '@/components/ui/Button'
+import { Card } from '@/components/ui/Card'
 import { createBrowserClient } from '@supabase/ssr'
 
 const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true'
@@ -79,25 +82,12 @@ export default function LoginPage() {
 
       <div className="relative z-10 w-full max-w-md">
         {/* Logo */}
-        <div className="flex items-center justify-center gap-2 mb-10">
-          <span style={{ color: '#F59E0B', fontSize: 28, filter: 'drop-shadow(0 0 8px rgba(245,158,11,0.5))' }}>✦</span>
-          <span
-            className="font-display font-extrabold text-white tracking-tight"
-            style={{ fontSize: 26 }}
-          >
-            Desta<span style={{ color: '#F59E0B' }}>ka</span>
-          </span>
+        <div className="flex justify-center mb-10">
+          <Logo size="lg" glow />
         </div>
 
         {/* Card */}
-        <div
-          className="rounded-2xl p-8"
-          style={{
-            background: 'rgba(255,255,255,0.04)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            backdropFilter: 'blur(12px)',
-          }}
-        >
+        <Card variant="glass" padding="lg">
           <h1
             className="font-display font-extrabold text-white text-center mb-2"
             style={{ fontSize: 26, letterSpacing: '-0.5px' }}
@@ -120,20 +110,10 @@ export default function LoginPage() {
             Conecte-se com o mesmo email que você usou para criar o seu Google Meu Negócio.
           </p>
 
-          <button
-            onClick={handleGoogleSignIn}
-            className="w-full flex items-center justify-center gap-3 rounded-xl font-display font-bold transition-all"
-            style={{
-              background: '#ffffff',
-              color: '#1C1917',
-              padding: '14px 24px',
-              fontSize: 15,
-              boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
-            }}
-          >
+          <Button variant="white" size="lg" fullWidth onClick={handleGoogleSignIn}>
             <GoogleIcon />
             Entrar com Google
-          </button>
+          </Button>
 
           {isDemoMode && (
             <>
@@ -142,22 +122,9 @@ export default function LoginPage() {
                 <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 12 }}>ou</span>
                 <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
               </div>
-              <button
-                onClick={handleDemoLogin}
-                disabled={demoLoading}
-                className="w-full flex items-center justify-center gap-2 rounded-xl font-display font-bold transition-all"
-                style={{
-                  background: 'rgba(245,158,11,0.12)',
-                  border: '1px solid rgba(245,158,11,0.3)',
-                  color: '#F59E0B',
-                  padding: '13px 24px',
-                  fontSize: 14,
-                  opacity: demoLoading ? 0.6 : 1,
-                  cursor: demoLoading ? 'not-allowed' : 'pointer',
-                }}
-              >
+              <Button variant="secondary" size="md" fullWidth onClick={handleDemoLogin} loading={demoLoading}>
                 {demoLoading ? 'Entrando...' : '✦ Entrar como Demo'}
-              </button>
+              </Button>
               <p className="text-center mt-3" style={{ color: 'rgba(255,255,255,0.2)', fontSize: 11 }}>
                 Dados simulados. Sem necessidade de conta Google.
               </p>
@@ -172,7 +139,7 @@ export default function LoginPage() {
               Ao entrar, você autoriza a Destaka a acessar o seu perfil no Google Meu Negócio.
             </p>
           )}
-        </div>
+        </Card>
 
         {/* Rodapé */}
         <p className="text-center mt-6" style={{ color: 'rgba(255,255,255,0.2)', fontSize: 12 }}>

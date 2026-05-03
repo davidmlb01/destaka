@@ -2,6 +2,7 @@
 
 import { ReactNode } from 'react'
 import Link from 'next/link'
+import { Logo } from '@/components/ui/Logo'
 import { MobileNav } from './MobileNav'
 
 export const NAV_ITEMS = [
@@ -42,11 +43,8 @@ export function DashboardLayout({ children, activeHref, profileName, userEmail }
         }}
       >
         {/* Logo */}
-        <div className="flex items-center gap-2.5 px-2 mb-4">
-          <span style={{ color: 'var(--accent)', fontSize: 24 }}>✦</span>
-          <span className="font-display font-extrabold text-white" style={{ fontSize: 22 }}>
-            Desta<span style={{ color: 'var(--accent)' }}>ka</span>
-          </span>
+        <div className="px-2 mb-4">
+          <Logo size="md" href="/dashboard" />
         </div>
 
         {/* Perfil */}

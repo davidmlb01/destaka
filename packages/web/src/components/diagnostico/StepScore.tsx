@@ -1,5 +1,7 @@
 'use client'
 
+import { Logo } from '@/components/ui/Logo'
+
 interface Category {
   icon: string
   name: string
@@ -93,12 +95,7 @@ export function StepScore({ clinicName, city, score, onCapture }: StepScoreProps
         style={{ background: 'linear-gradient(160deg, #14532D 0%, #0A2E18 100%)' }}
       >
         <div className="max-w-[680px] mx-auto flex items-center justify-between mb-10">
-          <div className="flex items-center gap-1.5">
-            <span className="text-[18px]" style={{ color: '#F59E0B' }}>✦</span>
-            <span className="font-display font-extrabold text-[16px] text-white tracking-[-0.3px]">
-              Desta<span style={{ color: '#F59E0B' }}>ka</span>
-            </span>
-          </div>
+          <Logo size="sm" />
           <span className="text-[12px] font-medium" style={{ color: 'rgba(255,255,255,0.4)' }}>
             {clinicName} · {city}
           </span>

@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import { Logo } from '@/components/ui/Logo'
+import { Badge } from '@/components/ui/Badge'
 import { TeaserForm } from './teaser-form'
 
 function Nav() {
@@ -8,12 +10,7 @@ function Nav() {
       style={{ background: 'rgba(20,83,45,0.85)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
     >
       <div className="max-w-5xl mx-auto flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-[22px]" style={{ color: '#F59E0B', filter: 'drop-shadow(0 0 6px rgba(245,158,11,0.4))' }}>✦</span>
-          <span className="font-extrabold text-[20px] text-white tracking-tight">
-            Desta<span style={{ color: '#F59E0B' }}>ka</span>
-          </span>
-        </div>
+        <Logo size="md" glow href="/" />
         <span className="text-[12px] font-semibold tracking-[1px] uppercase" style={{ color: 'rgba(255,255,255,0.4)' }}>
           Em breve
         </span>
@@ -49,13 +46,7 @@ export default function Home() {
       <section className="relative z-10 min-h-screen flex items-center justify-center px-6 pt-28 pb-20">
         <div className="max-w-xl w-full text-center">
 
-          <div
-            className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-10 text-[11px] font-bold tracking-[1.8px] uppercase"
-            style={{ background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', color: '#FCD34D' }}
-          >
-            <span style={{ color: '#F59E0B' }}>✦</span>
-            Lançamento em breve para profissionais de saúde
-          </div>
+          <Badge className="mb-10">Lançamento em breve para profissionais de saúde</Badge>
 
           <h1
             className="font-extrabold text-white mb-6"
