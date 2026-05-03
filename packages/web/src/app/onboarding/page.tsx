@@ -21,9 +21,18 @@ export default function OnboardingPage() {
       .then(async (res) => {
         // 403 = scope não concedido — redireciona para login para reconectar
         if (res.status === 403) {
+          const retries = Number(sessionStorage.getItem('onboarding_403_count') ?? '0') + 1
+          sessionStorage.setItem('onboarding_403_count', String(retries))
+          if (retries >= 3) {
+            sessionStorage.removeItem('onboarding_403_count')
+            setErrorMsg('Não foi possível acessar seu Google Meu Negócio. Verifique se você autorizou o acesso completo e tente novamente.')
+            setStep('error')
+            return
+          }
           window.location.href = '/login'
           return
         }
+        sessionStorage.removeItem('onboarding_403_count')
         const data = await res.json() as { error?: string; locations?: GmbLocation[]; noProfiles?: boolean }
         if (data.error) {
           setErrorMsg(data.error)
