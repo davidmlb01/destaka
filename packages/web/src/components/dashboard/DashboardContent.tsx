@@ -117,7 +117,7 @@ export function DashboardContent() {
     <div className="flex flex-col gap-8">
 
       {/* Linha 1: Score gauge + métricas */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch animate-fade-in-up">
 
         {/* Gauge */}
         <div
@@ -161,7 +161,7 @@ export function DashboardContent() {
       </div>
 
       {/* Linha 2: Cards de categoria */}
-      <div>
+      <div className="animate-fade-in-up stagger-2">
         <SectionTitle>Score por categoria</SectionTitle>
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
           {categories.map(cat => <ScoreCard key={cat.name} category={cat} />)}
@@ -169,7 +169,7 @@ export function DashboardContent() {
       </div>
 
       {/* Linha 3: Próximas ações + Gráfico */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fade-in-up stagger-4">
 
         {/* Próximas ações */}
         <div>
