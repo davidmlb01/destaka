@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 import { stripe } from '@/lib/stripe'
 import { createServiceClient } from '@/lib/supabase/server'
+import { resend, FROM } from '@/lib/email'
+import { logger } from '@/lib/logger'
 import type Stripe from 'stripe'
 
 export const dynamic = 'force-dynamic'
@@ -90,8 +92,34 @@ export async function POST(request: Request) {
     }
 
     case 'invoice.payment_failed': {
-      // Apenas loga — não rebaixa o plano imediatamente
-      // O Stripe tentará mais vezes antes de cancelar
+      const invoice = event.data.object as Stripe.Invoice
+      const customerId = invoice.customer as string
+      const attempt = invoice.attempt_count ?? 1
+
+      logger.warn('stripe/webhook', 'pagamento falhou', { customerId, attempt })
+
+      // Busca email do usuário para notificar
+      const { data: user } = await serviceClient
+        .from('users')
+        .select('email, name')
+        .eq('stripe_customer_id', customerId)
+        .maybeSingle()
+
+      if (user?.email) {
+        await resend.emails.send({
+          from: FROM,
+          to: user.email,
+          subject: 'Destaka: problema com seu pagamento',
+          html: `
+            <p>Olá${user.name ? `, ${user.name}` : ''},</p>
+            <p>Não conseguimos processar o pagamento da sua assinatura Destaka.</p>
+            <p>Vamos tentar novamente nos próximos dias. Se o problema persistir, atualize seu cartão no painel do Stripe.</p>
+            <p>Qualquer dúvida, responda este email.</p>
+            <p>Equipe Destaka</p>
+          `,
+        }).catch(() => {})
+      }
+
       break
     }
   }
