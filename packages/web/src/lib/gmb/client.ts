@@ -49,8 +49,24 @@ function formatAddress(raw: RawLocation): string {
   return parts.join(', ')
 }
 
+async function fetchWithRetry(
+  url: string,
+  init: RequestInit,
+  maxRetries = 3
+): Promise<Response> {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    const res = await fetch(url, init)
+    if (res.ok || (res.status < 429 && res.status !== 408)) return res
+    // Retry on 408, 429, 5xx
+    if (attempt === maxRetries) return res
+    const delay = Math.min(1000 * 2 ** attempt, 8000)
+    await new Promise(r => setTimeout(r, delay))
+  }
+  return fetch(url, init) // unreachable, satisfies TS
+}
+
 async function fetchJson<T>(url: string, accessToken: string): Promise<T> {
-  const res = await fetch(url, {
+  const res = await fetchWithRetry(url, {
     headers: { Authorization: `Bearer ${accessToken}` },
   })
   if (!res.ok) {
@@ -257,7 +273,7 @@ export async function patchLocation(
   updateMask: string,
   body: Record<string, unknown>
 ): Promise<void> {
-  const res = await fetch(
+  const res = await fetchWithRetry(
     `${BUSINESS_INFO_URL}/${locationName}?updateMask=${encodeURIComponent(updateMask)}`,
     {
       method: 'PATCH',
@@ -285,7 +301,7 @@ export async function createLocalPost(
   locationName: string, // "accounts/{id}/locations/{id}"
   content: string
 ): Promise<void> {
-  const res = await fetch(`${MYBUSINESS_V4_URL}/${locationName}/localPosts`, {
+  const res = await fetchWithRetry(`${MYBUSINESS_V4_URL}/${locationName}/localPosts`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -368,7 +384,7 @@ export async function replyToReview(
   reviewName: string, // "accounts/{id}/locations/{id}/reviews/{id}"
   comment: string
 ): Promise<void> {
-  const res = await fetch(`${MYBUSINESS_V4_URL}/${reviewName}/reply`, {
+  const res = await fetchWithRetry(`${MYBUSINESS_V4_URL}/${reviewName}/reply`, {
     method: 'PUT',
     headers: {
       Authorization: `Bearer ${accessToken}`,
