@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import type { Review, ReviewFilter } from '@/lib/gmb/reviews'
+import { ReviewsSkeleton } from './Skeletons'
 
 interface ReviewsData {
   reviews: Review[]
@@ -161,15 +162,7 @@ export function ReviewsContent() {
 
       {/* Lista */}
       {loading ? (
-        <div className="flex flex-col gap-3">
-          {[...Array(4)].map((_, i) => (
-            <div
-              key={i}
-              className="rounded-2xl animate-pulse"
-              style={{ height: 110, background: 'rgba(255,255,255,0.04)' }}
-            />
-          ))}
-        </div>
+        <ReviewsSkeleton />
       ) : !data?.reviews.length ? (
         <div
           className="rounded-2xl flex items-center justify-center py-16"

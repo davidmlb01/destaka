@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { PostsSkeleton } from './Skeletons'
 
 interface Post {
   id: string
@@ -122,13 +123,7 @@ export function PostsContent() {
   }
 
   if (loading) {
-    return (
-      <div className="flex flex-col gap-4">
-        {[...Array(3)].map((_, i) => (
-          <div key={i} className="rounded-2xl animate-pulse" style={{ height: 100, background: 'rgba(255,255,255,0.04)' }} />
-        ))}
-      </div>
-    )
+    return <PostsSkeleton />
   }
 
   return (

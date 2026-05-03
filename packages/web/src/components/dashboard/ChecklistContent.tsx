@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import type { ChecklistItem } from '@/lib/gmb/checklist'
+import { ChecklistSkeleton } from './Skeletons'
 
 interface ChecklistData {
   items: ChecklistItem[]
@@ -80,13 +81,7 @@ export function ChecklistContent() {
   }
 
   if (loading) {
-    return (
-      <div className="flex flex-col gap-3">
-        {[...Array(5)].map((_, i) => (
-          <div key={i} className="rounded-2xl animate-pulse" style={{ height: 80, background: 'rgba(255,255,255,0.04)' }} />
-        ))}
-      </div>
-    )
+    return <ChecklistSkeleton />
   }
 
   if (!data) return null

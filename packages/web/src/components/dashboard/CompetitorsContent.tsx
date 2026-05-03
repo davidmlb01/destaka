@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import type { Competitor, BenchmarkData } from '@/lib/gmb/competitors'
+import { CompetitorsSkeleton } from './Skeletons'
 
 interface Profile {
   id: string
@@ -173,17 +174,7 @@ export function CompetitorsContent() {
   useEffect(() => { load() }, [])
 
   if (loading) {
-    return (
-      <div className="flex flex-col gap-4">
-        {[...Array(3)].map((_, i) => (
-          <div
-            key={i}
-            className="rounded-2xl animate-pulse"
-            style={{ height: 140, background: 'var(--card-subtle)' }}
-          />
-        ))}
-      </div>
-    )
+    return <CompetitorsSkeleton />
   }
 
   return (
