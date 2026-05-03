@@ -2,61 +2,21 @@
 
 import { Logo } from '@/components/ui/Logo'
 
-interface Category {
-  icon: string
+interface ScoreCategory {
   name: string
+  label: string
   score: number
+  maxScore: number
 }
 
-interface Issue {
-  severity: 'critical' | 'warning' | 'ok'
-  title: string
-  description: string
+const CATEGORY_ICONS: Record<string, string> = {
+  completude: '📋',
+  photos: '📸',
+  reputation: '⭐',
+  activity: '📝',
+  services: '🏷️',
+  attributes: '✅',
 }
-
-function buildCategories(score: number): Category[] {
-  const base = [
-    { icon: '📋', name: 'Informações básicas', weight: 1.3 },
-    { icon: '📸', name: 'Fotos', weight: 0.5 },
-    { icon: '⭐', name: 'Avaliações', weight: 1.1 },
-    { icon: '📝', name: 'Posts e atualizações', weight: 0.4 },
-    { icon: '🏷️', name: 'Serviços cadastrados', weight: 1.0 },
-    { icon: '✅', name: 'Atributos do perfil', weight: 1.5 },
-  ]
-  return base.map((b, i) => ({
-    icon: b.icon,
-    name: b.name,
-    score: Math.min(100, Math.max(10, Math.round(score * b.weight + (i % 2 === 0 ? 8 : -12)))),
-  }))
-}
-
-const ISSUES: Issue[] = [
-  {
-    severity: 'critical',
-    title: 'Sem fotos do ambiente interno',
-    description: 'Perfis com fotos recebem 42% mais pedidos de rota. O Google penaliza perfis sem imagens atualizadas.',
-  },
-  {
-    severity: 'critical',
-    title: 'Nenhum post nos últimos 30 dias',
-    description: 'O algoritmo do Google favorece perfis ativos. Sem posts, você perde posição para concorrentes que publicam semanalmente.',
-  },
-  {
-    severity: 'warning',
-    title: '4 avaliações sem resposta',
-    description: '88% dos pacientes leem as respostas antes de escolher. Avaliações sem resposta reduzem a confiança no consultório.',
-  },
-  {
-    severity: 'warning',
-    title: 'Descrição do negócio sem palavras-chave',
-    description: 'Pacientes buscam "dentista especialista em implante SP": sua descrição não captura essas buscas.',
-  },
-  {
-    severity: 'warning',
-    title: 'Serviços incompletos',
-    description: 'Você tem 3 serviços cadastrados. Consultórios similares na sua cidade têm em média 11.',
-  },
-]
 
 function scoreColor(score: number) {
   if (score >= 70) return '#16A34A'
@@ -83,16 +43,43 @@ function getVerdict(score: number) {
   }
 }
 
+function buildIssues(categories: ScoreCategory[], place: { rating: number | null; reviewsTotal: number | null; website: string | null }) {
+  const issues: Array<{ severity: 'critical' | 'warning'; title: string; description: string }> = []
+
+  for (const cat of categories) {
+    const pct = Math.round((cat.score / cat.maxScore) * 100)
+    if (cat.name === 'activity' && pct < 30) {
+      issues.push({ severity: 'critical', title: 'Nenhum post recente no perfil', description: 'O algoritmo do Google favorece perfis ativos. Sem posts, você perde posição para concorrentes que publicam semanalmente.' })
+    }
+    if (cat.name === 'photos' && pct < 50) {
+      issues.push({ severity: 'critical', title: 'Poucas fotos no perfil', description: 'Perfis com fotos recebem 42% mais pedidos de rota. O Google penaliza perfis sem imagens atualizadas.' })
+    }
+    if (cat.name === 'reputation' && pct < 60) {
+      issues.push({ severity: 'warning', title: 'Avaliações precisam de atenção', description: place.reviewsTotal ? `Você tem ${place.reviewsTotal} avaliações (nota ${place.rating ?? '?'}). Responder todas aumenta a confiança dos pacientes.` : 'Seu perfil ainda não tem avaliações suficientes para gerar confiança.' })
+    }
+    if (cat.name === 'services' && pct < 40) {
+      issues.push({ severity: 'warning', title: 'Serviços incompletos', description: 'Cadastre todos os seus serviços para aparecer em mais buscas específicas na sua cidade.' })
+    }
+    if (cat.name === 'completude' && pct < 70) {
+      issues.push({ severity: 'warning', title: 'Informações básicas incompletas', description: !place.website ? 'Seu perfil não tem site cadastrado. Isso reduz a credibilidade e as chances de conversão.' : 'Preencha todas as informações (telefone, horários, descrição) para maximizar a visibilidade.' })
+    }
+  }
+
+  return issues.slice(0, 5)
+}
+
 interface StepScoreProps {
   clinicName: string
   city: string
   score: number
+  categories: ScoreCategory[]
+  place: { rating: number | null; reviewsTotal: number | null; website: string | null }
   onCapture: () => void
 }
 
-export function StepScore({ clinicName, city, score, onCapture }: StepScoreProps) {
+export function StepScore({ clinicName, city, score, categories, place, onCapture }: StepScoreProps) {
   const verdict = getVerdict(score)
-  const categories = buildCategories(score)
+  const issues = buildIssues(categories, place)
 
   return (
     <section className="min-h-screen flex flex-col" style={{ background: '#FAFAF9' }}>
@@ -111,7 +98,7 @@ export function StepScore({ clinicName, city, score, onCapture }: StepScoreProps
 
         <div className="max-w-[560px] mx-auto relative z-10">
           <p className="text-[11px] font-bold tracking-[3px] uppercase mb-5" style={{ color: 'rgba(255,255,255,0.4)' }}>
-            Resultado estimado do diagnóstico
+            Resultado do diagnóstico
           </p>
 
           {/* Score circle */}
@@ -157,35 +144,39 @@ export function StepScore({ clinicName, city, score, onCapture }: StepScoreProps
             <span className="flex-1 h-px" style={{ background: '#E7E5E4' }} />
           </h3>
           <div className="flex flex-col">
-            {categories.map((cat, i) => (
-              <div
-                key={cat.name}
-                className="flex items-center gap-3 py-2.5"
-                style={{ borderBottom: i < CATEGORIES.length - 1 ? '1px solid #E7E5E4' : 'none' }}
-              >
-                <span className="text-[18px] w-7 text-center flex-shrink-0">{cat.icon}</span>
-                <span className="flex-1 text-[14px] font-medium" style={{ color: '#1C1917' }}>{cat.name}</span>
-                <div className="w-[100px] h-1.5 rounded-full overflow-hidden flex-shrink-0" style={{ background: '#E7E5E4' }}>
-                  <div
-                    className="h-full rounded-full"
-                    style={{ width: `${cat.score}%`, background: scoreColor(cat.score) }}
-                  />
-                </div>
-                <span
-                  className="font-display font-bold text-[13px] min-w-[32px] text-right"
-                  style={{ color: scoreColor(cat.score) }}
+            {categories.map((cat, i) => {
+              const pct = Math.round((cat.score / cat.maxScore) * 100)
+              return (
+                <div
+                  key={cat.name}
+                  className="flex items-center gap-3 py-2.5"
+                  style={{ borderBottom: i < categories.length - 1 ? '1px solid #E7E5E4' : 'none' }}
                 >
-                  {cat.score}
-                </span>
-              </div>
-            ))}
+                  <span className="text-[18px] w-7 text-center flex-shrink-0">{CATEGORY_ICONS[cat.name] ?? '📌'}</span>
+                  <span className="flex-1 text-[14px] font-medium" style={{ color: '#1C1917' }}>{cat.label}</span>
+                  <div className="w-[100px] h-1.5 rounded-full overflow-hidden flex-shrink-0" style={{ background: '#E7E5E4' }}>
+                    <div
+                      className="h-full rounded-full"
+                      style={{ width: `${pct}%`, background: scoreColor(pct) }}
+                    />
+                  </div>
+                  <span
+                    className="font-display font-bold text-[13px] min-w-[32px] text-right"
+                    style={{ color: scoreColor(pct) }}
+                  >
+                    {pct}
+                  </span>
+                </div>
+              )
+            })}
           </div>
           <p className="text-[11px] mt-3 text-center" style={{ color: '#A8A29E' }}>
-            * Estimativa baseada em dados públicos. Conecte seu perfil para um diagnóstico completo e preciso.
+            Dados reais do Google. Conecte seu perfil para otimizar automaticamente.
           </p>
         </div>
 
         {/* Issues */}
+        {issues.length > 0 && (
         <div className="bg-white rounded-[20px] p-7 mb-5" style={{ boxShadow: '0 8px 40px rgba(0,0,0,0.1)' }}>
           <h3
             className="font-display font-bold text-[16px] mb-5 flex items-center gap-2"
@@ -195,15 +186,15 @@ export function StepScore({ clinicName, city, score, onCapture }: StepScoreProps
             <span className="flex-1 h-px" style={{ background: '#E7E5E4' }} />
           </h3>
           <div className="flex flex-col">
-            {ISSUES.map((issue, i) => (
+            {issues.map((issue, i) => (
               <div
                 key={issue.title}
                 className="flex items-start gap-3 py-3"
-                style={{ borderBottom: i < ISSUES.length - 1 ? '1px solid #E7E5E4' : 'none' }}
+                style={{ borderBottom: i < issues.length - 1 ? '1px solid #E7E5E4' : 'none' }}
               >
                 <div
                   className="w-2 h-2 rounded-full flex-shrink-0 mt-1.5"
-                  style={{ background: issue.severity === 'critical' ? '#DC2626' : issue.severity === 'warning' ? '#D97706' : '#16A34A' }}
+                  style={{ background: issue.severity === 'critical' ? '#DC2626' : '#D97706' }}
                 />
                 <div>
                   <p className="text-[14px] font-semibold mb-0.5" style={{ color: '#1C1917' }}>{issue.title}</p>
@@ -213,6 +204,7 @@ export function StepScore({ clinicName, city, score, onCapture }: StepScoreProps
             ))}
           </div>
         </div>
+        )}
 
         {/* Cost card */}
         <div
@@ -243,23 +235,20 @@ export function StepScore({ clinicName, city, score, onCapture }: StepScoreProps
           </div>
         </div>
 
-        {/* CTA card — área de conversão principal */}
+        {/* CTA card */}
         <div
           className="rounded-[20px] overflow-hidden mb-5"
           style={{ background: 'linear-gradient(145deg, #14532D 0%, #0A2E18 60%, #1C1917 100%)', boxShadow: '0 24px 64px rgba(20,83,45,0.4)' }}
         >
-          {/* Faixa âmbar no topo */}
           <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #D97706, #F59E0B, #D97706)' }} />
 
           <div className="p-8 text-center relative overflow-hidden">
-            {/* Orb decorativo */}
             <div
               className="absolute rounded-full pointer-events-none blur-[60px]"
               style={{ width: 300, height: 300, background: 'rgba(217,119,6,0.18)', top: -80, right: -80 }}
             />
 
             <div className="relative z-10">
-              {/* Ícone âmbar com glow */}
               <div
                 className="text-[44px] mb-4 leading-none"
                 style={{ color: '#F59E0B', filter: 'drop-shadow(0 0 16px rgba(245,158,11,0.6))' }}
@@ -279,7 +268,6 @@ export function StepScore({ clinicName, city, score, onCapture }: StepScoreProps
                 Conecte seu Google Meu Negócio agora e a Destaka começa a otimizar em menos de 5 minutos: fotos, posts, respostas, serviços e tudo mais.
               </p>
 
-              {/* Botão primário */}
               <button
                 onClick={onCapture}
                 className="w-full rounded-2xl py-5 font-display font-extrabold text-[17px] flex items-center justify-center gap-2 transition-all active:scale-[0.99] mb-3"
@@ -292,7 +280,6 @@ export function StepScore({ clinicName, city, score, onCapture }: StepScoreProps
                 <span>✦</span> Quero mais pacientes pelo Google.
               </button>
 
-              {/* Botão secundário */}
               <button
                 onClick={onCapture}
                 className="w-full rounded-xl py-3.5 font-body font-semibold text-[14px] transition-all"
@@ -305,7 +292,6 @@ export function StepScore({ clinicName, city, score, onCapture }: StepScoreProps
                 Receber relatório completo por e-mail
               </button>
 
-              {/* Trust badges */}
               <div className="flex items-center justify-center gap-4 mt-5 flex-wrap">
                 {['Garantia de 30 dias', 'Cancele quando quiser', 'Resultado em 5 minutos'].map((t) => (
                   <div key={t} className="flex items-center gap-1.5 text-[11px]" style={{ color: 'rgba(255,255,255,0.35)' }}>

@@ -21,9 +21,10 @@ interface StepLoadingProps {
   clinicName: string
   city: string
   onComplete: () => void
+  ready?: boolean
 }
 
-export function StepLoading({ clinicName, city, onComplete }: StepLoadingProps) {
+export function StepLoading({ clinicName, city, onComplete, ready }: StepLoadingProps) {
   const [items, setItems] = useState<LoadingItem[]>(
     LOADING_STEPS.map(s => ({ ...s, status: 'wait' }))
   )
@@ -46,14 +47,21 @@ export function StepLoading({ clinicName, city, onComplete }: StepLoadingProps) 
       }, delay))
     })
 
-    // finish
+    // finish animation
     timers.push(setTimeout(() => {
       setBarWidth(100)
-      timers.push(setTimeout(onComplete, 400))
     }, 5400))
 
     return () => timers.forEach(clearTimeout)
-  }, [onComplete])
+  }, [])
+
+  // Avança quando animação terminou E dados estão prontos
+  useEffect(() => {
+    if (barWidth === 100 && ready) {
+      const t = setTimeout(onComplete, 400)
+      return () => clearTimeout(t)
+    }
+  }, [barWidth, ready, onComplete])
 
   return (
     <section className="min-h-screen flex items-center justify-center px-6 py-10 bg-dark">

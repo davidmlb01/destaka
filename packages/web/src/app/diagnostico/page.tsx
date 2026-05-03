@@ -6,45 +6,87 @@ import { StepLoading } from '@/components/diagnostico/StepLoading'
 import { StepScore } from '@/components/diagnostico/StepScore'
 import { StepCapture } from '@/components/diagnostico/StepCapture'
 
-type Step = 'hero' | 'loading' | 'score' | 'capture'
+type Step = 'hero' | 'loading' | 'score' | 'capture' | 'error'
 
-interface DiagnosticState {
+interface ScoreCategory {
+  name: string
+  label: string
+  score: number
+  maxScore: number
+}
+
+interface DiagnosticResult {
   clinicName: string
   city: string
   score: number
-}
-
-// Score estimado baseado no nome (determinístico por input, varia entre clínicas)
-function estimateScore(name: string): number {
-  let hash = 0
-  for (let i = 0; i < name.length; i++) {
-    hash = ((hash << 5) - hash + name.charCodeAt(i)) | 0
+  categories: ScoreCategory[]
+  place: {
+    rating: number | null
+    reviewsTotal: number | null
+    website: string | null
   }
-  return 35 + Math.abs(hash % 30) // range 35-64
 }
 
 export default function DiagnosticoPage() {
   const [step, setStep] = useState<Step>('hero')
-  const [state, setState] = useState<DiagnosticState>({
-    clinicName: '',
-    city: '',
-    score: 50,
-  })
+  const [result, setResult] = useState<DiagnosticResult | null>(null)
+  const [query, setQuery] = useState({ clinicName: '', city: '' })
+  const [errorMsg, setErrorMsg] = useState('')
 
   function handleStart(clinicName: string, city: string) {
-    setState({ clinicName, city, score: estimateScore(clinicName + city) })
+    setQuery({ clinicName, city })
     setStep('loading')
     window.scrollTo(0, 0)
+
+    // Chamada real à API enquanto animação roda
+    fetch('/api/public/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ input: `${clinicName} ${city}` }),
+    })
+      .then(async res => {
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({})) as { error?: string }
+          throw new Error(data.error ?? 'Não foi possível encontrar o estabelecimento.')
+        }
+        return res.json()
+      })
+      .then(data => {
+        setResult({
+          clinicName: data.place?.name ?? clinicName,
+          city,
+          score: data.score?.total ?? 0,
+          categories: data.score?.categories ?? [],
+          place: {
+            rating: data.place?.rating ?? null,
+            reviewsTotal: data.place?.reviewsTotal ?? null,
+            website: data.place?.website ?? null,
+          },
+        })
+      })
+      .catch(err => {
+        setErrorMsg(err.message ?? 'Erro ao analisar o perfil.')
+        setStep('error')
+      })
   }
 
   const handleLoadingComplete = useCallback(() => {
-    setStep('score')
-    window.scrollTo(0, 0)
-  }, [])
+    if (result) {
+      setStep('score')
+      window.scrollTo(0, 0)
+    }
+    // Se result ainda não chegou, StepLoading vai aguardar
+  }, [result])
 
   function handleCapture() {
     setStep('capture')
     window.scrollTo(0, 0)
+  }
+
+  function handleRetry() {
+    setStep('hero')
+    setErrorMsg('')
+    setResult(null)
   }
 
   return (
@@ -54,21 +96,42 @@ export default function DiagnosticoPage() {
       )}
       {step === 'loading' && (
         <StepLoading
-          clinicName={state.clinicName}
-          city={state.city}
+          clinicName={query.clinicName}
+          city={query.city}
           onComplete={handleLoadingComplete}
+          ready={!!result}
         />
       )}
-      {step === 'score' && (
+      {step === 'score' && result && (
         <StepScore
-          clinicName={state.clinicName}
-          city={state.city}
-          score={state.score}
+          clinicName={result.clinicName}
+          city={result.city}
+          score={result.score}
+          categories={result.categories}
+          place={result.place}
           onCapture={handleCapture}
         />
       )}
-      {step === 'capture' && (
-        <StepCapture clinicName={state.clinicName} score={state.score} />
+      {step === 'capture' && result && (
+        <StepCapture clinicName={result.clinicName} score={result.score} />
+      )}
+      {step === 'error' && (
+        <section className="min-h-screen flex items-center justify-center px-6" style={{ background: 'linear-gradient(160deg, #14532D 0%, #0A2E18 100%)' }}>
+          <div className="text-center max-w-md">
+            <p className="text-[40px] mb-6">⚠️</p>
+            <h2 className="font-display font-extrabold text-white text-2xl mb-3">{errorMsg}</h2>
+            <p className="text-[15px] mb-8" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              Tente digitar o nome completo da clínica e a cidade.
+            </p>
+            <button
+              onClick={handleRetry}
+              className="px-8 py-3 rounded-xl font-semibold text-white transition-all"
+              style={{ background: '#D97706' }}
+            >
+              Tentar novamente
+            </button>
+          </div>
+        </section>
       )}
     </>
   )
