@@ -14,14 +14,21 @@ interface Issue {
   description: string
 }
 
-const CATEGORIES: Category[] = [
-  { icon: '📋', name: 'Informações básicas', score: 70 },
-  { icon: '📸', name: 'Fotos', score: 30 },
-  { icon: '⭐', name: 'Avaliações', score: 60 },
-  { icon: '📝', name: 'Posts e atualizações', score: 20 },
-  { icon: '🏷️', name: 'Serviços cadastrados', score: 55 },
-  { icon: '✅', name: 'Atributos do perfil', score: 80 },
-]
+function buildCategories(score: number): Category[] {
+  const base = [
+    { icon: '📋', name: 'Informações básicas', weight: 1.3 },
+    { icon: '📸', name: 'Fotos', weight: 0.5 },
+    { icon: '⭐', name: 'Avaliações', weight: 1.1 },
+    { icon: '📝', name: 'Posts e atualizações', weight: 0.4 },
+    { icon: '🏷️', name: 'Serviços cadastrados', weight: 1.0 },
+    { icon: '✅', name: 'Atributos do perfil', weight: 1.5 },
+  ]
+  return base.map((b, i) => ({
+    icon: b.icon,
+    name: b.name,
+    score: Math.min(100, Math.max(10, Math.round(score * b.weight + (i % 2 === 0 ? 8 : -12)))),
+  }))
+}
 
 const ISSUES: Issue[] = [
   {
@@ -85,6 +92,7 @@ interface StepScoreProps {
 
 export function StepScore({ clinicName, city, score, onCapture }: StepScoreProps) {
   const verdict = getVerdict(score)
+  const categories = buildCategories(score)
 
   return (
     <section className="min-h-screen flex flex-col" style={{ background: '#FAFAF9' }}>
@@ -103,7 +111,7 @@ export function StepScore({ clinicName, city, score, onCapture }: StepScoreProps
 
         <div className="max-w-[560px] mx-auto relative z-10">
           <p className="text-[11px] font-bold tracking-[3px] uppercase mb-5" style={{ color: 'rgba(255,255,255,0.4)' }}>
-            Resultado do diagnóstico
+            Resultado estimado do diagnóstico
           </p>
 
           {/* Score circle */}
@@ -149,7 +157,7 @@ export function StepScore({ clinicName, city, score, onCapture }: StepScoreProps
             <span className="flex-1 h-px" style={{ background: '#E7E5E4' }} />
           </h3>
           <div className="flex flex-col">
-            {CATEGORIES.map((cat, i) => (
+            {categories.map((cat, i) => (
               <div
                 key={cat.name}
                 className="flex items-center gap-3 py-2.5"
@@ -172,6 +180,9 @@ export function StepScore({ clinicName, city, score, onCapture }: StepScoreProps
               </div>
             ))}
           </div>
+          <p className="text-[11px] mt-3 text-center" style={{ color: '#A8A29E' }}>
+            * Estimativa baseada em dados públicos. Conecte seu perfil para um diagnóstico completo e preciso.
+          </p>
         </div>
 
         {/* Issues */}

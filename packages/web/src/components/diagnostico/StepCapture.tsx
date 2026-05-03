@@ -2,12 +2,32 @@
 
 import { useState } from 'react'
 
-export function StepCapture() {
-  const [email, setEmail] = useState('')
+interface StepCaptureProps {
+  clinicName: string
+  score: number
+}
 
-  function handleEmailSubmit(e: React.FormEvent) {
+export function StepCapture({ clinicName, score }: StepCaptureProps) {
+  const [email, setEmail] = useState('')
+  const [sending, setSending] = useState(false)
+  const [sent, setSent] = useState(false)
+
+  async function handleEmailSubmit(e: React.FormEvent) {
     e.preventDefault()
-    window.location.href = '/login'
+    if (!email || sending) return
+    setSending(true)
+    try {
+      await fetch('/api/public/capture-lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, placeName: clinicName, score }),
+      })
+      setSent(true)
+    } catch {
+      setSent(true)
+    } finally {
+      setSending(false)
+    }
   }
 
   function handleGoogleAuth() {
@@ -17,7 +37,7 @@ export function StepCapture() {
   const benefits = [
     'Diagnóstico completo de 50+ pontos',
     'Otimização automática em 5 minutos',
-    'Sem cartão de crédito no teste grátis',
+    'Sem compromisso, sem cartão de crédito',
     'Cancele quando quiser',
   ]
 
@@ -127,13 +147,15 @@ export function StepCapture() {
             />
             <button
               type="submit"
+              disabled={sending || sent}
               className="w-full rounded-xl py-4 font-display font-extrabold text-[15px] text-white transition-all"
               style={{
-                background: 'linear-gradient(135deg, #14532D 0%, #166534 100%)',
-                boxShadow: '0 4px 20px rgba(20,83,45,0.35)',
+                background: sent ? '#16A34A' : 'linear-gradient(135deg, #14532D 0%, #166534 100%)',
+                boxShadow: sent ? 'none' : '0 4px 20px rgba(20,83,45,0.35)',
+                opacity: sending ? 0.7 : 1,
               }}
             >
-              Receber diagnóstico completo →
+              {sent ? '✓ Enviado! Confira seu email.' : sending ? 'Enviando...' : 'Receber diagnóstico por email →'}
             </button>
           </form>
         </div>

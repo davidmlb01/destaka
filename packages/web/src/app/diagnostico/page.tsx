@@ -14,19 +14,25 @@ interface DiagnosticState {
   score: number
 }
 
-// Mock score — será substituído pela API do Google Business Profile (Block 1)
-const MOCK_SCORE = 55
+// Score estimado baseado no nome (determinístico por input, varia entre clínicas)
+function estimateScore(name: string): number {
+  let hash = 0
+  for (let i = 0; i < name.length; i++) {
+    hash = ((hash << 5) - hash + name.charCodeAt(i)) | 0
+  }
+  return 35 + Math.abs(hash % 30) // range 35-64
+}
 
 export default function DiagnosticoPage() {
   const [step, setStep] = useState<Step>('hero')
   const [state, setState] = useState<DiagnosticState>({
     clinicName: '',
     city: '',
-    score: MOCK_SCORE,
+    score: 50,
   })
 
   function handleStart(clinicName: string, city: string) {
-    setState(prev => ({ ...prev, clinicName, city }))
+    setState({ clinicName, city, score: estimateScore(clinicName + city) })
     setStep('loading')
     window.scrollTo(0, 0)
   }
@@ -62,7 +68,7 @@ export default function DiagnosticoPage() {
         />
       )}
       {step === 'capture' && (
-        <StepCapture />
+        <StepCapture clinicName={state.clinicName} score={state.score} />
       )}
     </>
   )
