@@ -60,7 +60,7 @@ export function DashboardLayout({ children, activeHref, profileName, userEmail }
               <Link
                 key={item.href}
                 href={item.href}
-                className="group flex items-center gap-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150"
+                className={`group flex items-center gap-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 nav-link ${isActive ? 'nav-active' : ''}`}
                 style={{
                   paddingLeft: isActive ? '10px' : '12px',
                   paddingRight: '12px',
@@ -69,18 +69,6 @@ export function DashboardLayout({ children, activeHref, profileName, userEmail }
                   borderLeft: isActive ? '2px solid var(--accent)' : '2px solid transparent',
                   borderRadius: isActive ? '0 12px 12px 0' : '12px',
                   textDecoration: 'none',
-                }}
-                onMouseEnter={e => {
-                  if (!isActive) {
-                    (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.05)'
-                    ;(e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.75)'
-                  }
-                }}
-                onMouseLeave={e => {
-                  if (!isActive) {
-                    (e.currentTarget as HTMLElement).style.background = 'transparent'
-                    ;(e.currentTarget as HTMLElement).style.color = 'var(--text-tertiary)'
-                  }
                 }}
               >
                 <span style={{ fontSize: 15 }}>{item.icon}</span>
@@ -95,10 +83,8 @@ export function DashboardLayout({ children, activeHref, profileName, userEmail }
           <p className="text-xs truncate mb-2" style={{ color: 'var(--text-muted)' }}>{userEmail}</p>
           <a
             href="/api/auth/signout"
-            className="text-xs transition-colors"
+            className="text-xs transition-colors hover-signout"
             style={{ color: 'var(--text-muted)' }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.6)' }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--text-muted)' }}
           >
             Sair
           </a>

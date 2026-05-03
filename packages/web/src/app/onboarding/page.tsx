@@ -185,18 +185,10 @@ function SelectState({
           <button
             key={loc.name}
             onClick={() => onSelect(loc)}
-            className="w-full text-left rounded-2xl p-5 transition-all group"
+            className="w-full text-left rounded-2xl p-5 transition-all group location-card"
             style={{
               background: 'rgba(255,255,255,0.04)',
               border: '1px solid rgba(255,255,255,0.08)',
-            }}
-            onMouseEnter={e => {
-              ;(e.currentTarget as HTMLElement).style.border = '1px solid rgba(217,119,6,0.5)'
-              ;(e.currentTarget as HTMLElement).style.background = 'rgba(217,119,6,0.06)'
-            }}
-            onMouseLeave={e => {
-              ;(e.currentTarget as HTMLElement).style.border = '1px solid rgba(255,255,255,0.08)'
-              ;(e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)'
             }}
           >
             <div className="flex items-start justify-between gap-4">

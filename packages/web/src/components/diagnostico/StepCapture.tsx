@@ -77,20 +77,12 @@ export function StepCapture() {
           {/* Botão Google */}
           <button
             onClick={handleGoogleAuth}
-            className="w-full rounded-xl py-3.5 font-body font-semibold text-[15px] flex items-center justify-center gap-2.5 mb-3 transition-all"
+            className="w-full rounded-xl py-3.5 font-body font-semibold text-[15px] flex items-center justify-center gap-2.5 mb-3 transition-all google-auth-btn"
             style={{
               background: '#fff',
               color: '#1C1917',
               border: '1.5px solid #E7E5E4',
               boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.borderColor = '#14532D'
-              e.currentTarget.style.boxShadow = '0 2px 12px rgba(20,83,45,0.12)'
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.borderColor = '#E7E5E4'
-              e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.06)'
             }}
           >
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">

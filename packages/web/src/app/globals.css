@@ -87,6 +87,26 @@ textarea {
   field-sizing: content;
 }
 
+/* ─── Hover utilities (substitui onMouseEnter/Leave JS) ───────────── */
+.nav-link:not(.nav-active):hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.hover-signout:hover {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.location-card:hover {
+  border-color: rgba(217, 119, 6, 0.5) !important;
+  background: rgba(217, 119, 6, 0.06) !important;
+}
+
+.google-auth-btn:hover {
+  border-color: #14532D !important;
+  box-shadow: 0 2px 12px rgba(20, 83, 45, 0.12) !important;
+}
+
 /* ─── Reduced motion ───────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
