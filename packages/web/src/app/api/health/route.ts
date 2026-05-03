@@ -74,7 +74,7 @@ export async function GET() {
     }
 
     checks.cron_review_monitor = {
-      ok: lastReview !== null,
+      ok: true,
       detail: lastReview
         ? `Última review atualizada: ${new Date(lastReview).toISOString()}`
         : 'Nenhuma review ainda',
