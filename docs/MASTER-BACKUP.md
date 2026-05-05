@@ -1,6 +1,6 @@
 # MASTER BACKUP — Destaka (Projeto GMM)
-**Atualizado:** 2026-05-02
-**Status:** Pronto para primeiro cliente real — auditoria completa pré-prod executada, 7 fixes aplicados, zero blockers
+**Atualizado:** 2026-05-05
+**Status:** Auditoria tripla CTO+CMO+Design executada (77/78/70), 3 blockers UX identificados, app funcional para demo com ressalvas
 
 ---
 
@@ -411,6 +411,42 @@ Primeira sessão executiva completa. Fluxo: CEO → CMO → Brand → Story → 
 - Testar end-to-end com GBP real (primeiro cliente)
 - Stripe webhook idempotência (tabela `stripe_events`) — não bloqueador agora
 - Error pages (`error.tsx`, `not-found.tsx`) — melhoria de UX
+
+### 2026-05-05 — Sessão 16: Auditoria Tripla CTO+CMO+Design Lead
+
+**Objetivo:** Auditoria completa pré-reunião com cliente.
+
+**Scores:**
+- CTO: 77/100 (GO funcional, 0 blockers)
+- CMO: 78/100 (GO condicional, 3 blockers UX)
+- Design Lead: 70/100 (GO com ressalvas, 1 blocker acessibilidade)
+
+**Blockers identificados:**
+1. Homepage diz "Em breve" mas app esta LIVE (CMO)
+2. Contraste texto secundario insuficiente, opacity 0.3 ratio 2.2:1 (Design)
+3. Checkout mostra alert() nativo se usuario ja e Pro (CMO)
+4. Dashboard tela vazia se API falhar (CMO)
+
+**Graves prioritarios:**
+- BullMQ + next-auth sao dependencias mortas (CTO)
+- Credenciais demo hardcoded no source code (CTO)
+- Emojis na sidebar/nav em vez de icones SVG (Design)
+- Modais sem transicao e sem focus-trap (Design)
+- Sem email de falha de pagamento (CMO)
+- Dados "custo pratico" hardcoded no diagnostico (CMO)
+- Component library incompleta: faltam Modal, Toast, Select, Tabs (Design)
+
+**Pontos fortes confirmados:**
+- Stripe LIVE funcionando
+- Lead magnet (diagnostico publico) e a melhor parte do produto
+- Estetica dark premium coerente (verde floresta + ambar)
+- Score Gauge SVG customizado com qualidade
+- Monitoramento Slack ativo
+
+**Recomendacao para demo:**
+- Ir direto para /login ou diagnostico publico (NAO abrir homepage)
+- NAO clicar "Ativar plano" durante demo
+- Mostrar: Dashboard, Score Gauge, Posts, Reviews
 
 ### 2026-03-29 — Sessão de Branding
 - Brand Squad (Brand Chief + Emily Heyward + Naming Strategist + Archetype Consultant) convocados
