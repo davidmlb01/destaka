@@ -1,10 +1,10 @@
 import Link from 'next/link'
 
 const sizes = {
-  xs: { mark: 16, text: 13, gap: 3 },
-  sm: { mark: 20, text: 16, gap: 4 },
-  md: { mark: 28, text: 22, gap: 5 },
-  lg: { mark: 36, text: 28, gap: 6 },
+  xs: { mark: 18, text: 13, gap: 3 },
+  sm: { mark: 22, text: 16, gap: 4 },
+  md: { mark: 30, text: 22, gap: 4 },
+  lg: { mark: 40, text: 28, gap: 5 },
 } as const
 
 type LogoSize = keyof typeof sizes
