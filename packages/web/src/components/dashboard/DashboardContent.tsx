@@ -57,10 +57,12 @@ export function DashboardContent() {
   const router = useRouter()
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
   const [syncing, setSyncing] = useState(false)
   const [diagnosticId, setDiagnosticId] = useState<string>('')
 
   async function load() {
+    setError(false)
     try {
       const res = await fetch('/api/dashboard', { cache: 'no-store' })
       if (res.ok) {
@@ -68,9 +70,11 @@ export function DashboardContent() {
         setData(json)
         setDiagnosticId(json.diagnostic?.id ?? '')
         router.refresh()
+      } else {
+        setError(true)
       }
     } catch {
-      // erro de rede — loading para, skeleton some
+      setError(true)
     } finally {
       setLoading(false)
     }
@@ -90,7 +94,26 @@ export function DashboardContent() {
 
   useEffect(() => { load() }, [])
 
-  if (loading || !data) return <DashboardSkeleton />
+  if (loading) return <DashboardSkeleton />
+
+  if (error || !data) return (
+    <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
+      <div className="text-[48px] mb-4" style={{ opacity: 0.3 }}>⚠</div>
+      <h2 className="font-display font-bold text-white text-[20px] mb-2">
+        Não foi possível carregar o painel
+      </h2>
+      <p className="text-[14px] mb-6" style={{ color: 'rgba(255,255,255,0.5)', maxWidth: 400 }}>
+        Houve um problema ao conectar com o servidor. Verifique sua conexão e tente novamente.
+      </p>
+      <button
+        onClick={() => { setLoading(true); load() }}
+        className="px-6 py-3 rounded-lg font-display font-semibold text-[14px] transition-all hover:brightness-110"
+        style={{ background: 'var(--accent)', color: '#fff' }}
+      >
+        Tentar novamente
+      </button>
+    </div>
+  )
 
   const { profile, diagnostic, scoreHistory, metrics, nextActions } = data
 
