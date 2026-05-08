@@ -116,7 +116,7 @@ export default function DiagnosticoPage() {
         <StepCapture clinicName={result.clinicName} score={result.score} />
       )}
       {step === 'error' && (
-        <section className="min-h-screen flex items-center justify-center px-6" style={{ background: 'linear-gradient(160deg, #14532D 0%, #0A2E18 100%)' }}>
+        <section className="min-h-screen flex items-center justify-center px-6" style={{ background: 'var(--bg-gradient)' }}>
           <div className="text-center max-w-md">
             <p className="text-[40px] mb-6">⚠️</p>
             <h2 className="font-display font-extrabold text-white text-2xl mb-3">{errorMsg}</h2>
@@ -126,7 +126,7 @@ export default function DiagnosticoPage() {
             <button
               onClick={handleRetry}
               className="px-8 py-3 rounded-xl font-semibold text-white transition-all"
-              style={{ background: '#D97706' }}
+              style={{ background: 'var(--accent-hover)' }}
             >
               Tentar novamente
             </button>

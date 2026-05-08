@@ -44,12 +44,12 @@ export function StepCapture({ clinicName, score }: StepCaptureProps) {
   return (
     <section
       className="min-h-screen flex items-center justify-center px-6 py-16"
-      style={{ background: 'linear-gradient(160deg, #14532D 0%, #0A2E18 100%)' }}
+      style={{ background: 'var(--bg-gradient)' }}
     >
       {/* Orbs decorativos */}
       <div
         className="absolute rounded-full pointer-events-none blur-[120px]"
-        style={{ width: 400, height: 400, background: 'rgba(217,119,6,0.2)', top: -100, right: -100 }}
+        style={{ width: 400, height: 400, background: 'rgba(14,165,233,0.2)', top: -100, right: -100 }}
       />
       <div
         className="absolute rounded-full pointer-events-none blur-[80px]"
@@ -61,7 +61,7 @@ export function StepCapture({ clinicName, score }: StepCaptureProps) {
         {/* Ícone */}
         <div
           className="text-[48px] mb-6 leading-none"
-          style={{ color: '#F59E0B', filter: 'drop-shadow(0 0 16px rgba(245,158,11,0.55))' }}
+          style={{ color: 'var(--accent)', filter: 'drop-shadow(0 0 16px rgba(14,165,233,0.55))' }}
         >
           ✦
         </div>
@@ -72,7 +72,7 @@ export function StepCapture({ clinicName, score }: StepCaptureProps) {
           style={{ fontSize: 'clamp(28px, 5vw, 40px)' }}
         >
           Pronto para{' '}
-          <em className="not-italic" style={{ color: '#F59E0B' }}>aparecer primeiro?</em>
+          <em className="not-italic" style={{ color: 'var(--accent)' }}>aparecer primeiro?</em>
         </h2>
 
         <p className="text-[16px] leading-relaxed mb-8" style={{ color: 'rgba(255,255,255,0.6)' }}>
@@ -135,9 +135,9 @@ export function StepCapture({ clinicName, score }: StepCaptureProps) {
                 color: '#1C1917',
               }}
               onFocus={e => {
-                e.currentTarget.style.border = '1.5px solid #14532D'
+                e.currentTarget.style.border = '1.5px solid #161B26'
                 e.currentTarget.style.background = '#fff'
-                e.currentTarget.style.boxShadow = '0 0 0 3px rgba(20,83,45,0.1)'
+                e.currentTarget.style.boxShadow = '0 0 0 3px rgba(15,17,23,0.1)'
               }}
               onBlur={e => {
                 e.currentTarget.style.border = '1.5px solid #BBF7D0'
@@ -150,8 +150,8 @@ export function StepCapture({ clinicName, score }: StepCaptureProps) {
               disabled={sending || sent}
               className="w-full rounded-xl py-4 font-display font-extrabold text-[15px] text-white transition-all"
               style={{
-                background: sent ? '#16A34A' : 'linear-gradient(135deg, #14532D 0%, #166534 100%)',
-                boxShadow: sent ? 'none' : '0 4px 20px rgba(20,83,45,0.35)',
+                background: sent ? '#16A34A' : 'linear-gradient(135deg, #161B26 0%, #1E2433 100%)',
+                boxShadow: sent ? 'none' : '0 4px 20px rgba(15,17,23,0.35)',
                 opacity: sending ? 0.7 : 1,
               }}
             >

@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
-import { Plus_Jakarta_Sans, Inter } from 'next/font/google'
+import { Outfit, Inter } from 'next/font/google'
 import './globals.css'
 
-const plusJakartaSans = Plus_Jakarta_Sans({
+const outfit = Outfit({
   variable: '--font-display',
   subsets: ['latin'],
-  weight: ['400', '600', '700', '800'],
+  weight: ['300', '400', '500', '600', '700'],
 })
 
 const inter = Inter({
@@ -15,15 +15,15 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'Destaka — Apareça para quem precisa de você',
-  description: 'Google Meu Negócio no piloto automático. Para dentistas e médicos brasileiros.',
+  title: 'Destaka Saúde — Quem te procura, te encontra.',
+  description: 'Presença digital no piloto automático para profissionais de saúde.',
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'https://destaka.com.br'),
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className="h-full">
-      <body className={`${plusJakartaSans.variable} ${inter.variable} min-h-full antialiased`}>
+    <html lang="pt-BR" className="h-full" data-vertical="saude">
+      <body className={`${outfit.variable} ${inter.variable} min-h-full antialiased`}>
         {children}
       </body>
     </html>

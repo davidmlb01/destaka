@@ -4,17 +4,17 @@ const variants = {
   accent: {
     base: 'text-[11px] font-bold tracking-[1.8px] uppercase',
     style: {
-      background: 'rgba(245,158,11,0.15)',
-      border: '1px solid rgba(245,158,11,0.3)',
-      color: '#FCD34D',
+      background: 'rgba(14,165,233,0.15)',
+      border: '1px solid rgba(14,165,233,0.3)',
+      color: 'var(--accent-bright)',
     },
   },
   subtle: {
     base: 'text-[11px] font-bold tracking-[1.8px] uppercase',
     style: {
-      background: 'rgba(245,158,11,0.12)',
-      border: '1px solid rgba(245,158,11,0.25)',
-      color: '#FCD34D',
+      background: 'rgba(14,165,233,0.12)',
+      border: '1px solid rgba(14,165,233,0.25)',
+      color: 'var(--accent-bright)',
     },
   },
   muted: {
@@ -42,7 +42,7 @@ export function Badge({ variant = 'accent', icon = true, className = '', childre
       className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 ${v.base} ${className}`}
       style={v.style}
     >
-      {icon && <span style={{ color: '#F59E0B' }}>✦</span>}
+      {icon && <span style={{ color: 'var(--accent)' }}>✦</span>}
       {children}
     </span>
   )

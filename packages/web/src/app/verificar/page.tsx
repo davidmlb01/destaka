@@ -12,12 +12,12 @@ export default function VerificarPage() {
   return (
     <div
       className="min-h-screen"
-      style={{ background: 'linear-gradient(160deg, #14532D 0%, #0A2E18 100%)' }}
+      style={{ background: 'var(--bg-gradient)' }}
     >
       {/* Orbs decorativos */}
       <div
         className="fixed pointer-events-none blur-[160px] rounded-full"
-        style={{ width: 600, height: 600, background: 'rgba(217,119,6,0.09)', top: -200, right: -200 }}
+        style={{ width: 600, height: 600, background: 'rgba(14,165,233,0.09)', top: -200, right: -200 }}
       />
       <div
         className="fixed pointer-events-none blur-[140px] rounded-full"

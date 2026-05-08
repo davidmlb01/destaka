@@ -25,7 +25,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; dot: string 
   done: { label: 'Concluído', color: '#4ADE80', dot: '#4ADE80' },
   in_progress: { label: 'Em andamento', color: '#FBBF24', dot: '#FBBF24' },
   pending: { label: 'Pendente', color: 'rgba(255,255,255,0.35)', dot: 'rgba(255,255,255,0.2)' },
-  failed: { label: 'Falhou', color: '#FB923C', dot: '#FB923C' },
+  failed: { label: 'Falhou', color: 'var(--error)', dot: 'var(--error)' },
 }
 
 function formatDate(iso: string) {

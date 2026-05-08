@@ -68,12 +68,12 @@ export default function LoginPage() {
   return (
     <main
       className="min-h-screen flex items-center justify-center px-6"
-      style={{ background: 'linear-gradient(160deg, #14532D 0%, #0A2E18 100%)' }}
+      style={{ background: 'var(--bg-gradient)' }}
     >
       {/* Orbs de fundo */}
       <div
         className="fixed rounded-full pointer-events-none blur-[140px]"
-        style={{ width: 500, height: 500, background: 'rgba(217,119,6,0.14)', top: -150, right: -150 }}
+        style={{ width: 500, height: 500, background: 'rgba(14,165,233,0.14)', top: -150, right: -150 }}
       />
       <div
         className="fixed rounded-full pointer-events-none blur-[100px]"
@@ -83,7 +83,7 @@ export default function LoginPage() {
       <div className="relative z-10 w-full max-w-md">
         {/* Logo */}
         <div className="flex justify-center mb-10">
-          <Logo size="lg" glow />
+          <Logo size="lg" />
         </div>
 
         {/* Card */}
@@ -98,7 +98,7 @@ export default function LoginPage() {
           {errorMessage && (
             <div
               className="rounded-xl px-4 py-3 mb-4 text-sm text-center"
-              style={{ background: 'rgba(251,146,60,0.1)', border: '1px solid rgba(251,146,60,0.3)', color: '#FCD34D', lineHeight: 1.5 }}
+              style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: 'var(--accent-bright)', lineHeight: 1.5 }}
             >
               {errorMessage}
             </div>

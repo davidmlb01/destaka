@@ -25,12 +25,12 @@ export function DashboardLayout({ children, activeHref, profileName, userEmail }
   return (
     <div
       className="min-h-screen flex"
-      style={{ background: 'linear-gradient(160deg, #14532D 0%, #0A2E18 100%)' }}
+      style={{ background: 'var(--bg-gradient)' }}
     >
       {/* Orb accent */}
       <div
         className="fixed pointer-events-none blur-[160px] rounded-full"
-        style={{ width: 600, height: 600, background: 'rgba(217,119,6,0.08)', top: -200, right: -200 }}
+        style={{ width: 600, height: 600, background: 'var(--accent-bg)', top: -200, right: -200 }}
       />
 
       {/* Sidebar */}
@@ -44,7 +44,7 @@ export function DashboardLayout({ children, activeHref, profileName, userEmail }
       >
         {/* Logo */}
         <div className="px-2 mb-4">
-          <Logo size="md" href="/dashboard" />
+          <Logo size="md" href="/dashboard" vertical="Saúde" />
         </div>
 
         {/* Perfil */}

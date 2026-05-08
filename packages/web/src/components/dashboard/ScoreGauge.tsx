@@ -3,7 +3,7 @@
 function scoreTheme(score: number) {
   if (score >= 70) return { color: '#4ADE80', label: 'Seu perfil está ótimo!', glow: 'rgba(74,222,128,0.6)' }
   if (score >= 40) return { color: '#FBBF24', label: 'Tem espaço para melhorar', glow: 'rgba(251,191,36,0.6)' }
-  return { color: '#FB923C', label: 'Precisa de atenção', glow: 'rgba(251,146,60,0.55)' }
+  return { color: 'var(--error)', label: 'Precisa de atenção', glow: 'rgba(239,68,68,0.55)' }
 }
 
 // Gauge estilo speedometer: arco de 270° de 225° a 135° (sentido horário)

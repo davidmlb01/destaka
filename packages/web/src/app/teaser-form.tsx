@@ -85,7 +85,7 @@ export function TeaserForm() {
         type="submit"
         disabled={loading}
         className="w-full py-4 rounded-xl font-extrabold text-[15px] transition-all"
-        style={{ background: '#D97706', color: '#1C1917', opacity: loading ? 0.7 : 1 }}
+        style={{ background: 'var(--accent-hover)', color: '#1C1917', opacity: loading ? 0.7 : 1 }}
       >
         {loading ? 'Enviando...' : 'Quero garantir minha vaga'}
       </button>

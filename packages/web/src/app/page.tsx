@@ -7,10 +7,10 @@ function Nav() {
   return (
     <nav
       className="fixed top-0 left-0 right-0 z-50 px-6 py-5"
-      style={{ background: 'rgba(20,83,45,0.85)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+      style={{ background: 'rgba(15,17,23,0.85)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
     >
       <div className="max-w-5xl mx-auto flex items-center justify-between">
-        <Logo size="md" glow href="/" />
+        <Logo size="md" href="/" />
         <span className="text-[12px] font-semibold tracking-[1px] uppercase" style={{ color: 'rgba(255,255,255,0.4)' }}>
           Em breve
         </span>
@@ -35,10 +35,10 @@ export default function Home() {
   return (
     <main
       className="min-h-screen relative overflow-x-hidden"
-      style={{ background: '#0A2E18', color: '#fff' }}
+      style={{ background: '#0F1117', color: '#fff' }}
     >
       {/* Orbs */}
-      <div className="fixed rounded-full pointer-events-none" style={{ width: 700, height: 700, background: 'radial-gradient(circle, rgba(217,119,6,0.18) 0%, transparent 70%)', top: -300, right: -200 }} />
+      <div className="fixed rounded-full pointer-events-none" style={{ width: 700, height: 700, background: 'radial-gradient(circle, rgba(14,165,233,0.18) 0%, transparent 70%)', top: -300, right: -200 }} />
       <div className="fixed rounded-full pointer-events-none" style={{ width: 400, height: 400, background: 'radial-gradient(circle, rgba(22,163,74,0.12) 0%, transparent 70%)', bottom: -100, left: -100 }} />
 
       <Nav />
@@ -53,7 +53,7 @@ export default function Home() {
             style={{ fontSize: 'clamp(38px, 6vw, 62px)', lineHeight: 1.05, letterSpacing: '-2px' }}
           >
             Seu consultório no<br />
-            <span style={{ color: '#F59E0B' }}>topo do Google.</span><br />
+            <span style={{ color: 'var(--accent)' }}>topo do Google.</span><br />
             No piloto automático.
           </h1>
 

@@ -1,57 +1,71 @@
 import Link from 'next/link'
 
 const sizes = {
-  xs: { icon: 14, text: 13, gap: 'gap-1' },
-  sm: { icon: 18, text: 16, gap: 'gap-1.5' },
-  md: { icon: 24, text: 22, gap: 'gap-2' },
-  lg: { icon: 32, text: 28, gap: 'gap-2.5' },
+  xs: { mark: 16, text: 13, gap: 3 },
+  sm: { mark: 20, text: 16, gap: 4 },
+  md: { mark: 28, text: 22, gap: 5 },
+  lg: { mark: 36, text: 28, gap: 6 },
 } as const
 
 type LogoSize = keyof typeof sizes
 
 interface LogoProps {
   size?: LogoSize
-  glow?: boolean
   iconOnly?: boolean
   href?: string
   className?: string
+  vertical?: string
 }
 
-function LogoMark({ size = 'md', glow = false, iconOnly = false, className = '' }: Omit<LogoProps, 'href'>) {
+function PinMark({ w, h, fill, pupil }: { w: number; h: number; fill: string; pupil: string }) {
+  return (
+    <svg width={w} height={h} viewBox="0 0 72 84" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        fillRule="evenodd"
+        d="M36 5C50.91 5 63 17.09 63 32C63 43.5 56.4 51.7 49.6 59.6C44.5 65.55 39.6 71.2 36 76C32.4 71.2 27.5 65.55 22.4 59.6C15.6 51.7 9 43.5 9 32C9 17.09 21.09 5 36 5Z M19.5 32C24 24.5 30 21 36 21C42 21 48 24.5 52.5 32C48 39.5 42 43 36 43C30 43 24 39.5 19.5 32Z"
+        fill={fill}
+      />
+      <circle cx="36" cy="32" r="4.2" fill={pupil} />
+    </svg>
+  )
+}
+
+function LogoMark({ size = 'md', iconOnly = false, vertical, className = '' }: Omit<LogoProps, 'href'>) {
   const s = sizes[size]
+  const markH = Math.round(s.mark * (84 / 72))
 
   return (
-    <span className={`inline-flex items-center ${s.gap} ${className}`}>
-      <span
-        style={{
-          color: 'var(--accent)',
-          fontSize: s.icon,
-          filter: glow ? 'drop-shadow(0 0 8px rgba(245,158,11,0.5))' : undefined,
-          lineHeight: 1,
-        }}
-      >
-        ✦
-      </span>
+    <span className={`inline-flex items-center ${className}`} style={{ gap: s.gap }}>
+      <PinMark w={s.mark} h={markH} fill="var(--accent)" pupil="var(--accent)" />
       {!iconOnly && (
-        <span
-          className="font-display font-extrabold text-white"
-          style={{ fontSize: s.text, letterSpacing: '-0.3px', lineHeight: 1 }}
-        >
-          Desta<span style={{ color: 'var(--accent)' }}>ka</span>
+        <span className="inline-flex items-baseline" style={{ gap: s.gap }}>
+          <span
+            className="font-display font-bold text-white"
+            style={{ fontSize: s.text, letterSpacing: '-0.5px', lineHeight: 1 }}
+          >
+            Destaka
+          </span>
+          {vertical && (
+            <span
+              className="font-display font-light"
+              style={{ fontSize: s.text, letterSpacing: '-0.5px', lineHeight: 1, opacity: 0.4 }}
+            >
+              {vertical}
+            </span>
+          )}
         </span>
       )}
     </span>
   )
 }
 
-export function Logo({ size = 'md', glow = false, iconOnly = false, href, className = '' }: LogoProps) {
+export function Logo({ size = 'md', iconOnly = false, href, vertical, className = '' }: LogoProps) {
   if (href) {
     return (
       <Link href={href} className={`inline-flex ${className}`}>
-        <LogoMark size={size} glow={glow} iconOnly={iconOnly} />
+        <LogoMark size={size} iconOnly={iconOnly} vertical={vertical} />
       </Link>
     )
   }
-
-  return <LogoMark size={size} glow={glow} iconOnly={iconOnly} className={className} />
+  return <LogoMark size={size} iconOnly={iconOnly} vertical={vertical} className={className} />
 }

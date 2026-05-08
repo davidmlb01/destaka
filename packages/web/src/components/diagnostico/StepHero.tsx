@@ -20,14 +20,14 @@ export function StepHero({ onStart }: StepHeroProps) {
   return (
     <section
       className="min-h-screen flex items-center justify-center px-6 py-16 relative overflow-hidden"
-      style={{ background: 'linear-gradient(160deg, #14532D 0%, #0A2E18 100%)' }}
+      style={{ background: 'var(--bg-gradient)' }}
     >
       {/* Decorative orb âmbar — contraste de cor */}
       <div
         className="absolute rounded-full pointer-events-none blur-[120px]"
         style={{
           width: 500, height: 500,
-          background: 'rgba(217,119,6,0.18)',
+          background: 'rgba(14,165,233,0.18)',
           top: -120, right: -180,
         }}
       />
@@ -44,7 +44,7 @@ export function StepHero({ onStart }: StepHeroProps) {
         className="absolute rounded-full pointer-events-none"
         style={{
           width: 480, height: 480,
-          border: '1px solid rgba(217,119,6,0.15)',
+          border: '1px solid rgba(14,165,233,0.15)',
           top: -140, right: -140,
         }}
       />
@@ -53,7 +53,7 @@ export function StepHero({ onStart }: StepHeroProps) {
 
         {/* Logo */}
         <div className="flex justify-center mb-8">
-          <Logo size="lg" glow />
+          <Logo size="lg" />
         </div>
 
         {/* Badge */}
@@ -66,7 +66,7 @@ export function StepHero({ onStart }: StepHeroProps) {
         >
           Seu consultório aparece<br />
           quando o paciente{' '}
-          <em className="not-italic" style={{ color: '#F59E0B' }}>procura?</em>
+          <em className="not-italic" style={{ color: 'var(--accent)' }}>procura?</em>
         </h1>
 
         {/* Subheadline */}
@@ -98,7 +98,7 @@ export function StepHero({ onStart }: StepHeroProps) {
             <div className="relative">
               <span
                 className="absolute left-4 top-1/2 -translate-y-1/2 text-[15px] pointer-events-none select-none"
-                style={{ color: '#14532D' }}
+                style={{ color: '#161B26' }}
               >
                 🏥
               </span>
@@ -114,9 +114,9 @@ export function StepHero({ onStart }: StepHeroProps) {
                   color: '#1C1917',
                 }}
                 onFocus={e => {
-                  e.currentTarget.style.border = '1.5px solid #14532D'
+                  e.currentTarget.style.border = '1.5px solid #161B26'
                   e.currentTarget.style.background = '#fff'
-                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(20,83,45,0.12)'
+                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(15,17,23,0.12)'
                 }}
                 onBlur={e => {
                   e.currentTarget.style.border = '1.5px solid #BBF7D0'
@@ -130,7 +130,7 @@ export function StepHero({ onStart }: StepHeroProps) {
             <div className="relative">
               <span
                 className="absolute left-4 top-1/2 -translate-y-1/2 text-[15px] pointer-events-none select-none"
-                style={{ color: '#D97706' }}
+                style={{ color: 'var(--accent-hover)' }}
               >
                 📍
               </span>
@@ -146,9 +146,9 @@ export function StepHero({ onStart }: StepHeroProps) {
                   color: '#1C1917',
                 }}
                 onFocus={e => {
-                  e.currentTarget.style.border = '1.5px solid #D97706'
+                  e.currentTarget.style.border = '1.5px solid #0284C7'
                   e.currentTarget.style.background = '#fff'
-                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(217,119,6,0.12)'
+                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(14,165,233,0.12)'
                 }}
                 onBlur={e => {
                   e.currentTarget.style.border = '1.5px solid #FDE68A'
@@ -161,7 +161,7 @@ export function StepHero({ onStart }: StepHeroProps) {
 
           {/* CTA button */}
           <Button type="submit" variant="green" size="lg" fullWidth>
-            <span style={{ color: '#FCD34D' }}>✦</span>
+            <span style={{ color: 'var(--accent-bright)' }}>✦</span>
             Ver a nota do meu perfil
           </Button>
 
@@ -173,7 +173,7 @@ export function StepHero({ onStart }: StepHeroProps) {
         {/* Linha divisória âmbar */}
         <div className="flex items-center gap-4 my-8 px-4">
           <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.08)' }} />
-          <span className="text-[11px] font-semibold tracking-widest uppercase" style={{ color: 'rgba(245,158,11,0.5)' }}>
+          <span className="text-[11px] font-semibold tracking-widest uppercase" style={{ color: 'rgba(14,165,233,0.5)' }}>
             Por que importa
           </span>
           <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.08)' }} />
@@ -193,7 +193,7 @@ export function StepHero({ onStart }: StepHeroProps) {
               <div className="text-center">
                 <div
                   className="font-display font-extrabold text-[26px] leading-none"
-                  style={{ color: '#FCD34D' }}
+                  style={{ color: 'var(--accent-bright)' }}
                 >
                   {item.num}
                 </div>

@@ -5,15 +5,15 @@ import Link from 'next/link'
 
 const variants = {
   primary: {
-    base: 'bg-amber-600 text-stone-900 hover:bg-amber-500 shadow-[0_4px_24px_rgba(217,119,6,0.35)] hover:shadow-[0_6px_32px_rgba(217,119,6,0.5)]',
+    base: 'bg-amber-600 text-stone-900 hover:bg-amber-500 shadow-[0_4px_24px_rgba(14,165,233,0.35)] hover:shadow-[0_6px_32px_rgba(14,165,233,0.5)]',
   },
   green: {
-    base: 'text-white shadow-[0_4px_24px_rgba(20,83,45,0.4)] hover:shadow-[0_6px_32px_rgba(20,83,45,0.55)]',
-    style: { background: 'linear-gradient(135deg, #14532D 0%, #166534 100%)' },
+    base: 'text-white shadow-[0_4px_24px_rgba(15,17,23,0.4)] hover:shadow-[0_6px_32px_rgba(15,17,23,0.55)]',
+    style: { background: 'linear-gradient(135deg, #161B26 0%, #1E2433 100%)' },
   },
   secondary: {
     base: 'text-amber-400 border border-amber-600/30 hover:border-amber-600/50',
-    style: { background: 'rgba(245,158,11,0.12)' },
+    style: { background: 'rgba(14,165,233,0.12)' },
   },
   ghost: {
     base: 'text-white/60 border border-white/12 hover:text-white hover:border-white/20',

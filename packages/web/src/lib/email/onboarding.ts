@@ -6,10 +6,10 @@ const BASE_STYLES = {
   body: 'margin:0;padding:0;background:#f5f5f4;font-family:Inter,Arial,sans-serif;',
   outer: 'background:#f5f5f4;padding:32px 0;',
   card: 'background:#ffffff;border-radius:16px;overflow:hidden;',
-  header: 'background:linear-gradient(135deg,#14532D,#0A2E18);padding:32px 40px;text-align:center;',
+  header: 'background:linear-gradient(135deg,#161B26,#0F1117);padding:32px 40px;text-align:center;',
   body_cell: 'padding:40px;',
   footer: 'padding:24px 40px;border-top:1px solid #e7e5e4;text-align:center;',
-  cta: 'display:inline-block;background:#D97706;color:#1C1917;text-decoration:none;padding:14px 28px;border-radius:10px;font-size:15px;font-weight:700;',
+  cta: 'display:inline-block;background:#0284C7;color:#1C1917;text-decoration:none;padding:14px 28px;border-radius:10px;font-size:15px;font-weight:700;',
 }
 
 function baseLayout(content: string): string {
@@ -21,9 +21,9 @@ function baseLayout(content: string): string {
     <tr><td align="center">
       <table width="560" cellpadding="0" cellspacing="0" style="${BASE_STYLES.card}">
         <tr><td style="${BASE_STYLES.header}">
-          <p style="margin:0;color:#F59E0B;font-size:24px;">✦</p>
+          <p style="margin:0;color:#0EA5E9;font-size:24px;">✦</p>
           <p style="margin:4px 0 0;color:#ffffff;font-size:22px;font-weight:800;letter-spacing:-0.5px;">
-            Desta<span style="color:#F59E0B;">ka</span>
+            Desta<span style="color:#0EA5E9;">ka</span>
           </p>
         </td></tr>
         <tr><td style="${BASE_STYLES.body_cell}">${content}</td></tr>
@@ -82,7 +82,7 @@ export async function sendOnboardingDay3(params: { to: string; name: string; pro
     </p>
     <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f4;border-radius:12px;margin-bottom:24px;">
       <tr><td style="padding:24px;text-align:center;">
-        <p style="margin:0;font-size:48px;font-weight:800;color:#D97706;">${score}</p>
+        <p style="margin:0;font-size:48px;font-weight:800;color:#0284C7;">${score}</p>
         <p style="margin:4px 0 0;font-size:13px;color:#78716c;">Score atual de 100</p>
       </td></tr>
     </table>

@@ -32,7 +32,7 @@ function scoreColor(score: number) {
   if (score === 0) return 'rgba(255,255,255,0.3)'
   if (score >= 70) return '#4ADE80'
   if (score >= 40) return '#FBBF24'
-  return '#FB923C'
+  return 'var(--error)'
 }
 
 function scoreLabel(total: number) {
@@ -145,7 +145,7 @@ export function VerifyTool() {
               outline: 'none',
               boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04)',
             }}
-            onFocus={e => { e.currentTarget.style.borderColor = 'rgba(245,158,11,0.5)' }}
+            onFocus={e => { e.currentTarget.style.borderColor = 'rgba(14,165,233,0.5)' }}
             onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)' }}
           />
           <button
@@ -155,17 +155,17 @@ export function VerifyTool() {
             style={{
               background: loading || !input.trim()
                 ? 'rgba(255,255,255,0.06)'
-                : 'linear-gradient(135deg, rgba(217,119,6,0.4), rgba(217,119,6,0.25))',
-              border: `1px solid ${loading || !input.trim() ? 'rgba(255,255,255,0.08)' : 'rgba(217,119,6,0.45)'}`,
-              color: loading || !input.trim() ? 'rgba(255,255,255,0.2)' : '#FCD34D',
-              boxShadow: loading || !input.trim() ? 'none' : '0 0 24px rgba(217,119,6,0.15)',
+                : 'linear-gradient(135deg, rgba(14,165,233,0.4), rgba(14,165,233,0.25))',
+              border: `1px solid ${loading || !input.trim() ? 'rgba(255,255,255,0.08)' : 'rgba(14,165,233,0.45)'}`,
+              color: loading || !input.trim() ? 'rgba(255,255,255,0.2)' : 'var(--accent-bright)',
+              boxShadow: loading || !input.trim() ? 'none' : '0 0 24px rgba(14,165,233,0.15)',
             }}
           >
             {loading ? (
               <span className="flex items-center gap-2">
                 <span
                   className="inline-block w-4 h-4 rounded-full border-2 border-t-transparent animate-spin"
-                  style={{ borderColor: 'rgba(252,211,77,0.3)', borderTopColor: '#FCD34D' }}
+                  style={{ borderColor: 'rgba(252,211,77,0.3)', borderTopColor: 'var(--accent-bright)' }}
                 />
                 Analisando...
               </span>
@@ -174,7 +174,7 @@ export function VerifyTool() {
         </div>
 
         {error && (
-          <p className="text-xs px-1" style={{ color: '#FB923C' }}>{error}</p>
+          <p className="text-xs px-1" style={{ color: 'var(--error)' }}>{error}</p>
         )}
 
         <p className="text-xs px-1" style={{ color: 'rgba(255,255,255,0.25)' }}>
@@ -284,8 +284,8 @@ export function VerifyTool() {
           <div
             className="rounded-2xl px-6 py-6 flex flex-col sm:flex-row items-center gap-5"
             style={{
-              background: 'linear-gradient(135deg, rgba(217,119,6,0.1), rgba(217,119,6,0.06))',
-              border: '1px solid rgba(217,119,6,0.22)',
+              background: 'linear-gradient(135deg, rgba(14,165,233,0.1), rgba(14,165,233,0.06))',
+              border: '1px solid rgba(14,165,233,0.22)',
             }}
           >
             <div className="flex-1 text-center sm:text-left">
@@ -300,10 +300,10 @@ export function VerifyTool() {
               href="/login"
               className="shrink-0 inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold whitespace-nowrap"
               style={{
-                background: 'rgba(217,119,6,0.3)',
-                border: '1px solid rgba(217,119,6,0.45)',
-                color: '#FCD34D',
-                boxShadow: '0 0 20px rgba(217,119,6,0.2)',
+                background: 'rgba(14,165,233,0.3)',
+                border: '1px solid rgba(14,165,233,0.45)',
+                color: 'var(--accent-bright)',
+                boxShadow: '0 0 20px rgba(14,165,233,0.2)',
               }}
             >
               Começar gratuitamente
@@ -344,7 +344,7 @@ export function VerifyTool() {
                   style={{
                     background: capturing || !captureEmail.includes('@') || !lgpdConsent
                       ? 'rgba(255,255,255,0.06)'
-                      : 'rgba(20,83,45,0.7)',
+                      : 'rgba(15,17,23,0.7)',
                     border: '1px solid rgba(255,255,255,0.1)',
                     color: 'rgba(255,255,255,0.6)',
                     cursor: capturing || !captureEmail.includes('@') || !lgpdConsent ? 'not-allowed' : 'pointer',
@@ -390,8 +390,8 @@ function InfoRow({ icon, label, value, missing }: {
     <div
       className="rounded-xl px-3 py-2.5"
       style={{
-        background: missing ? 'rgba(251,146,60,0.07)' : 'rgba(255,255,255,0.04)',
-        border: `1px solid ${missing ? 'rgba(251,146,60,0.12)' : 'rgba(255,255,255,0.05)'}`,
+        background: missing ? 'rgba(239,68,68,0.07)' : 'rgba(255,255,255,0.04)',
+        border: `1px solid ${missing ? 'rgba(239,68,68,0.12)' : 'rgba(255,255,255,0.05)'}`,
       }}
     >
       <p className="text-xs mb-0.5" style={{ color: 'rgba(255,255,255,0.3)' }}>
@@ -399,7 +399,7 @@ function InfoRow({ icon, label, value, missing }: {
       </p>
       <p
         className="text-sm font-medium"
-        style={{ color: missing ? '#FB923C' : 'rgba(255,255,255,0.8)' }}
+        style={{ color: missing ? 'var(--error)' : 'rgba(255,255,255,0.8)' }}
       >
         {value}
       </p>

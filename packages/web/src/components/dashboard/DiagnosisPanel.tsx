@@ -72,7 +72,7 @@ export function DiagnosisPanel({ profileId, profileName }: Props) {
       <div className="text-center py-16">
         <div
           className="inline-block w-10 h-10 rounded-full border-2 border-t-transparent mb-6 animate-spin"
-          style={{ borderColor: 'rgba(255,255,255,0.15)', borderTopColor: '#F59E0B' }}
+          style={{ borderColor: 'rgba(255,255,255,0.15)', borderTopColor: 'var(--accent)' }}
         />
         <p className="font-display font-bold text-white text-lg">
           {state === 'running' ? 'Gerando diagnóstico...' : 'Carregando...'}
@@ -93,7 +93,7 @@ export function DiagnosisPanel({ profileId, profileName }: Props) {
         <button
           onClick={loadDiagnostic}
           className="font-display font-bold text-sm px-5 py-2.5 rounded-xl"
-          style={{ background: '#D97706', color: '#1C1917' }}
+          style={{ background: 'var(--accent-hover)', color: '#1C1917' }}
         >
           Tentar novamente
         </button>
@@ -128,7 +128,7 @@ export function DiagnosisPanel({ profileId, profileName }: Props) {
           <button
             onClick={runDiagnostic}
             className="mt-3 text-xs font-medium transition-colors"
-            style={{ color: '#F59E0B' }}
+            style={{ color: 'var(--accent)' }}
           >
             Refazer diagnóstico
           </button>

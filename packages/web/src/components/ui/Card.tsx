@@ -19,8 +19,8 @@ const variants = {
   accent: {
     base: 'rounded-2xl',
     style: {
-      background: 'linear-gradient(135deg, rgba(217,119,6,0.15) 0%, rgba(217,119,6,0.05) 100%)',
-      border: '1px solid rgba(217,119,6,0.3)',
+      background: 'linear-gradient(135deg, rgba(14,165,233,0.15) 0%, rgba(14,165,233,0.05) 100%)',
+      border: '1px solid rgba(14,165,233,0.3)',
     },
   },
   light: {

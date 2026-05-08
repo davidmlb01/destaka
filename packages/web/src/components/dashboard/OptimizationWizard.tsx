@@ -101,9 +101,9 @@ export function OptimizationWizard({ profileId, diagnosticId, onComplete }: {
         onClick={openWizard}
         className="w-full flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold transition-all"
         style={{
-          background: 'linear-gradient(135deg, rgba(217,119,6,0.25) 0%, rgba(217,119,6,0.15) 100%)',
-          border: '1px solid rgba(217,119,6,0.35)',
-          color: '#FCD34D',
+          background: 'linear-gradient(135deg, rgba(14,165,233,0.25) 0%, rgba(14,165,233,0.15) 100%)',
+          border: '1px solid rgba(14,165,233,0.35)',
+          color: 'var(--accent-bright)',
         }}
       >
         <span>⚡</span>
@@ -143,7 +143,7 @@ export function OptimizationWizard({ profileId, diagnosticId, onComplete }: {
         {step === 'loading-plan' && (
           <div className="flex items-center justify-center py-8">
             <div className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin"
-              style={{ borderColor: 'rgba(252,211,77,0.3)', borderTopColor: '#FCD34D' }} />
+              style={{ borderColor: 'rgba(252,211,77,0.3)', borderTopColor: 'var(--accent-bright)' }} />
           </div>
         )}
 
@@ -201,7 +201,7 @@ export function OptimizationWizard({ profileId, diagnosticId, onComplete }: {
               <button
                 onClick={startExecution}
                 className="flex-1 rounded-xl py-2.5 text-sm font-bold"
-                style={{ background: 'rgba(217,119,6,0.25)', border: '1px solid rgba(217,119,6,0.4)', color: '#FCD34D' }}
+                style={{ background: 'rgba(14,165,233,0.25)', border: '1px solid rgba(14,165,233,0.4)', color: 'var(--accent-bright)' }}
               >
                 Confirmar e Otimizar
               </button>
@@ -228,7 +228,7 @@ export function OptimizationWizard({ profileId, diagnosticId, onComplete }: {
                   <span style={{ fontSize: 16 }}>
                     {done ? '✅' : active ? (
                       <span className="inline-block w-4 h-4 rounded-full border-2 border-t-transparent animate-spin"
-                        style={{ borderColor: 'rgba(252,211,77,0.3)', borderTopColor: '#FCD34D' }} />
+                        style={{ borderColor: 'rgba(252,211,77,0.3)', borderTopColor: 'var(--accent-bright)' }} />
                     ) : ACTION_ICONS[action.type]}
                   </span>
                   <p className="text-sm font-medium text-white">{action.label}</p>
@@ -264,7 +264,7 @@ export function OptimizationWizard({ profileId, diagnosticId, onComplete }: {
               {execution.results.map((r, i) => (
                 <div key={i} className="flex items-center gap-2 text-sm">
                   <span>{r.status === 'done' ? '✅' : '❌'}</span>
-                  <span style={{ color: r.status === 'done' ? 'rgba(255,255,255,0.7)' : '#FB923C' }}>
+                  <span style={{ color: r.status === 'done' ? 'rgba(255,255,255,0.7)' : 'var(--error)' }}>
                     {r.action.label}
                   </span>
                 </div>
@@ -284,7 +284,7 @@ export function OptimizationWizard({ profileId, diagnosticId, onComplete }: {
         {/* Error */}
         {step === 'error' && (
           <>
-            <p className="text-sm mb-5" style={{ color: '#FB923C' }}>{errorMsg}</p>
+            <p className="text-sm mb-5" style={{ color: 'var(--error)' }}>{errorMsg}</p>
             <button
               onClick={reset}
               className="w-full rounded-xl py-2.5 text-sm font-medium"

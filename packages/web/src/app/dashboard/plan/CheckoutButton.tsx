@@ -32,13 +32,13 @@ export function CheckoutButton() {
       disabled={loading}
       className="w-full rounded-xl font-display font-bold py-4 transition-all hover:brightness-110 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
       style={{
-        background: 'linear-gradient(135deg, #D97706 0%, #F59E0B 100%)',
+        background: 'linear-gradient(135deg, var(--accent-hover) 0%, var(--accent) 100%)',
         color: '#fff',
         border: 'none',
         cursor: loading ? 'not-allowed' : 'pointer',
         fontSize: 16,
         letterSpacing: '-0.2px',
-        boxShadow: '0 0 24px rgba(217,119,6,0.45), 0 4px 12px rgba(0,0,0,0.3)',
+        boxShadow: '0 0 24px rgba(14,165,233,0.45), 0 4px 12px rgba(0,0,0,0.3)',
       }}
     >
       {loading ? 'Redirecionando...' : 'Ativar meu plano'}

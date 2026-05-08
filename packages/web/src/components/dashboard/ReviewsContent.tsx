@@ -128,7 +128,7 @@ export function ReviewsContent() {
           style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)' }}
         >
           <span style={{ fontSize: 18 }}>⭐</span>
-          <p className="text-sm font-medium" style={{ color: '#FCD34D' }}>
+          <p className="text-sm font-medium" style={{ color: 'var(--accent-bright)' }}>
             {data.pendingCount} {data.pendingCount === 1 ? 'avaliação aguardando' : 'avaliações aguardando'} resposta. Responder rápido melhora seu ranking.
           </p>
         </div>
@@ -142,16 +142,16 @@ export function ReviewsContent() {
             onClick={() => changeFilter(f)}
             className="px-4 py-1.5 rounded-full text-xs font-medium transition-all"
             style={{
-              background: filter === f ? 'rgba(217,119,6,0.2)' : 'rgba(255,255,255,0.06)',
-              color: filter === f ? '#FCD34D' : 'rgba(255,255,255,0.5)',
-              border: filter === f ? '1px solid rgba(217,119,6,0.3)' : '1px solid transparent',
+              background: filter === f ? 'rgba(14,165,233,0.2)' : 'rgba(255,255,255,0.06)',
+              color: filter === f ? 'var(--accent-bright)' : 'rgba(255,255,255,0.5)',
+              border: filter === f ? '1px solid rgba(14,165,233,0.3)' : '1px solid transparent',
             }}
           >
             {FILTER_LABELS[f]}
             {f === 'pending' && data && data.pendingCount > 0 && (
               <span
                 className="ml-1.5 px-1.5 py-0.5 rounded-full text-xs"
-                style={{ background: '#D97706', color: 'white', fontSize: 10 }}
+                style={{ background: 'var(--accent-hover)', color: 'white', fontSize: 10 }}
               >
                 {data.pendingCount}
               </span>
@@ -181,7 +181,7 @@ export function ReviewsContent() {
               style={{
                 background: 'rgba(0,0,0,0.25)',
                 border: `1px solid ${review.reply_status === 'pending' && review.rating <= 2
-                  ? 'rgba(251,146,60,0.2)'
+                  ? 'rgba(239,68,68,0.2)'
                   : 'rgba(255,255,255,0.08)'}`,
               }}
             >
@@ -226,9 +226,9 @@ export function ReviewsContent() {
                     onClick={() => openReplyModal(review)}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
                     style={{
-                      background: 'rgba(217,119,6,0.15)',
-                      border: '1px solid rgba(217,119,6,0.25)',
-                      color: '#FCD34D',
+                      background: 'rgba(14,165,233,0.15)',
+                      border: '1px solid rgba(14,165,233,0.25)',
+                      color: 'var(--accent-bright)',
                     }}
                   >
                     ✍️ Responder
@@ -330,15 +330,15 @@ export function ReviewsContent() {
                   disabled={modal.generating}
                   className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium"
                   style={{
-                    background: modal.generating ? 'rgba(255,255,255,0.06)' : 'rgba(217,119,6,0.15)',
-                    color: modal.generating ? 'rgba(255,255,255,0.3)' : '#FCD34D',
-                    border: '1px solid rgba(217,119,6,0.2)',
+                    background: modal.generating ? 'rgba(255,255,255,0.06)' : 'rgba(14,165,233,0.15)',
+                    color: modal.generating ? 'rgba(255,255,255,0.3)' : 'var(--accent-bright)',
+                    border: '1px solid rgba(14,165,233,0.2)',
                   }}
                 >
                   {modal.generating ? (
                     <>
                       <span className="inline-block w-3 h-3 rounded-full border border-t-transparent animate-spin"
-                        style={{ borderColor: 'rgba(252,211,77,0.3)', borderTopColor: '#FCD34D' }} />
+                        style={{ borderColor: 'rgba(252,211,77,0.3)', borderTopColor: 'var(--accent-bright)' }} />
                       Gerando...
                     </>
                   ) : (

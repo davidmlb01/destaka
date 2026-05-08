@@ -88,12 +88,12 @@ export function StepLoading({ clinicName, city, onComplete, ready }: StepLoading
                 background: item.status === 'done'
                   ? 'rgba(22,163,74,0.12)'
                   : item.status === 'active'
-                    ? 'rgba(217,119,6,0.10)'
+                    ? 'rgba(14,165,233,0.10)'
                     : 'rgba(255,255,255,0.05)',
                 border: item.status === 'done'
                   ? '1px solid rgba(22,163,74,0.2)'
                   : item.status === 'active'
-                    ? '1px solid rgba(217,119,6,0.2)'
+                    ? '1px solid rgba(14,165,233,0.2)'
                     : '1px solid transparent',
               }}
             >
@@ -103,7 +103,7 @@ export function StepLoading({ clinicName, city, onComplete, ready }: StepLoading
                   background: item.status === 'done'
                     ? '#16A34A'
                     : item.status === 'active'
-                      ? '#D97706'
+                      ? 'var(--accent-hover)'
                       : 'rgba(255,255,255,0.08)',
                   color: item.status === 'done'
                     ? 'white'
@@ -130,7 +130,7 @@ export function StepLoading({ clinicName, city, onComplete, ready }: StepLoading
             className="h-full rounded-full transition-all duration-500"
             style={{
               width: `${barWidth}%`,
-              background: 'linear-gradient(90deg, #14532D, #D97706)',
+              background: 'linear-gradient(90deg, #161B26, #0284C7)',
             }}
           />
         </div>

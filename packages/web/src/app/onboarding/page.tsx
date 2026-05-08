@@ -88,11 +88,11 @@ export default function OnboardingPage() {
   return (
     <main
       className="min-h-screen flex items-center justify-center px-6 py-16"
-      style={{ background: 'linear-gradient(160deg, #14532D 0%, #0A2E18 100%)' }}
+      style={{ background: 'var(--bg-gradient)' }}
     >
       <div
         className="fixed rounded-full pointer-events-none blur-[140px]"
-        style={{ width: 500, height: 500, background: 'rgba(217,119,6,0.12)', top: -150, right: -150 }}
+        style={{ width: 500, height: 500, background: 'rgba(14,165,233,0.12)', top: -150, right: -150 }}
       />
 
       <div className="relative z-10 w-full max-w-2xl">
@@ -118,7 +118,7 @@ function LoadingState() {
     <div className="text-center">
       <div
         className="inline-block w-10 h-10 rounded-full border-2 border-t-transparent mb-6 animate-spin"
-        style={{ borderColor: 'rgba(255,255,255,0.2)', borderTopColor: '#F59E0B' }}
+        style={{ borderColor: 'rgba(255,255,255,0.2)', borderTopColor: 'var(--accent)' }}
       />
       <p className="font-display font-bold text-white text-lg">Buscando seus perfis no Google...</p>
       <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14, marginTop: 8 }}>Isso leva alguns segundos.</p>
@@ -131,7 +131,7 @@ function SavingState({ name }: { name: string }) {
     <div className="text-center">
       <div
         className="inline-block w-10 h-10 rounded-full border-2 border-t-transparent mb-6 animate-spin"
-        style={{ borderColor: 'rgba(255,255,255,0.2)', borderTopColor: '#F59E0B' }}
+        style={{ borderColor: 'rgba(255,255,255,0.2)', borderTopColor: 'var(--accent)' }}
       />
       <p className="font-display font-bold text-white text-lg">Conectando {name}...</p>
     </div>
@@ -147,7 +147,7 @@ function NoProfilesState() {
       </h2>
       <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 15, lineHeight: 1.6 }}>
         Sua conta Google não tem um perfil no Google Meu Negócio.
-        Crie um em <a href="https://business.google.com" target="_blank" rel="noopener noreferrer" style={{ color: '#F59E0B' }}>business.google.com</a> e volte aqui.
+        Crie um em <a href="https://business.google.com" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>business.google.com</a> e volte aqui.
       </p>
     </Card>
   )
@@ -211,12 +211,12 @@ function SelectState({
                   </p>
                 )}
                 {loc.category && (
-                  <p className="text-xs mt-1" style={{ color: 'rgba(245,158,11,0.7)' }}>
+                  <p className="text-xs mt-1" style={{ color: 'rgba(14,165,233,0.7)' }}>
                     {loc.category}
                   </p>
                 )}
               </div>
-              <span className="text-lg mt-0.5" style={{ color: '#D97706' }}>→</span>
+              <span className="text-lg mt-0.5" style={{ color: 'var(--accent-hover)' }}>→</span>
             </div>
           </button>
         ))}

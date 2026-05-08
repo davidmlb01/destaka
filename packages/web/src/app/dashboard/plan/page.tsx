@@ -39,7 +39,7 @@ export default async function PlanPage() {
 
         {/* Header */}
         <div className="mb-12">
-          <Badge variant="subtle" className="mb-4">Plano Destaka <span style={{ color: '#F59E0B' }}>✦</span></Badge>
+          <Badge variant="subtle" className="mb-4">Plano Destaka <span style={{ color: 'var(--accent)' }}>✦</span></Badge>
 
           <h1
             className="font-display font-extrabold text-white"
@@ -60,27 +60,27 @@ export default async function PlanPage() {
             <div
               className="rounded-2xl flex flex-col overflow-hidden w-full"
               style={{
-                background: 'rgba(217,119,6,0.07)',
-                border: '1px solid rgba(217,119,6,0.4)',
-                boxShadow: '0 0 60px rgba(217,119,6,0.12), inset 0 1px 0 rgba(255,255,255,0.07)',
+                background: 'rgba(14,165,233,0.07)',
+                border: '1px solid rgba(14,165,233,0.4)',
+                boxShadow: '0 0 60px rgba(14,165,233,0.12), inset 0 1px 0 rgba(255,255,255,0.07)',
               }}
             >
               {/* Badge "Mais Popular" */}
               <div
                 className="flex items-center justify-center gap-2 py-2.5"
                 style={{
-                  background: 'linear-gradient(90deg, rgba(217,119,6,0.0) 0%, rgba(217,119,6,0.25) 50%, rgba(217,119,6,0.0) 100%)',
-                  borderBottom: '1px solid rgba(217,119,6,0.25)',
+                  background: 'linear-gradient(90deg, rgba(14,165,233,0.0) 0%, rgba(14,165,233,0.25) 50%, rgba(14,165,233,0.0) 100%)',
+                  borderBottom: '1px solid rgba(14,165,233,0.25)',
                 }}
               >
-                <span style={{ color: '#F59E0B', fontSize: 10 }}>★</span>
+                <span style={{ color: 'var(--accent)', fontSize: 10 }}>★</span>
                 <span
                   className="font-bold tracking-widest uppercase"
-                  style={{ color: '#FCD34D', fontSize: 10 }}
+                  style={{ color: 'var(--accent-bright)', fontSize: 10 }}
                 >
                   Plano Único
                 </span>
-                <span style={{ color: '#F59E0B', fontSize: 10 }}>★</span>
+                <span style={{ color: 'var(--accent)', fontSize: 10 }}>★</span>
               </div>
 
               <div className="p-7 flex flex-col flex-1 justify-between">
@@ -90,7 +90,7 @@ export default async function PlanPage() {
                   <div className="flex items-baseline gap-1">
                     <span
                       className="font-display font-extrabold"
-                      style={{ fontSize: 58, lineHeight: 1, color: '#F59E0B', letterSpacing: '-2px' }}
+                      style={{ fontSize: 58, lineHeight: 1, color: 'var(--accent)', letterSpacing: '-2px' }}
                     >
                       R$197
                     </span>
@@ -207,11 +207,11 @@ export default async function PlanPage() {
                   <span
                     className="text-xs font-bold shrink-0"
                     style={{
-                      color: '#FCD34D',
-                      background: 'rgba(245,158,11,0.1)',
+                      color: 'var(--accent-bright)',
+                      background: 'rgba(14,165,233,0.1)',
                       padding: '5px 12px',
                       borderRadius: 999,
-                      border: '1px solid rgba(245,158,11,0.22)',
+                      border: '1px solid rgba(14,165,233,0.22)',
                       whiteSpace: 'nowrap',
                     }}
                   >
@@ -225,9 +225,9 @@ export default async function PlanPage() {
             <div
               className="rounded-xl px-5 py-5 mt-4"
               style={{
-                background: 'linear-gradient(135deg, rgba(217,119,6,0.1) 0%, rgba(217,119,6,0.05) 100%)',
-                border: '1px solid rgba(217,119,6,0.3)',
-                boxShadow: '0 0 30px rgba(217,119,6,0.08)',
+                background: 'linear-gradient(135deg, rgba(14,165,233,0.1) 0%, rgba(14,165,233,0.05) 100%)',
+                border: '1px solid rgba(14,165,233,0.3)',
+                boxShadow: '0 0 30px rgba(14,165,233,0.08)',
               }}
             >
               <div className="flex items-center justify-between gap-4">

@@ -26,8 +26,8 @@ interface PostsData {
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   draft: { label: 'Aguardando aprovação', color: '#FBBF24' },
   published: { label: 'Publicado', color: '#4ADE80' },
-  scheduled: { label: 'Agendado', color: '#FCD34D' },
-  failed: { label: 'Falhou', color: '#FB923C' },
+  scheduled: { label: 'Agendado', color: 'var(--accent-bright)' },
+  failed: { label: 'Falhou', color: 'var(--error)' },
 }
 
 const TYPE_LABELS: Record<string, string> = {
@@ -149,9 +149,9 @@ export function PostsContent() {
                 disabled={savingMode}
                 className="flex-1 py-2 rounded-xl text-xs font-medium transition-all"
                 style={{
-                  background: data?.autoPostMode === mode ? 'rgba(217,119,6,0.2)' : 'rgba(255,255,255,0.05)',
-                  border: data?.autoPostMode === mode ? '1px solid rgba(217,119,6,0.3)' : '1px solid rgba(255,255,255,0.08)',
-                  color: data?.autoPostMode === mode ? '#FCD34D' : 'rgba(255,255,255,0.4)',
+                  background: data?.autoPostMode === mode ? 'rgba(14,165,233,0.2)' : 'rgba(255,255,255,0.05)',
+                  border: data?.autoPostMode === mode ? '1px solid rgba(14,165,233,0.3)' : '1px solid rgba(255,255,255,0.08)',
+                  color: data?.autoPostMode === mode ? 'var(--accent-bright)' : 'rgba(255,255,255,0.4)',
                 }}
               >
                 {mode === 'approval' ? '✋ Aprovação' : '⚡ Automático'}
@@ -196,15 +196,15 @@ export function PostsContent() {
             disabled={generating}
             className="w-full flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-bold transition-all"
             style={{
-              background: generating ? 'rgba(255,255,255,0.06)' : 'rgba(217,119,6,0.2)',
-              border: '1px solid rgba(217,119,6,0.3)',
-              color: generating ? 'rgba(255,255,255,0.3)' : '#FCD34D',
+              background: generating ? 'rgba(255,255,255,0.06)' : 'rgba(14,165,233,0.2)',
+              border: '1px solid rgba(14,165,233,0.3)',
+              color: generating ? 'rgba(255,255,255,0.3)' : 'var(--accent-bright)',
             }}
           >
             {generating ? (
               <>
                 <span className="inline-block w-4 h-4 rounded-full border-2 border-t-transparent animate-spin"
-                  style={{ borderColor: 'rgba(252,211,77,0.3)', borderTopColor: '#FCD34D' }} />
+                  style={{ borderColor: 'rgba(252,211,77,0.3)', borderTopColor: 'var(--accent-bright)' }} />
                 Gerando post...
               </>
             ) : (

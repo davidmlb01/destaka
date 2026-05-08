@@ -9,21 +9,19 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        floresta: {
-          DEFAULT: '#14532D',
-          medio: '#166534',
+        base: {
+          DEFAULT: '#0F1117',
+          light: '#161B26',
         },
-        verde: {
-          vivo: '#16A34A',
-          claro: '#DCFCE7',
-          minimo: '#F0FDF4',
+        ink: {
+          DEFAULT: '#0F2A1F',
         },
-        ambar: {
-          DEFAULT: '#D97706',
-          claro: '#F59E0B',
-          bg: '#FFFBEB',
+        accent: {
+          DEFAULT: 'var(--accent)',
+          hover: 'var(--accent-hover)',
+          bright: 'var(--accent-bright)',
         },
-        dark: '#1C1917',
+        dark: '#0a0a0a',
         stone: {
           destaka: '#57534E',
           claro: '#E7E5E4',

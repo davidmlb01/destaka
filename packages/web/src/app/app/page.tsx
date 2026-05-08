@@ -9,10 +9,10 @@ function Nav() {
   return (
     <nav
       className="fixed top-0 left-0 right-0 z-50 px-6 py-4"
-      style={{ background: 'rgba(20,83,45,0.92)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+      style={{ background: 'rgba(15,17,23,0.92)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between">
-        <Logo size="lg" glow href="/" />
+        <Logo size="lg" href="/" />
         <div className="hidden md:flex items-center gap-8 text-[14px] font-medium" style={{ color: 'rgba(255,255,255,0.6)' }}>
           <a href="#como-funciona" className="hover:text-white transition-colors">Como funciona</a>
           <a href="#recursos" className="hover:text-white transition-colors">Recursos</a>
@@ -28,11 +28,11 @@ function Hero() {
   return (
     <section
       className="relative min-h-screen flex items-center justify-center px-6 pt-24 pb-20 overflow-hidden"
-      style={{ background: 'linear-gradient(160deg, #14532D 0%, #0A2E18 100%)' }}
+      style={{ background: 'var(--bg-gradient)' }}
     >
-      <div className="absolute rounded-full pointer-events-none blur-[140px]" style={{ width: 600, height: 600, background: 'rgba(217,119,6,0.16)', top: -200, right: -200 }} />
+      <div className="absolute rounded-full pointer-events-none blur-[140px]" style={{ width: 600, height: 600, background: 'rgba(14,165,233,0.16)', top: -200, right: -200 }} />
       <div className="absolute rounded-full pointer-events-none blur-[100px]" style={{ width: 350, height: 350, background: 'rgba(22,163,74,0.10)', bottom: -80, left: -100 }} />
-      <div className="absolute rounded-full pointer-events-none" style={{ width: 520, height: 520, border: '1px solid rgba(217,119,6,0.12)', top: -160, right: -160 }} />
+      <div className="absolute rounded-full pointer-events-none" style={{ width: 520, height: 520, border: '1px solid rgba(14,165,233,0.12)', top: -160, right: -160 }} />
 
       <div className="max-w-3xl w-full text-center relative z-10">
 
@@ -46,7 +46,7 @@ function Hero() {
         >
           Você deveria<br />
           aparecer primeiro no Google.<br />
-          <em className="not-italic" style={{ color: '#F59E0B' }}>A gente faz isso acontecer.</em>
+          <em className="not-italic" style={{ color: 'var(--accent)' }}>A gente faz isso acontecer.</em>
         </h1>
 
         <p
@@ -83,7 +83,7 @@ function StatsBar() {
       <div className="max-w-6xl mx-auto px-6 py-8 grid grid-cols-2 md:grid-cols-4 gap-6">
         {stats.map((s) => (
           <div key={s.num} className="text-center">
-            <div className="font-display font-extrabold text-[32px] tracking-[-1px]" style={{ color: '#D97706' }}>{s.num}</div>
+            <div className="font-display font-extrabold text-[32px] tracking-[-1px]" style={{ color: 'var(--accent-hover)' }}>{s.num}</div>
             <div className="text-[13px] leading-tight mt-1" style={{ color: '#78716C' }}>{s.label}</div>
           </div>
         ))}
@@ -100,7 +100,7 @@ function Problema() {
       <div className="max-w-4xl mx-auto">
         <div className="grid md:grid-cols-2 gap-16 items-center">
           <div>
-            <p className="text-[11px] font-bold tracking-[2px] uppercase mb-4" style={{ color: '#D97706' }}>
+            <p className="text-[11px] font-bold tracking-[2px] uppercase mb-4" style={{ color: 'var(--accent-hover)' }}>
               O problema real
             </p>
             <h2
@@ -170,10 +170,10 @@ function ComoFunciona() {
   ]
 
   return (
-    <section id="como-funciona" className="px-6 py-24" style={{ background: 'linear-gradient(160deg, #0A2E18 0%, #14532D 100%)' }}>
+    <section id="como-funciona" className="px-6 py-24" style={{ background: 'var(--bg-gradient)' }}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
-          <p className="text-[11px] font-bold tracking-[2px] uppercase mb-4" style={{ color: '#F59E0B' }}>Como funciona</p>
+          <p className="text-[11px] font-bold tracking-[2px] uppercase mb-4" style={{ color: 'var(--accent)' }}>Como funciona</p>
           <h2
             className="font-display font-extrabold text-white leading-[1.1] tracking-[-1.5px]"
             style={{ fontSize: 'clamp(28px, 4vw, 44px)' }}
@@ -191,7 +191,7 @@ function ComoFunciona() {
             >
               <div
                 className="font-display font-extrabold text-[48px] leading-none tracking-[-2px]"
-                style={{ color: '#D97706' }}
+                style={{ color: 'var(--accent-hover)' }}
               >
                 {step.num}
               </div>
@@ -228,13 +228,13 @@ function Recursos() {
     <section id="recursos" className="px-6 py-24" style={{ background: '#fff' }}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
-          <p className="text-[11px] font-bold tracking-[2px] uppercase mb-4" style={{ color: '#D97706' }}>O que a Destaka faz</p>
+          <p className="text-[11px] font-bold tracking-[2px] uppercase mb-4" style={{ color: 'var(--accent-hover)' }}>O que a Destaka faz</p>
           <h2
             className="font-display font-extrabold leading-[1.1] tracking-[-1.5px] mb-4"
             style={{ fontSize: 'clamp(28px, 4vw, 44px)', color: '#1C1917' }}
           >
             Tudo que uma agência faria.<br />
-            <span style={{ color: '#14532D' }}>Sem reunião. Sem espera. Sem mensalidade de agência.</span>
+            <span style={{ color: '#161B26' }}>Sem reunião. Sem espera. Sem mensalidade de agência.</span>
           </h2>
           <p className="text-[17px] max-w-2xl mx-auto" style={{ color: '#78716C' }}>
             A Destaka cuida da sua visibilidade enquanto você cuida dos pacientes. Cada um no que sabe fazer melhor.
@@ -250,7 +250,7 @@ function Recursos() {
             >
               <span className="text-[28px] flex-shrink-0">{f.icon}</span>
               <div>
-                <h3 className="font-display font-bold text-[16px] mb-1.5" style={{ color: '#14532D' }}>{f.title}</h3>
+                <h3 className="font-display font-bold text-[16px] mb-1.5" style={{ color: '#161B26' }}>{f.title}</h3>
                 <p className="text-[14px] leading-relaxed" style={{ color: '#57534E' }}>{f.desc}</p>
               </div>
             </div>
@@ -267,14 +267,14 @@ function Manifesto() {
   return (
     <section
       className="px-6 py-28 relative overflow-hidden"
-      style={{ background: 'linear-gradient(160deg, #14532D 0%, #0A2E18 100%)' }}
+      style={{ background: 'var(--bg-gradient)' }}
     >
-      <div className="absolute rounded-full pointer-events-none blur-[120px]" style={{ width: 500, height: 500, background: 'rgba(217,119,6,0.12)', top: -150, right: -150 }} />
+      <div className="absolute rounded-full pointer-events-none blur-[120px]" style={{ width: 500, height: 500, background: 'rgba(14,165,233,0.12)', top: -150, right: -150 }} />
 
       <div className="max-w-3xl mx-auto text-center relative z-10">
         <span
           className="text-[40px] block mb-8"
-          style={{ color: '#F59E0B', filter: 'drop-shadow(0 0 12px rgba(245,158,11,0.4))' }}
+          style={{ color: 'var(--accent)', filter: 'drop-shadow(0 0 12px rgba(14,165,233,0.4))' }}
         >
           ✦
         </span>
@@ -307,7 +307,7 @@ function Manifesto() {
 
         <p
           className="font-display font-bold text-[18px] mb-10"
-          style={{ color: '#FCD34D' }}
+          style={{ color: 'var(--accent-bright)' }}
         >
           Quem salva vidas não deveria perder pacientes<br />por causa de burocracia digital.
         </p>
@@ -328,7 +328,7 @@ function Manifesto() {
 
 function Footer() {
   return (
-    <footer className="px-6 py-10" style={{ background: '#0A2E18', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+    <footer className="px-6 py-10" style={{ background: '#0F1117', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
         <Logo size="sm" />
         <p className="text-[13px]" style={{ color: 'rgba(255,255,255,0.25)' }}>

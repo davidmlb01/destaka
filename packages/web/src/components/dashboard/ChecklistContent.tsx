@@ -19,7 +19,7 @@ const PRIORITY_LABELS: Record<string, string> = {
 }
 
 const PRIORITY_COLORS: Record<string, string> = {
-  P0: '#FB923C',
+  P0: 'var(--error)',
   P1: '#FBBF24',
   P2: 'rgba(255,255,255,0.3)',
 }
@@ -213,7 +213,7 @@ function ChecklistCard({
       className="rounded-2xl overflow-hidden"
       style={{
         background: 'rgba(0,0,0,0.25)',
-        border: `1px solid ${item.priority === 'P0' ? 'rgba(251,146,60,0.2)' : 'rgba(255,255,255,0.08)'}`,
+        border: `1px solid ${item.priority === 'P0' ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.08)'}`,
       }}
     >
       {/* Header do card */}

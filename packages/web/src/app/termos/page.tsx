@@ -12,10 +12,10 @@ function Nav() {
   return (
     <nav
       className="fixed top-0 left-0 right-0 z-50 px-6 py-4"
-      style={{ background: 'rgba(20,83,45,0.92)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+      style={{ background: 'rgba(15,17,23,0.92)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between">
-        <Logo size="md" glow href="/" />
+        <Logo size="md" href="/" />
         <Button variant="primary" size="md" href="/diagnostico">
           Diagnostico gratis
         </Button>
@@ -29,7 +29,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
     <div className="mb-10">
       <h2
         className="font-display font-bold mb-4"
-        style={{ fontSize: 20, color: '#F59E0B' }}
+        style={{ fontSize: 20, color: 'var(--accent)' }}
       >
         {title}
       </h2>
@@ -42,11 +42,11 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 export default function TermosPage() {
   return (
-    <main style={{ background: 'linear-gradient(160deg, #14532D 0%, #0A2E18 100%)', minHeight: '100vh' }}>
+    <main style={{ background: 'var(--bg-gradient)', minHeight: '100vh' }}>
       <Nav />
 
       {/* Orbs decorativos */}
-      <div className="fixed rounded-full pointer-events-none blur-[140px]" style={{ width: 500, height: 500, background: 'rgba(217,119,6,0.10)', top: -150, right: -150 }} />
+      <div className="fixed rounded-full pointer-events-none blur-[140px]" style={{ width: 500, height: 500, background: 'rgba(14,165,233,0.10)', top: -150, right: -150 }} />
       <div className="fixed rounded-full pointer-events-none blur-[100px]" style={{ width: 300, height: 300, background: 'rgba(22,163,74,0.08)', bottom: -80, left: -80 }} />
 
       <div className="max-w-3xl mx-auto px-6 pt-36 pb-24 relative z-10">
@@ -208,11 +208,11 @@ export default function TermosPage() {
             </p>
             <div
               className="mt-4 p-4 rounded-xl"
-              style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)' }}
+              style={{ background: 'rgba(14,165,233,0.08)', border: '1px solid rgba(14,165,233,0.2)' }}
             >
               <p style={{ color: 'rgba(255,255,255,0.9)' }}><strong>Destaka</strong></p>
-              <p>Email: <span style={{ color: '#F59E0B' }}>contato@destaka.com.br</span></p>
-              <p>Site: <span style={{ color: '#F59E0B' }}>destaka.com.br</span></p>
+              <p>Email: <span style={{ color: 'var(--accent)' }}>contato@destaka.com.br</span></p>
+              <p>Site: <span style={{ color: 'var(--accent)' }}>destaka.com.br</span></p>
             </div>
           </Section>
         </div>

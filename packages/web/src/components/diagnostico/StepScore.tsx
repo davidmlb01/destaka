@@ -20,7 +20,7 @@ const CATEGORY_ICONS: Record<string, string> = {
 
 function scoreColor(score: number) {
   if (score >= 70) return '#16A34A'
-  if (score >= 50) return '#D97706'
+  if (score >= 50) return 'var(--accent-hover)'
   return '#DC2626'
 }
 
@@ -87,7 +87,7 @@ export function StepScore({ clinicName, city, score, categories, place, onCaptur
       {/* Score hero */}
       <div
         className="px-6 pt-10 pb-16 text-center relative"
-        style={{ background: 'linear-gradient(160deg, #14532D 0%, #0A2E18 100%)' }}
+        style={{ background: 'var(--bg-gradient)' }}
       >
         <div className="max-w-[680px] mx-auto flex items-center justify-between mb-10">
           <Logo size="sm" />
@@ -109,9 +109,9 @@ export function StepScore({ clinicName, city, score, categories, place, onCaptur
             >
               <div
                 className="absolute inset-0 rounded-full"
-                style={{ border: '6px solid transparent', borderTopColor: '#D97706', borderRightColor: '#D97706', transform: 'rotate(-30deg)' }}
+                style={{ border: '6px solid transparent', borderTopColor: 'var(--accent-hover)', borderRightColor: 'var(--accent-hover)', transform: 'rotate(-30deg)' }}
               />
-              <span className="font-display font-extrabold leading-none tracking-[-4px]" style={{ fontSize: 64, color: '#F59E0B' }}>
+              <span className="font-display font-extrabold leading-none tracking-[-4px]" style={{ fontSize: 64, color: 'var(--accent)' }}>
                 {score}
               </span>
               <span className="text-[14px] mt-0.5" style={{ color: 'rgba(255,255,255,0.3)' }}>de 100</span>
@@ -122,7 +122,7 @@ export function StepScore({ clinicName, city, score, categories, place, onCaptur
             className="font-display font-extrabold text-white tracking-[-0.5px] leading-[1.2] mb-3"
             style={{ fontSize: 'clamp(22px, 4vw, 32px)' }}
             dangerouslySetInnerHTML={{
-              __html: verdict.html.replace(/<em>/g, '<em style="color:#F59E0B;font-style:normal;">'),
+              __html: verdict.html.replace(/<em>/g, '<em style="color:#0EA5E9;font-style:normal;">'),
             }}
           />
           <p className="text-[15px] leading-relaxed max-w-[400px] mx-auto" style={{ color: 'rgba(255,255,255,0.55)' }}>
@@ -194,7 +194,7 @@ export function StepScore({ clinicName, city, score, categories, place, onCaptur
               >
                 <div
                   className="w-2 h-2 rounded-full flex-shrink-0 mt-1.5"
-                  style={{ background: issue.severity === 'critical' ? '#DC2626' : '#D97706' }}
+                  style={{ background: issue.severity === 'critical' ? '#DC2626' : 'var(--accent-hover)' }}
                 />
                 <div>
                   <p className="text-[14px] font-semibold mb-0.5" style={{ color: '#1C1917' }}>{issue.title}</p>
@@ -211,7 +211,7 @@ export function StepScore({ clinicName, city, score, categories, place, onCaptur
           className="rounded-[20px] p-7 mb-5"
           style={{ background: 'linear-gradient(135deg, #1C1917 0%, #0C1A0F 100%)' }}
         >
-          <p className="text-[11px] font-bold tracking-[2px] uppercase mb-4" style={{ color: '#D97706' }}>
+          <p className="text-[11px] font-bold tracking-[2px] uppercase mb-4" style={{ color: 'var(--accent-hover)' }}>
             O que isso custa na prática
           </p>
           <p className="font-display font-extrabold text-[20px] text-white leading-[1.3] mb-5 tracking-[-0.5px]">
@@ -228,7 +228,7 @@ export function StepScore({ clinicName, city, score, categories, place, onCaptur
                 className="rounded-xl p-3.5 text-center"
                 style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.06)' }}
               >
-                <div className="font-display font-extrabold text-[22px] tracking-[-1px]" style={{ color: '#F59E0B' }}>{item.num}</div>
+                <div className="font-display font-extrabold text-[22px] tracking-[-1px]" style={{ color: 'var(--accent)' }}>{item.num}</div>
                 <div className="text-[10px] mt-1 leading-tight whitespace-pre-line" style={{ color: 'rgba(255,255,255,0.4)' }}>{item.lbl}</div>
               </div>
             ))}
@@ -238,20 +238,20 @@ export function StepScore({ clinicName, city, score, categories, place, onCaptur
         {/* CTA card */}
         <div
           className="rounded-[20px] overflow-hidden mb-5"
-          style={{ background: 'linear-gradient(145deg, #14532D 0%, #0A2E18 60%, #1C1917 100%)', boxShadow: '0 24px 64px rgba(20,83,45,0.4)' }}
+          style={{ background: 'linear-gradient(145deg, #161B26 0%, #0F1117 60%, #1C1917 100%)', boxShadow: '0 24px 64px rgba(15,17,23,0.4)' }}
         >
-          <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #D97706, #F59E0B, #D97706)' }} />
+          <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #0284C7, #0EA5E9, #0284C7)' }} />
 
           <div className="p-8 text-center relative overflow-hidden">
             <div
               className="absolute rounded-full pointer-events-none blur-[60px]"
-              style={{ width: 300, height: 300, background: 'rgba(217,119,6,0.18)', top: -80, right: -80 }}
+              style={{ width: 300, height: 300, background: 'rgba(14,165,233,0.18)', top: -80, right: -80 }}
             />
 
             <div className="relative z-10">
               <div
                 className="text-[44px] mb-4 leading-none"
-                style={{ color: '#F59E0B', filter: 'drop-shadow(0 0 16px rgba(245,158,11,0.6))' }}
+                style={{ color: 'var(--accent)', filter: 'drop-shadow(0 0 16px rgba(14,165,233,0.6))' }}
               >
                 ✦
               </div>
@@ -261,7 +261,7 @@ export function StepScore({ clinicName, city, score, categories, place, onCaptur
                 style={{ fontSize: 'clamp(22px, 4vw, 28px)' }}
               >
                 A Destaka corrige tudo isso.<br />
-                <span style={{ color: '#F59E0B' }}>Automaticamente.</span>
+                <span style={{ color: 'var(--accent)' }}>Automaticamente.</span>
               </h3>
 
               <p className="text-[15px] leading-relaxed mb-8 max-w-[420px] mx-auto" style={{ color: 'rgba(255,255,255,0.6)' }}>
@@ -272,9 +272,9 @@ export function StepScore({ clinicName, city, score, categories, place, onCaptur
                 onClick={onCapture}
                 className="w-full rounded-2xl py-5 font-display font-extrabold text-[17px] flex items-center justify-center gap-2 transition-all active:scale-[0.99] mb-3"
                 style={{
-                  background: 'linear-gradient(135deg, #D97706 0%, #F59E0B 100%)',
+                  background: 'linear-gradient(135deg, var(--accent-hover) 0%, var(--accent) 100%)',
                   color: '#1C1917',
-                  boxShadow: '0 8px 32px rgba(217,119,6,0.5)',
+                  boxShadow: '0 8px 32px rgba(14,165,233,0.5)',
                 }}
               >
                 <span>✦</span> Quero mais pacientes pelo Google.

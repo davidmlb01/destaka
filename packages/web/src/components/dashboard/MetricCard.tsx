@@ -19,7 +19,7 @@ export function MetricCard({ label, value, icon, hint }: MetricCardProps) {
         style={{
           width: 80,
           height: 80,
-          background: 'radial-gradient(circle, rgba(217,119,6,0.06) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(14,165,233,0.06) 0%, transparent 70%)',
         }}
       />
 

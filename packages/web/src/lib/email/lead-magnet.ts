@@ -51,9 +51,9 @@ export async function sendLeadMagnetEmail(params: LeadMagnetEmailParams) {
       <table width="100%" style="max-width:560px;" cellpadding="0" cellspacing="0">
 
         <!-- Header -->
-        <tr><td style="background:linear-gradient(135deg,#14532D,#0A2E18);border-radius:16px 16px 0 0;padding:28px 36px;text-align:center;">
-          <p style="margin:0;color:#F59E0B;font-size:22px;">✦</p>
-          <p style="margin:4px 0 0;color:#fff;font-size:20px;font-weight:800;letter-spacing:-0.5px;">Desta<span style="color:#F59E0B;">ka</span></p>
+        <tr><td style="background:linear-gradient(135deg,#161B26,#0F1117);border-radius:16px 16px 0 0;padding:28px 36px;text-align:center;">
+          <p style="margin:0;color:#0EA5E9;font-size:22px;">✦</p>
+          <p style="margin:4px 0 0;color:#fff;font-size:20px;font-weight:800;letter-spacing:-0.5px;">Desta<span style="color:#0EA5E9;">ka</span></p>
           <p style="margin:8px 0 0;color:rgba(255,255,255,0.6);font-size:13px;">Auditoria GMB Gratuita</p>
         </td></tr>
 
@@ -84,7 +84,7 @@ export async function sendLeadMagnetEmail(params: LeadMagnetEmailParams) {
           </table>` : ''}
 
           <!-- CTA -->
-          <table width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(135deg,rgba(20,83,45,0.06),rgba(20,83,45,0.03));border:1px solid rgba(20,83,45,0.12);border-radius:12px;margin-bottom:8px;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(135deg,rgba(15,17,23,0.06),rgba(15,17,23,0.03));border:1px solid rgba(15,17,23,0.12);border-radius:12px;margin-bottom:8px;">
             <tr><td style="padding:24px;text-align:center;">
               <p style="margin:0 0 6px;font-size:16px;font-weight:800;color:#1c1917;">
                 A Destaka corrige isso automaticamente.
@@ -93,7 +93,7 @@ export async function sendLeadMagnetEmail(params: LeadMagnetEmailParams) {
                 Conecte seu perfil e veja as otimizações sendo aplicadas em minutos. Sem ação manual da sua parte.
               </p>
               <a href="${appUrl}/login"
-                 style="display:inline-block;background:#14532D;color:#fff;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:15px;font-weight:700;">
+                 style="display:inline-block;background:#161B26;color:#fff;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:15px;font-weight:700;">
                 Começar por R$197/mês
               </a>
             </td></tr>

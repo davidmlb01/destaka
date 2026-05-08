@@ -46,7 +46,7 @@ export function Input({ label, error, icon, id: externalId, className = '', ...p
         />
       </div>
       {error && (
-        <p id={`${id}-error`} className="mt-1.5 text-[13px]" style={{ color: '#FB923C' }} role="alert">
+        <p id={`${id}-error`} className="mt-1.5 text-[13px]" style={{ color: 'var(--error)' }} role="alert">
           {error}
         </p>
       )}

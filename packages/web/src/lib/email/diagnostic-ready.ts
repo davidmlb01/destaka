@@ -35,10 +35,10 @@ export async function sendDiagnosticReadyEmail(params: DiagnosticReadyParams) {
     <tr><td align="center">
       <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;">
         <!-- Header -->
-        <tr><td style="background:linear-gradient(135deg,#14532D,#0A2E18);padding:32px 40px;text-align:center;">
-          <p style="margin:0;color:#F59E0B;font-size:24px;">✦</p>
+        <tr><td style="background:linear-gradient(135deg,#161B26,#0F1117);padding:32px 40px;text-align:center;">
+          <p style="margin:0;color:#0EA5E9;font-size:24px;">✦</p>
           <p style="margin:4px 0 0;color:#ffffff;font-size:22px;font-weight:800;letter-spacing:-0.5px;">
-            Desta<span style="color:#F59E0B;">ka</span>
+            Desta<span style="color:#0EA5E9;">ka</span>
           </p>
         </td></tr>
         <!-- Body -->
@@ -64,7 +64,7 @@ export async function sendDiagnosticReadyEmail(params: DiagnosticReadyParams) {
           <!-- CTA -->
           <table cellpadding="0" cellspacing="0"><tr><td>
             <a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard"
-               style="display:inline-block;background:#D97706;color:#1C1917;text-decoration:none;padding:14px 28px;border-radius:10px;font-size:15px;font-weight:700;">
+               style="display:inline-block;background:#0284C7;color:#1C1917;text-decoration:none;padding:14px 28px;border-radius:10px;font-size:15px;font-weight:700;">
               Ver diagnóstico completo
             </a>
           </td></tr></table>

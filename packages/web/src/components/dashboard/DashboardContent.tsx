@@ -141,9 +141,9 @@ export function DashboardContent() {
               disabled={syncing}
               className="text-xs font-medium px-3 py-1.5 rounded-lg transition-all"
               style={{
-                background: syncing ? 'rgba(255,255,255,0.06)' : 'rgba(217,119,6,0.15)',
-                color: syncing ? 'rgba(255,255,255,0.3)' : '#FCD34D',
-                border: '1px solid rgba(217,119,6,0.2)',
+                background: syncing ? 'rgba(255,255,255,0.06)' : 'rgba(14,165,233,0.15)',
+                color: syncing ? 'rgba(255,255,255,0.3)' : 'var(--accent-bright)',
+                border: '1px solid rgba(14,165,233,0.2)',
               }}
             >
               {syncing ? 'Sincronizando...' : 'Sincronizar'}

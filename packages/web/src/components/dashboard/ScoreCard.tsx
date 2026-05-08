@@ -16,7 +16,7 @@ function scoreToColor(percentage: number): string {
   if (percentage === 0) return 'rgba(255,255,255,0.35)'
   if (percentage >= 70) return '#4ADE80'
   if (percentage >= 40) return '#FBBF24'
-  return '#FB923C'
+  return 'var(--error)'
 }
 
 export function ScoreCard({ category }: { category: CategoryScore }) {
