@@ -16,7 +16,7 @@ function Nav() {
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between">
         <Logo size="md" href="/" />
-        <Button variant="primary" size="md" href="/diagnostico">
+        <Button variant="primary" size="md" href="/saude/diagnostico">
           Diagnostico gratis
         </Button>
       </div>

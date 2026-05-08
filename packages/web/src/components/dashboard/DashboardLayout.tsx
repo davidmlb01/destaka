@@ -6,12 +6,12 @@ import { Logo } from '@/components/ui/Logo'
 import { MobileNav } from './MobileNav'
 
 export const NAV_ITEMS = [
-  { label: 'Dashboard', icon: '📊', href: '/dashboard' },
-  { label: 'Avaliações', icon: '⭐', href: '/dashboard/reviews' },
-  { label: 'Posts', icon: '📝', href: '/dashboard/posts' },
-  { label: 'Otimizações', icon: '⚡', href: '/dashboard/optimizations' },
-  { label: 'Concorrentes', icon: '🎯', href: '/dashboard/competitors' },
-  { label: 'Plano', icon: '💎', href: '/dashboard/plan' },
+  { label: 'Dashboard', icon: '📊', href: '/saude/dashboard' },
+  { label: 'Avaliações', icon: '⭐', href: '/saude/dashboard/reviews' },
+  { label: 'Posts', icon: '📝', href: '/saude/dashboard/posts' },
+  { label: 'Otimizações', icon: '⚡', href: '/saude/dashboard/optimizations' },
+  { label: 'Concorrentes', icon: '🎯', href: '/saude/dashboard/competitors' },
+  { label: 'Plano', icon: '💎', href: '/saude/dashboard/plan' },
 ]
 
 interface Props {
@@ -44,7 +44,7 @@ export function DashboardLayout({ children, activeHref, profileName, userEmail }
       >
         {/* Logo */}
         <div className="px-2 mb-4">
-          <Logo size="md" href="/dashboard" vertical="Saúde" />
+          <Logo size="md" href="/saude/dashboard" vertical="Saúde" />
         </div>
 
         {/* Perfil */}

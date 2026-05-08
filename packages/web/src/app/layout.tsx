@@ -15,14 +15,14 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'Destaka Saúde — Quem te procura, te encontra.',
-  description: 'Presença digital no piloto automático para profissionais de saúde.',
+  title: 'Destaka — Quem te procura, te encontra.',
+  description: 'Presença digital no piloto automático para profissionais liberais.',
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'https://destaka.com.br'),
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className="h-full" data-vertical="saude">
+    <html lang="pt-BR" className="h-full">
       <body className={`${outfit.variable} ${inter.variable} min-h-full antialiased`}>
         {children}
       </body>

@@ -34,7 +34,7 @@ export default function LoginPage() {
     try {
       const res = await fetch('/api/auth/demo-login', { method: 'POST' })
       if (res.ok) {
-        window.location.href = '/dashboard'
+        window.location.href = '/saude/dashboard'
       } else {
         const data = await res.json()
         alert('Erro no login demo: ' + (data.error ?? 'tente novamente'))

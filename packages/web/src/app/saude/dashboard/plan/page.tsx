@@ -26,15 +26,15 @@ const FEATURES = [
 export default async function PlanPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  if (!user) redirect('/saude/login')
 
   const { data: profiles } = await supabase
     .from('gmb_profiles').select('id, name').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1)
 
-  if (!profiles?.length) redirect('/onboarding')
+  if (!profiles?.length) redirect('/saude/onboarding')
 
   return (
-    <DashboardLayout activeHref="/dashboard/plan" profileName={profiles[0].name} userEmail={user.email ?? ''}>
+    <DashboardLayout activeHref="/saude/dashboard/plan" profileName={profiles[0].name} userEmail={user.email ?? ''}>
       <div className="px-6 py-10 max-w-5xl">
 
         {/* Header */}

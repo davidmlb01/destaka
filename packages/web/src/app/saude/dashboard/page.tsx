@@ -8,18 +8,18 @@ import { UpgradeBanner } from '@/components/dashboard/UpgradeBanner'
 export default async function DashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  if (!user) redirect('/saude/login')
 
   const [{ data: profiles }, { data: dbUser }] = await Promise.all([
     supabase.from('gmb_profiles').select('id, name').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1),
     supabase.from('users').select('plan').eq('id', user.id).single(),
   ])
 
-  if (!profiles?.length) redirect('/onboarding')
+  if (!profiles?.length) redirect('/saude/onboarding')
   const profile = profiles[0]
 
   return (
-    <DashboardLayout activeHref="/dashboard" profileName={profile.name} userEmail={user.email ?? ''}>
+    <DashboardLayout activeHref="/saude/dashboard" profileName={profile.name} userEmail={user.email ?? ''}>
       <div className="px-6 py-8 max-w-5xl">
         <div className="mb-8">
           <Badge variant="subtle" className="mb-3">Dashboard</Badge>

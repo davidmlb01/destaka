@@ -297,7 +297,7 @@ export function VerifyTool() {
               </p>
             </div>
             <a
-              href="/login"
+              href="/saude/login"
               className="shrink-0 inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold whitespace-nowrap"
               style={{
                 background: 'rgba(14,165,233,0.3)',

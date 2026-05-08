@@ -27,15 +27,15 @@ export async function updateSession(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  const isAuthRoute = request.nextUrl.pathname.startsWith('/login')
-  const isDashboardRoute = request.nextUrl.pathname.startsWith('/dashboard')
+  const isAuthRoute = request.nextUrl.pathname.startsWith('/saude/login')
+  const isDashboardRoute = request.nextUrl.pathname.startsWith('/saude/dashboard')
 
   if (!user && isDashboardRoute) {
-    return NextResponse.redirect(new URL('/login', request.url))
+    return NextResponse.redirect(new URL('/saude/login', request.url))
   }
 
   if (user && isAuthRoute) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+    return NextResponse.redirect(new URL('/saude/dashboard', request.url))
   }
 
   return supabaseResponse

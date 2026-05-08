@@ -31,7 +31,7 @@ export function StepCapture({ clinicName, score }: StepCaptureProps) {
   }
 
   function handleGoogleAuth() {
-    window.location.href = '/login'
+    window.location.href = '/saude/login'
   }
 
   const benefits = [

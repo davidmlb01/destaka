@@ -29,7 +29,7 @@ export default function OnboardingPage() {
             setStep('error')
             return
           }
-          window.location.href = '/login'
+          window.location.href = '/saude/login'
           return
         }
         sessionStorage.removeItem('onboarding_403_count')
@@ -72,7 +72,7 @@ export default function OnboardingPage() {
     })
 
     if (res.ok) {
-      router.push('/dashboard')
+      router.push('/saude/dashboard')
       return
     }
 
@@ -159,7 +159,7 @@ function ErrorState({ message }: { message: string }) {
       <div className="text-4xl mb-4">⚠️</div>
       <h2 className="font-display font-extrabold text-white text-xl mb-3">Algo deu errado</h2>
       <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 15, marginBottom: 24 }}>{message}</p>
-      <Button variant="primary" size="md" href="/login">
+      <Button variant="primary" size="md" href="/saude/login">
         Tentar novamente
       </Button>
     </Card>

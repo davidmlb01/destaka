@@ -20,7 +20,7 @@ export default function NotFound() {
           Página não encontrada.
         </p>
         <a
-          href="/dashboard"
+          href="/saude/dashboard"
           className="inline-block font-medium rounded-xl transition-colors"
           style={{
             background: '#16a34a',
