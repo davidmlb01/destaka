@@ -24,6 +24,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(callbackUrl)
   }
 
+  // /saude sem sub-rota redireciona para login
+  if (pathname === '/saude') {
+    return NextResponse.redirect(new URL('/saude/login', origin), 302)
+  }
+
   // Redirect rotas legado para /saude/*
   for (const [old, newPath] of Object.entries(LEGACY_REDIRECTS)) {
     if (pathname === old || pathname.startsWith(old + '/')) {
