@@ -41,7 +41,7 @@ function Hero() {
         </Badge>
 
         <h1
-          className="font-display font-extrabold text-white leading-[1.05] tracking-[-2.5px] mb-6"
+          className="font-display font-bold text-white leading-[1.05] tracking-[-2.5px] mb-6"
           style={{ fontSize: 'clamp(40px, 6vw, 68px)' }}
         >
           Você deveria<br />
@@ -83,8 +83,8 @@ function StatsBar() {
       <div className="max-w-6xl mx-auto px-6 py-8 grid grid-cols-2 md:grid-cols-4 gap-6">
         {stats.map((s) => (
           <div key={s.num} className="text-center">
-            <div className="font-display font-extrabold text-[32px] tracking-[-1px]" style={{ color: 'var(--accent)' }}>{s.num}</div>
-            <div className="text-[13px] leading-tight mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>{s.label}</div>
+            <div className="font-display font-bold text-[32px] tracking-[-1px]" style={{ color: 'var(--accent)' }}>{s.num}</div>
+            <div className="text-[13px] leading-tight mt-1" style={{ color: 'rgba(255,255,255,0.65)' }}>{s.label}</div>
           </div>
         ))}
       </div>
@@ -104,7 +104,7 @@ function Problema() {
               O problema real
             </p>
             <h2
-              className="font-display font-extrabold leading-[1.1] tracking-[-1.5px] mb-6"
+              className="font-display font-bold leading-[1.1] tracking-[-1.5px] mb-6"
               style={{ fontSize: 'clamp(28px, 4vw, 44px)', color: '#fff' }}
             >
               Você não perde pacientes<br />
@@ -113,7 +113,7 @@ function Problema() {
             <p className="text-[17px] leading-relaxed mb-6" style={{ color: 'rgba(255,255,255,0.7)' }}>
               Perde porque eles não te encontram.
             </p>
-            <p className="text-[16px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>
+            <p className="text-[16px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.65)' }}>
               O profissional que aparece em primeiro não é necessariamente o melhor. É o mais visível. Quando alguém digita "médico perto de mim", o Google decide quem aparece. E na maioria das vezes, não é quem merece mais.
             </p>
           </div>
@@ -131,7 +131,7 @@ function Problema() {
                 <span className="text-[24px] flex-shrink-0">{item.icon}</span>
                 <div>
                   <p className="font-display font-bold text-[15px] mb-1 text-white">{item.title}</p>
-                  <p className="text-[14px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>{item.desc}</p>
+                  <p className="text-[14px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.65)' }}>{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -175,7 +175,7 @@ function ComoFunciona() {
         <div className="text-center mb-16">
           <p className="text-[11px] font-bold tracking-[2px] uppercase mb-4" style={{ color: 'var(--accent)' }}>Como funciona</p>
           <h2
-            className="font-display font-extrabold text-white leading-[1.1] tracking-[-1.5px]"
+            className="font-display font-bold text-white leading-[1.1] tracking-[-1.5px]"
             style={{ fontSize: 'clamp(28px, 4vw, 44px)' }}
           >
             Em 5 minutos, seu perfil<br />já está sendo otimizado.
@@ -190,14 +190,14 @@ function ComoFunciona() {
               style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}
             >
               <div
-                className="font-display font-extrabold text-[48px] leading-none tracking-[-2px]"
+                className="font-display font-bold text-[48px] leading-none tracking-[-2px]"
                 style={{ color: 'var(--accent-hover)' }}
               >
                 {step.num}
               </div>
               <div>
                 <h3 className="font-display font-bold text-[20px] text-white mb-2">{step.title}</h3>
-                <p className="text-[15px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.55)' }}>{step.desc}</p>
+                <p className="text-[15px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.65)' }}>{step.desc}</p>
               </div>
               {step.cta && step.href && (
                 <Button variant="primary" size="md" href={step.href} className="mt-auto self-start">
@@ -230,13 +230,13 @@ function Recursos() {
         <div className="text-center mb-16">
           <p className="text-[11px] font-bold tracking-[2px] uppercase mb-4" style={{ color: 'var(--accent)' }}>O que a Destaka faz</p>
           <h2
-            className="font-display font-extrabold leading-[1.1] tracking-[-1.5px] mb-4"
+            className="font-display font-bold leading-[1.1] tracking-[-1.5px] mb-4"
             style={{ fontSize: 'clamp(28px, 4vw, 44px)', color: '#fff' }}
           >
             Tudo que uma agência faria.<br />
             <span style={{ color: 'rgba(255,255,255,0.7)' }}>Sem reunião. Sem espera. Sem mensalidade de agência.</span>
           </h2>
-          <p className="text-[17px] max-w-2xl mx-auto" style={{ color: 'rgba(255,255,255,0.5)' }}>
+          <p className="text-[17px] max-w-2xl mx-auto" style={{ color: 'rgba(255,255,255,0.65)' }}>
             A Destaka cuida da sua visibilidade enquanto você cuida dos pacientes. Cada um no que sabe fazer melhor.
           </p>
         </div>
@@ -251,7 +251,7 @@ function Recursos() {
               <span className="text-[28px] flex-shrink-0">{f.icon}</span>
               <div>
                 <h3 className="font-display font-bold text-[16px] mb-1.5 text-white">{f.title}</h3>
-                <p className="text-[14px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>{f.desc}</p>
+                <p className="text-[14px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.65)' }}>{f.desc}</p>
               </div>
             </div>
           ))}
@@ -280,7 +280,7 @@ function Manifesto() {
         </span>
 
         <h2
-          className="font-display font-extrabold text-white leading-[1.15] tracking-[-1.5px] mb-10"
+          className="font-display font-bold text-white leading-[1.15] tracking-[-1.5px] mb-10"
           style={{ fontSize: 'clamp(24px, 4vw, 38px)' }}
         >
           Você passou anos se formando.<br />
@@ -316,7 +316,7 @@ function Manifesto() {
           <span>✦</span> Descobrir minha nota no Google
         </Button>
 
-        <p className="mt-5 text-[12px]" style={{ color: 'rgba(255,255,255,0.25)' }}>
+        <p className="mt-5 text-[12px]" style={{ color: 'rgba(255,255,255,0.45)' }}>
           Grátis. Sem cadastro. Resultado em 30 segundos.
         </p>
       </div>
@@ -331,14 +331,14 @@ function Footer() {
     <footer className="px-6 py-10" style={{ background: '#0a1f16', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
         <Logo size="sm" vertical="Saúde" />
-        <p className="text-[13px]" style={{ color: 'rgba(255,255,255,0.25)' }}>
+        <p className="text-[13px]" style={{ color: 'rgba(255,255,255,0.45)' }}>
           Google Business Profile no piloto automático. Para profissionais de saúde que merecem aparecer primeiro.
         </p>
         <div className="flex items-center gap-5">
-          <Link href="/privacidade" className="text-[12px] hover:text-white transition-colors" style={{ color: 'rgba(255,255,255,0.25)' }}>
+          <Link href="/privacidade" className="text-[12px] hover:text-white transition-colors" style={{ color: 'rgba(255,255,255,0.45)' }}>
             Privacidade
           </Link>
-          <Link href="/termos" className="text-[12px] hover:text-white transition-colors" style={{ color: 'rgba(255,255,255,0.25)' }}>
+          <Link href="/termos" className="text-[12px] hover:text-white transition-colors" style={{ color: 'rgba(255,255,255,0.45)' }}>
             Termos
           </Link>
           <p className="text-[12px]" style={{ color: 'rgba(255,255,255,0.15)' }}>

@@ -1,10 +1,10 @@
 import Link from 'next/link'
 
 const sizes = {
-  xs: { mark: 18, text: 13, gap: 3 },
-  sm: { mark: 22, text: 16, gap: 4 },
-  md: { mark: 30, text: 22, gap: 4 },
-  lg: { mark: 40, text: 28, gap: 5 },
+  xs: { mark: 18, text: 13, gap: 4 },
+  sm: { mark: 22, text: 16, gap: 6 },
+  md: { mark: 30, text: 22, gap: 6 },
+  lg: { mark: 40, text: 28, gap: 6 },
 } as const
 
 type LogoSize = keyof typeof sizes
@@ -41,14 +41,14 @@ function LogoMark({ size = 'md', iconOnly = false, vertical, className = '' }: O
         <span className="inline-flex items-baseline" style={{ gap: s.gap }}>
           <span
             className="font-display font-bold text-white"
-            style={{ fontSize: s.text, letterSpacing: '-0.5px', lineHeight: 1 }}
+            style={{ fontSize: s.text, letterSpacing: '0.5px', lineHeight: 1 }}
           >
             Destaka
           </span>
           {vertical && (
             <span
               className="font-display font-light"
-              style={{ fontSize: s.text, letterSpacing: '-0.5px', lineHeight: 1, opacity: 0.4 }}
+              style={{ fontSize: s.text, letterSpacing: '0.5px', lineHeight: 1, opacity: 0.4 }}
             >
               {vertical}
             </span>

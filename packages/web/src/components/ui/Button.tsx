@@ -5,8 +5,8 @@ import Link from 'next/link'
 
 const variants = {
   primary: {
-    base: 'text-white shadow-[0_4px_24px_rgba(74,222,128,0.25)] hover:shadow-[0_6px_32px_rgba(74,222,128,0.4)] hover:brightness-110',
-    style: { background: 'var(--accent)' },
+    base: 'text-white hover:brightness-110',
+    style: { background: 'var(--accent)', boxShadow: '0 4px 24px var(--accent-bg)' },
   },
   green: {
     base: 'text-white shadow-[0_4px_24px_rgba(15,17,23,0.4)] hover:shadow-[0_6px_32px_rgba(15,17,23,0.55)]',
@@ -14,7 +14,7 @@ const variants = {
   },
   secondary: {
     base: 'border hover:brightness-110',
-    style: { color: 'var(--accent)', borderColor: 'rgba(74,222,128,0.3)', background: 'rgba(74,222,128,0.08)' },
+    style: { color: 'var(--accent)', borderColor: 'var(--accent-border)', background: 'var(--accent-bg)' },
   },
   ghost: {
     base: 'text-white/60 border border-white/12 hover:text-white hover:border-white/20',
@@ -49,7 +49,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
 ) {
   const v = variants[variant]
   const classes = [
-    'inline-flex items-center justify-center gap-2 font-display font-extrabold rounded-xl transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed',
+    'inline-flex items-center justify-center gap-2 font-display font-bold rounded-xl transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed',
     v.base,
     sizes[size],
     fullWidth ? 'w-full' : '',
