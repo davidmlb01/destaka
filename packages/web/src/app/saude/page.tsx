@@ -3,6 +3,17 @@ import { Logo } from '@/components/ui/Logo'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 
+function PinIcon({ size = 24 }: { size?: number }) {
+  const h = Math.round(size * (160 / 120))
+  return (
+    <svg width={size} height={h} viewBox="0 0 120 160" fill="none" className="flex-shrink-0">
+      <path d="M60 6C32.4 6 10 28.4 10 56C10 76 20 90 32 102C42 112 52 122 60 132C68 122 78 112 88 102C100 90 110 76 110 56C110 28.4 87.6 6 60 6Z" fill="var(--accent)"/>
+      <path d="M26 56C36 43 47 38 60 38C73 38 84 43 94 56C84 69 73 74 60 74C47 74 36 69 26 56Z" fill="var(--bg-base)"/>
+      <circle cx="60" cy="56" r="7" fill="var(--accent)"/>
+    </svg>
+  )
+}
+
 // ─── NAV ────────────────────────────────────────────────────────────────────
 
 function Nav() {
@@ -58,7 +69,7 @@ function Hero() {
         </p>
 
         <Button variant="primary" size="lg" href="/saude/verificar">
-          <span>✦</span> Ver a nota do meu perfil
+          <PinIcon size={16} /> Ver a nota do meu perfil
         </Button>
 
         <p className="mt-5 text-[12px]" style={{ color: '#ffffff' }}>
@@ -96,7 +107,7 @@ function StatsBar() {
 
 function Problema() {
   return (
-    <section className="px-6 py-24" style={{ background: 'rgba(255,255,255,0.02)' }}>
+    <section className="px-6 py-24" style={{ background: 'var(--bg-gradient)' }}>
       <div className="max-w-4xl mx-auto">
         <div className="grid md:grid-cols-2 gap-16 items-center">
           <div>
@@ -119,16 +130,16 @@ function Problema() {
           </div>
           <div className="flex flex-col gap-4">
             {[
-              { icon: '🔍', title: 'O paciente pesquisa', desc: 'Todo dia, dezenas de pessoas na sua cidade buscam pelo profissional que você é. O Google escolhe quem mostrar, não quem merece mais.' },
-              { icon: '📉', title: 'Perfis incompletos são penalizados', desc: '51% dos perfis de saúde no Google estão incompletos. Cada campo vazio é uma penalidade silenciosa que você nunca vai ver.' },
-              { icon: '🏥', title: 'O concorrente aparece', desc: 'Não porque atende melhor. Porque o perfil está otimizado. Fotos atualizadas, posts recentes, avaliações respondidas.' },
+              { title: 'O paciente pesquisa', desc: 'Todo dia, dezenas de pessoas na sua cidade buscam pelo profissional que você é. O Google escolhe quem mostrar, não quem merece mais.' },
+              { title: 'Perfis incompletos são penalizados', desc: '51% dos perfis de saúde no Google estão incompletos. Cada campo vazio é uma penalidade silenciosa que você nunca vai ver.' },
+              { title: 'O concorrente aparece', desc: 'Não porque atende melhor. Porque o perfil está otimizado. Fotos atualizadas, posts recentes, avaliações respondidas.' },
             ].map((item) => (
               <div
                 key={item.title}
                 className="flex gap-4 p-5 rounded-2xl"
                 style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
               >
-                <span className="text-[24px] flex-shrink-0">{item.icon}</span>
+                <PinIcon size={22} />
                 <div>
                   <p className="font-display font-bold text-[15px] mb-1 text-white">{item.title}</p>
                   <p className="text-[14px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.65)' }}>{item.desc}</p>
@@ -216,16 +227,16 @@ function ComoFunciona() {
 
 function Recursos() {
   const features = [
-    { icon: '📊', title: 'Diagnóstico de perfil', desc: 'Score 0-100 em 6 categorias. Você sabe exatamente onde está perdendo visibilidade e o que precisa mudar.' },
-    { icon: '📝', title: 'Posts automáticos', desc: 'Conteúdo gerado com IA em português nativo, com contexto da sua especialidade e cidade. Publicado semanalmente sem você precisar fazer nada.' },
-    { icon: '⭐', title: 'Respostas a avaliações', desc: 'Cada nova avaliação recebe uma resposta personalizada e gentil. Automaticamente. Inclusive as de uma estrela, que são as mais importantes.' },
-    { icon: '🖼️', title: 'Sugestão de fotos', desc: 'A Destaka indica exatamente quais fotos estão faltando e com qual frequência atualizar. Perfis com fotos recebem 42% mais pedidos de rota.' },
-    { icon: '🏷️', title: 'Serviços otimizados', desc: 'Cadastro completo dos seus serviços com as palavras-chave que seus pacientes usam para buscar. Consultórios similares têm em média 11 serviços cadastrados.' },
-    { icon: '📈', title: 'Relatório mensal', desc: 'Visibilidade completa do que foi feito, o que melhorou e qual impacto nas buscas. Tudo em português, sem jargão técnico.' },
+    { title: 'Diagnóstico de perfil', desc: 'Score 0-100 em 6 categorias. Você sabe exatamente onde está perdendo visibilidade e o que precisa mudar.' },
+    { title: 'Posts automáticos', desc: 'Conteúdo gerado com IA em português nativo, com contexto da sua especialidade e cidade. Publicado semanalmente sem você precisar fazer nada.' },
+    { title: 'Respostas a avaliações', desc: 'Cada nova avaliação recebe uma resposta personalizada e gentil. Automaticamente. Inclusive as de uma estrela, que são as mais importantes.' },
+    { title: 'Sugestão de fotos', desc: 'A Destaka indica exatamente quais fotos estão faltando e com qual frequência atualizar. Perfis com fotos recebem 42% mais pedidos de rota.' },
+    { title: 'Serviços otimizados', desc: 'Cadastro completo dos seus serviços com as palavras-chave que seus pacientes usam para buscar. Consultórios similares têm em média 11 serviços cadastrados.' },
+    { title: 'Relatório mensal', desc: 'Visibilidade completa do que foi feito, o que melhorou e qual impacto nas buscas. Tudo em português, sem jargão técnico.' },
   ]
 
   return (
-    <section id="recursos" className="px-6 py-24" style={{ background: 'rgba(255,255,255,0.02)' }}>
+    <section id="recursos" className="px-6 py-24" style={{ background: 'var(--bg-gradient)' }}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <p className="text-[11px] font-bold tracking-[2px] uppercase mb-4" style={{ color: 'var(--accent)' }}>O que a Destaka faz</p>
@@ -248,7 +259,7 @@ function Recursos() {
               className="p-6 rounded-2xl flex gap-4 transition-all"
               style={{ background: 'rgba(14,165,233,0.06)', border: '1px solid rgba(14,165,233,0.15)' }}
             >
-              <span className="text-[28px] flex-shrink-0">{f.icon}</span>
+              <PinIcon size={22} />
               <div>
                 <h3 className="font-display font-bold text-[16px] mb-1.5 text-white">{f.title}</h3>
                 <p className="text-[14px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.65)' }}>{f.desc}</p>
@@ -272,12 +283,9 @@ function Manifesto() {
       <div className="absolute rounded-full pointer-events-none blur-[120px]" style={{ width: 500, height: 500, background: 'rgba(14,165,233,0.08)', top: -150, right: -150 }} />
 
       <div className="max-w-3xl mx-auto text-center relative z-10">
-        <span
-          className="text-[40px] block mb-8"
-          style={{ color: 'var(--accent)', filter: 'drop-shadow(0 0 12px rgba(14,165,233,0.3))' }}
-        >
-          ✦
-        </span>
+        <div className="mb-8 flex justify-center" style={{ filter: 'drop-shadow(0 0 16px rgba(14,165,233,0.3))' }}>
+          <PinIcon size={48} />
+        </div>
 
         <h2
           className="font-display font-bold text-white leading-[1.15] tracking-[-1.5px] mb-10"
@@ -313,7 +321,7 @@ function Manifesto() {
         </p>
 
         <Button variant="primary" size="lg" href="/saude/verificar">
-          <span>✦</span> Descobrir minha nota no Google
+          <PinIcon size={16} /> Descobrir minha nota no Google
         </Button>
 
         <p className="mt-5 text-[12px]" style={{ color: 'rgba(255,255,255,0.45)' }}>
