@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/Card'
 import { apiFetch } from '@/lib/api/client'
 import { PostsSkeleton } from './Skeletons'
 import { formatDateShort } from '@/lib/utils/format-date'
+import { Spinner } from '@/components/ui/Spinner'
 
 interface Post {
   id: string
@@ -214,8 +215,7 @@ export function PostsContent() {
           >
             {generating ? (
               <>
-                <span className="inline-block w-4 h-4 rounded-full border-2 border-t-transparent animate-spin"
-                  style={{ borderColor: 'rgba(252,211,77,0.3)', borderTopColor: 'var(--accent-bright)' }} />
+                <Spinner size="md" />
                 Gerando post...
               </>
             ) : (

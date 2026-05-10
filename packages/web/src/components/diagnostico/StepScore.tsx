@@ -2,6 +2,7 @@
 
 import { Logo } from '@/components/ui/Logo'
 import { getScoreColor } from '@/lib/utils/score-colors'
+import { getCategoryIcon } from '@/lib/constants/category-meta'
 
 interface ScoreCategory {
   name: string
@@ -10,14 +11,6 @@ interface ScoreCategory {
   maxScore: number
 }
 
-const CATEGORY_ICONS: Record<string, string> = {
-  completude: '📋',
-  photos: '📸',
-  reputation: '⭐',
-  activity: '📝',
-  services: '🏷️',
-  attributes: '✅',
-}
 
 function scoreColor(score: number) {
   return getScoreColor(score)
@@ -151,7 +144,7 @@ export function StepScore({ clinicName, city, score, categories, place, onCaptur
                   className="flex items-center gap-3 py-2.5"
                   style={{ borderBottom: i < categories.length - 1 ? '1px solid #E7E5E4' : 'none' }}
                 >
-                  <span className="text-[18px] w-7 text-center flex-shrink-0">{CATEGORY_ICONS[cat.name] ?? '📌'}</span>
+                  <span className="text-[18px] w-7 text-center flex-shrink-0">{getCategoryIcon(cat.name)}</span>
                   <span className="flex-1 text-[14px] font-medium" style={{ color: '#1C1917' }}>{cat.label}</span>
                   <div className="w-[100px] h-1.5 rounded-full overflow-hidden flex-shrink-0" style={{ background: '#E7E5E4' }}>
                     <div

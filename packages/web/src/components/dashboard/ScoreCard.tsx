@@ -3,15 +3,7 @@
 import { useState } from 'react'
 import type { CategoryScore } from '@/lib/gmb/scorer'
 import { getScoreColor, getScoreLabel } from '@/lib/utils/score-colors'
-
-const CATEGORY_ICONS: Record<string, string> = {
-  info: '📋',
-  photos: '📸',
-  reviews: '⭐',
-  posts: '📝',
-  services: '🏥',
-  attributes: '✅',
-}
+import { getCategoryIcon } from '@/lib/constants/category-meta'
 
 function scoreToColor(percentage: number): string {
   if (percentage === 0) return 'rgba(255,255,255,0.35)'
@@ -21,7 +13,7 @@ function scoreToColor(percentage: number): string {
 export function ScoreCard({ category }: { category: CategoryScore }) {
   const [expanded, setExpanded] = useState(false)
   const color = scoreToColor(category.percentage)
-  const icon = CATEGORY_ICONS[category.name] ?? '📊'
+  const icon = getCategoryIcon(category.name)
   const hasIssues = category.issues.length > 0
 
   return (

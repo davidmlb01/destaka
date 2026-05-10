@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import type { Review, ReviewFilter } from '@/lib/gmb/reviews'
 import { ReviewsSkeleton } from './Skeletons'
 import { formatDateShort } from '@/lib/utils/format-date'
+import { Spinner } from '@/components/ui/Spinner'
 
 interface ReviewsData {
   reviews: Review[]
@@ -42,15 +43,23 @@ const FILTER_LABELS: Record<ReviewFilter, string> = {
 export function ReviewsContent() {
   const [data, setData] = useState<ReviewsData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [filter, setFilter] = useState<ReviewFilter>('all')
   const [page, setPage] = useState(1)
   const [modal, setModal] = useState<ReplyModalState | null>(null)
 
   async function load(f = filter, p = page) {
-    setLoading(true)
-    const res = await fetch(`/api/reviews?filter=${f}&page=${p}`)
-    if (res.ok) setData(await res.json())
-    setLoading(false)
+    try {
+      setLoading(true)
+      setError(null)
+      const res = await fetch(`/api/reviews?filter=${f}&page=${p}`)
+      if (!res.ok) throw new Error('Erro ao carregar dados')
+      setData(await res.json())
+    } catch {
+      setError('Não foi possível carregar. Tente novamente.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => { load() }, [])
@@ -119,6 +128,15 @@ export function ReviewsContent() {
   }
 
   const totalPages = data ? Math.ceil(data.total / data.pageSize) : 1
+
+  if (error) return (
+    <div className="flex flex-col items-center justify-center py-20 text-center">
+      <p className="text-[15px] mb-4" style={{ color: 'rgba(255,255,255,0.7)' }}>{error}</p>
+      <button onClick={() => { setError(null); load() }} className="text-[14px] font-medium px-4 py-2 rounded-lg" style={{ background: 'var(--accent)', color: '#fff' }}>
+        Tentar novamente
+      </button>
+    </div>
+  )
 
   return (
     <>
@@ -338,8 +356,7 @@ export function ReviewsContent() {
                 >
                   {modal.generating ? (
                     <>
-                      <span className="inline-block w-3 h-3 rounded-full border border-t-transparent animate-spin"
-                        style={{ borderColor: 'rgba(252,211,77,0.3)', borderTopColor: 'var(--accent-bright)' }} />
+                      <Spinner size="sm" />
                       Gerando...
                     </>
                   ) : (

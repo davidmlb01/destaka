@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import type { OptimizationAction, OptimizationPlan, ExecutionResult } from '@/lib/gmb/optimizer'
+import { Spinner } from '@/components/ui/Spinner'
 
 type Step = 'idle' | 'loading-plan' | 'preview' | 'executing' | 'done' | 'error'
 
@@ -142,8 +143,7 @@ export function OptimizationWizard({ profileId, diagnosticId, onComplete }: {
         {/* Loading plan */}
         {step === 'loading-plan' && (
           <div className="flex items-center justify-center py-8">
-            <div className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin"
-              style={{ borderColor: 'rgba(252,211,77,0.3)', borderTopColor: 'var(--accent-bright)' }} />
+            <Spinner size="lg" />
           </div>
         )}
 
@@ -227,8 +227,7 @@ export function OptimizationWizard({ profileId, diagnosticId, onComplete }: {
                 >
                   <span style={{ fontSize: 16 }}>
                     {done ? '✅' : active ? (
-                      <span className="inline-block w-4 h-4 rounded-full border-2 border-t-transparent animate-spin"
-                        style={{ borderColor: 'rgba(252,211,77,0.3)', borderTopColor: 'var(--accent-bright)' }} />
+                      <Spinner size="md" />
                     ) : ACTION_ICONS[action.type]}
                   </span>
                   <p className="text-sm font-medium text-white">{action.label}</p>

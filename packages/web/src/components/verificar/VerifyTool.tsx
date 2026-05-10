@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import type { CategoryScore } from '@/lib/gmb/scorer'
 import { getScoreColor, getScoreLabel } from '@/lib/utils/score-colors'
+import { getCategoryIcon } from '@/lib/constants/category-meta'
+import { Spinner } from '@/components/ui/Spinner'
 import { ScoreGauge } from '@/components/dashboard/ScoreGauge'
 
 interface PlaceInfo {
@@ -21,14 +23,6 @@ interface VerifyResult {
   usingMock: boolean
 }
 
-const CATEGORY_ICONS: Record<string, string> = {
-  info: '📋',
-  photos: '📸',
-  reviews: '⭐',
-  posts: '📝',
-  services: '🏥',
-  attributes: '✅',
-}
 
 function scoreColor(score: number) {
   if (score === 0) return 'rgba(255,255,255,0.3)'
@@ -138,10 +132,7 @@ export function VerifyTool() {
           >
             {loading ? (
               <span className="flex items-center gap-2">
-                <span
-                  className="inline-block w-4 h-4 rounded-full border-2 border-t-transparent animate-spin"
-                  style={{ borderColor: 'rgba(252,211,77,0.3)', borderTopColor: 'var(--accent-bright)' }}
-                />
+                <Spinner size="md" />
                 Analisando...
               </span>
             ) : 'Analisar agora'}
@@ -403,7 +394,7 @@ function CategoryRow({ category, expanded, onToggle }: {
         onClick={!perfect ? onToggle : undefined}
         style={{ cursor: perfect ? 'default' : 'pointer' }}
       >
-        <span style={{ fontSize: 16, flexShrink: 0 }}>{CATEGORY_ICONS[category.name] ?? '📊'}</span>
+        <span style={{ fontSize: 16, flexShrink: 0 }}>{getCategoryIcon(category.name)}</span>
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between mb-1.5">

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import type { Competitor, BenchmarkData } from '@/lib/gmb/competitors'
 import { apiFetch } from '@/lib/api/client'
 import { CompetitorsSkeleton } from './Skeletons'
+import { Spinner } from '@/components/ui/Spinner'
 
 interface Profile {
   id: string
@@ -216,10 +217,7 @@ export function CompetitorsContent() {
         >
           {discovering ? (
             <>
-              <span
-                className="inline-block w-3.5 h-3.5 rounded-full border-2 border-t-transparent animate-spin"
-                style={{ borderColor: 'rgba(252,211,77,0.3)', borderTopColor: 'var(--accent-bright)' }}
-              />
+              <Spinner size="sm" />
               Buscando...
             </>
           ) : 'Atualizar'}

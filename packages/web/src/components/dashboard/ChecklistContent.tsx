@@ -5,6 +5,7 @@ import type { ChecklistItem } from '@/lib/gmb/checklist'
 import { Card } from '@/components/ui/Card'
 import { ChecklistSkeleton } from './Skeletons'
 import { formatDateShort } from '@/lib/utils/format-date'
+import { getCategoryIcon } from '@/lib/constants/category-meta'
 
 interface ChecklistData {
   items: ChecklistItem[]
@@ -26,12 +27,6 @@ const PRIORITY_COLORS: Record<string, string> = {
   P2: 'rgba(255,255,255,0.3)',
 }
 
-const CATEGORY_ICONS: Record<string, string> = {
-  photos: '📸',
-  reviews: '⭐',
-  verification: '✅',
-  info: '📋',
-}
 
 function formatDate(iso: string) {
   return formatDateShort(iso)
@@ -40,13 +35,22 @@ function formatDate(iso: string) {
 export function ChecklistContent() {
   const [data, setData] = useState<ChecklistData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [expanded, setExpanded] = useState<string | null>(null)
   const [toggling, setToggling] = useState<string | null>(null)
 
   async function load() {
-    const res = await fetch('/api/checklist')
-    if (res.ok) setData(await res.json())
-    setLoading(false)
+    try {
+      setLoading(true)
+      setError(null)
+      const res = await fetch('/api/checklist')
+      if (!res.ok) throw new Error('Erro ao carregar dados')
+      setData(await res.json())
+    } catch {
+      setError('Não foi possível carregar. Tente novamente.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => { load() }, [])
@@ -85,6 +89,15 @@ export function ChecklistContent() {
   if (loading) {
     return <ChecklistSkeleton />
   }
+
+  if (error) return (
+    <div className="flex flex-col items-center justify-center py-20 text-center">
+      <p className="text-[15px] mb-4" style={{ color: 'rgba(255,255,255,0.7)' }}>{error}</p>
+      <button onClick={() => { setError(null); load() }} className="text-[14px] font-medium px-4 py-2 rounded-lg" style={{ background: 'var(--accent)', color: '#fff' }}>
+        Tentar novamente
+      </button>
+    </div>
+  )
 
   if (!data) return null
 
@@ -232,7 +245,7 @@ function ChecklistCard({
         {/* Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap mb-1">
-            <span style={{ fontSize: 14 }}>{CATEGORY_ICONS[item.category]}</span>
+            <span style={{ fontSize: 14 }}>{getCategoryIcon(item.category)}</span>
             <span className="font-medium text-white text-sm">{item.title}</span>
             <span
               className="text-xs px-2 py-0.5 rounded-full font-medium"
