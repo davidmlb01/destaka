@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 
 // Rotas públicas que não precisam de auth
-const PUBLIC_PATHS = ['/', '/saude/diagnostico', '/saude/login', '/saude/verificar', '/privacidade', '/termos', '/api/auth', '/api/public', '/api/health']
+const PUBLIC_PATHS = ['/', '/saude', '/saude/diagnostico', '/saude/login', '/saude/verificar', '/privacidade', '/termos', '/api/auth', '/api/public', '/api/health']
 
 // Redirects de rotas antigas para novas (SEO + links existentes)
 const LEGACY_REDIRECTS: Record<string, string> = {
@@ -22,11 +22,6 @@ export async function middleware(request: NextRequest) {
     const callbackUrl = new URL('/api/auth/callback', origin)
     callbackUrl.searchParams.set('code', code)
     return NextResponse.redirect(callbackUrl)
-  }
-
-  // /saude sem sub-rota redireciona para login
-  if (pathname === '/saude') {
-    return NextResponse.redirect(new URL('/saude/login', origin), 302)
   }
 
   // Redirect rotas legado para /saude/*
