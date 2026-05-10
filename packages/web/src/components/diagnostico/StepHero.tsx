@@ -53,7 +53,7 @@ export function StepHero({ onStart }: StepHeroProps) {
 
         {/* Logo */}
         <div className="flex justify-center mb-8">
-          <Logo size="lg" />
+          <Logo size="lg" vertical="Saúde" />
         </div>
 
         {/* Badge */}

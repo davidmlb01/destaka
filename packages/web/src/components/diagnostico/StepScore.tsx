@@ -90,7 +90,7 @@ export function StepScore({ clinicName, city, score, categories, place, onCaptur
         style={{ background: 'var(--bg-gradient)' }}
       >
         <div className="max-w-[680px] mx-auto flex items-center justify-between mb-10">
-          <Logo size="sm" />
+          <Logo size="sm" vertical="Saúde" />
           <span className="text-[12px] font-medium" style={{ color: 'rgba(255,255,255,0.4)' }}>
             {clinicName} · {city}
           </span>

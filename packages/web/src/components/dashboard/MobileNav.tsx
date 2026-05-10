@@ -31,7 +31,7 @@ export function MobileNav({ profileName, userEmail, activeHref }: MobileNavProps
           backdropFilter: 'blur(16px)',
         }}
       >
-        <Logo size="sm" />
+        <Logo size="sm" vertical="Saúde" />
 
         <div className="flex items-center gap-3">
           <p className="text-xs truncate max-w-[120px]" style={{ color: 'var(--text-tertiary)' }}>
@@ -69,7 +69,7 @@ export function MobileNav({ profileName, userEmail, activeHref }: MobileNavProps
       >
         {/* Header */}
         <div className="flex items-center justify-between px-2 mb-8">
-          <Logo size="sm" />
+          <Logo size="sm" vertical="Saúde" />
           <button
             onClick={() => setOpen(false)}
             className="text-lg leading-none transition-colors"

@@ -34,7 +34,7 @@ export default function LoginPage() {
     try {
       const res = await fetch('/api/auth/demo-login', { method: 'POST' })
       if (res.ok) {
-        window.location.href = '/saude/dashboard'
+        window.location.href = '/dashboard'
       } else {
         const data = await res.json()
         alert('Erro no login demo: ' + (data.error ?? 'tente novamente'))
@@ -83,7 +83,7 @@ export default function LoginPage() {
       <div className="relative z-10 w-full max-w-md">
         {/* Logo */}
         <div className="flex justify-center mb-10">
-          <Logo size="lg" href="/saude" vertical="Saúde" />
+          <Logo size="lg" />
         </div>
 
         {/* Card */}
