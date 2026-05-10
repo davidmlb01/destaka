@@ -12,7 +12,7 @@ function Nav() {
       style={{ background: 'rgba(15,17,23,0.92)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between">
-        <Logo size="lg" href="/" />
+        <Logo size="lg" href="/saude" vertical="Saúde" />
         <div className="hidden md:flex items-center gap-8 text-[14px] font-medium" style={{ color: 'rgba(255,255,255,0.6)' }}>
           <a href="#como-funciona" className="hover:text-white transition-colors">Como funciona</a>
           <a href="#recursos" className="hover:text-white transition-colors">Recursos</a>
@@ -330,7 +330,7 @@ function Footer() {
   return (
     <footer className="px-6 py-10" style={{ background: '#0F1117', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-        <Logo size="sm" />
+        <Logo size="sm" vertical="Saúde" />
         <p className="text-[13px]" style={{ color: 'rgba(255,255,255,0.25)' }}>
           Google Business Profile no piloto automático. Para profissionais de saúde que merecem aparecer primeiro.
         </p>
