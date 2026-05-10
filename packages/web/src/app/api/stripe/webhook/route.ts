@@ -3,6 +3,7 @@ import { headers } from 'next/headers'
 import { stripe } from '@/lib/stripe'
 import { createServiceClient } from '@/lib/supabase/server'
 import { resend, FROM } from '@/lib/email'
+import { sendWelcomeEmail } from '@/lib/email/welcome'
 import { logger } from '@/lib/logger'
 import type Stripe from 'stripe'
 
@@ -58,6 +59,20 @@ export async function POST(request: Request) {
           updated_at: new Date().toISOString(),
         })
         .eq('id', userId)
+
+      // Email de boas-vindas dia 0
+      const { data: newUser } = await serviceClient
+        .from('users')
+        .select('email, name')
+        .eq('id', userId)
+        .maybeSingle()
+
+      if (newUser?.email) {
+        await sendWelcomeEmail({
+          to: newUser.email,
+          name: newUser.name || 'profissional',
+        }).catch((err) => logger.warn('stripe/webhook', 'falha ao enviar welcome email', { err }))
+      }
 
       break
     }

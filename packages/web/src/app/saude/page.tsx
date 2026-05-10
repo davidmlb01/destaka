@@ -24,9 +24,14 @@ function Nav() {
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between">
         <Logo size="lg" href="/saude" vertical="Saúde" />
-        <div className="hidden md:flex items-center gap-8 text-[14px] font-medium" style={{ color: 'rgba(255,255,255,0.6)' }}>
-          <a href="#como-funciona" className="hover:text-white transition-colors">Como funciona</a>
-          <a href="#recursos" className="hover:text-white transition-colors">Recursos</a>
+        <div className="flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-8 text-[14px] font-medium" style={{ color: 'rgba(255,255,255,0.6)' }}>
+            <a href="#como-funciona" className="hover:text-white transition-colors">Como funciona</a>
+            <a href="#recursos" className="hover:text-white transition-colors">Recursos</a>
+          </div>
+          <Button variant="primary" size="sm" href="/saude/verificar">
+            Diagnóstico gratuito
+          </Button>
         </div>
       </div>
     </nav>
