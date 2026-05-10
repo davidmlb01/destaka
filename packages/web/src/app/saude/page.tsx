@@ -1,7 +1,29 @@
 import Link from 'next/link'
+import type { Metadata } from 'next'
 import { Logo } from '@/components/ui/Logo'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
+
+export const metadata: Metadata = {
+  title: 'Destaka Saúde: seu perfil no Google trabalhando por você',
+  description:
+    'Presença digital no piloto automático para médicos, dentistas e profissionais de saúde. Diagnóstico gratuito do seu Google Meu Negócio em 30 segundos.',
+  openGraph: {
+    title: 'Destaka Saúde: seu perfil no Google trabalhando por você',
+    description:
+      'Presença digital no piloto automático para profissionais de saúde. Diagnóstico gratuito em 30 segundos.',
+    url: 'https://destaka.com.br/saude',
+    siteName: 'Destaka',
+    locale: 'pt_BR',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Destaka Saúde: seu perfil no Google trabalhando por você',
+    description:
+      'Presença digital no piloto automático para profissionais de saúde. Diagnóstico gratuito em 30 segundos.',
+  },
+}
 
 function PinIcon({ size = 24 }: { size?: number }) {
   const h = Math.round(size * (160 / 120))
@@ -30,7 +52,7 @@ function Nav() {
             <a href="#recursos" className="hover:text-white transition-colors">Recursos</a>
           </div>
           <Button variant="primary" size="sm" href="/saude/verificar">
-            Diagnóstico gratuito
+            Fazer diagnóstico gratuito
           </Button>
         </div>
       </div>
@@ -77,12 +99,22 @@ function Hero() {
             </p>
 
             <Button variant="primary" size="lg" href="/saude/verificar">
-              <PinIcon size={16} /> Ver a nota do meu perfil
+              <PinIcon size={16} /> Fazer diagnóstico gratuito
             </Button>
 
-            <p className="mt-5 text-[12px]" style={{ color: '#ffffff' }}>
-              Diagnóstico gratuito. Sem cadastro. Resultado em 30 segundos.
+            <p className="mt-4 text-[12px]" style={{ color: 'rgba(255,255,255,0.7)' }}>
+              Resultado em 30 segundos. Sem cadastro.
             </p>
+
+            <div className="flex items-center gap-4 mt-6">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full" style={{ background: 'rgba(14,165,233,0.1)', border: '1px solid rgba(14,165,233,0.2)' }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                <span className="text-[11px] font-medium" style={{ color: 'var(--accent)' }}>Conectado à API oficial do Google</span>
+              </div>
+            </div>
           </div>
 
           {/* Coluna direita: proof cards */}
@@ -112,24 +144,30 @@ function Hero() {
   )
 }
 
-// ─── STATS BAR ──────────────────────────────────────────────────────────────
+// ─── ANCORAGEM ─────────────────────────────────────────────────────────────
 
-function StatsBar() {
-  const stats = [
-    { num: '46%', label: 'das buscas no Google têm intenção local' },
-    { num: '76%', label: 'resultam em contato no mesmo dia' },
-    { num: '88%', label: 'confiam em avaliações como indicação pessoal' },
-    { num: '3x', label: 'mais pacientes com perfil otimizado' },
-  ]
+function Ancoragem() {
   return (
     <section style={{ background: 'rgba(14,165,233,0.06)', borderTop: '1px solid rgba(14,165,233,0.15)', borderBottom: '1px solid rgba(14,165,233,0.15)' }}>
-      <div className="max-w-6xl mx-auto px-6 py-8 grid grid-cols-2 md:grid-cols-4 gap-6">
-        {stats.map((s) => (
-          <div key={s.num} className="text-center">
-            <div className="font-display font-bold text-[32px] tracking-[-1px]" style={{ color: 'var(--accent)' }}>{s.num}</div>
-            <div className="text-[13px] leading-tight mt-1" style={{ color: 'rgba(255,255,255,0.65)' }}>{s.label}</div>
-          </div>
-        ))}
+      <div className="max-w-4xl mx-auto px-6 py-16 text-center">
+        <p className="text-[11px] font-bold tracking-[2px] uppercase mb-6" style={{ color: 'var(--accent)' }}>
+          O custo da invisibilidade
+        </p>
+        <h2
+          className="font-display font-bold text-white leading-[1.15] tracking-[-1.5px] mb-6"
+          style={{ fontSize: 'clamp(24px, 3.5vw, 36px)' }}
+        >
+          Agências de marketing médico cobram de R$3.000 a R$8.000 por mês para fazer o que a Destaka faz no piloto automático.
+        </h2>
+        <p className="text-[18px] mb-4" style={{ color: 'rgba(255,255,255,0.7)' }}>
+          Por uma fração desse custo.
+        </p>
+        <p className="text-[15px] mb-10" style={{ color: 'rgba(255,255,255,0.5)' }}>
+          Sem contrato. Sem fidelidade. Cancele quando quiser.
+        </p>
+        <Button variant="primary" size="lg" href="/saude/verificar">
+          <PinIcon size={16} /> Fazer diagnóstico gratuito
+        </Button>
       </div>
     </section>
   )
@@ -156,8 +194,11 @@ function Problema() {
             <p className="text-[17px] leading-relaxed mb-6" style={{ color: 'rgba(255,255,255,0.7)' }}>
               Perde porque eles não te encontram.
             </p>
-            <p className="text-[16px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.65)' }}>
+            <p className="text-[16px] leading-relaxed mb-6" style={{ color: 'rgba(255,255,255,0.65)' }}>
               O profissional que aparece em primeiro não é necessariamente o melhor. É o mais visível. Quando alguém digita "médico perto de mim", o Google decide quem aparece. E na maioria das vezes, não é quem merece mais.
+            </p>
+            <p className="text-[15px] leading-relaxed font-medium" style={{ color: 'var(--accent)' }}>
+              Enquanto você lê isso, seus concorrentes estão recebendo os pacientes que deveriam ser seus.
             </p>
           </div>
           <div className="flex flex-col gap-4 reveal-right">
@@ -193,7 +234,7 @@ function ComoFunciona() {
       num: '01',
       title: 'Ver a nota do meu perfil',
       desc: 'Em 30 segundos, a Destaka analisa seu perfil no Google e gera uma nota de 0 a 100. Você vê exatamente onde está perdendo visibilidade.',
-      cta: 'Ver minha nota agora',
+      cta: 'Fazer diagnóstico gratuito',
       href: '/saude/verificar',
     },
     {
@@ -299,6 +340,57 @@ function Recursos() {
             </div>
           ))}
         </div>
+
+        <div className="text-center mt-14 reveal">
+          <Button variant="primary" size="lg" href="/saude/verificar">
+            <PinIcon size={16} /> Fazer diagnóstico gratuito
+          </Button>
+          <p className="mt-4 text-[13px]" style={{ color: 'rgba(255,255,255,0.5)' }}>
+            Descubra quanto seu perfil pode melhorar. Resultado em 30 segundos.
+          </p>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ─── FAQ ───────────────────────────────────────────────────────────────────
+
+function FAQ() {
+  const faqs = [
+    { q: 'Preciso dar acesso ao meu Google?', a: 'Sim, conexão segura via OAuth oficial do Google. Não armazenamos sua senha.' },
+    { q: 'Tem contrato ou fidelidade?', a: 'Não. Cancele quando quiser, sem multa.' },
+    { q: 'Funciona na minha cidade?', a: 'Sim, funciona em qualquer cidade do Brasil.' },
+    { q: 'Quanto tempo para ver resultado?', a: 'Seu perfil começa a ser otimizado em minutos. Resultados visíveis nas buscas em 2 a 4 semanas.' },
+    { q: 'Já uso Doctoralia. Preciso da Destaka?', a: 'São complementares. A Doctoralia é um marketplace. A Destaka otimiza seu Google, que é onde 46% das buscas locais acontecem.' },
+    { q: 'É seguro?', a: '100%. Conexão via API oficial do Google. Dados protegidos. Conformidade LGPD.' },
+  ]
+
+  return (
+    <section className="px-6 py-24" style={{ background: 'var(--bg-gradient)' }}>
+      <div className="max-w-3xl mx-auto">
+        <div className="text-center mb-14 reveal">
+          <p className="text-[11px] font-bold tracking-[2px] uppercase mb-4" style={{ color: 'var(--accent)' }}>Perguntas frequentes</p>
+          <h2
+            className="font-display font-bold text-white leading-[1.1] tracking-[-1.5px]"
+            style={{ fontSize: 'clamp(28px, 4vw, 40px)' }}
+          >
+            Tudo que você precisa saber
+          </h2>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          {faqs.map((faq) => (
+            <div
+              key={faq.q}
+              className="p-6 rounded-2xl reveal card-hover"
+              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+            >
+              <p className="font-display font-bold text-[16px] text-white mb-2">{faq.q}</p>
+              <p className="text-[15px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.65)' }}>{faq.a}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   )
@@ -365,7 +457,7 @@ function Manifesto() {
             </div>
 
             <Button variant="primary" size="lg" href="/saude/verificar">
-              <PinIcon size={16} /> Descobrir minha nota no Google
+              <PinIcon size={16} /> Fazer diagnóstico gratuito
             </Button>
 
             <p className="mt-5 text-[12px]" style={{ color: 'rgba(255,255,255,0.45)' }}>
@@ -429,10 +521,11 @@ export default function Home() {
     <>
       <Nav />
       <Hero />
-      <StatsBar />
+      <Ancoragem />
       <Problema />
       <ComoFunciona />
       <Recursos />
+      <FAQ />
       <Manifesto />
       <Footer />
       <ScrollReveal />

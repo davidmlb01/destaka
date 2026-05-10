@@ -252,7 +252,7 @@ export function VerifyTool() {
                   icon="💬"
                   label="Avaliações"
                   value={result.place.reviewsTotal
-                    ? `${result.place.reviewsTotal} avaliação${result.place.reviewsTotal !== 1 ? 'ões' : ''}`
+                    ? `${result.place.reviewsTotal} ${result.place.reviewsTotal === 1 ? 'avaliação' : 'avaliações'}`
                     : 'Nenhuma ainda'}
                   missing={!result.place.reviewsTotal}
                 />
