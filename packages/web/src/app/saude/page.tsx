@@ -9,7 +9,7 @@ function Nav() {
   return (
     <nav
       className="fixed top-0 left-0 right-0 z-50 px-6 py-4"
-      style={{ background: 'rgba(15,42,31,0.92)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+      style={{ background: 'rgba(9,30,47,0.92)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between">
         <Logo size="lg" href="/saude" vertical="Saúde" />
@@ -30,9 +30,9 @@ function Hero() {
       className="relative min-h-screen flex items-center justify-center px-6 pt-24 pb-20 overflow-hidden"
       style={{ background: 'var(--bg-gradient)' }}
     >
-      <div className="absolute rounded-full pointer-events-none blur-[140px]" style={{ width: 600, height: 600, background: 'rgba(74,222,128,0.08)', top: -200, right: -200 }} />
+      <div className="absolute rounded-full pointer-events-none blur-[140px]" style={{ width: 600, height: 600, background: 'rgba(14,165,233,0.1)', top: -200, right: -200 }} />
       <div className="absolute rounded-full pointer-events-none blur-[100px]" style={{ width: 350, height: 350, background: 'rgba(14,165,233,0.06)', bottom: -80, left: -100 }} />
-      <div className="absolute rounded-full pointer-events-none" style={{ width: 520, height: 520, border: '1px solid rgba(74,222,128,0.06)', top: -160, right: -160 }} />
+      <div className="absolute rounded-full pointer-events-none" style={{ width: 520, height: 520, border: '1px solid rgba(14,165,233,0.08)', top: -160, right: -160 }} />
 
       <div className="max-w-3xl w-full text-center relative z-10">
 
@@ -269,7 +269,7 @@ function Manifesto() {
       className="px-6 py-28 relative overflow-hidden"
       style={{ background: 'var(--bg-gradient)' }}
     >
-      <div className="absolute rounded-full pointer-events-none blur-[120px]" style={{ width: 500, height: 500, background: 'rgba(74,222,128,0.06)', top: -150, right: -150 }} />
+      <div className="absolute rounded-full pointer-events-none blur-[120px]" style={{ width: 500, height: 500, background: 'rgba(14,165,233,0.08)', top: -150, right: -150 }} />
 
       <div className="max-w-3xl mx-auto text-center relative z-10">
         <span
@@ -328,7 +328,7 @@ function Manifesto() {
 
 function Footer() {
   return (
-    <footer className="px-6 py-10" style={{ background: '#0a1f16', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+    <footer className="px-6 py-10" style={{ background: '#071825', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
         <Logo size="sm" vertical="Saúde" />
         <p className="text-[13px]" style={{ color: 'rgba(255,255,255,0.45)' }}>

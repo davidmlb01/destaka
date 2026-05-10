@@ -45,20 +45,32 @@
   --error-border: rgba(239, 68, 68, 0.2);
 }
 
-/* ─── Vertical themes (accent override only) ─────────────────────── */
+/* ─── Vertical themes (atmosfera cromática completa) ──────────────── */
 [data-vertical="saude"] {
+  --bg-base: #091e2f;
+  --bg-gradient: linear-gradient(160deg, #0c2640 0%, #091e2f 100%);
+  --sidebar-bg: rgba(9, 30, 47, 0.95);
+  --modal-bg: rgba(9, 30, 47, 0.98);
   --accent: #0EA5E9; --accent-hover: #0284C7; --accent-bright: #38BDF8;
   --accent-bg: rgba(14,165,233,0.12); --accent-bg-hover: rgba(14,165,233,0.20);
   --accent-border: rgba(14,165,233,0.25); --border-accent: rgba(14,165,233,0.25);
   --border-accent-soft: rgba(14,165,233,0.2); --text-accent: #38BDF8;
 }
 [data-vertical="pet"] {
+  --bg-base: #0F2A1F;
+  --bg-gradient: linear-gradient(160deg, #122a1f 0%, #0F2A1F 100%);
+  --sidebar-bg: rgba(15, 42, 31, 0.95);
+  --modal-bg: rgba(15, 42, 31, 0.98);
   --accent: #22C55E; --accent-hover: #16A34A; --accent-bright: #4ADE80;
   --accent-bg: rgba(34,197,94,0.12); --accent-bg-hover: rgba(34,197,94,0.20);
   --accent-border: rgba(34,197,94,0.25); --border-accent: rgba(34,197,94,0.25);
   --border-accent-soft: rgba(34,197,94,0.2); --text-accent: #4ADE80;
 }
 [data-vertical="juridico"] {
+  --bg-base: #0f1a2a;
+  --bg-gradient: linear-gradient(160deg, #142236 0%, #0f1a2a 100%);
+  --sidebar-bg: rgba(15, 26, 42, 0.95);
+  --modal-bg: rgba(15, 26, 42, 0.98);
   --accent: #60A5FA; --accent-hover: #3B82F6; --accent-bright: #93C5FD;
   --accent-bg: rgba(96,165,250,0.12); --accent-bg-hover: rgba(96,165,250,0.20);
   --accent-border: rgba(96,165,250,0.25); --border-accent: rgba(96,165,250,0.25);
