@@ -7,9 +7,6 @@ function scoreTheme(score: number) {
 }
 
 // Gauge estilo speedometer: arco de 270° de 225° a 135° (sentido horário)
-const R = 60
-const CX = 80
-const CY = 82
 const START_DEG = 225
 const TOTAL_DEG = 270
 
@@ -17,50 +14,67 @@ function toRad(deg: number) {
   return ((deg - 90) * Math.PI) / 180
 }
 
-function pt(deg: number) {
+function pt(cx: number, cy: number, r: number, deg: number) {
   return {
-    x: CX + R * Math.cos(toRad(deg)),
-    y: CY + R * Math.sin(toRad(deg)),
+    x: cx + r * Math.cos(toRad(deg)),
+    y: cy + r * Math.sin(toRad(deg)),
   }
 }
 
-function arcPath(fromDeg: number, sweep: number) {
+function arcPath(cx: number, cy: number, r: number, fromDeg: number, sweep: number) {
   if (sweep <= 0) return ''
   const toDeg = fromDeg + sweep
-  const s = pt(fromDeg)
-  const e = pt(toDeg)
+  const s = pt(cx, cy, r, fromDeg)
+  const e = pt(cx, cy, r, toDeg)
   const large = sweep > 180 ? 1 : 0
-  return `M ${s.x.toFixed(2)} ${s.y.toFixed(2)} A ${R} ${R} 0 ${large} 1 ${e.x.toFixed(2)} ${e.y.toFixed(2)}`
+  return `M ${s.x.toFixed(2)} ${s.y.toFixed(2)} A ${r} ${r} 0 ${large} 1 ${e.x.toFixed(2)} ${e.y.toFixed(2)}`
 }
 
-export function ScoreGauge({ score }: { score: number }) {
+interface ScoreGaugeProps {
+  score: number
+  size?: number
+  showGlow?: boolean
+}
+
+export function ScoreGauge({ score, size = 160, showGlow = true }: ScoreGaugeProps) {
   const { color, label, glow } = scoreTheme(score)
+
+  const R = (size / 160) * 60
+  const CX = size / 2
+  const CY = (size / 160) * 82
+  const svgHeight = (size / 160) * 145
   const fillSweep = (score / 100) * TOTAL_DEG
-  const glowId = `gauge-glow-${score}`
+  const glowId = `gauge-glow-${score}-${size}`
+  const fontSize = (size / 160) * 34
+  const subFontSize = (size / 160) * 11
 
   return (
     <div className="flex flex-col items-center gap-2 w-full">
-      <p
-        className="text-xs font-bold tracking-[0.15em] uppercase"
-        style={{ color: 'rgba(255,255,255,0.35)' }}
-      >
-        Score Destaka
-      </p>
+      {showGlow && (
+        <p
+          className="text-xs font-bold tracking-[0.15em] uppercase"
+          style={{ color: 'rgba(255,255,255,0.35)' }}
+        >
+          Score Destaka
+        </p>
+      )}
 
-      <svg width="160" height="145" viewBox="0 0 160 145" style={{ overflow: 'visible' }}>
-        <defs>
-          <filter id={glowId} x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
+      <svg width={size} height={svgHeight} viewBox={`0 0 ${size} ${svgHeight}`} style={{ overflow: 'visible' }}>
+        {showGlow && (
+          <defs>
+            <filter id={glowId} x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+        )}
 
         {/* Track */}
         <path
-          d={arcPath(START_DEG, TOTAL_DEG)}
+          d={arcPath(CX, CY, R, START_DEG, TOTAL_DEG)}
           fill="none"
           stroke="rgba(255,255,255,0.08)"
           strokeWidth="12"
@@ -70,23 +84,23 @@ export function ScoreGauge({ score }: { score: number }) {
         {/* Fill com glow */}
         {fillSweep > 0 && (
           <path
-            d={arcPath(START_DEG, fillSweep)}
+            d={arcPath(CX, CY, R, START_DEG, fillSweep)}
             fill="none"
             stroke={color}
             strokeWidth="12"
             strokeLinecap="round"
-            filter={`url(#${glowId})`}
-            style={{ filter: `drop-shadow(0 0 8px ${glow})` }}
+            filter={showGlow ? `url(#${glowId})` : undefined}
+            style={showGlow ? { filter: `drop-shadow(0 0 8px ${glow})` } : undefined}
           />
         )}
 
-        {/* Score número */}
+        {/* Score numero */}
         <text
           x={CX}
           y={CY + 8}
           textAnchor="middle"
           fill="white"
-          fontSize="34"
+          fontSize={fontSize}
           fontWeight="800"
           fontFamily="var(--font-display, sans-serif)"
         >
@@ -99,19 +113,21 @@ export function ScoreGauge({ score }: { score: number }) {
           y={CY + 27}
           textAnchor="middle"
           fill="rgba(255,255,255,0.3)"
-          fontSize="11"
+          fontSize={subFontSize}
           fontFamily="var(--font-body, sans-serif)"
         >
           de 100
         </text>
       </svg>
 
-      <p
-        className="font-display font-bold text-sm text-center -mt-2"
-        style={{ color, textShadow: `0 0 20px ${glow}` }}
-      >
-        {label}
-      </p>
+      {showGlow && (
+        <p
+          className="font-display font-bold text-sm text-center -mt-2"
+          style={{ color, textShadow: `0 0 20px ${glow}` }}
+        >
+          {label}
+        </p>
+      )}
     </div>
   )
 }
