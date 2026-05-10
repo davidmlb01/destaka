@@ -1,13 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { Card } from '@/components/ui/Card'
 import { ScoreGauge } from './ScoreGauge'
 import { ScoreCard } from './ScoreCard'
 import { MetricCard } from './MetricCard'
 import { NextActionsPanel } from './NextActionsPanel'
-import { ScoreChart } from './ScoreChart'
+import dynamic from 'next/dynamic'
+const ScoreChart = dynamic(() => import('./ScoreChart').then(m => m.ScoreChart), { ssr: false, loading: () => <div className="h-[200px]" /> })
 import { OptimizationHistory } from './OptimizationHistory'
 import { OptimizationWizard } from './OptimizationWizard'
 import { DashboardSkeleton } from './Skeletons'
@@ -55,7 +55,6 @@ interface DashboardData {
 }
 
 export function DashboardContent() {
-  const router = useRouter()
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
@@ -65,12 +64,11 @@ export function DashboardContent() {
   async function load() {
     setError(false)
     try {
-      const res = await fetch('/api/dashboard', { cache: 'no-store' })
+      const res = await fetch('/api/dashboard')
       if (res.ok) {
         const json = await res.json()
         setData(json)
         setDiagnosticId(json.diagnostic?.id ?? '')
-        router.refresh()
       } else {
         setError(true)
       }
