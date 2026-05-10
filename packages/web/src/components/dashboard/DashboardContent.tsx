@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Card } from '@/components/ui/Card'
 import { ScoreGauge } from './ScoreGauge'
 import { ScoreCard } from './ScoreCard'
 import { MetricCard } from './MetricCard'
@@ -201,13 +202,10 @@ export function DashboardContent() {
         </div>
 
         {/* Evolução do score */}
-        <div
-          className="rounded-2xl p-5"
-          style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.08)' }}
-        >
+        <Card variant="dark" padding="sm">
           <SectionTitle>Evolução do score</SectionTitle>
           <ScoreChart data={scoreHistory} />
-        </div>
+        </Card>
       </div>
 
       {/* Linha 4: Histórico de otimizações */}

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createAdminClient } from '@/lib/supabase/server'
 
 export const dynamic = 'force-dynamic'
 
@@ -34,11 +34,7 @@ export async function GET() {
 
   // 3. Banco de dados — ping simples
   try {
-    const db = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      { auth: { persistSession: false } }
-    )
+    const db = createAdminClient()
     const { error } = await db.from('users').select('id').limit(1)
     checks.database = {
       ok: !error,
@@ -50,11 +46,7 @@ export async function GET() {
 
   // 4. Último cron de cada tipo (via gmb_posts e gmb_reviews)
   try {
-    const db = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      { auth: { persistSession: false } }
-    )
+    const db = createAdminClient()
 
     const [postsRes, reviewsRes] = await Promise.all([
       db.from('gmb_posts').select('created_at').order('created_at', { ascending: false }).limit(1).maybeSingle(),

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createAdminClient } from '@/lib/supabase/server'
 import { processReviewQueue } from '@/lib/gmb/review-automation'
 import { validateCronAuth } from '@/lib/cron-auth'
 import { getValidGmbToken } from '@/lib/gmb/auth'
@@ -13,10 +13,7 @@ export async function POST(request: NextRequest) {
   if (authError) return authError
 
   const startedAt = Date.now()
-  const db = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
+  const db = createAdminClient()
 
   // Filtra apenas usuários pro — automação de reviews é feature paga
   const { data: proUsers } = await db.from('users').select('id').neq('plan', 'free')

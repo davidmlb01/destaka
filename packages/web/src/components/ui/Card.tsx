@@ -30,6 +30,13 @@ const variants = {
       boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
     },
   },
+  dark: {
+    base: 'rounded-2xl',
+    style: {
+      background: 'rgba(0,0,0,0.25)',
+      border: '1px solid rgba(255,255,255,0.08)',
+    },
+  },
 } as const
 
 type CardVariant = keyof typeof variants

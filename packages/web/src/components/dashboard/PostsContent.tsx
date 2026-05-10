@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Card } from '@/components/ui/Card'
+import { apiFetch } from '@/lib/api/client'
 import { PostsSkeleton } from './Skeletons'
 import { formatDateShort } from '@/lib/utils/format-date'
 
@@ -52,8 +53,8 @@ export function PostsContent() {
 
   async function load() {
     setLoading(true)
-    const res = await fetch('/api/posts')
-    if (res.ok) setData(await res.json())
+    const { data: result } = await apiFetch<PostsData>('/api/posts')
+    if (result) setData(result)
     setLoading(false)
   }
 
@@ -62,10 +63,9 @@ export function PostsContent() {
   async function handleGenerate() {
     setGenerating(true)
     try {
-      const res = await fetch('/api/posts/generate', { method: 'POST' })
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({})) as { error?: string }
-        alert(err.error ?? 'Erro ao gerar post. Tente novamente.')
+      const { error } = await apiFetch('/api/posts/generate', { method: 'POST' })
+      if (error) {
+        alert(error)
         return
       }
       await load()
@@ -77,10 +77,9 @@ export function PostsContent() {
   async function handlePublish(postId: string) {
     setPublishingId(postId)
     try {
-      const res = await fetch(`/api/posts/${postId}/publish`, { method: 'POST' })
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({})) as { error?: string }
-        alert(err.error ?? 'Erro ao publicar. Tente novamente.')
+      const { error } = await apiFetch(`/api/posts/${postId}/publish`, { method: 'POST' })
+      if (error) {
+        alert(error)
         return
       }
       await load()
@@ -92,10 +91,9 @@ export function PostsContent() {
   async function handleDiscard(postId: string) {
     setDeletingId(postId)
     try {
-      const res = await fetch(`/api/posts/${postId}`, { method: 'DELETE' })
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({})) as { error?: string }
-        alert(err.error ?? 'Erro ao descartar. Tente novamente.')
+      const { error } = await apiFetch(`/api/posts/${postId}`, { method: 'DELETE' })
+      if (error) {
+        alert(error)
         return
       }
       await load()

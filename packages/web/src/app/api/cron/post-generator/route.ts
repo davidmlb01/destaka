@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createAdminClient } from '@/lib/supabase/server'
 import { generateWeeklyPost } from '@/lib/gmb/posts'
 import { createLocalPost } from '@/lib/gmb/client'
 import { getValidGmbToken } from '@/lib/gmb/auth'
@@ -14,10 +14,7 @@ export async function POST(request: NextRequest) {
   if (authError) return authError
 
   const startedAt = Date.now()
-  const db = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
+  const db = createAdminClient()
 
   // Filtra apenas usuários pro — evita gerar posts para plano free
   const { data: proUsers } = await db.from('users').select('id').neq('plan', 'free')
