@@ -1,18 +1,17 @@
 import { NextResponse } from 'next/server'
-import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { getAuthenticatedProfile } from '@/lib/api/with-auth'
 import { stripe, PLANS } from '@/lib/stripe'
+import { logger } from '@/lib/logger'
 
 export const dynamic = 'force-dynamic'
 
 // POST /api/stripe/checkout
 // Cria uma Stripe Checkout Session para o plano Pro
 export async function POST(request: Request) {
-  const supabase = await createClient()
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  const auth = await getAuthenticatedProfile('id')
+  if (auth.error) return auth.error
 
-  if (authError || !user) {
-    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
-  }
+  const { user, serviceClient } = auth
 
   const { plan = 'pro' } = await request.json().catch(() => ({}))
 
@@ -21,7 +20,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Plano inválido' }, { status: 400 })
   }
 
-  const serviceClient = await createServiceClient()
   const { data: dbUser } = await serviceClient
     .from('users')
     .select('stripe_customer_id, plan')
@@ -35,19 +33,24 @@ export async function POST(request: Request) {
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://destaka.com.br'
 
-  const session = await stripe.checkout.sessions.create({
-    mode: 'subscription',
-    payment_method_types: ['card'],
-    customer: dbUser?.stripe_customer_id || undefined,
-    customer_email: !dbUser?.stripe_customer_id ? user.email! : undefined,
-    line_items: [{ price: planConfig.priceId, quantity: 1 }],
-    allow_promotion_codes: true,
-    success_url: `${appUrl}/dashboard?checkout=success`,
-    cancel_url: `${appUrl}/dashboard?checkout=cancelled`,
-    metadata: { user_id: user.id, plan },
-    subscription_data: { metadata: { user_id: user.id, plan } },
-    locale: 'pt-BR',
-  })
+  try {
+    const session = await stripe.checkout.sessions.create({
+      mode: 'subscription',
+      payment_method_types: ['card'],
+      customer: dbUser?.stripe_customer_id || undefined,
+      customer_email: !dbUser?.stripe_customer_id ? user.email! : undefined,
+      line_items: [{ price: planConfig.priceId, quantity: 1 }],
+      allow_promotion_codes: true,
+      success_url: `${appUrl}/dashboard?checkout=success`,
+      cancel_url: `${appUrl}/dashboard?checkout=cancelled`,
+      metadata: { user_id: user.id, plan },
+      subscription_data: { metadata: { user_id: user.id, plan } },
+      locale: 'pt-BR',
+    })
 
-  return NextResponse.json({ url: session.url })
+    return NextResponse.json({ url: session.url })
+  } catch (err) {
+    logger.error('stripe/checkout', 'Erro ao criar sessão de checkout', { err, userId: user.id, plan })
+    return NextResponse.json({ error: 'Erro ao processar pagamento' }, { status: 500 })
+  }
 }

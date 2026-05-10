@@ -1,26 +1,15 @@
 import { NextResponse } from 'next/server'
-import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { getAuthenticatedProfile } from '@/lib/api/with-auth'
 import { generateWeeklyPost, detectSegment } from '@/lib/gmb/posts'
 
 export const dynamic = 'force-dynamic'
 
 // POST /api/posts/generate
 export async function POST() {
-  const supabase = await createClient()
-  const { data: { user }, error } = await supabase.auth.getUser()
-  if (error || !user) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+  const auth = await getAuthenticatedProfile('id, name, category, auto_post_mode')
+  if (auth.error) return auth.error
 
-  const serviceClient = await createServiceClient()
-
-  const { data: profile } = await serviceClient
-    .from('gmb_profiles')
-    .select('id, name, category, auto_post_mode')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .single()
-
-  if (!profile) return NextResponse.json({ error: 'Nenhum perfil encontrado' }, { status: 404 })
+  const { profile, serviceClient } = auth
 
   const segment = detectSegment(profile.category ?? '')
   const generated = await generateWeeklyPost(segment, profile.name)

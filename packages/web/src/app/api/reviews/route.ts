@@ -1,30 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { getAuthenticatedProfile } from '@/lib/api/with-auth'
 import { buildMockReviews } from '@/lib/gmb/reviews'
 import type { ReviewFilter } from '@/lib/gmb/reviews'
 
 // GET /api/reviews?filter=all|pending|negative&page=1
 export async function GET(req: NextRequest) {
-  const supabase = await createClient()
-  const { data: { user }, error } = await supabase.auth.getUser()
-  if (error || !user) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+  const auth = await getAuthenticatedProfile('id, name, category')
+  if (auth.error) return auth.error
+
+  const { profile, serviceClient } = auth
 
   const { searchParams } = new URL(req.url)
   const filter = (searchParams.get('filter') ?? 'all') as ReviewFilter
   const page = Math.max(1, parseInt(searchParams.get('page') ?? '1'))
   const pageSize = 10
-
-  const serviceClient = await createServiceClient()
-
-  const { data: profile } = await serviceClient
-    .from('gmb_profiles')
-    .select('id, name, category')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .single()
-
-  if (!profile) return NextResponse.json({ error: 'Nenhum perfil encontrado' }, { status: 404 })
 
   // Se não há reviews no banco, seed com mocks
   const { count } = await serviceClient

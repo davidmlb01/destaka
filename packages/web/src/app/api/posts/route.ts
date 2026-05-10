@@ -1,27 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { getAuthenticatedProfile } from '@/lib/api/with-auth'
 
 // GET /api/posts?page=1
 export async function GET(req: NextRequest) {
-  const supabase = await createClient()
-  const { data: { user }, error } = await supabase.auth.getUser()
-  if (error || !user) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+  const auth = await getAuthenticatedProfile('id, name, category, auto_post_mode')
+  if (auth.error) return auth.error
+
+  const { profile, serviceClient } = auth
 
   const { searchParams } = new URL(req.url)
   const page = Math.max(1, parseInt(searchParams.get('page') ?? '1'))
   const pageSize = 10
-
-  const serviceClient = await createServiceClient()
-
-  const { data: profile } = await serviceClient
-    .from('gmb_profiles')
-    .select('id, name, category, auto_post_mode')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .single()
-
-  if (!profile) return NextResponse.json({ error: 'Nenhum perfil encontrado' }, { status: 404 })
 
   const from = (page - 1) * pageSize
   const { data: posts, count } = await serviceClient

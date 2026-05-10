@@ -1,25 +1,14 @@
 import { NextResponse } from 'next/server'
-import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { getAuthenticatedProfile } from '@/lib/api/with-auth'
 import { buildChecklist, projectedScore } from '@/lib/gmb/checklist'
 import { trackEvent } from '@/lib/analytics'
 
 // GET /api/checklist
 export async function GET() {
-  const supabase = await createClient()
-  const { data: { user }, error } = await supabase.auth.getUser()
-  if (error || !user) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+  const auth = await getAuthenticatedProfile('id')
+  if (auth.error) return auth.error
 
-  const serviceClient = await createServiceClient()
-
-  const { data: profile } = await serviceClient
-    .from('gmb_profiles')
-    .select('id')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .single()
-
-  if (!profile) return NextResponse.json({ error: 'Nenhum perfil encontrado' }, { status: 404 })
+  const { user, profile, serviceClient } = auth
 
   // Evento de ativação: checklist_started (one-time)
   trackEvent(serviceClient, user.id, 'checklist_started', { profileId: profile.id })

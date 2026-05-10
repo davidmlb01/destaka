@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { getAuthenticatedProfile } from '@/lib/api/with-auth'
 import { trackEvent, upsertSession } from '@/lib/analytics'
 import { getGmbMetrics, type GmbMetrics } from '@/lib/gmb/client'
 import { getValidGmbToken } from '@/lib/gmb/auth'
@@ -10,27 +10,10 @@ export const dynamic = 'force-dynamic'
 // GET /api/dashboard
 // Agrega todos os dados necessários para o dashboard principal.
 export async function GET() {
-  const supabase = await createClient()
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  const auth = await getAuthenticatedProfile('*')
+  if (auth.error) return auth.error
 
-  if (authError || !user) {
-    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
-  }
-
-  const serviceClient = await createServiceClient()
-
-  // Perfil principal
-  const { data: profile } = await serviceClient
-    .from('gmb_profiles')
-    .select('*')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .single()
-
-  if (!profile) {
-    return NextResponse.json({ error: 'Nenhum perfil conectado' }, { status: 404 })
-  }
+  const { user, profile, serviceClient } = auth
 
   // Engagement: score_viewed (one-time) + session (churn prevention)
   trackEvent(serviceClient, user.id, 'score_viewed', { profileId: profile.id })

@@ -1,30 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { getAuthenticatedProfile } from '@/lib/api/with-auth'
 
 // PATCH /api/posts/settings
 // Body: { autoPostMode: 'automatic' | 'approval' }
 export async function PATCH(req: NextRequest) {
-  const supabase = await createClient()
-  const { data: { user }, error } = await supabase.auth.getUser()
-  if (error || !user) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
-
   const { autoPostMode } = await req.json() as { autoPostMode: 'automatic' | 'approval' }
 
   if (!['automatic', 'approval'].includes(autoPostMode)) {
     return NextResponse.json({ error: 'Valor inválido' }, { status: 400 })
   }
 
-  const serviceClient = await createServiceClient()
+  const auth = await getAuthenticatedProfile('id')
+  if (auth.error) return auth.error
 
-  const { data: profile } = await serviceClient
-    .from('gmb_profiles')
-    .select('id')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .single()
-
-  if (!profile) return NextResponse.json({ error: 'Perfil não encontrado' }, { status: 404 })
+  const { profile, serviceClient } = auth
 
   await serviceClient
     .from('gmb_profiles')
