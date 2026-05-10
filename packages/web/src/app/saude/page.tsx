@@ -25,13 +25,13 @@ export const metadata: Metadata = {
   },
 }
 
-function PinIcon({ size = 24 }: { size?: number }) {
+function PinIcon({ size = 24, color = 'var(--accent)', bg = 'var(--bg-base)' }: { size?: number; color?: string; bg?: string }) {
   const h = Math.round(size * (160 / 120))
   return (
     <svg width={size} height={h} viewBox="0 0 120 160" fill="none" className="flex-shrink-0">
-      <path d="M60 6C32.4 6 10 28.4 10 56C10 76 20 90 32 102C42 112 52 122 60 132C68 122 78 112 88 102C100 90 110 76 110 56C110 28.4 87.6 6 60 6Z" fill="var(--accent)"/>
-      <path d="M26 56C36 43 47 38 60 38C73 38 84 43 94 56C84 69 73 74 60 74C47 74 36 69 26 56Z" fill="var(--bg-base)"/>
-      <circle cx="60" cy="56" r="7" fill="var(--accent)"/>
+      <path d="M60 6C32.4 6 10 28.4 10 56C10 76 20 90 32 102C42 112 52 122 60 132C68 122 78 112 88 102C100 90 110 76 110 56C110 28.4 87.6 6 60 6Z" fill={color}/>
+      <path d="M26 56C36 43 47 38 60 38C73 38 84 43 94 56C84 69 73 74 60 74C47 74 36 69 26 56Z" fill={bg}/>
+      <circle cx="60" cy="56" r="7" fill={color}/>
     </svg>
   )
 }
@@ -99,7 +99,7 @@ function Hero() {
             </p>
 
             <Button variant="primary" size="lg" href="/saude/verificar">
-              <PinIcon size={16} /> Fazer diagnóstico gratuito
+              <PinIcon size={16} color="#fff" bg="var(--accent)" /> Fazer diagnóstico gratuito
             </Button>
 
             <p className="mt-4 text-[12px]" style={{ color: 'rgba(255,255,255,0.7)' }}>
@@ -166,7 +166,7 @@ function Ancoragem() {
           Sem contrato. Sem fidelidade. Cancele quando quiser.
         </p>
         <Button variant="primary" size="lg" href="/saude/verificar">
-          <PinIcon size={16} /> Fazer diagnóstico gratuito
+          <PinIcon size={16} color="#fff" bg="var(--accent)" /> Fazer diagnóstico gratuito
         </Button>
       </div>
     </section>
@@ -343,7 +343,7 @@ function Recursos() {
 
         <div className="text-center mt-14 reveal">
           <Button variant="primary" size="lg" href="/saude/verificar">
-            <PinIcon size={16} /> Fazer diagnóstico gratuito
+            <PinIcon size={16} color="#fff" bg="var(--accent)" /> Fazer diagnóstico gratuito
           </Button>
           <p className="mt-4 text-[13px]" style={{ color: 'rgba(255,255,255,0.5)' }}>
             Descubra quanto seu perfil pode melhorar. Resultado em 30 segundos.
@@ -457,7 +457,7 @@ function Manifesto() {
             </div>
 
             <Button variant="primary" size="lg" href="/saude/verificar">
-              <PinIcon size={16} /> Fazer diagnóstico gratuito
+              <PinIcon size={16} color="#fff" bg="var(--accent)" /> Fazer diagnóstico gratuito
             </Button>
 
             <p className="mt-5 text-[12px]" style={{ color: 'rgba(255,255,255,0.45)' }}>
