@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import type { Competitor, BenchmarkData } from '@/lib/gmb/competitors'
+import { apiFetch } from '@/lib/api/client'
 import { CompetitorsSkeleton } from './Skeletons'
 
 interface Profile {
@@ -140,31 +141,37 @@ function CompetitorCard({ comp, profile }: { comp: Competitor; profile: Profile 
 export function CompetitorsContent() {
   const [data, setData] = useState<CompetitorsData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [discovering, setDiscovering] = useState(false)
   const [msg, setMsg] = useState('')
 
   async function load() {
-    setLoading(true)
-    const res = await fetch('/api/competitors')
-    if (res.ok) setData(await res.json())
-    setLoading(false)
+    try {
+      setLoading(true)
+      setError(null)
+      const { data: result, error: fetchError } = await apiFetch<CompetitorsData>('/api/competitors')
+      if (fetchError || !result) throw new Error(fetchError ?? 'Erro ao carregar dados')
+      setData(result)
+    } catch {
+      setError('Não foi possível carregar. Tente novamente.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   async function handleDiscover() {
     setDiscovering(true)
     setMsg('')
-    const res = await fetch('/api/competitors', {
+    const { data: json, error } = await apiFetch<{ discovered: number; errors: string[] }>('/api/competitors', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ benchmark: true }),
     })
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({})) as { error?: string }
-      setMsg(err.error ?? 'Erro ao buscar concorrentes. Tente novamente.')
+    if (error || !json) {
+      setMsg(error ?? 'Erro ao buscar concorrentes. Tente novamente.')
       setDiscovering(false)
       return
     }
-    const json = await res.json() as { discovered: number; errors: string[] }
     const n = json.discovered
     setMsg(`${n} ${n === 1 ? 'concorrente encontrado' : 'concorrentes encontrados'}${json.errors.length ? ` (${json.errors.length} ${json.errors.length === 1 ? 'erro' : 'erros'})` : ''}.`)
     await load()
@@ -176,6 +183,15 @@ export function CompetitorsContent() {
   if (loading) {
     return <CompetitorsSkeleton />
   }
+
+  if (error) return (
+    <div className="flex flex-col items-center justify-center py-20 text-center">
+      <p className="text-[15px] mb-4" style={{ color: 'rgba(255,255,255,0.7)' }}>{error}</p>
+      <button onClick={() => { setError(null); load() }} className="text-[14px] font-medium px-4 py-2 rounded-lg" style={{ background: 'var(--accent)', color: '#fff' }}>
+        Tentar novamente
+      </button>
+    </div>
+  )
 
   return (
     <div>

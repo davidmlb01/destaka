@@ -46,16 +46,24 @@ function formatDate(iso: string) {
 export function PostsContent() {
   const [data, setData] = useState<PostsData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [generating, setGenerating] = useState(false)
   const [publishingId, setPublishingId] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [savingMode, setSavingMode] = useState(false)
 
   async function load() {
-    setLoading(true)
-    const { data: result } = await apiFetch<PostsData>('/api/posts')
-    if (result) setData(result)
-    setLoading(false)
+    try {
+      setLoading(true)
+      setError(null)
+      const { data: result, error: fetchError } = await apiFetch<PostsData>('/api/posts')
+      if (fetchError || !result) throw new Error(fetchError ?? 'Erro ao carregar dados')
+      setData(result)
+    } catch {
+      setError('Não foi possível carregar. Tente novamente.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => { load() }, [])
@@ -125,6 +133,15 @@ export function PostsContent() {
   if (loading) {
     return <PostsSkeleton />
   }
+
+  if (error) return (
+    <div className="flex flex-col items-center justify-center py-20 text-center">
+      <p className="text-[15px] mb-4" style={{ color: 'rgba(255,255,255,0.7)' }}>{error}</p>
+      <button onClick={() => { setError(null); load() }} className="text-[14px] font-medium px-4 py-2 rounded-lg" style={{ background: 'var(--accent)', color: '#fff' }}>
+        Tentar novamente
+      </button>
+    </div>
+  )
 
   return (
     <div className="flex flex-col gap-6">
