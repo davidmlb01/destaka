@@ -5,7 +5,7 @@
 :root {
   /* Backgrounds — neutro escuro, sem cor */
   --bg-base: #0F1117;
-  --bg-gradient: linear-gradient(160deg, #161B26 0%, #0F1117 100%);
+  --bg-gradient: linear-gradient(160deg, #122a1f 0%, #0F2A1F 100%);
   --sidebar-bg: rgba(15, 17, 23, 0.95);
   --card-subtle: rgba(255, 255, 255, 0.04);
   --card-dark: rgba(0, 0, 0, 0.25);

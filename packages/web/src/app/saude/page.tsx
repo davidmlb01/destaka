@@ -79,12 +79,12 @@ function StatsBar() {
     { num: '3x', label: 'mais pacientes com perfil otimizado' },
   ]
   return (
-    <section style={{ background: '#FFFBEB', borderTop: '1px solid #FDE68A', borderBottom: '1px solid #FDE68A' }}>
+    <section style={{ background: 'rgba(14,165,233,0.06)', borderTop: '1px solid rgba(14,165,233,0.15)', borderBottom: '1px solid rgba(14,165,233,0.15)' }}>
       <div className="max-w-6xl mx-auto px-6 py-8 grid grid-cols-2 md:grid-cols-4 gap-6">
         {stats.map((s) => (
           <div key={s.num} className="text-center">
-            <div className="font-display font-extrabold text-[32px] tracking-[-1px]" style={{ color: 'var(--accent-hover)' }}>{s.num}</div>
-            <div className="text-[13px] leading-tight mt-1" style={{ color: '#78716C' }}>{s.label}</div>
+            <div className="font-display font-extrabold text-[32px] tracking-[-1px]" style={{ color: 'var(--accent)' }}>{s.num}</div>
+            <div className="text-[13px] leading-tight mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>{s.label}</div>
           </div>
         ))}
       </div>
@@ -96,24 +96,24 @@ function StatsBar() {
 
 function Problema() {
   return (
-    <section className="px-6 py-24" style={{ background: '#FAFAF9' }}>
+    <section className="px-6 py-24" style={{ background: 'rgba(255,255,255,0.02)' }}>
       <div className="max-w-4xl mx-auto">
         <div className="grid md:grid-cols-2 gap-16 items-center">
           <div>
-            <p className="text-[11px] font-bold tracking-[2px] uppercase mb-4" style={{ color: 'var(--accent-hover)' }}>
+            <p className="text-[11px] font-bold tracking-[2px] uppercase mb-4" style={{ color: 'var(--accent)' }}>
               O problema real
             </p>
             <h2
               className="font-display font-extrabold leading-[1.1] tracking-[-1.5px] mb-6"
-              style={{ fontSize: 'clamp(28px, 4vw, 44px)', color: '#1C1917' }}
+              style={{ fontSize: 'clamp(28px, 4vw, 44px)', color: '#fff' }}
             >
               Você não perde pacientes<br />
               por falta de competência.
             </h2>
-            <p className="text-[17px] leading-relaxed mb-6" style={{ color: '#57534E' }}>
+            <p className="text-[17px] leading-relaxed mb-6" style={{ color: 'rgba(255,255,255,0.7)' }}>
               Perde porque eles não te encontram.
             </p>
-            <p className="text-[16px] leading-relaxed" style={{ color: '#78716C' }}>
+            <p className="text-[16px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>
               O profissional que aparece em primeiro não é necessariamente o melhor. É o mais visível. Quando alguém digita "médico perto de mim", o Google decide quem aparece. E na maioria das vezes, não é quem merece mais.
             </p>
           </div>
@@ -126,12 +126,12 @@ function Problema() {
               <div
                 key={item.title}
                 className="flex gap-4 p-5 rounded-2xl"
-                style={{ background: '#fff', border: '1px solid #E7E5E4', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}
+                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
               >
                 <span className="text-[24px] flex-shrink-0">{item.icon}</span>
                 <div>
-                  <p className="font-display font-bold text-[15px] mb-1" style={{ color: '#1C1917' }}>{item.title}</p>
-                  <p className="text-[14px] leading-relaxed" style={{ color: '#78716C' }}>{item.desc}</p>
+                  <p className="font-display font-bold text-[15px] mb-1 text-white">{item.title}</p>
+                  <p className="text-[14px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -225,18 +225,18 @@ function Recursos() {
   ]
 
   return (
-    <section id="recursos" className="px-6 py-24" style={{ background: '#fff' }}>
+    <section id="recursos" className="px-6 py-24" style={{ background: 'rgba(255,255,255,0.02)' }}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
-          <p className="text-[11px] font-bold tracking-[2px] uppercase mb-4" style={{ color: 'var(--accent-hover)' }}>O que a Destaka faz</p>
+          <p className="text-[11px] font-bold tracking-[2px] uppercase mb-4" style={{ color: 'var(--accent)' }}>O que a Destaka faz</p>
           <h2
             className="font-display font-extrabold leading-[1.1] tracking-[-1.5px] mb-4"
-            style={{ fontSize: 'clamp(28px, 4vw, 44px)', color: '#1C1917' }}
+            style={{ fontSize: 'clamp(28px, 4vw, 44px)', color: '#fff' }}
           >
             Tudo que uma agência faria.<br />
-            <span style={{ color: '#161B26' }}>Sem reunião. Sem espera. Sem mensalidade de agência.</span>
+            <span style={{ color: 'rgba(255,255,255,0.7)' }}>Sem reunião. Sem espera. Sem mensalidade de agência.</span>
           </h2>
-          <p className="text-[17px] max-w-2xl mx-auto" style={{ color: '#78716C' }}>
+          <p className="text-[17px] max-w-2xl mx-auto" style={{ color: 'rgba(255,255,255,0.5)' }}>
             A Destaka cuida da sua visibilidade enquanto você cuida dos pacientes. Cada um no que sabe fazer melhor.
           </p>
         </div>
@@ -246,12 +246,12 @@ function Recursos() {
             <div
               key={f.title}
               className="p-6 rounded-2xl flex gap-4 transition-all"
-              style={{ background: '#F0FDF4', border: '1px solid #BBF7D0' }}
+              style={{ background: 'rgba(14,165,233,0.06)', border: '1px solid rgba(14,165,233,0.15)' }}
             >
               <span className="text-[28px] flex-shrink-0">{f.icon}</span>
               <div>
-                <h3 className="font-display font-bold text-[16px] mb-1.5" style={{ color: '#161B26' }}>{f.title}</h3>
-                <p className="text-[14px] leading-relaxed" style={{ color: '#57534E' }}>{f.desc}</p>
+                <h3 className="font-display font-bold text-[16px] mb-1.5 text-white">{f.title}</h3>
+                <p className="text-[14px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>{f.desc}</p>
               </div>
             </div>
           ))}
@@ -328,7 +328,7 @@ function Manifesto() {
 
 function Footer() {
   return (
-    <footer className="px-6 py-10" style={{ background: '#0F1117', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+    <footer className="px-6 py-10" style={{ background: '#0a1f16', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
         <Logo size="sm" vertical="Saúde" />
         <p className="text-[13px]" style={{ color: 'rgba(255,255,255,0.25)' }}>
