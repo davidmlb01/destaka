@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import type { CategoryScore } from '@/lib/gmb/scorer'
+import { getScoreColor, getScoreLabel } from '@/lib/utils/score-colors'
+import { ScoreGauge } from '@/components/dashboard/ScoreGauge'
 
 interface PlaceInfo {
   name: string
@@ -30,9 +32,7 @@ const CATEGORY_ICONS: Record<string, string> = {
 
 function scoreColor(score: number) {
   if (score === 0) return 'rgba(255,255,255,0.3)'
-  if (score >= 70) return '#4ADE80'
-  if (score >= 40) return '#FBBF24'
-  return 'var(--error)'
+  return getScoreColor(score)
 }
 
 function scoreLabel(total: number) {
@@ -41,31 +41,6 @@ function scoreLabel(total: number) {
   return 'Precisa de atenção urgente'
 }
 
-function ScoreArc({ score }: { score: number }) {
-  const R = 54, CX = 70, CY = 72, START = 225, TOTAL = 270
-
-  function toRad(deg: number) { return ((deg - 90) * Math.PI) / 180 }
-  function pt(deg: number) { return { x: CX + R * Math.cos(toRad(deg)), y: CY + R * Math.sin(toRad(deg)) } }
-  function arc(from: number, sweep: number) {
-    if (sweep <= 0) return ''
-    const to = from + sweep
-    const s = pt(from), e = pt(to)
-    const large = sweep > 180 ? 1 : 0
-    return `M ${s.x.toFixed(2)} ${s.y.toFixed(2)} A ${R} ${R} 0 ${large} 1 ${e.x.toFixed(2)} ${e.y.toFixed(2)}`
-  }
-
-  const fill = (score / 100) * TOTAL
-  const color = scoreColor(score)
-
-  return (
-    <svg width="140" height="130" viewBox="0 0 140 130">
-      <path d={arc(START, TOTAL)} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="12" strokeLinecap="round" />
-      {fill > 0 && <path d={arc(START, fill)} fill="none" stroke={color} strokeWidth="12" strokeLinecap="round" />}
-      <text x={CX} y={CY + 7} textAnchor="middle" fill="white" fontSize="30" fontWeight="800">{score}</text>
-      <text x={CX} y={CY + 23} textAnchor="middle" fill="rgba(255,255,255,0.35)" fontSize="10">de 100</text>
-    </svg>
-  )
-}
 
 export function VerifyTool() {
   const [input, setInput] = useState('')
@@ -205,7 +180,7 @@ export function VerifyTool() {
               className="rounded-2xl p-5 flex flex-col items-center justify-center order-first lg:order-last"
               style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.08)' }}
             >
-              <ScoreArc score={result.score.total} />
+              <ScoreGauge score={result.score.total} size={140} showGlow={false} />
               <p
                 className="font-display font-bold text-sm text-center mt-1"
                 style={{ color: scoreColor(result.score.total) }}

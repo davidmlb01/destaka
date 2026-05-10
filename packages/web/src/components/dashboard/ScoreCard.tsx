@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import type { CategoryScore } from '@/lib/gmb/scorer'
+import { getScoreColor, getScoreLabel } from '@/lib/utils/score-colors'
 
 const CATEGORY_ICONS: Record<string, string> = {
   info: '📋',
@@ -14,9 +15,7 @@ const CATEGORY_ICONS: Record<string, string> = {
 
 function scoreToColor(percentage: number): string {
   if (percentage === 0) return 'rgba(255,255,255,0.35)'
-  if (percentage >= 70) return '#4ADE80'
-  if (percentage >= 40) return '#FBBF24'
-  return 'var(--error)'
+  return getScoreColor(percentage)
 }
 
 export function ScoreCard({ category }: { category: CategoryScore }) {
@@ -99,7 +98,7 @@ export function ScoreCard({ category }: { category: CategoryScore }) {
 
 export function TotalScoreBadge({ score }: { score: number }) {
   const color = scoreToColor(score)
-  const label = score >= 70 ? 'Excelente' : score >= 40 ? 'Regular' : score === 0 ? 'Não configurado' : 'Crítico'
+  const label = score === 0 ? 'Não configurado' : getScoreLabel(score)
 
   return (
     <div

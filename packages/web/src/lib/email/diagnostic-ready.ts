@@ -1,4 +1,5 @@
 import { resend, FROM } from './index'
+import { getScoreColor, getScoreLabel } from '@/lib/utils/score-colors'
 
 interface DiagnosticReadyParams {
   to: string
@@ -8,17 +9,11 @@ interface DiagnosticReadyParams {
 }
 
 function scoreLabel(score: number): string {
-  if (score >= 80) return 'Excelente'
-  if (score >= 60) return 'Bom'
-  if (score >= 40) return 'Regular'
-  return 'Crítico'
+  return getScoreLabel(score)
 }
 
 function scoreColor(score: number): string {
-  if (score >= 80) return '#16a34a'
-  if (score >= 60) return '#d97706'
-  if (score >= 40) return '#ea580c'
-  return '#dc2626'
+  return getScoreColor(score)
 }
 
 export async function sendDiagnosticReadyEmail(params: DiagnosticReadyParams) {

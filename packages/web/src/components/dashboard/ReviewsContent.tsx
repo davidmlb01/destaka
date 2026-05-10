@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import type { Review, ReviewFilter } from '@/lib/gmb/reviews'
 import { ReviewsSkeleton } from './Skeletons'
+import { formatDateShort } from '@/lib/utils/format-date'
 
 interface ReviewsData {
   reviews: Review[]
@@ -29,7 +30,7 @@ function StarRow({ rating }: { rating: number }) {
 }
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
+  return formatDateShort(iso)
 }
 
 const FILTER_LABELS: Record<ReviewFilter, string> = {

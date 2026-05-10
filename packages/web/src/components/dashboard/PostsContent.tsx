@@ -1,7 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { Card } from '@/components/ui/Card'
 import { PostsSkeleton } from './Skeletons'
+import { formatDateShort } from '@/lib/utils/format-date'
 
 interface Post {
   id: string
@@ -37,7 +39,7 @@ const TYPE_LABELS: Record<string, string> = {
 }
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
+  return formatDateShort(iso)
 }
 
 export function PostsContent() {
@@ -133,10 +135,7 @@ export function PostsContent() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
         {/* Modo de postagem */}
-        <div
-          className="rounded-2xl p-5"
-          style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.08)' }}
-        >
+        <Card variant="dark" padding="sm">
           <p className="font-display font-bold text-white text-sm mb-1">Modo de postagem</p>
           <p className="text-xs mb-4" style={{ color: 'rgba(255,255,255,0.35)' }}>
             Como os posts semanais serão tratados
@@ -163,13 +162,10 @@ export function PostsContent() {
               ? 'Posts são publicados direto toda semana, sem precisar revisar.'
               : 'Você recebe o post para revisar antes de publicar.'}
           </p>
-        </div>
+        </Card>
 
         {/* Próximo post + botão gerar */}
-        <div
-          className="rounded-2xl p-5 flex flex-col justify-between"
-          style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.08)' }}
-        >
+        <Card variant="dark" padding="sm" className="flex flex-col justify-between">
           {data?.scheduledNext ? (
             <div className="mb-3">
               <p className="font-display font-bold text-white text-sm mb-1">Próximo post agendado</p>
@@ -211,7 +207,7 @@ export function PostsContent() {
               <>✨ Gerar Post Agora</>
             )}
           </button>
-        </div>
+        </Card>
       </div>
 
       {/* Posts aguardando aprovação */}
@@ -289,11 +285,7 @@ export function PostsContent() {
             {data?.posts.filter(p => p.status !== 'draft').map(post => {
               const cfg = STATUS_CONFIG[post.status] ?? STATUS_CONFIG.draft
               return (
-                <div
-                  key={post.id}
-                  className="rounded-2xl p-5"
-                  style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.08)' }}
-                >
+                <Card key={post.id} variant="dark" padding="sm">
                   <div className="flex items-center justify-between gap-3 mb-2">
                     <div className="flex items-center gap-2">
                       <span
@@ -311,7 +303,7 @@ export function PostsContent() {
                   <p className="text-sm" style={{ color: 'rgba(255,255,255,0.65)', lineHeight: 1.6 }}>
                     {post.content}
                   </p>
-                </div>
+                </Card>
               )
             })}
           </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
+import { formatDateShort } from '@/lib/utils/format-date'
 
 interface DataPoint {
   score_total: number
@@ -8,7 +9,7 @@ interface DataPoint {
 }
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
+  return formatDateShort(iso)
 }
 
 interface CustomTooltipProps {

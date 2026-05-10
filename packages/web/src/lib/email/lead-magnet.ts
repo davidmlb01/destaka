@@ -1,5 +1,6 @@
 import { resend, FROM } from './index'
 import type { CategoryScore } from '@/lib/gmb/scorer'
+import { getScoreColor, getScoreLabel } from '@/lib/utils/score-colors'
 
 interface LeadMagnetEmailParams {
   to: string
@@ -9,15 +10,11 @@ interface LeadMagnetEmailParams {
 }
 
 function scoreColor(score: number): string {
-  if (score >= 70) return '#16a34a'
-  if (score >= 40) return '#d97706'
-  return '#dc2626'
+  return getScoreColor(score)
 }
 
 function scoreLabel(score: number): string {
-  if (score >= 70) return 'Perfil bem otimizado'
-  if (score >= 40) return 'Tem espaço para melhorar'
-  return 'Precisa de atenção urgente'
+  return getScoreLabel(score)
 }
 
 export async function sendLeadMagnetEmail(params: LeadMagnetEmailParams) {

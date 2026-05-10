@@ -1,6 +1,7 @@
 'use client'
 
 import { Logo } from '@/components/ui/Logo'
+import { getScoreColor } from '@/lib/utils/score-colors'
 
 interface ScoreCategory {
   name: string
@@ -19,9 +20,7 @@ const CATEGORY_ICONS: Record<string, string> = {
 }
 
 function scoreColor(score: number) {
-  if (score >= 70) return '#16A34A'
-  if (score >= 50) return 'var(--accent-hover)'
-  return '#DC2626'
+  return getScoreColor(score)
 }
 
 function getVerdict(score: number) {

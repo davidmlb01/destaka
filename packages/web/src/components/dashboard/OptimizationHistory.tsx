@@ -1,5 +1,8 @@
 'use client'
 
+import { Card } from '@/components/ui/Card'
+import { formatDateShort } from '@/lib/utils/format-date'
+
 interface Action {
   id: string
   type: string
@@ -29,7 +32,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; dot: string 
 }
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
+  return formatDateShort(iso)
 }
 
 function typeLabel(type: string) {
@@ -39,22 +42,16 @@ function typeLabel(type: string) {
 export function OptimizationHistory({ actions }: { actions: Action[] }) {
   if (!actions.length) {
     return (
-      <div
-        className="rounded-2xl p-5 flex items-center justify-center"
-        style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.08)', minHeight: 80 }}
-      >
+      <Card variant="dark" padding="sm" className="flex items-center justify-center" style={{ minHeight: 80 }}>
         <p className="text-sm text-center" style={{ color: 'rgba(255,255,255,0.3)' }}>
           Nenhuma otimização registrada ainda.
         </p>
-      </div>
+      </Card>
     )
   }
 
   return (
-    <div
-      className="rounded-2xl overflow-hidden"
-      style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.08)' }}
-    >
+    <Card variant="dark" padding="sm" className="overflow-hidden !p-0">
       {actions.map((action, i) => {
         const cfg = STATUS_CONFIG[action.status] ?? STATUS_CONFIG.pending
         return (
@@ -89,6 +86,6 @@ export function OptimizationHistory({ actions }: { actions: Action[] }) {
           </div>
         )
       })}
-    </div>
+    </Card>
   )
 }

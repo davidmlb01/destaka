@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import type { ChecklistItem } from '@/lib/gmb/checklist'
+import { Card } from '@/components/ui/Card'
 import { ChecklistSkeleton } from './Skeletons'
+import { formatDateShort } from '@/lib/utils/format-date'
 
 interface ChecklistData {
   items: ChecklistItem[]
@@ -32,7 +34,7 @@ const CATEGORY_ICONS: Record<string, string> = {
 }
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
+  return formatDateShort(iso)
 }
 
 export function ChecklistContent() {
@@ -94,10 +96,7 @@ export function ChecklistContent() {
     <div className="flex flex-col gap-6">
 
       {/* Progresso geral */}
-      <div
-        className="rounded-2xl p-5"
-        style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.08)' }}
-      >
+      <Card variant="dark" padding="sm">
         <div className="flex items-center justify-between mb-3">
           <div>
             <p className="font-display font-bold text-white text-sm">
@@ -119,7 +118,7 @@ export function ChecklistContent() {
             style={{ width: `${progressPct}%`, background: 'var(--success)' }}
           />
         </div>
-      </div>
+      </Card>
 
       {/* Tarefas pendentes */}
       {pending.length > 0 && (
