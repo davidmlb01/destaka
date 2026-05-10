@@ -51,7 +51,7 @@ export async function POST(request: Request) {
 
       if (!userId || !plan) break
 
-      await serviceClient
+      const { error: updateError } = await serviceClient
         .from('users')
         .update({
           plan,
@@ -59,6 +59,10 @@ export async function POST(request: Request) {
           updated_at: new Date().toISOString(),
         })
         .eq('id', userId)
+
+      if (updateError) {
+        logger.error('stripe/webhook', 'Falha ao atualizar plano do usuário após checkout', { updateError, userId, plan })
+      }
 
       // Email de boas-vindas dia 0
       const { data: newUser } = await serviceClient
@@ -81,10 +85,14 @@ export async function POST(request: Request) {
       const subscription = event.data.object as Stripe.Subscription
       const customerId = subscription.customer as string
 
-      await serviceClient
+      const { error: deleteError } = await serviceClient
         .from('users')
         .update({ plan: 'free', updated_at: new Date().toISOString() })
         .eq('stripe_customer_id', customerId)
+
+      if (deleteError) {
+        logger.error('stripe/webhook', 'Falha ao rebaixar plano após subscription.deleted', { deleteError, customerId })
+      }
 
       break
     }
@@ -95,12 +103,16 @@ export async function POST(request: Request) {
       const status = subscription.status
 
       // Rebaixa para free apenas em cancelamento definitivo ou inadimplência confirmada.
-      // past_due = pagamento atrasado, Stripe retentar automaticamente — NÃO downgrader ainda.
+      // past_due = pagamento atrasado, Stripe retenta automaticamente, NÃO downgrader ainda.
       if (status === 'canceled' || status === 'unpaid') {
-        await serviceClient
+        const { error: subUpdateError } = await serviceClient
           .from('users')
           .update({ plan: 'free', updated_at: new Date().toISOString() })
           .eq('stripe_customer_id', customerId)
+
+        if (subUpdateError) {
+          logger.error('stripe/webhook', 'Falha ao rebaixar plano após subscription.updated', { subUpdateError, customerId, status })
+        }
       }
 
       break
