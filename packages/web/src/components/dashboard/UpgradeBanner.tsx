@@ -4,17 +4,26 @@ import { useState } from 'react'
 
 export function UpgradeBanner() {
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   async function handleUpgrade() {
     setLoading(true)
+    setError(null)
     try {
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ plan: 'pro' }),
       })
+      if (!res.ok) {
+        setError('Não foi possível iniciar o checkout. Tente novamente.')
+        return
+      }
       const data = await res.json()
       if (data.url) window.location.href = data.url
+      else setError('Não foi possível iniciar o checkout. Tente novamente.')
+    } catch {
+      setError('Não foi possível iniciar o checkout. Tente novamente.')
     } finally {
       setLoading(false)
     }
@@ -42,6 +51,10 @@ export function UpgradeBanner() {
           R$197/mês. Garantia de 30 dias. Uma consulta cobre 6 meses de Destaka.
         </p>
       </div>
+
+      {error && (
+        <p className="text-xs font-medium" style={{ color: 'var(--error)' }}>{error}</p>
+      )}
 
       <button
         onClick={handleUpgrade}

@@ -11,20 +11,23 @@ export function StepCapture({ clinicName, score }: StepCaptureProps) {
   const [email, setEmail] = useState('')
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   async function handleEmailSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!email || sending) return
     setSending(true)
+    setSubmitError(null)
     try {
-      await fetch('/api/public/capture-lead', {
+      const res = await fetch('/api/public/capture-lead', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, placeName: clinicName, score }),
       })
+      if (!res.ok) throw new Error('Erro')
       setSent(true)
     } catch {
-      setSent(true)
+      setSubmitError('Não foi possível enviar. Tente novamente.')
     } finally {
       setSending(false)
     }
@@ -150,12 +153,12 @@ export function StepCapture({ clinicName, score }: StepCaptureProps) {
               disabled={sending || sent}
               className="w-full rounded-xl py-4 font-display font-extrabold text-[15px] text-white transition-all"
               style={{
-                background: sent ? '#16A34A' : 'linear-gradient(135deg, #161B26 0%, #1E2433 100%)',
-                boxShadow: sent ? 'none' : '0 4px 20px rgba(15,17,23,0.35)',
+                background: sent ? '#16A34A' : submitError ? '#DC2626' : 'linear-gradient(135deg, #161B26 0%, #1E2433 100%)',
+                boxShadow: sent || submitError ? 'none' : '0 4px 20px rgba(15,17,23,0.35)',
                 opacity: sending ? 0.7 : 1,
               }}
             >
-              {sent ? '✓ Enviado! Confira seu email.' : sending ? 'Enviando...' : 'Receber diagnóstico por email →'}
+              {sent ? '✓ Enviado! Confira seu email.' : submitError ? submitError : sending ? 'Enviando...' : 'Receber diagnóstico por email →'}
             </button>
           </form>
         </div>
