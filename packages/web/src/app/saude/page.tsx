@@ -38,43 +38,70 @@ function Nav() {
 function Hero() {
   return (
     <section
-      className="relative min-h-screen flex items-center justify-center px-6 pt-24 pb-20 overflow-hidden"
+      className="relative min-h-screen flex items-center px-6 pt-24 pb-20 overflow-hidden"
       style={{ background: 'var(--bg-gradient)' }}
     >
       <div className="absolute rounded-full pointer-events-none blur-[140px]" style={{ width: 600, height: 600, background: 'rgba(14,165,233,0.1)', top: -200, right: -200 }} />
       <div className="absolute rounded-full pointer-events-none blur-[100px]" style={{ width: 350, height: 350, background: 'rgba(14,165,233,0.06)', bottom: -80, left: -100 }} />
       <div className="absolute rounded-full pointer-events-none" style={{ width: 520, height: 520, border: '1px solid rgba(14,165,233,0.08)', top: -160, right: -160 }} />
 
-      <div className="max-w-3xl w-full text-center relative z-10">
+      <div className="max-w-6xl mx-auto w-full relative z-10">
+        <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
 
-        <Badge className="mb-8">
-          Para profissionais de saúde que merecem aparecer primeiro
-        </Badge>
+          {/* Coluna esquerda: copy principal */}
+          <div>
+            <Badge className="mb-8">
+              Para profissionais de saúde que merecem aparecer primeiro
+            </Badge>
 
-        <h1
-          className="font-display font-bold text-white leading-[1.05] tracking-[-2.5px] mb-6"
-          style={{ fontSize: 'clamp(40px, 6vw, 68px)' }}
-        >
-          Você deveria<br />
-          aparecer primeiro no Google.<br />
-          <em className="not-italic" style={{ color: 'var(--accent)' }}>A gente faz isso acontecer.</em>
-        </h1>
+            <h1
+              className="font-display font-bold text-white leading-[1.05] tracking-[-2.5px] mb-6"
+              style={{ fontSize: 'clamp(36px, 5vw, 64px)' }}
+            >
+              Você deveria<br />
+              aparecer primeiro no Google.<br />
+              <em className="not-italic" style={{ color: 'var(--accent)' }}>A gente faz isso acontecer.</em>
+            </h1>
 
-        <p
-          className="leading-relaxed mb-10 max-w-2xl mx-auto"
-          style={{ color: 'rgba(255,255,255,0.6)', fontSize: 'clamp(16px, 2vw, 19px)' }}
-        >
-          O Google decide quem o seu paciente vai ligar.<br />
-          A Destaka decide o que o Google vai ver.
-        </p>
+            <p
+              className="leading-relaxed mb-10"
+              style={{ color: 'rgba(255,255,255,0.6)', fontSize: 'clamp(16px, 2vw, 19px)' }}
+            >
+              O Google decide quem o seu paciente vai ligar.<br />
+              A Destaka decide o que o Google vai ver.
+            </p>
 
-        <Button variant="primary" size="lg" href="/saude/verificar">
-          <PinIcon size={16} /> Ver a nota do meu perfil
-        </Button>
+            <Button variant="primary" size="lg" href="/saude/verificar">
+              <PinIcon size={16} /> Ver a nota do meu perfil
+            </Button>
 
-        <p className="mt-5 text-[12px]" style={{ color: '#ffffff' }}>
-          Diagnóstico gratuito. Sem cadastro. Resultado em 30 segundos.
-        </p>
+            <p className="mt-5 text-[12px]" style={{ color: '#ffffff' }}>
+              Diagnóstico gratuito. Sem cadastro. Resultado em 30 segundos.
+            </p>
+          </div>
+
+          {/* Coluna direita: proof cards */}
+          <div className="flex flex-col gap-4">
+            {[
+              { title: '46% das buscas são locais', desc: 'Quase metade das pesquisas no Google têm intenção local. Se você não aparece, seu concorrente aparece.' },
+              { title: '76% ligam no mesmo dia', desc: 'Quem pesquisa um profissional de saúde no Google tem urgência. Visibilidade é conversão imediata.' },
+              { title: '88% confiam em avaliações', desc: 'Avaliações online têm o mesmo peso de uma indicação pessoal. Perfis sem resposta perdem credibilidade.' },
+            ].map((card, i) => (
+              <div
+                key={card.title}
+                className="flex gap-4 p-5 rounded-2xl animate-fade-in-up"
+                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', animationDelay: `${0.3 + i * 0.15}s` }}
+              >
+                <PinIcon size={22} />
+                <div>
+                  <p className="font-display font-bold text-[15px] mb-1 text-white">{card.title}</p>
+                  <p className="text-[14px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.65)' }}>{card.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+        </div>
       </div>
     </section>
   )
@@ -110,7 +137,7 @@ function Problema() {
     <section className="px-6 py-24" style={{ background: 'var(--bg-gradient)' }}>
       <div className="max-w-4xl mx-auto">
         <div className="grid md:grid-cols-2 gap-16 items-center">
-          <div>
+          <div className="reveal-left">
             <p className="text-[11px] font-bold tracking-[2px] uppercase mb-4" style={{ color: 'var(--accent)' }}>
               O problema real
             </p>
@@ -128,7 +155,7 @@ function Problema() {
               O profissional que aparece em primeiro não é necessariamente o melhor. É o mais visível. Quando alguém digita "médico perto de mim", o Google decide quem aparece. E na maioria das vezes, não é quem merece mais.
             </p>
           </div>
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 reveal-right">
             {[
               { title: 'O paciente pesquisa', desc: 'Todo dia, dezenas de pessoas na sua cidade buscam pelo profissional que você é. O Google escolhe quem mostrar, não quem merece mais.' },
               { title: 'Perfis incompletos são penalizados', desc: '51% dos perfis de saúde no Google estão incompletos. Cada campo vazio é uma penalidade silenciosa que você nunca vai ver.' },
@@ -136,7 +163,7 @@ function Problema() {
             ].map((item) => (
               <div
                 key={item.title}
-                className="flex gap-4 p-5 rounded-2xl"
+                className="flex gap-4 p-5 rounded-2xl card-hover"
                 style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
               >
                 <PinIcon size={22} />
@@ -162,7 +189,7 @@ function ComoFunciona() {
       title: 'Ver a nota do meu perfil',
       desc: 'Em 30 segundos, a Destaka analisa seu perfil no Google e gera uma nota de 0 a 100. Você vê exatamente onde está perdendo visibilidade.',
       cta: 'Ver minha nota agora',
-      href: '/login',
+      href: '/saude/verificar',
     },
     {
       num: '02',
@@ -183,7 +210,7 @@ function ComoFunciona() {
   return (
     <section id="como-funciona" className="px-6 py-24" style={{ background: 'var(--bg-gradient)' }}>
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
+        <div className="text-center mb-16 reveal">
           <p className="text-[11px] font-bold tracking-[2px] uppercase mb-4" style={{ color: 'var(--accent)' }}>Como funciona</p>
           <h2
             className="font-display font-bold text-white leading-[1.1] tracking-[-1.5px]"
@@ -197,7 +224,7 @@ function ComoFunciona() {
           {steps.map((step) => (
             <div
               key={step.num}
-              className="relative p-7 rounded-2xl flex flex-col gap-4"
+              className="relative p-7 rounded-2xl flex flex-col gap-4 reveal card-hover"
               style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}
             >
               <div
@@ -238,7 +265,7 @@ function Recursos() {
   return (
     <section id="recursos" className="px-6 py-24" style={{ background: 'var(--bg-gradient)' }}>
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
+        <div className="text-center mb-16 reveal">
           <p className="text-[11px] font-bold tracking-[2px] uppercase mb-4" style={{ color: 'var(--accent)' }}>O que a Destaka faz</p>
           <h2
             className="font-display font-bold leading-[1.1] tracking-[-1.5px] mb-4"
@@ -256,7 +283,7 @@ function Recursos() {
           {features.map((f) => (
             <div
               key={f.title}
-              className="p-6 rounded-2xl flex gap-4 transition-all"
+              className="p-6 rounded-2xl flex gap-4 reveal card-hover"
               style={{ background: 'rgba(14,165,233,0.06)', border: '1px solid rgba(14,165,233,0.15)' }}
             >
               <PinIcon size={22} />
@@ -282,51 +309,66 @@ function Manifesto() {
     >
       <div className="absolute rounded-full pointer-events-none blur-[120px]" style={{ width: 500, height: 500, background: 'rgba(14,165,233,0.08)', top: -150, right: -150 }} />
 
-      <div className="max-w-3xl mx-auto text-center relative z-10">
-        <div className="mb-8 flex justify-center" style={{ filter: 'drop-shadow(0 0 16px rgba(14,165,233,0.3))' }}>
-          <PinIcon size={48} />
-        </div>
+      <div className="max-w-5xl mx-auto relative z-10">
+        <div className="grid md:grid-cols-[1fr_auto] gap-12 md:gap-20 items-start">
 
-        <h2
-          className="font-display font-bold text-white leading-[1.15] tracking-[-1.5px] mb-10"
-          style={{ fontSize: 'clamp(24px, 4vw, 38px)' }}
-        >
-          Você passou anos se formando.<br />
-          Fez residência. Aprendeu a cuidar<br />
-          de pessoas melhor do que qualquer um na sua cidade.
-        </h2>
+          {/* Coluna esquerda: narrativa */}
+          <div className="reveal-left">
+            <div className="mb-8" style={{ filter: 'drop-shadow(0 0 16px rgba(14,165,233,0.3))' }}>
+              <PinIcon size={48} />
+            </div>
 
-        <div className="text-left max-w-xl mx-auto space-y-5 mb-12">
-          {[
-            'E hoje, quando alguém digita "médico perto de mim", aparece o consultório do lado. O que faz menos. O que cobra mais caro. O que tem metade da sua experiência.',
-            'Não é injusto. É técnico. O Google não conhece você. Ainda.',
-            'A Destaka existe para isso. Para traduzir a sua competência em linguagem que o algoritmo entende. Para fazer o invisível aparecer.',
-            'Para garantir que, quando o paciente certo estiver buscando, ele vai te encontrar primeiro.',
-          ].map((text, i) => (
-            <p
-              key={i}
-              className="text-[17px] leading-relaxed"
-              style={{ color: i === 1 ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.55)' }}
+            <h2
+              className="font-display font-bold text-white leading-[1.15] tracking-[-1.5px] mb-10"
+              style={{ fontSize: 'clamp(24px, 4vw, 38px)' }}
             >
-              {text}
+              Você passou anos se formando.<br />
+              Fez residência. Aprendeu a cuidar<br />
+              de pessoas melhor do que qualquer um na sua cidade.
+            </h2>
+
+            <div className="space-y-5">
+              {[
+                'E hoje, quando alguém digita "médico perto de mim", aparece o consultório do lado. O que faz menos. O que cobra mais caro. O que tem metade da sua experiência.',
+                'Não é injusto. É técnico. O Google não conhece você. Ainda.',
+                'A Destaka existe para isso. Para traduzir a sua competência em linguagem que o algoritmo entende. Para fazer o invisível aparecer.',
+                'Para garantir que, quando o paciente certo estiver buscando, ele vai te encontrar primeiro.',
+              ].map((text, i) => (
+                <p
+                  key={i}
+                  className="text-[17px] leading-relaxed"
+                  style={{ color: i === 1 ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.55)' }}
+                >
+                  {text}
+                </p>
+              ))}
+            </div>
+          </div>
+
+          {/* Coluna direita: frase de fechamento + CTA */}
+          <div className="md:sticky md:top-32 flex flex-col items-start md:max-w-[300px] reveal-right">
+            <div
+              className="p-7 rounded-2xl mb-8 w-full"
+              style={{ background: 'rgba(14,165,233,0.06)', border: '1px solid rgba(14,165,233,0.15)' }}
+            >
+              <p
+                className="font-display font-bold text-[18px] leading-[1.35]"
+                style={{ color: 'var(--accent-bright)' }}
+              >
+                Quem salva vidas não deveria perder pacientes por causa de burocracia digital.
+              </p>
+            </div>
+
+            <Button variant="primary" size="lg" href="/saude/verificar">
+              <PinIcon size={16} /> Descobrir minha nota no Google
+            </Button>
+
+            <p className="mt-5 text-[12px]" style={{ color: 'rgba(255,255,255,0.45)' }}>
+              Grátis. Sem cadastro. Resultado em 30 segundos.
             </p>
-          ))}
+          </div>
+
         </div>
-
-        <p
-          className="font-display font-bold text-[18px] mb-10"
-          style={{ color: 'var(--accent-bright)' }}
-        >
-          Quem salva vidas não deveria perder pacientes<br />por causa de burocracia digital.
-        </p>
-
-        <Button variant="primary" size="lg" href="/saude/verificar">
-          <PinIcon size={16} /> Descobrir minha nota no Google
-        </Button>
-
-        <p className="mt-5 text-[12px]" style={{ color: 'rgba(255,255,255,0.45)' }}>
-          Grátis. Sem cadastro. Resultado em 30 segundos.
-        </p>
       </div>
     </section>
   )
@@ -360,6 +402,23 @@ function Footer() {
 
 // ─── PAGE ───────────────────────────────────────────────────────────────────
 
+function ScrollReveal() {
+  return (
+    <script dangerouslySetInnerHTML={{ __html: `
+      (function(){
+        var items = document.querySelectorAll('.reveal,.reveal-left,.reveal-right');
+        if (!items.length) return;
+        var obs = new IntersectionObserver(function(entries){
+          entries.forEach(function(e){
+            if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}
+          });
+        },{threshold:0.12,rootMargin:'0px 0px -40px 0px'});
+        items.forEach(function(el){obs.observe(el);});
+      })();
+    `}} />
+  )
+}
+
 export default function Home() {
   return (
     <>
@@ -371,6 +430,7 @@ export default function Home() {
       <Recursos />
       <Manifesto />
       <Footer />
+      <ScrollReveal />
     </>
   )
 }
