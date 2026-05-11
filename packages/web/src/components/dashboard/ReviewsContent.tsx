@@ -5,6 +5,7 @@ import type { Review, ReviewFilter } from '@/lib/gmb/reviews'
 import { ReviewsSkeleton } from './Skeletons'
 import { formatDateShort } from '@/lib/utils/format-date'
 import { Spinner } from '@/components/ui/Spinner'
+import { PinIcon } from '@/components/ui/PinIcon'
 
 interface ReviewsData {
   reviews: Review[]
@@ -147,7 +148,7 @@ export function ReviewsContent() {
           className="rounded-xl px-4 py-3 mb-5 flex items-center gap-3"
           style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)' }}
         >
-          <span style={{ fontSize: 18 }}>⭐</span>
+          <PinIcon size={18} />
           <p className="text-sm font-medium" style={{ color: 'var(--accent-bright)' }}>
             {data.pendingCount} {data.pendingCount === 1 ? 'avaliação aguardando' : 'avaliações aguardando'} resposta. Responder rápido melhora seu ranking.
           </p>
@@ -251,7 +252,7 @@ export function ReviewsContent() {
                       color: 'var(--accent-bright)',
                     }}
                   >
-                    ✍️ Responder
+                    <PinIcon size={12} color="var(--accent-bright)" bg="transparent" /> Responder
                   </button>
                   <button
                     onClick={() => ignoreReview(review.id)}
@@ -361,7 +362,7 @@ export function ReviewsContent() {
                       Gerando...
                     </>
                   ) : (
-                    <>✨ Gerar com IA</>
+                    <><PinIcon size={12} color="var(--accent-bright)" bg="transparent" /> Gerar com IA</>
                   )}
                 </button>
               </div>

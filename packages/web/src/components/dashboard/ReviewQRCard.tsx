@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { Card } from '@/components/ui/Card'
 import { Spinner } from '@/components/ui/Spinner'
+import { PinIcon } from '@/components/ui/PinIcon'
 
 interface QRData {
   reviewUrl: string
@@ -191,7 +192,7 @@ export function ReviewQRCard() {
               color: 'var(--accent-bright)',
             }}
           >
-            📥 Baixar para impressão (PNG)
+            <PinIcon size={14} color="var(--accent-bright)" bg="transparent" /> Baixar para impressão (PNG)
           </button>
         </div>
       </div>

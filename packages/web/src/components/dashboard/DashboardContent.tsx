@@ -13,6 +13,7 @@ import { OptimizationWizard } from './OptimizationWizard'
 import { ProfileAlerts } from './ProfileAlerts'
 import { WeeklyHighlights } from './WeeklyHighlights'
 import { DashboardSkeleton } from './Skeletons'
+import { PinIcon } from '@/components/ui/PinIcon'
 import type { CategoryScore } from '@/lib/gmb/scorer'
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
@@ -100,7 +101,7 @@ export function DashboardContent() {
 
   if (error || !data) return (
     <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
-      <div className="text-[48px] mb-4" style={{ opacity: 0.3 }}>⚠</div>
+      <div className="mb-4" style={{ opacity: 0.3 }}><PinIcon size={48} /></div>
       <h2 className="font-display font-bold text-white text-[20px] mb-2">
         Não foi possível carregar o painel
       </h2>
@@ -184,10 +185,10 @@ export function DashboardContent() {
 
         {/* Métricas */}
         <div className="lg:col-span-2 grid grid-cols-2 gap-3 content-start">
-          <MetricCard label="Buscas no Google" value={metrics.viewsSearch} icon="🔍" hint={metrics.period} />
-          <MetricCard label="Visualizações no Maps" value={metrics.viewsMaps} icon="📍" hint={metrics.period} />
-          <MetricCard label="Cliques no site" value={metrics.clicksWebsite} icon="🌐" hint={metrics.period} />
-          <MetricCard label="Ligações geradas" value={metrics.clicksCall} icon="📞" hint={metrics.period} />
+          <MetricCard label="Buscas no Google" value={metrics.viewsSearch} icon={<PinIcon size={16} />} hint={metrics.period} />
+          <MetricCard label="Visualizações no Maps" value={metrics.viewsMaps} icon={<PinIcon size={16} />} hint={metrics.period} />
+          <MetricCard label="Cliques no site" value={metrics.clicksWebsite} icon={<PinIcon size={16} />} hint={metrics.period} />
+          <MetricCard label="Ligações geradas" value={metrics.clicksCall} icon={<PinIcon size={16} />} hint={metrics.period} />
         </div>
       </div>
 

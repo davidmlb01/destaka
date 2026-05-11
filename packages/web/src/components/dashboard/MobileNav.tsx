@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { Logo } from '@/components/ui/Logo'
+import { PinIcon } from '@/components/ui/PinIcon'
 import { NAV_ITEMS } from './DashboardLayout'
 
 interface MobileNavProps {
@@ -106,7 +107,7 @@ export function MobileNav({ profileName, userEmail, activeHref }: MobileNavProps
                   textDecoration: 'none',
                 }}
               >
-                <span style={{ fontSize: 15 }}>{item.icon}</span>
+                <PinIcon size={15} color={active ? 'var(--accent)' : 'var(--text-tertiary)'} bg="transparent" />
                 {item.label}
               </Link>
             )

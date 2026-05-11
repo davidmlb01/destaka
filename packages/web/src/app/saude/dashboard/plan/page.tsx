@@ -1,15 +1,16 @@
 import { Badge } from '@/components/ui/Badge'
+import { PinIcon } from '@/components/ui/PinIcon'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 import { CheckoutButton } from './CheckoutButton'
 
 const VALUE_STACK = [
-  { label: 'Gestão do Google Meu Negócio', value: 'R$400/mês', desc: 'O que uma agência cobraria para fazer o mesmo', icon: '📍' },
-  { label: '4 posts mensais no perfil', value: 'R$200/mês', desc: 'Criados por IA, publicados automaticamente', icon: '✍️' },
-  { label: 'Monitoramento de avaliações', value: 'R$150/mês', desc: 'Alertas e histórico de todas as avaliações', icon: '⭐' },
-  { label: 'Análise de concorrentes', value: 'R$250/mês', desc: 'Top 3 concorrentes monitorados em tempo real', icon: '🔍' },
-  { label: 'Relatório de performance mensal', value: 'R$100/mês', desc: 'Score Destaka e evolução mês a mês', icon: '📊' },
+  { label: 'Gestão do Google Meu Negócio', value: 'R$400/mês', desc: 'O que uma agência cobraria para fazer o mesmo' },
+  { label: '4 posts mensais no perfil', value: 'R$200/mês', desc: 'Criados por IA, publicados automaticamente' },
+  { label: 'Monitoramento de avaliações', value: 'R$150/mês', desc: 'Alertas e histórico de todas as avaliações' },
+  { label: 'Análise de concorrentes', value: 'R$250/mês', desc: 'Top 3 concorrentes monitorados em tempo real' },
+  { label: 'Relatório de performance mensal', value: 'R$100/mês', desc: 'Score Destaka e evolução mês a mês' },
 ]
 
 const FEATURES = [
@@ -189,10 +190,9 @@ export default async function PlanPage() {
                         height: 36,
                         background: 'rgba(255,255,255,0.05)',
                         border: '1px solid rgba(255,255,255,0.08)',
-                        fontSize: 16,
                       }}
                     >
-                      {item.icon}
+                      <PinIcon size={16} />
                     </div>
                     {/* Texto */}
                     <div className="min-w-0">

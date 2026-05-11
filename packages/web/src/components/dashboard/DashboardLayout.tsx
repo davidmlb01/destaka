@@ -3,16 +3,17 @@
 import { ReactNode } from 'react'
 import Link from 'next/link'
 import { Logo } from '@/components/ui/Logo'
+import { PinIcon } from '@/components/ui/PinIcon'
 import { MobileNav } from './MobileNav'
 
 export const NAV_ITEMS = [
-  { label: 'Dashboard', icon: '📊', href: '/saude/dashboard' },
-  { label: 'Avaliações', icon: '⭐', href: '/saude/dashboard/reviews' },
-  { label: 'Posts', icon: '📝', href: '/saude/dashboard/posts' },
-  { label: 'Otimizações', icon: '⚡', href: '/saude/dashboard/optimizations' },
-  { label: 'Keywords', icon: '🔍', href: '/saude/dashboard/keywords' },
-  { label: 'Concorrentes', icon: '🎯', href: '/saude/dashboard/competitors' },
-  { label: 'Plano', icon: '💎', href: '/saude/dashboard/plan' },
+  { label: 'Dashboard', href: '/saude/dashboard' },
+  { label: 'Avaliações', href: '/saude/dashboard/reviews' },
+  { label: 'Posts', href: '/saude/dashboard/posts' },
+  { label: 'Otimizações', href: '/saude/dashboard/optimizations' },
+  { label: 'Keywords', href: '/saude/dashboard/keywords' },
+  { label: 'Concorrentes', href: '/saude/dashboard/competitors' },
+  { label: 'Plano', href: '/saude/dashboard/plan' },
 ]
 
 interface Props {
@@ -72,7 +73,7 @@ export function DashboardLayout({ children, activeHref, profileName, userEmail }
                   textDecoration: 'none',
                 }}
               >
-                <span style={{ fontSize: 15 }}>{item.icon}</span>
+                <PinIcon size={15} color={isActive ? 'var(--accent)' : 'var(--text-tertiary)'} bg="transparent" />
                 {item.label}
               </Link>
             )
