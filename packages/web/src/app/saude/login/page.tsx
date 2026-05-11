@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Logo } from '@/components/ui/Logo'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
@@ -27,7 +28,18 @@ function getErrorMessage(): string | null {
 
 export default function LoginPage() {
   const [demoLoading, setDemoLoading] = useState(false)
+  const router = useRouter()
   const errorMessage = getErrorMessage()
+
+  // Se usuario ja esta autenticado, redirecionar para dashboard
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        router.replace('/saude/dashboard')
+      }
+    })
+  }, [router])
 
   async function handleDemoLogin() {
     setDemoLoading(true)

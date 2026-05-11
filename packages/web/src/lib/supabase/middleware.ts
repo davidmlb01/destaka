@@ -27,15 +27,11 @@ export async function updateSession(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  const isAuthRoute = request.nextUrl.pathname.startsWith('/saude/login')
-  const isDashboardRoute = request.nextUrl.pathname.startsWith('/saude/dashboard')
-
-  if (!user && isDashboardRoute) {
+  // Se nao ha usuario autenticado, redirecionar para login.
+  // Esta funcao so e chamada para rotas NAO-publicas (filtradas no middleware principal),
+  // entao qualquer rota que chega aqui requer autenticacao.
+  if (!user) {
     return NextResponse.redirect(new URL('/saude/login', request.url))
-  }
-
-  if (user && isAuthRoute) {
-    return NextResponse.redirect(new URL('/saude/dashboard', request.url))
   }
 
   return supabaseResponse
