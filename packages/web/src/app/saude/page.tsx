@@ -157,13 +157,13 @@ function Ancoragem() {
           className="font-display font-bold text-white leading-[1.15] tracking-[-1.5px] mb-6"
           style={{ fontSize: 'clamp(24px, 3.5vw, 36px)' }}
         >
-          Agências de marketing médico cobram de R$3.000 a R$8.000 por mês. A Destaka entrega posts, respostas, keywords, proteção de perfil, QR Code e relatórios semanais no piloto automático.
+          Agências de marketing médico cobram de R$3.000 a R$8.000 por mês. Exigem reuniões, pedem conteúdo, demoram semanas para postar. E você ainda precisa cobrar resultados.
         </h2>
         <p className="text-[18px] mb-4" style={{ color: 'rgba(255,255,255,0.7)' }}>
-          Por uma fração desse custo.
+          A Destaka entrega tudo isso no piloto automático, por uma fração do custo e sem depender de você.
         </p>
         <p className="text-[15px] mb-10" style={{ color: 'rgba(255,255,255,0.5)' }}>
-          Sem contrato. Sem fidelidade. Cancele quando quiser.
+          Sem contrato. Sem fidelidade. Sem reunião. Cancele quando quiser.
         </p>
         <Button variant="primary" size="lg" href="/saude/verificar">
           <PinIcon size={16} color="#fff" bg="var(--accent)" /> Fazer diagnóstico gratuito
@@ -300,16 +300,16 @@ function ComoFunciona() {
 
 function Recursos() {
   const features = [
-    { title: 'Diagnóstico de perfil', desc: 'Score 0-100 em 6 categorias. Você sabe exatamente onde está perdendo visibilidade e o que precisa mudar.' },
-    { title: 'Posts automáticos', desc: 'Conteúdo gerado com IA em português nativo, com contexto da sua especialidade e cidade. Publicado semanalmente sem você precisar fazer nada.' },
-    { title: 'Respostas a avaliações', desc: 'Cada nova avaliação recebe uma resposta personalizada e gentil. Automaticamente. Inclusive as de uma estrela, que são as mais importantes.' },
-    { title: 'Sugestão de fotos', desc: 'A Destaka indica exatamente quais fotos estão faltando e com qual frequência atualizar. Perfis com fotos recebem 42% mais pedidos de rota.' },
-    { title: 'Serviços otimizados', desc: 'Cadastro completo dos seus serviços com as palavras-chave que seus pacientes usam para buscar. Consultórios similares têm em média 11 serviços cadastrados.' },
-    { title: 'Keywords do Google', desc: 'Descubra as buscas reais que trazem pacientes ao seu perfil. A Destaka mostra os termos mais usados e sugere palavras-chave por especialidade.' },
-    { title: 'QR Code para avaliações', desc: 'Imprima e coloque na recepção. Seus pacientes avaliam seu perfil escaneando o código, sem complicação.' },
-    { title: 'Proteção de perfil', desc: 'Receba um alerta se alguém alterar seu perfil no Google sem autorização. Você fica sabendo antes que o dano aconteça.' },
-    { title: 'Relatório semanal', desc: 'Resumo do que a Destaka fez esta semana, direto no seu email toda segunda. Sem precisar abrir nenhum painel.' },
-    { title: 'Relatório mensal', desc: 'Visibilidade completa do que foi feito, o que melhorou e qual impacto nas buscas. Tudo em português, sem jargão técnico.' },
+    { title: 'Descubra por que você não aparece', desc: 'Em 30 segundos, você vê exatamente o que está afastando pacientes do seu perfil. Sem achismo, com diagnóstico claro de cada ponto fraco.' },
+    { title: 'Pacientes te encontram sem você fazer nada', desc: 'Toda semana, conteúdo novo aparece no seu perfil do Google, escrito para a sua especialidade e a sua cidade. Você não toca em nada.' },
+    { title: 'Avaliação negativa? Já está respondida.', desc: 'Cada avaliação recebe uma resposta personalizada e profissional. Inclusive as de uma estrela, que são as que mais afastam pacientes novos.' },
+    { title: '42% mais pacientes pedem rota até você', desc: 'A Destaka indica exatamente quais fotos publicar e quando atualizar. Perfis com fotos atualizadas recebem 42% mais pedidos de rota no Google.' },
+    { title: 'Seu consultório aparece para quem busca o que você faz', desc: 'Seus serviços ficam cadastrados com os termos que os pacientes realmente digitam. Consultórios similares têm em média 11 serviços visíveis. Quantos o seu tem?' },
+    { title: 'Saiba o que seus pacientes digitam para te encontrar', desc: 'Você descobre as buscas reais que trazem gente ao seu perfil. E recebe sugestões de termos novos para atrair ainda mais pacientes da sua região.' },
+    { title: 'Mais avaliações 5 estrelas, no piloto automático', desc: 'Um código QR na recepção. O paciente escaneia e avalia na hora, sem complicação. Mais avaliações positivas, mais confiança, mais agendamentos.' },
+    { title: 'Ninguém mexe no seu perfil sem você saber', desc: 'Se alguém alterar qualquer informação do seu Google sem autorização, você recebe um alerta antes que o dano aconteça.' },
+    { title: 'Toda segunda você sabe o que foi feito', desc: 'Um resumo direto no seu email com tudo que a Destaka fez na semana. Sem precisar abrir painel, sem linguagem técnica.' },
+    { title: 'Veja o impacto real no seu consultório', desc: 'Todo mês, um relatório mostra o que melhorou, quantas pessoas te encontraram e o que mudou nas buscas. Em português, sem siglas.' },
   ]
 
   return (
@@ -321,8 +321,8 @@ function Recursos() {
             className="font-display font-bold leading-[1.1] tracking-[-1.5px] mb-4"
             style={{ fontSize: 'clamp(28px, 4vw, 44px)', color: '#fff' }}
           >
-            10 recursos que uma agência cobraria milhares por mês.<br />
-            <span style={{ color: 'rgba(255,255,255,0.7)' }}>Sem reunião. Sem espera. Sem mensalidade de agência.</span>
+            Tudo que uma agência cobraria milhares por mês.<br />
+            <span style={{ color: 'rgba(255,255,255,0.7)' }}>Funcionando no piloto automático, sem depender de você.</span>
           </h2>
           <p className="text-[17px] max-w-2xl mx-auto" style={{ color: 'rgba(255,255,255,0.65)' }}>
             A Destaka cuida da sua visibilidade enquanto você cuida dos pacientes. Cada um no que sabe fazer melhor.
