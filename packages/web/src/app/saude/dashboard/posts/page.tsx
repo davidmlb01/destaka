@@ -19,7 +19,7 @@ export default async function PostsPage() {
     <DashboardLayout activeHref="/saude/dashboard/posts" profileName={profile.name} userEmail={user.email ?? ''}>
       <div className="px-6 py-8 max-w-4xl">
         <div className="mb-8">
-          <Badge variant="subtle" className="mb-3">Posts</Badge>
+          <Badge className="mb-3">Posts</Badge>
           <h1 className="font-display font-extrabold text-white" style={{ fontSize: 28, letterSpacing: '-0.5px' }}>
             Posts Automáticos
           </h1>

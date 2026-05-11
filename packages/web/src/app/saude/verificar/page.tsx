@@ -37,7 +37,7 @@ export default function VerificarPage() {
 
         {/* Hero */}
         <div className="text-center pt-8 pb-10">
-          <Badge variant="subtle" className="mb-5">Diagnóstico gratuito</Badge>
+          <Badge className="mb-5">Diagnóstico gratuito</Badge>
 
           <h1
             className="font-display font-extrabold text-white mb-4"

@@ -19,7 +19,7 @@ export default async function CompetitorsPage() {
     <DashboardLayout activeHref="/saude/dashboard/competitors" profileName={profile.name} userEmail={user.email ?? ''}>
       <div className="px-6 py-8 max-w-5xl">
         <div className="mb-8">
-          <Badge variant="subtle" className="mb-3">Concorrentes</Badge>
+          <Badge className="mb-3">Concorrentes</Badge>
           <h1 className="font-display font-extrabold text-white" style={{ fontSize: 28, letterSpacing: '-0.5px' }}>
             Análise de Concorrentes
           </h1>

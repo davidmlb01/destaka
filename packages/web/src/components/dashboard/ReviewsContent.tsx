@@ -160,7 +160,7 @@ export function ReviewsContent() {
           <button
             key={f}
             onClick={() => changeFilter(f)}
-            className="px-4 py-1.5 rounded-full text-xs font-medium transition-all"
+            className="px-4 py-1.5 rounded-lg text-xs font-medium transition-all"
             style={{
               background: filter === f ? 'rgba(14,165,233,0.2)' : 'rgba(255,255,255,0.06)',
               color: filter === f ? 'var(--accent-bright)' : 'rgba(255,255,255,0.5)',
@@ -170,8 +170,8 @@ export function ReviewsContent() {
             {FILTER_LABELS[f]}
             {f === 'pending' && data && data.pendingCount > 0 && (
               <span
-                className="ml-1.5 px-1.5 py-0.5 rounded-full text-xs"
-                style={{ background: 'var(--accent-hover)', color: 'white', fontSize: 10 }}
+                className="ml-1 text-xs font-bold"
+                style={{ color: 'var(--accent-bright)', fontSize: 10 }}
               >
                 {data.pendingCount}
               </span>
@@ -418,16 +418,14 @@ export function ReviewsContent() {
 
 function StatusBadge({ status }: { status: string }) {
   const config = {
-    pending: { label: 'Aguardando', color: '#FBBF24', bg: 'rgba(251,191,36,0.1)' },
-    replied: { label: 'Respondida', color: '#4ADE80', bg: 'rgba(74,222,128,0.1)' },
-    ignored: { label: 'Ignorada', color: 'rgba(255,255,255,0.3)', bg: 'rgba(255,255,255,0.05)' },
-  }[status] ?? { label: status, color: 'rgba(255,255,255,0.3)', bg: 'rgba(255,255,255,0.05)' }
+    pending: { label: 'Aguardando', color: '#FBBF24', dot: '#FBBF24' },
+    replied: { label: 'Respondida', color: 'var(--success)', dot: 'var(--success)' },
+    ignored: { label: 'Ignorada', color: 'rgba(255,255,255,0.3)', dot: 'rgba(255,255,255,0.3)' },
+  }[status] ?? { label: status, color: 'rgba(255,255,255,0.3)', dot: 'rgba(255,255,255,0.3)' }
 
   return (
-    <span
-      className="text-xs font-medium px-2.5 py-1 rounded-full shrink-0"
-      style={{ background: config.bg, color: config.color }}
-    >
+    <span className="inline-flex items-center gap-1.5 text-xs font-medium shrink-0" style={{ color: config.color }}>
+      <span className="rounded-full" style={{ width: 6, height: 6, background: config.dot }} />
       {config.label}
     </span>
   )

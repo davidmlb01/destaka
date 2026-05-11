@@ -39,7 +39,7 @@ export default async function PlanPage() {
 
         {/* Header */}
         <div className="mb-12">
-          <Badge variant="subtle" className="mb-4">Plano Destaka <span style={{ color: 'var(--accent)' }}>✦</span></Badge>
+          <Badge className="mb-4">Plano Destaka <span style={{ color: 'var(--accent)' }}>✦</span></Badge>
 
           <h1
             className="font-display font-extrabold text-white"
@@ -208,10 +208,6 @@ export default async function PlanPage() {
                     className="text-xs font-bold shrink-0"
                     style={{
                       color: 'var(--accent-bright)',
-                      background: 'rgba(14,165,233,0.1)',
-                      padding: '5px 12px',
-                      borderRadius: 999,
-                      border: '1px solid rgba(14,165,233,0.22)',
                       whiteSpace: 'nowrap',
                     }}
                   >

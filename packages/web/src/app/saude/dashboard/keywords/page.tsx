@@ -19,7 +19,7 @@ export default async function KeywordsPage() {
     <DashboardLayout activeHref="/saude/dashboard/keywords" profileName={profile.name} userEmail={user.email ?? ''}>
       <div className="px-6 py-8 max-w-4xl">
         <div className="mb-8">
-          <Badge variant="subtle" className="mb-3">Keywords</Badge>
+          <Badge className="mb-3">Keywords</Badge>
           <h1 className="font-display font-extrabold text-white" style={{ fontSize: 28, letterSpacing: '-0.5px' }}>
             Palavras-chave de Busca
           </h1>
