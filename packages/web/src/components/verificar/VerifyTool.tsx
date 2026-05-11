@@ -1,27 +1,12 @@
 'use client'
 
-import { useState } from 'react'
 import type { CategoryScore } from '@/lib/gmb/scorer'
 import { getScoreColor } from '@/lib/utils/score-colors'
 import { Spinner } from '@/components/ui/Spinner'
 import { PinIcon } from '@/components/ui/PinIcon'
 import { ScoreGauge } from '@/components/dashboard/ScoreGauge'
-
-interface PlaceInfo {
-  name: string
-  address: string
-  phone: string | null
-  website: string | null
-  rating: number | null
-  reviewsTotal: number | null
-  types: string[]
-}
-
-interface VerifyResult {
-  place: PlaceInfo
-  score: { total: number; categories: CategoryScore[] }
-  usingMock: boolean
-}
+import { useVerifyDiagnostic } from '@/components/dashboard/hooks/useVerifyDiagnostic'
+import { useLeadCapture } from '@/components/dashboard/hooks/useLeadCapture'
 
 
 function scoreColor(score: number) {
@@ -37,62 +22,30 @@ function scoreLabel(total: number) {
 
 
 export function VerifyTool() {
-  const [input, setInput] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState<VerifyResult | null>(null)
-  const [error, setError] = useState('')
-  const [expandedCat, setExpandedCat] = useState<string | null>(null)
-  const [captureEmail, setCaptureEmail] = useState('')
-  const [lgpdConsent, setLgpdConsent] = useState(false)
-  const [capturing, setCapturing] = useState(false)
-  const [captureMsg, setCaptureMsg] = useState('')
+  const {
+    input,
+    setInput,
+    loading,
+    result,
+    error,
+    expandedCat,
+    setExpandedCat,
+    handleVerify,
+  } = useVerifyDiagnostic()
 
-  async function handleCapture() {
-    if (!captureEmail.includes('@') || !lgpdConsent || !result) return
-    setCapturing(true)
-    setCaptureMsg('')
-    const res = await fetch('/api/public/capture-lead', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: captureEmail,
-        placeName: result.place.name,
-        score: result.score.total,
-        categories: result.score.categories,
-        lgpdConsent: true,
-      }),
-    })
-    const data = await res.json() as { ok?: boolean; emailSent?: boolean; error?: string }
-    if (data.ok) {
-      setCaptureMsg(data.emailSent ? 'Relatório enviado! Confira sua caixa de entrada.' : 'Email registrado com sucesso.')
-    } else {
-      setCaptureMsg(data.error ?? 'Erro ao enviar. Tente novamente.')
-    }
-    setCapturing(false)
-  }
-
-  async function handleVerify() {
-    if (!input.trim()) return
-    setLoading(true)
-    setError('')
-    setResult(null)
-
-    const res = await fetch('/api/public/verify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ input: input.trim() }),
-    })
-
-    if (!res.ok) {
-      const data = await res.json() as { error?: string }
-      setError(data.error ?? 'Não foi possível analisar este estabelecimento.')
-      setLoading(false)
-      return
-    }
-
-    setResult(await res.json() as VerifyResult)
-    setLoading(false)
-  }
+  const {
+    captureEmail,
+    setCaptureEmail,
+    lgpdConsent,
+    setLgpdConsent,
+    capturing,
+    captureMsg,
+    handleCapture,
+  } = useLeadCapture(
+    result
+      ? { placeName: result.place.name, score: result.score.total, categories: result.score.categories }
+      : null,
+  )
 
   return (
     <div className="flex flex-col gap-6">
