@@ -141,11 +141,11 @@ export function ReviewsContent() {
   )
 
   return (
-    <>
+    <div className="flex flex-col gap-5">
       {/* Badge de pendentes */}
       {data && data.pendingCount > 0 && (
         <div
-          className="rounded-xl px-4 py-3 mb-5 flex items-center gap-3"
+          className="rounded-xl px-4 py-3 flex items-center gap-3"
           style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)' }}
         >
           <PinIcon size={18} />
@@ -156,7 +156,7 @@ export function ReviewsContent() {
       )}
 
       {/* Filtros */}
-      <div className="flex gap-2 mb-5 flex-wrap">
+      <div className="flex gap-2 flex-wrap">
         {(Object.keys(FILTER_LABELS) as ReviewFilter[]).map(f => (
           <button
             key={f}
@@ -233,7 +233,7 @@ export function ReviewsContent() {
                   className="rounded-xl px-4 py-3 mb-3"
                   style={{ background: 'rgba(74,222,128,0.06)', border: '1px solid rgba(74,222,128,0.12)' }}
                 >
-                  <p className="text-xs mb-1 font-medium" style={{ color: '#4ADE80' }}>Sua resposta</p>
+                  <p className="text-xs mb-1 font-medium" style={{ color: 'var(--success)' }}>Sua resposta</p>
                   <p className="text-sm" style={{ color: 'rgba(255,255,255,0.6)', lineHeight: 1.5 }}>
                     {review.reply}
                   </p>
@@ -404,7 +404,7 @@ export function ReviewsContent() {
                   border: modal.draft.trim() && !modal.publishing
                     ? '1px solid rgba(74,222,128,0.25)'
                     : '1px solid transparent',
-                  color: modal.draft.trim() && !modal.publishing ? '#4ADE80' : 'rgba(255,255,255,0.2)',
+                  color: modal.draft.trim() && !modal.publishing ? 'var(--success)' : 'rgba(255,255,255,0.2)',
                 }}
               >
                 {modal.publishing ? 'Publicando...' : 'Publicar Resposta'}
@@ -413,7 +413,7 @@ export function ReviewsContent() {
           </div>
         </div>
       )}
-    </>
+    </div>
   )
 }
 

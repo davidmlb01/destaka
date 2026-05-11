@@ -145,7 +145,7 @@ export function ReviewQRCard() {
         <div
           ref={svgContainerRef}
           className="shrink-0 rounded-xl p-3"
-          style={{ background: 'rgba(255,255,255,0.08)' }}
+          style={{ background: 'rgba(255,255,255,0.08)', width: 160, height: 160 }}
           dangerouslySetInnerHTML={{ __html: data.qrSvg }}
         />
 

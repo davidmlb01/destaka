@@ -18,7 +18,7 @@ export default async function ReviewsPage() {
 
   return (
     <DashboardLayout activeHref="/saude/dashboard/reviews" profileName={profile.name} userEmail={user.email ?? ''}>
-      <div className="px-6 py-8 max-w-4xl">
+      <div className="px-6 py-8 max-w-5xl">
         <div className="mb-8">
           <Badge className="mb-3">Avaliações</Badge>
           <h1 className="font-display font-extrabold text-white" style={{ fontSize: 28, letterSpacing: '-0.5px' }}>

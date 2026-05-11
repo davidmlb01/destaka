@@ -39,7 +39,7 @@ export default async function PlanPage() {
       <div className="px-6 py-10 max-w-5xl">
 
         {/* Header */}
-        <div className="mb-12">
+        <div className="mb-8">
           <Badge className="mb-4">Plano Destaka <span style={{ color: 'var(--accent)' }}>✦</span></Badge>
 
           <h1
@@ -196,7 +196,7 @@ export default async function PlanPage() {
                     </div>
                     {/* Texto */}
                     <div className="min-w-0">
-                      <p className="font-semibold text-white truncate" style={{ fontSize: 15 }}>{item.label}</p>
+                      <p className="font-display font-bold text-white truncate" style={{ fontSize: 15 }}>{item.label}</p>
                       <p className="mt-0.5 truncate" style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>
                         {item.desc}
                       </p>
@@ -228,7 +228,7 @@ export default async function PlanPage() {
             >
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="font-semibold text-white" style={{ fontSize: 21 }}>
+                  <p className="font-display font-bold text-white" style={{ fontSize: 21 }}>
                     Valor total se contratasse separado
                   </p>
                   <p className="mt-1" style={{ color: 'rgba(255,255,255,0.6)', fontSize: 18 }}>
