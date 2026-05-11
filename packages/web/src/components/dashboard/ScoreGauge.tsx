@@ -1,8 +1,8 @@
 'use client'
 
 function scoreTheme(score: number) {
-  if (score >= 70) return { color: '#4ADE80', label: 'Seu perfil está ótimo!', glow: 'rgba(74,222,128,0.6)' }
-  if (score >= 40) return { color: '#FBBF24', label: 'Tem espaço para melhorar', glow: 'rgba(251,191,36,0.6)' }
+  if (score >= 70) return { color: 'var(--success)', label: 'Seu perfil está ótimo!', glow: 'rgba(74,222,128,0.6)' }
+  if (score >= 40) return { color: 'var(--warning)', label: 'Tem espaço para melhorar', glow: 'rgba(251,191,36,0.6)' }
   return { color: 'var(--error)', label: 'Precisa de atenção', glow: 'rgba(239,68,68,0.55)' }
 }
 

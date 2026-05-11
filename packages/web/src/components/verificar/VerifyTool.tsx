@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 import type { CategoryScore } from '@/lib/gmb/scorer'
-import { getScoreColor, getScoreLabel } from '@/lib/utils/score-colors'
-import { getCategoryIcon } from '@/lib/constants/category-meta'
+import { getScoreColor } from '@/lib/utils/score-colors'
 import { Spinner } from '@/components/ui/Spinner'
+import { PinIcon } from '@/components/ui/PinIcon'
 import { ScoreGauge } from '@/components/dashboard/ScoreGauge'
 
 interface PlaceInfo {
@@ -64,7 +64,7 @@ export function VerifyTool() {
     })
     const data = await res.json() as { ok?: boolean; emailSent?: boolean; error?: string }
     if (data.ok) {
-      setCaptureMsg(data.emailSent ? 'Relatorio enviado! Confira sua caixa de entrada.' : 'Email registrado com sucesso.')
+      setCaptureMsg(data.emailSent ? 'Relatório enviado! Confira sua caixa de entrada.' : 'Email registrado com sucesso.')
     } else {
       setCaptureMsg(data.error ?? 'Erro ao enviar. Tente novamente.')
     }
@@ -97,7 +97,7 @@ export function VerifyTool() {
   return (
     <div className="flex flex-col gap-6">
 
-      {/* Input — sem card, protagonista */}
+      {/* Input: sem card, protagonista */}
       <div className="flex flex-col gap-2">
         <div className="flex gap-3 flex-col sm:flex-row">
           <input
@@ -152,13 +152,13 @@ export function VerifyTool() {
       {result && (
         <div className="flex flex-col gap-5">
 
-          {/* Aviso de demo — linguagem amigável */}
+          {/* Aviso de demo, linguagem amigavel */}
           {result.usingMock && (
             <div
               className="rounded-xl px-4 py-2.5 flex items-center gap-2 text-xs"
-              style={{ background: 'rgba(251,191,36,0.07)', border: '1px solid rgba(251,191,36,0.15)', color: 'rgba(252,211,77,0.7)' }}
+              style={{ background: 'rgba(14,165,233,0.07)', border: '1px solid rgba(14,165,233,0.15)', color: 'rgba(14,165,233,0.7)' }}
             >
-              <span>🔬</span>
+              <PinIcon size={12} />
               Dados demonstrativos para visualização do diagnóstico.
             </div>
           )}
@@ -166,7 +166,7 @@ export function VerifyTool() {
           {/* Score (mobile: primeiro) + Info (mobile: segundo) */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
-            {/* Score — order-first no mobile */}
+            {/* Score: order-first no mobile */}
             <div
               className="rounded-2xl p-5 flex flex-col items-center justify-center order-first lg:order-last"
               style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.08)' }}
@@ -197,25 +197,21 @@ export function VerifyTool() {
 
               <div className="grid grid-cols-2 gap-2.5">
                 <InfoRow
-                  icon="📞"
                   label="Telefone"
                   value={result.place.phone ?? 'Não cadastrado'}
                   missing={!result.place.phone}
                 />
                 <InfoRow
-                  icon="🌐"
                   label="Website"
                   value={result.place.website ? 'Vinculado' : 'Não vinculado'}
                   missing={!result.place.website}
                 />
                 <InfoRow
-                  icon="⭐"
                   label="Nota média"
                   value={result.place.rating ? `${result.place.rating.toFixed(1)} / 5.0` : 'Sem avaliações'}
                   missing={!result.place.rating}
                 />
                 <InfoRow
-                  icon="💬"
                   label="Avaliações"
                   value={result.place.reviewsTotal
                     ? `${result.place.reviewsTotal} ${result.place.reviewsTotal === 1 ? 'avaliação' : 'avaliações'}`
@@ -334,9 +330,9 @@ export function VerifyTool() {
           ) : (
             <div
               className="rounded-2xl px-6 py-4 text-center"
-              style={{ background: 'rgba(52,211,153,0.08)', border: '1px solid rgba(52,211,153,0.15)' }}
+              style={{ background: 'rgba(14,165,233,0.08)', border: '1px solid rgba(14,165,233,0.15)' }}
             >
-              <p className="text-sm font-medium" style={{ color: '#34D399' }}>{captureMsg}</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--accent)' }}>{captureMsg}</p>
             </div>
           )}
 
@@ -346,8 +342,7 @@ export function VerifyTool() {
   )
 }
 
-function InfoRow({ icon, label, value, missing }: {
-  icon: string
+function InfoRow({ label, value, missing }: {
   label: string
   value: string
   missing: boolean
@@ -360,8 +355,9 @@ function InfoRow({ icon, label, value, missing }: {
         border: `1px solid ${missing ? 'rgba(239,68,68,0.12)' : 'rgba(255,255,255,0.05)'}`,
       }}
     >
-      <p className="text-xs mb-0.5" style={{ color: 'rgba(255,255,255,0.3)' }}>
-        {icon} {label}
+      <p className="text-xs mb-0.5 flex items-center gap-1" style={{ color: 'var(--text-muted)' }}>
+        <PinIcon size={10} color={missing ? 'var(--error)' : 'var(--accent)'} />
+        {label}
       </p>
       <p
         className="text-sm font-medium"
@@ -373,12 +369,17 @@ function InfoRow({ icon, label, value, missing }: {
   )
 }
 
+function severityColor(severity: string) {
+  if (severity === 'critical') return 'var(--error)'
+  if (severity === 'warning') return 'var(--warning)'
+  return 'var(--accent)'
+}
+
 function CategoryRow({ category, expanded, onToggle }: {
   category: CategoryScore
   expanded: boolean
   onToggle: () => void
 }) {
-  const color = scoreColor(category.percentage)
   const perfect = category.issues.length === 0
 
   return (
@@ -386,7 +387,7 @@ function CategoryRow({ category, expanded, onToggle }: {
       className="rounded-xl overflow-hidden"
       style={{
         background: 'rgba(0,0,0,0.2)',
-        border: `1px solid ${perfect ? 'rgba(74,222,128,0.1)' : 'rgba(255,255,255,0.07)'}`,
+        border: `1px solid ${perfect ? 'rgba(14,165,233,0.12)' : 'rgba(255,255,255,0.07)'}`,
       }}
     >
       <button
@@ -394,19 +395,19 @@ function CategoryRow({ category, expanded, onToggle }: {
         onClick={!perfect ? onToggle : undefined}
         style={{ cursor: perfect ? 'default' : 'pointer' }}
       >
-        <span style={{ fontSize: 16, flexShrink: 0 }}>{getCategoryIcon(category.name)}</span>
+        <PinIcon size={14} color={perfect ? 'var(--success)' : 'var(--accent)'} />
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between mb-1.5">
             <span className="text-sm font-medium text-white">{category.label}</span>
-            <span className="text-sm font-bold ml-3 shrink-0" style={{ color }}>
-              {category.score === 0 ? '–' : category.score}/{category.maxScore}
+            <span className="text-sm font-bold ml-3 shrink-0" style={{ color: 'var(--accent)' }}>
+              {category.score === 0 ? '0' : category.score}/{category.maxScore}
             </span>
           </div>
           <div className="w-full rounded-full h-1.5" style={{ background: 'rgba(255,255,255,0.07)' }}>
             <div
               className="h-1.5 rounded-full transition-all"
-              style={{ width: `${category.percentage}%`, background: color }}
+              style={{ width: `${category.percentage}%`, background: 'var(--accent)' }}
             />
           </div>
         </div>
@@ -414,16 +415,16 @@ function CategoryRow({ category, expanded, onToggle }: {
         {/* Indicador de estado */}
         <div className="shrink-0 ml-2" style={{ width: 20, textAlign: 'center' }}>
           {perfect ? (
-            <span style={{ color: '#4ADE80', fontSize: 14 }}>✓</span>
+            <span style={{ color: 'var(--success)', fontSize: 14 }}>&#10003;</span>
           ) : (
             <span
               className="text-xs block transition-transform duration-200"
               style={{
-                color: 'rgba(255,255,255,0.3)',
+                color: 'var(--text-muted)',
                 transform: expanded ? 'rotate(180deg)' : 'none',
               }}
             >
-              ▼
+              &#9660;
             </span>
           )}
         </div>
@@ -441,14 +442,20 @@ function CategoryRow({ category, expanded, onToggle }: {
                   : 'none',
               }}
             >
-              <span style={{ fontSize: 12, marginTop: 2, flexShrink: 0 }}>
-                {issue.severity === 'critical' ? '🔴' : issue.severity === 'warning' ? '🟡' : '🔵'}
-              </span>
+              <span
+                className="inline-block rounded-full shrink-0"
+                style={{
+                  width: 8,
+                  height: 8,
+                  marginTop: 6,
+                  background: severityColor(issue.severity),
+                }}
+              />
               <div>
-                <p className="text-sm" style={{ color: 'rgba(255,255,255,0.65)', lineHeight: 1.55 }}>
+                <p className="text-sm" style={{ color: 'var(--text-secondary)', lineHeight: 1.55 }}>
                   {issue.message}
                 </p>
-                <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.25)' }}>
+                <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
                   impacto: +{issue.impact} pts se corrigido
                 </p>
               </div>

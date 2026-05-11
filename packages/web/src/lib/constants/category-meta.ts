@@ -10,18 +10,18 @@ interface CategoryMeta {
 }
 
 export const CATEGORY_META: Record<string, CategoryMeta> = {
-  info: { icon: '📋', label: 'Informações', color: '#60A5FA' },
-  completude: { icon: '📋', label: 'Completude', color: '#60A5FA' },
-  photos: { icon: '📸', label: 'Fotos', color: '#F472B6' },
-  reviews: { icon: '⭐', label: 'Avaliações', color: '#FBBF24' },
-  reputation: { icon: '⭐', label: 'Reputação', color: '#FBBF24' },
-  posts: { icon: '📝', label: 'Posts', color: '#34D399' },
-  activity: { icon: '📝', label: 'Atividade', color: '#34D399' },
-  services: { icon: '🏥', label: 'Serviços', color: '#A78BFA' },
-  attributes: { icon: '✅', label: 'Atributos', color: '#4ADE80' },
-  verification: { icon: '✅', label: 'Verificação', color: '#4ADE80' },
+  info: { icon: '📋', label: 'Informações', color: 'var(--accent)' },
+  completude: { icon: '📋', label: 'Completude', color: 'var(--accent)' },
+  photos: { icon: '📸', label: 'Fotos', color: 'var(--accent)' },
+  reviews: { icon: '⭐', label: 'Avaliações', color: 'var(--accent)' },
+  reputation: { icon: '⭐', label: 'Reputação', color: 'var(--accent)' },
+  posts: { icon: '📝', label: 'Posts', color: 'var(--accent)' },
+  activity: { icon: '📝', label: 'Atividade', color: 'var(--accent)' },
+  services: { icon: '🏥', label: 'Serviços', color: 'var(--accent)' },
+  attributes: { icon: '✅', label: 'Atributos', color: 'var(--accent)' },
+  verification: { icon: '✅', label: 'Verificação', color: 'var(--accent)' },
 }
 
 export function getCategoryIcon(name: string): string {
-  return CATEGORY_META[name]?.icon ?? '📊'
+  return CATEGORY_META[name]?.icon ?? '•'
 }

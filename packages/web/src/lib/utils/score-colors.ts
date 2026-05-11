@@ -4,9 +4,9 @@
  */
 
 export function getScoreColor(score: number): string {
-  if (score >= 70) return '#4ADE80'
-  if (score >= 40) return '#FBBF24'
-  return '#FB923C'
+  if (score >= 70) return 'var(--success)'
+  if (score >= 40) return 'var(--warning)'
+  return 'var(--error)'
 }
 
 export function getScoreLabel(score: number): string {
