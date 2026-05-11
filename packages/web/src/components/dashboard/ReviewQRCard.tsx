@@ -144,9 +144,9 @@ export function ReviewQRCard() {
         {/* QR Code */}
         <div
           ref={svgContainerRef}
-          className="shrink-0 rounded-xl p-3"
-          style={{ background: 'rgba(255,255,255,0.08)', width: 160, height: 160 }}
-          dangerouslySetInnerHTML={{ __html: data.qrSvg }}
+          className="shrink-0 rounded-xl p-3 qr-container"
+          style={{ background: 'rgba(255,255,255,0.08)', width: 140, height: 140, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          dangerouslySetInnerHTML={{ __html: data.qrSvg.replace('<svg ', '<svg width="116" height="116" ') }}
         />
 
         {/* Info */}
