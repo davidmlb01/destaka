@@ -1,19 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import type { ChecklistItem } from '@/lib/gmb/checklist'
 import { Card } from '@/components/ui/Card'
 import { ChecklistSkeleton } from './Skeletons'
 import { formatDateShort } from '@/lib/utils/format-date'
 import { PinIcon } from '@/components/ui/PinIcon'
-
-interface ChecklistData {
-  items: ChecklistItem[]
-  currentScore: number
-  projectedScore: number
-  doneCount: number
-  totalCount: number
-}
+import { useChecklist } from './hooks/useChecklist'
 
 const PRIORITY_LABELS: Record<string, string> = {
   P0: 'Urgente',
@@ -33,77 +25,33 @@ function formatDate(iso: string) {
 }
 
 export function ChecklistContent() {
-  const [data, setData] = useState<ChecklistData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [expanded, setExpanded] = useState<string | null>(null)
-  const [toggling, setToggling] = useState<string | null>(null)
+  const {
+    data,
+    error,
+    isLoading,
+    expanded,
+    setExpanded,
+    toggling,
+    toggleDone,
+    pending,
+    done,
+    progressPct,
+  } = useChecklist()
 
-  async function load() {
-    try {
-      setLoading(true)
-      setError(null)
-      const res = await fetch('/api/checklist')
-      if (!res.ok) throw new Error('Erro ao carregar dados')
-      setData(await res.json())
-    } catch {
-      setError('Não foi possível carregar. Tente novamente.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => { load() }, [])
-
-  async function toggleDone(item: ChecklistItem) {
-    if (toggling) return
-    setToggling(item.key)
-
-    const newDone = !item.done
-
-    // Optimistic update
-    setData(d => d ? {
-      ...d,
-      items: d.items.map(i => i.key === item.key ? { ...i, done: newDone, done_at: newDone ? new Date().toISOString() : null } : i),
-      doneCount: d.doneCount + (newDone ? 1 : -1),
-    } : d)
-
-    const res = await fetch(`/api/checklist/${item.key}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ done: newDone }),
-    })
-
-    if (!res.ok) {
-      // Reverte o optimistic update em caso de erro
-      setData(d => d ? {
-        ...d,
-        items: d.items.map(i => i.key === item.key ? { ...i, done: item.done, done_at: item.done_at ?? null } : i),
-        doneCount: d.doneCount + (newDone ? -1 : 1),
-      } : d)
-    }
-
-    setToggling(null)
-  }
-
-  if (loading) {
+  if (isLoading) {
     return <ChecklistSkeleton />
   }
 
   if (error) return (
     <div className="flex flex-col items-center justify-center py-20 text-center">
-      <p className="text-[15px] mb-4" style={{ color: 'rgba(255,255,255,0.7)' }}>{error}</p>
-      <button onClick={() => { setError(null); load() }} className="text-[14px] font-medium px-4 py-2 rounded-lg" style={{ background: 'var(--accent)', color: '#fff' }}>
+      <p className="text-[15px] mb-4" style={{ color: 'rgba(255,255,255,0.7)' }}>Não foi possível carregar. Tente novamente.</p>
+      <button onClick={() => window.location.reload()} className="text-[14px] font-medium px-4 py-2 rounded-lg" style={{ background: 'var(--accent)', color: '#fff' }}>
         Tentar novamente
       </button>
     </div>
   )
 
   if (!data) return null
-
-  const pending = data.items.filter(i => !i.done)
-  const done = data.items.filter(i => i.done)
-  const progressPct = data.totalCount > 0 ? Math.round((data.doneCount / data.totalCount) * 100) : 0
 
   return (
     <div className="flex flex-col gap-6">

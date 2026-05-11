@@ -1,6 +1,5 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { Card } from '@/components/ui/Card'
 import { ScoreGauge } from './ScoreGauge'
 import { ScoreCard } from './ScoreCard'
@@ -14,7 +13,7 @@ import { ProfileAlerts } from './ProfileAlerts'
 import { WeeklyHighlights } from './WeeklyHighlights'
 import { DashboardSkeleton } from './Skeletons'
 import { PinIcon } from '@/components/ui/PinIcon'
-import type { CategoryScore } from '@/lib/gmb/scorer'
+import { useDashboard } from './hooks/useDashboard'
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
@@ -30,74 +29,20 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   )
 }
 
-const FIELD_MAP: Record<string, string[]> = {
-  info: ['name', 'phone', 'address', 'hours', 'website', 'category'],
-  photos: ['logo', 'space_photos', 'total_photos', 'cover'],
-  reviews: ['reviews_count', 'rating', 'reply_rate'],
-  posts: ['posts', 'post_recency'],
-  services: ['services_count', 'services_desc'],
-  attributes: ['attributes'],
-}
-
-const CATEGORY_META = [
-  { key: 'info', label: 'Informações Básicas', max: 25, scoreField: 'score_info_basica' },
-  { key: 'photos', label: 'Fotos', max: 20, scoreField: 'score_fotos' },
-  { key: 'reviews', label: 'Avaliações', max: 25, scoreField: 'score_avaliacoes' },
-  { key: 'posts', label: 'Posts', max: 15, scoreField: 'score_posts' },
-  { key: 'services', label: 'Serviços', max: 10, scoreField: 'score_servicos' },
-  { key: 'attributes', label: 'Atributos', max: 5, scoreField: 'score_atributos' },
-]
-
-interface DashboardData {
-  profile: { id: string; name: string; address: string; score: number; last_synced_at: string | null }
-  diagnostic: (Record<string, number> & { issues: Array<{ field: string; severity: string; message: string; impact: number }> }) | null
-  scoreHistory: Array<{ score_total: number; created_at: string }>
-  recentActions: Array<{ id: string; type: string; status: string; created_at: string }>
-  metrics: { viewsSearch: number; viewsMaps: number; clicksWebsite: number; clicksCall: number; clicksDirections: number; period: string }
-  nextActions: Array<{ field: string; message: string; impact: number; severity: string }>
-  weeklySummary: { posts_published: number; reviews_replied: number; score_delta: number } | null
-}
-
 export function DashboardContent() {
-  const [data, setData] = useState<DashboardData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
-  const [syncing, setSyncing] = useState(false)
-  const [diagnosticId, setDiagnosticId] = useState<string>('')
+  const {
+    data,
+    error,
+    isLoading,
+    mutate,
+    syncing,
+    diagnosticId,
+    categories,
+    lastSync,
+    handleSync,
+  } = useDashboard()
 
-  async function load() {
-    setError(false)
-    try {
-      const res = await fetch('/api/dashboard')
-      if (res.ok) {
-        const json = await res.json()
-        setData(json)
-        setDiagnosticId(json.diagnostic?.id ?? '')
-      } else {
-        setError(true)
-      }
-    } catch {
-      setError(true)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  async function handleSync() {
-    if (!data || syncing) return
-    setSyncing(true)
-    await fetch('/api/diagnostic/run', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ profileId: data.profile.id }),
-    })
-    await load()
-    setSyncing(false)
-  }
-
-  useEffect(() => { load() }, [])
-
-  if (loading) return <DashboardSkeleton />
+  if (isLoading) return <DashboardSkeleton />
 
   if (error || !data) return (
     <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
@@ -109,7 +54,7 @@ export function DashboardContent() {
         Houve um problema ao conectar com o servidor. Verifique sua conexão e tente novamente.
       </p>
       <button
-        onClick={() => { setLoading(true); load() }}
+        onClick={() => mutate()}
         className="px-6 py-3 rounded-lg font-display font-semibold text-[14px] transition-all hover:brightness-110"
         style={{ background: 'var(--accent)', color: '#fff' }}
       >
@@ -119,25 +64,6 @@ export function DashboardContent() {
   )
 
   const { profile, diagnostic, scoreHistory, metrics, nextActions, weeklySummary } = data
-
-  const categories: CategoryScore[] = CATEGORY_META.map(m => {
-    const score = diagnostic ? ((diagnostic[m.scoreField] as number) ?? 0) : 0
-    const issues = !diagnostic ? [] : (diagnostic.issues ?? [])
-      .filter(i => FIELD_MAP[m.key]?.includes(i.field))
-      .map(i => ({ ...i, severity: i.severity as 'critical' | 'warning' | 'info' }))
-    return {
-      name: m.key,
-      label: m.label,
-      score,
-      maxScore: m.max,
-      percentage: Math.round((score / m.max) * 100),
-      issues,
-    }
-  })
-
-  const lastSync = profile.last_synced_at
-    ? new Date(profile.last_synced_at).toLocaleString('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
-    : 'nunca'
 
   return (
     <div className="flex flex-col gap-8">
@@ -161,7 +87,7 @@ export function DashboardContent() {
           <OptimizationWizard
             profileId={profile.id}
             diagnosticId={diagnosticId}
-            onComplete={load}
+            onComplete={() => mutate()}
           />
 
           <div className="w-full flex items-center justify-between">

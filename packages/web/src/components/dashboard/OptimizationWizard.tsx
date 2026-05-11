@@ -1,16 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import type { OptimizationAction, OptimizationPlan, ExecutionResult } from '@/lib/gmb/optimizer'
 import { Spinner } from '@/components/ui/Spinner'
-
-type Step = 'idle' | 'loading-plan' | 'preview' | 'executing' | 'done' | 'error'
-
-interface ExecutionState {
-  results: ExecutionResult[]
-  scoreBefore: number
-  scoreAfter: number
-}
+import { useOptimizationWizard } from './hooks/useOptimizationWizard'
 
 const ACTION_ICONS: Record<string, string> = {
   update_hours: '🕐',
@@ -25,72 +16,17 @@ export function OptimizationWizard({ profileId, diagnosticId, onComplete }: {
   diagnosticId: string
   onComplete?: () => void
 }) {
-  const [step, setStep] = useState<Step>('idle')
-  const [plan, setPlan] = useState<OptimizationPlan | null>(null)
-  const [execution, setExecution] = useState<ExecutionState | null>(null)
-  const [currentActionIndex, setCurrentActionIndex] = useState(0)
-  const [errorMsg, setErrorMsg] = useState('')
-
-  async function openWizard() {
-    setStep('loading-plan')
-    setErrorMsg('')
-
-    const res = await fetch('/api/optimization/plan')
-    if (!res.ok) {
-      setErrorMsg('Não foi possível gerar o plano. Execute um diagnóstico primeiro.')
-      setStep('error')
-      return
-    }
-
-    const data = await res.json() as OptimizationPlan
-    setPlan(data)
-    setStep('preview')
-  }
-
-  async function startExecution() {
-    if (!plan) return
-    setStep('executing')
-    setCurrentActionIndex(0)
-
-    // Progresso simulado por polling
-    const actionCount = plan.actions.length
-    for (let i = 0; i < actionCount; i++) {
-      setCurrentActionIndex(i)
-      await new Promise(r => setTimeout(r, 800))
-    }
-
-    const res = await fetch('/api/optimization/execute', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        profileId,
-        diagnosticId,
-        actions: plan.actions,
-      }),
-    })
-
-    if (!res.ok) {
-      setErrorMsg('Erro durante execução. Tente novamente.')
-      setStep('error')
-      return
-    }
-
-    const data = await res.json() as ExecutionState
-    setExecution(data)
-    setStep('done')
-  }
-
-  function reset() {
-    setStep('idle')
-    setPlan(null)
-    setExecution(null)
-    setCurrentActionIndex(0)
-  }
-
-  function handleComplete() {
-    reset()
-    onComplete?.()
-  }
+  const {
+    step,
+    plan,
+    execution,
+    currentActionIndex,
+    errorMsg,
+    openWizard,
+    startExecution,
+    reset,
+    handleComplete,
+  } = useOptimizationWizard(profileId, diagnosticId, onComplete)
 
   // -------------------------------------------------------------------------
   // Render

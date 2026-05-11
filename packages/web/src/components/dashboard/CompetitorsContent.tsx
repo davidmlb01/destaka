@@ -1,21 +1,15 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import type { Competitor, BenchmarkData } from '@/lib/gmb/competitors'
-import { apiFetch } from '@/lib/api/client'
 import { CompetitorsSkeleton } from './Skeletons'
 import { Spinner } from '@/components/ui/Spinner'
+import { useCompetitors } from './hooks/useCompetitors'
 
 interface Profile {
   id: string
   name: string
   avg_rating: number | null
   review_count: number | null
-}
-
-interface CompetitorsData {
-  profile: Profile
-  competitors: Competitor[]
 }
 
 function StarBar({ rating }: { rating: number | null }) {
@@ -140,55 +134,23 @@ function CompetitorCard({ comp, profile }: { comp: Competitor; profile: Profile 
 }
 
 export function CompetitorsContent() {
-  const [data, setData] = useState<CompetitorsData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [discovering, setDiscovering] = useState(false)
-  const [msg, setMsg] = useState('')
+  const {
+    data,
+    error,
+    isLoading,
+    discovering,
+    msg,
+    handleDiscover,
+  } = useCompetitors()
 
-  async function load() {
-    try {
-      setLoading(true)
-      setError(null)
-      const { data: result, error: fetchError } = await apiFetch<CompetitorsData>('/api/competitors')
-      if (fetchError || !result) throw new Error(fetchError ?? 'Erro ao carregar dados')
-      setData(result)
-    } catch {
-      setError('Não foi possível carregar. Tente novamente.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  async function handleDiscover() {
-    setDiscovering(true)
-    setMsg('')
-    const { data: json, error } = await apiFetch<{ discovered: number; errors: string[] }>('/api/competitors', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ benchmark: true }),
-    })
-    if (error || !json) {
-      setMsg(error ?? 'Erro ao buscar concorrentes. Tente novamente.')
-      setDiscovering(false)
-      return
-    }
-    const n = json.discovered
-    setMsg(`${n} ${n === 1 ? 'concorrente encontrado' : 'concorrentes encontrados'}${json.errors.length ? ` (${json.errors.length} ${json.errors.length === 1 ? 'erro' : 'erros'})` : ''}.`)
-    await load()
-    setDiscovering(false)
-  }
-
-  useEffect(() => { load() }, [])
-
-  if (loading) {
+  if (isLoading) {
     return <CompetitorsSkeleton />
   }
 
   if (error) return (
     <div className="flex flex-col items-center justify-center py-20 text-center">
-      <p className="text-[15px] mb-4" style={{ color: 'rgba(255,255,255,0.7)' }}>{error}</p>
-      <button onClick={() => { setError(null); load() }} className="text-[14px] font-medium px-4 py-2 rounded-lg" style={{ background: 'var(--accent)', color: '#fff' }}>
+      <p className="text-[15px] mb-4" style={{ color: 'rgba(255,255,255,0.7)' }}>Não foi possível carregar. Tente novamente.</p>
+      <button onClick={() => window.location.reload()} className="text-[14px] font-medium px-4 py-2 rounded-lg" style={{ background: 'var(--accent)', color: '#fff' }}>
         Tentar novamente
       </button>
     </div>

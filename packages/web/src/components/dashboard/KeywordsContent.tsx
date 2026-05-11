@@ -1,24 +1,8 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
 import { Spinner } from '@/components/ui/Spinner'
 import { Pulse } from './Skeletons'
-
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
-interface AggregatedKeyword {
-  keyword: string
-  impressions: number
-  trend: 'up' | 'down' | 'stable'
-  trendPercent: number
-}
-
-interface KeywordSuggestion {
-  keyword: string
-  autocomplete: boolean
-}
+import { useKeywords } from './hooks/useKeywords'
 
 type Tab = 'searches' | 'suggestions'
 
@@ -71,65 +55,16 @@ function TrendBadge({ trend, percent }: { trend: 'up' | 'down' | 'stable'; perce
 // ---------------------------------------------------------------------------
 
 export function KeywordsContent() {
-  const [tab, setTab] = useState<Tab>('searches')
-  const [keywords, setKeywords] = useState<AggregatedKeyword[]>([])
-  const [suggestions, setSuggestions] = useState<KeywordSuggestion[]>([])
-  const [loading, setLoading] = useState(true)
-  const [suggestionsLoading, setSuggestionsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [suggestionsError, setSuggestionsError] = useState<string | null>(null)
-  const [suggestionsLoaded, setSuggestionsLoaded] = useState(false)
-
-  // ---- Keywords reais (busca do perfil) ----
-  const loadKeywords = useCallback(async () => {
-    try {
-      setLoading(true)
-      setError(null)
-      const res = await fetch('/api/keywords')
-      if (!res.ok) {
-        const err = (await res.json().catch(() => ({}))) as { error?: string }
-        throw new Error(err.error ?? 'Erro ao carregar keywords')
-      }
-      const data = (await res.json()) as { keywords: AggregatedKeyword[] }
-      setKeywords(data.keywords)
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Não foi possível carregar. Tente novamente.')
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  // ---- Sugestões (Claude + autocomplete) ----
-  const loadSuggestions = useCallback(async () => {
-    if (suggestionsLoaded) return
-    try {
-      setSuggestionsLoading(true)
-      setSuggestionsError(null)
-      const res = await fetch('/api/keywords/suggestions')
-      if (!res.ok) {
-        const err = (await res.json().catch(() => ({}))) as { error?: string }
-        throw new Error(err.error ?? 'Erro ao gerar sugestões')
-      }
-      const data = (await res.json()) as { suggestions: KeywordSuggestion[] }
-      setSuggestions(data.suggestions)
-      setSuggestionsLoaded(true)
-    } catch (e) {
-      setSuggestionsError(e instanceof Error ? e.message : 'Não foi possível gerar sugestões.')
-    } finally {
-      setSuggestionsLoading(false)
-    }
-  }, [suggestionsLoaded])
-
-  useEffect(() => {
-    loadKeywords()
-  }, [loadKeywords])
-
-  // Carrega sugestões só quando clicar na aba
-  useEffect(() => {
-    if (tab === 'suggestions' && !suggestionsLoaded && !suggestionsLoading) {
-      loadSuggestions()
-    }
-  }, [tab, suggestionsLoaded, suggestionsLoading, loadSuggestions])
+  const {
+    tab,
+    setTab,
+    keywords,
+    suggestions,
+    loading,
+    error,
+    suggestionsLoading,
+    suggestionsError,
+  } = useKeywords()
 
   // ---- Error state ----
   if (error && tab === 'searches') {
@@ -137,7 +72,7 @@ export function KeywordsContent() {
       <div className="flex flex-col items-center justify-center py-20 text-center">
         <p className="text-[15px] mb-4" style={{ color: 'rgba(255,255,255,0.7)' }}>{error}</p>
         <button
-          onClick={() => { setError(null); loadKeywords() }}
+          onClick={() => window.location.reload()}
           className="text-[14px] font-medium px-4 py-2 rounded-lg"
           style={{ background: 'var(--accent)', color: '#fff' }}
         >
@@ -260,7 +195,7 @@ export function KeywordsContent() {
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <p className="text-[15px] mb-4" style={{ color: 'rgba(255,255,255,0.7)' }}>{suggestionsError}</p>
             <button
-              onClick={() => { setSuggestionsError(null); setSuggestionsLoaded(false); loadSuggestions() }}
+              onClick={() => window.location.reload()}
               className="text-[14px] font-medium px-4 py-2 rounded-lg"
               style={{ background: 'var(--accent)', color: '#fff' }}
             >
