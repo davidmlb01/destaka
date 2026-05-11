@@ -1,10 +1,13 @@
 'use client'
 
 function scoreTheme(score: number) {
-  if (score >= 70) return { color: 'var(--success)', label: 'Seu perfil está ótimo!', glow: 'rgba(74,222,128,0.6)' }
-  if (score >= 40) return { color: 'var(--warning)', label: 'Tem espaço para melhorar', glow: 'rgba(251,191,36,0.6)' }
-  return { color: 'var(--error)', label: 'Precisa de atenção', glow: 'rgba(239,68,68,0.55)' }
+  if (score >= 70) return { statusColor: 'var(--success)', label: 'Seu perfil está ótimo!' }
+  if (score >= 40) return { statusColor: 'var(--warning)', label: 'Tem espaço para melhorar' }
+  return { statusColor: 'var(--error)', label: 'Precisa de atenção' }
 }
+
+const ARC_COLOR = 'var(--accent)'
+const ARC_GLOW = 'rgba(14,165,233,0.6)'
 
 // Gauge estilo speedometer: arco de 270° de 225° a 135° (sentido horário)
 const START_DEG = 225
@@ -37,7 +40,7 @@ interface ScoreGaugeProps {
 }
 
 export function ScoreGauge({ score, size = 160, showGlow = true }: ScoreGaugeProps) {
-  const { color, label, glow } = scoreTheme(score)
+  const { statusColor, label } = scoreTheme(score)
 
   const R = (size / 160) * 60
   const CX = size / 2
@@ -86,11 +89,11 @@ export function ScoreGauge({ score, size = 160, showGlow = true }: ScoreGaugePro
           <path
             d={arcPath(CX, CY, R, START_DEG, fillSweep)}
             fill="none"
-            stroke={color}
+            stroke={ARC_COLOR}
             strokeWidth="12"
             strokeLinecap="round"
             filter={showGlow ? `url(#${glowId})` : undefined}
-            style={showGlow ? { filter: `drop-shadow(0 0 8px ${glow})` } : undefined}
+            style={showGlow ? { filter: `drop-shadow(0 0 8px ${ARC_GLOW})` } : undefined}
           />
         )}
 
@@ -123,7 +126,7 @@ export function ScoreGauge({ score, size = 160, showGlow = true }: ScoreGaugePro
       {showGlow && (
         <p
           className="font-display font-bold text-sm text-center -mt-2"
-          style={{ color, textShadow: `0 0 20px ${glow}` }}
+          style={{ color: statusColor }}
         >
           {label}
         </p>
