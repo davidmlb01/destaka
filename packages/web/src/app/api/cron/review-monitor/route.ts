@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
 
   const { data: profiles, error: profilesError } = await db
     .from('gmb_profiles')
-    .select('id, name, category, auto_post_mode, user_id')
+    .select('id, name, category, auto_post_mode, user_id, users!inner(email)')
     .in('user_id', proUserIds.length ? proUserIds : ['00000000-0000-0000-0000-000000000000'])
 
   if (profilesError) {
@@ -49,13 +49,15 @@ export async function POST(request: NextRequest) {
     }
 
     try {
+      const userEmail = (profile as Record<string, unknown>).users && typeof (profile as Record<string, unknown>).users === 'object' ? ((profile as Record<string, unknown>).users as { email?: string })?.email ?? null : null
       const stats = await processReviewQueue(
         db,
         profile.id,
         profile.category ?? 'profissional de saúde',
         profile.name,
         autoPublish,
-        accessToken
+        accessToken,
+        userEmail
       )
       results.push({ profileId: profile.id, ...stats })
     } catch (err) {

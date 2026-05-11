@@ -24,12 +24,12 @@ export async function sendReviewApprovalEmail(params: ReviewApprovalParams) {
       <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;">
         <tr><td style="background:#091e2f;padding:24px 32px;">
           <span style="font-family:Outfit,Arial,sans-serif;font-weight:700;font-size:18px;color:#ffffff;letter-spacing:0.5px;">Destaka</span>
-          <span style="font-family:Outfit,Arial,sans-serif;font-weight:300;font-size:18px;color:rgba(255,255,255,0.4);letter-spacing:0.5px;margin-left:4px;">Saude</span>
+          <span style="font-family:Outfit,Arial,sans-serif;font-weight:300;font-size:18px;color:rgba(255,255,255,0.4);letter-spacing:0.5px;margin-left:4px;">Saúde</span>
         </td></tr>
         <tr><td style="padding:32px;">
-          <p style="font-size:16px;color:#1C1917;margin:0 0 16px;">Ola!</p>
+          <p style="font-size:16px;color:#1C1917;margin:0 0 16px;">Olá!</p>
           <p style="font-size:15px;color:#57534E;line-height:1.6;margin:0 0 24px;">
-            <strong>${businessName}</strong> recebeu uma avaliacao que precisa da sua aprovacao antes de responder.
+            <strong>${businessName}</strong> recebeu uma avaliação que precisa da sua aprovação antes de responder.
           </p>
 
           <div style="background:#f5f5f4;border-radius:8px;padding:20px;margin:0 0 24px;">
@@ -48,11 +48,11 @@ export async function sendReviewApprovalEmail(params: ReviewApprovalParams) {
           </a>
 
           <p style="font-size:12px;color:#A8A29E;margin:16px 0 0;line-height:1.5;">
-            Se voce nao aprovar em 7 dias, a resposta nao sera publicada.
+            Se você não aprovar em 7 dias, a resposta não será publicada.
           </p>
         </td></tr>
         <tr><td style="padding:16px 32px;border-top:1px solid #E7E5E4;">
-          <p style="font-size:11px;color:#A8A29E;margin:0;">Destaka Saude. Quem te procura, te encontra.</p>
+          <p style="font-size:11px;color:#A8A29E;margin:0;">Destaka Saúde. Quem te procura, te encontra.</p>
         </td></tr>
       </table>
     </td></tr>
@@ -63,7 +63,7 @@ export async function sendReviewApprovalEmail(params: ReviewApprovalParams) {
   await resend.emails.send({
     from: FROM,
     to,
-    subject: `Avaliacao ${reviewRating} estrela${reviewRating !== 1 ? 's' : ''}: aprovacao necessaria`,
+    subject: `Avaliação ${reviewRating} estrela${reviewRating !== 1 ? 's' : ''}: aprovação necessária`,
     html,
   })
 }

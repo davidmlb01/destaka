@@ -60,7 +60,7 @@ export async function sendWelcomeEmail(params: { to: string; name: string }) {
       Enquanto isso, você já pode acessar o painel para acompanhar tudo:
     </p>
     <table cellpadding="0" cellspacing="0"><tr><td>
-      <a href="${APP_URL}/dashboard" style="${BASE_STYLES.cta}">Acessar meu dashboard</a>
+      <a href="${APP_URL}/saude/dashboard" style="${BASE_STYLES.cta}">Acessar meu painel</a>
     </td></tr></table>
     <p style="margin:24px 0 0;color:#a8a29e;font-size:13px;line-height:1.6;">
       Qualquer dúvida, responda este e-mail. Estamos aqui para ajudar.
