@@ -10,6 +10,7 @@ export const NAV_ITEMS = [
   { label: 'Avaliações', icon: '⭐', href: '/saude/dashboard/reviews' },
   { label: 'Posts', icon: '📝', href: '/saude/dashboard/posts' },
   { label: 'Otimizações', icon: '⚡', href: '/saude/dashboard/optimizations' },
+  { label: 'Keywords', icon: '🔍', href: '/saude/dashboard/keywords' },
   { label: 'Concorrentes', icon: '🎯', href: '/saude/dashboard/competitors' },
   { label: 'Plano', icon: '💎', href: '/saude/dashboard/plan' },
 ]

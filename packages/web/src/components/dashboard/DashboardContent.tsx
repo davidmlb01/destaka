@@ -10,6 +10,7 @@ import dynamic from 'next/dynamic'
 const ScoreChart = dynamic(() => import('./ScoreChart').then(m => m.ScoreChart), { ssr: false, loading: () => <div className="h-[200px]" /> })
 import { OptimizationHistory } from './OptimizationHistory'
 import { OptimizationWizard } from './OptimizationWizard'
+import { ProfileAlerts } from './ProfileAlerts'
 import { DashboardSkeleton } from './Skeletons'
 import type { CategoryScore } from '@/lib/gmb/scorer'
 
@@ -137,6 +138,9 @@ export function DashboardContent() {
 
   return (
     <div className="flex flex-col gap-8">
+
+      {/* Alertas de alteração no perfil */}
+      <ProfileAlerts />
 
       {/* Linha 1: Score gauge + métricas */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch animate-fade-in-up">
