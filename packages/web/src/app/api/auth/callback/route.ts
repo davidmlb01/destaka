@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
   const next = searchParams.get('next') ?? '/saude/onboarding'
 
   if (!code) {
-    return NextResponse.redirect(`${origin}/login?error=missing_code`)
+    return NextResponse.redirect(`${origin}/saude/login?error=missing_code`)
   }
 
   const supabase = await createClient()
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
 
   if (error || !data.session) {
     console.error('[auth/callback] exchangeCodeForSession error:', error)
-    return NextResponse.redirect(`${origin}/login?error=auth_failed`)
+    return NextResponse.redirect(`${origin}/saude/login?error=auth_failed`)
   }
 
   const { session } = data
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
   // business.manage. Redireciona para login para forçar nova tentativa com consent.
   if (!accessToken) {
     console.error('[auth/callback] provider_token ausente — escopo não concedido, user:', user.id)
-    return NextResponse.redirect(`${origin}/login?error=missing_scope`)
+    return NextResponse.redirect(`${origin}/saude/login?error=missing_scope`)
   }
 
   const serviceClient = await createServiceClient()
@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
 
   if (upsertError) {
     console.error('[auth/callback] upsert user error:', upsertError)
-    return NextResponse.redirect(`${origin}/login?error=db_error`)
+    return NextResponse.redirect(`${origin}/saude/login?error=db_error`)
   }
 
   return NextResponse.redirect(`${origin}${next}`)

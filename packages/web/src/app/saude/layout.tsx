@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Destaka Saúde — Cuide dos seus pacientes. A gente cuida do Google.',
+  title: 'Destaka Saúde | Cuide dos seus pacientes. A gente cuida do Google.',
   description: 'Presença digital no piloto automático para médicos, dentistas e profissionais de saúde.',
 }
 
