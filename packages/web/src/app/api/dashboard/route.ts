@@ -72,6 +72,42 @@ export async function GET() {
     ? getNextActions(diagnostic.issues ?? [])
     : []
 
+  // Resumo semanal: posts publicados, reviews respondidos, delta de score
+  const weekAgo = new Date()
+  weekAgo.setDate(weekAgo.getDate() - 7)
+  const weekAgoISO = weekAgo.toISOString()
+
+  const { data: weeklyPosts } = await serviceClient
+    .from('gmb_posts')
+    .select('id')
+    .eq('profile_id', profile.id)
+    .eq('status', 'published')
+    .gte('published_at', weekAgoISO)
+
+  const { data: weeklyReplied } = await serviceClient
+    .from('gmb_reviews')
+    .select('id')
+    .eq('profile_id', profile.id)
+    .eq('reply_status', 'replied')
+    .gte('updated_at', weekAgoISO)
+
+  // Score delta semanal (último score vs score de ~7 dias atrás)
+  const currentScore = diagnostic?.score_total ?? 0
+  const { data: prevWeekDiag } = await serviceClient
+    .from('diagnostics')
+    .select('score_total')
+    .eq('profile_id', profile.id)
+    .lte('created_at', weekAgoISO)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .single()
+
+  const weeklySummary = {
+    posts_published: weeklyPosts?.length ?? 0,
+    reviews_replied: weeklyReplied?.length ?? 0,
+    score_delta: currentScore - (prevWeekDiag?.score_total ?? currentScore),
+  }
+
   return NextResponse.json({
     profile,
     diagnostic,
@@ -79,6 +115,7 @@ export async function GET() {
     recentActions: recentActions ?? [],
     metrics,
     nextActions,
+    weeklySummary,
   })
 }
 

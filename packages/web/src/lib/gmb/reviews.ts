@@ -19,12 +19,13 @@ export interface Review {
   rating: number
   text: string | null
   reply: string | null
-  reply_status: 'pending' | 'replied' | 'ignored'
+  ai_reply_draft: string | null
+  reply_status: 'pending' | 'replied' | 'ignored' | 'auto_published' | 'pending_approval' | 'approved' | 'rejected'
   review_date: string
   created_at: string
 }
 
-export type ReviewFilter = 'all' | 'pending' | 'negative'
+export type ReviewFilter = 'all' | 'pending' | 'negative' | 'pending_approval'
 
 // ---------------------------------------------------------------------------
 // Mock reviews (usados em dev enquanto API não está aprovada)
@@ -38,6 +39,7 @@ export const MOCK_REVIEWS: Omit<Review, 'id' | 'profile_id' | 'created_at'>[] = 
     text: 'Excelente atendimento! A equipe foi muito atenciosa e o procedimento foi rápido e indolor. Com certeza voltarei.',
     reply: null,
     reply_status: 'pending',
+    ai_reply_draft: null,
     review_date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
@@ -47,6 +49,7 @@ export const MOCK_REVIEWS: Omit<Review, 'id' | 'profile_id' | 'created_at'>[] = 
     text: 'Profissional excelente, muito cuidadoso e explica tudo com calma. Recomendo demais!',
     reply: 'Obrigado pela avaliação, Carlos! Fico feliz que tenha gostado do atendimento. Até a próxima consulta!',
     reply_status: 'replied',
+    ai_reply_draft: null,
     review_date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
@@ -56,6 +59,7 @@ export const MOCK_REVIEWS: Omit<Review, 'id' | 'profile_id' | 'created_at'>[] = 
     text: 'Esperei mais de 1 hora além do horário marcado sem nenhuma explicação. O atendimento em si foi ok, mas a organização precisa melhorar.',
     reply: null,
     reply_status: 'pending',
+    ai_reply_draft: null,
     review_date: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
@@ -65,6 +69,7 @@ export const MOCK_REVIEWS: Omit<Review, 'id' | 'profile_id' | 'created_at'>[] = 
     text: 'Bom atendimento e ambiente agradável. Só achei um pouco caro comparado a outros locais.',
     reply: null,
     reply_status: 'pending',
+    ai_reply_draft: null,
     review_date: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
@@ -74,6 +79,7 @@ export const MOCK_REVIEWS: Omit<Review, 'id' | 'profile_id' | 'created_at'>[] = 
     text: 'Péssima experiência. Fui marcada para às 14h e só fui atendida às 16h. Não retornarei.',
     reply: null,
     reply_status: 'pending',
+    ai_reply_draft: null,
     review_date: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
@@ -83,6 +89,7 @@ export const MOCK_REVIEWS: Omit<Review, 'id' | 'profile_id' | 'created_at'>[] = 
     text: 'Melhor clínica que já fui! Equipe super atenciosa e instalações modernas. Recomendo.',
     reply: 'Muito obrigado, Marcos! Sua satisfação é o que nos motiva. Conte conosco sempre!',
     reply_status: 'replied',
+    ai_reply_draft: null,
     review_date: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
   },
 ]

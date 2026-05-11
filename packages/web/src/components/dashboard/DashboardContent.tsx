@@ -11,6 +11,7 @@ const ScoreChart = dynamic(() => import('./ScoreChart').then(m => m.ScoreChart),
 import { OptimizationHistory } from './OptimizationHistory'
 import { OptimizationWizard } from './OptimizationWizard'
 import { ProfileAlerts } from './ProfileAlerts'
+import { WeeklyHighlights } from './WeeklyHighlights'
 import { DashboardSkeleton } from './Skeletons'
 import type { CategoryScore } from '@/lib/gmb/scorer'
 
@@ -53,6 +54,7 @@ interface DashboardData {
   recentActions: Array<{ id: string; type: string; status: string; created_at: string }>
   metrics: { viewsSearch: number; viewsMaps: number; clicksWebsite: number; clicksCall: number; clicksDirections: number; period: string }
   nextActions: Array<{ field: string; message: string; impact: number; severity: string }>
+  weeklySummary: { posts_published: number; reviews_replied: number; score_delta: number } | null
 }
 
 export function DashboardContent() {
@@ -115,7 +117,7 @@ export function DashboardContent() {
     </div>
   )
 
-  const { profile, diagnostic, scoreHistory, metrics, nextActions } = data
+  const { profile, diagnostic, scoreHistory, metrics, nextActions, weeklySummary } = data
 
   const categories: CategoryScore[] = CATEGORY_META.map(m => {
     const score = diagnostic ? ((diagnostic[m.scoreField] as number) ?? 0) : 0
@@ -138,6 +140,9 @@ export function DashboardContent() {
 
   return (
     <div className="flex flex-col gap-8">
+
+      {/* Resumo semanal */}
+      <WeeklyHighlights data={weeklySummary} />
 
       {/* Alertas de alteração no perfil */}
       <ProfileAlerts />
