@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { Logo } from '@/components/ui/Logo'
 
 const VERTICALS = [
-  { name: 'Saúde', desc: 'Médicos, dentistas e profissionais de saúde', color: '#0EA5E9', href: '/saude/verificar', status: 'ativo' },
+  { name: 'Saúde', desc: 'Médicos, dentistas e profissionais de saúde', color: '#0EA5E9', href: '/saude', status: 'ativo' },
   { name: 'Pet', desc: 'Veterinários e clínicas veterinárias', color: '#22C55E', href: '#', status: 'em breve' },
   { name: 'Jurídico', desc: 'Advogados e escritórios de advocacia', color: '#60A5FA', href: '#', status: 'em breve' },
 ] as const

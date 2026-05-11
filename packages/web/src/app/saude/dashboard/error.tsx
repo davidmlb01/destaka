@@ -49,7 +49,7 @@ export default function DashboardError({
           Tentar novamente
         </button>
         <a
-          href="/saude/dashboard"
+          href="/saude"
           className="px-5 py-2.5 rounded-xl text-sm font-medium transition-all"
           style={{
             background: 'rgba(255,255,255,0.06)',

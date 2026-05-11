@@ -2,15 +2,16 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 
 // Rotas públicas que não precisam de auth
-const PUBLIC_PATHS = ['/', '/saude', '/saude/diagnostico', '/saude/login', '/saude/verificar', '/privacidade', '/termos', '/api/auth', '/api/public', '/api/health']
+const PUBLIC_PATHS = ['/', '/saude', '/saude/login', '/saude/verificar', '/privacidade', '/termos', '/api/auth', '/api/public', '/api/health']
 
 // Redirects de rotas antigas para novas (SEO + links existentes)
 const LEGACY_REDIRECTS: Record<string, string> = {
   '/login': '/saude/login',
   '/dashboard': '/saude/dashboard',
   '/onboarding': '/saude/onboarding',
-  '/diagnostico': '/saude/diagnostico',
+  '/diagnostico': '/saude/verificar',
   '/verificar': '/saude/verificar',
+  '/saude/diagnostico': '/saude/verificar',
 }
 
 export async function middleware(request: NextRequest) {
