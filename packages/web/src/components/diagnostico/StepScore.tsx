@@ -2,7 +2,7 @@
 
 import { Logo } from '@/components/ui/Logo'
 import { getScoreColor } from '@/lib/utils/score-colors'
-import { getCategoryIcon } from '@/lib/constants/category-meta'
+import { PinIcon } from '@/components/ui/PinIcon'
 
 interface ScoreCategory {
   name: string
@@ -132,7 +132,7 @@ export function StepScore({ clinicName, city, score, categories, place, onCaptur
             className="font-display font-bold text-[16px] mb-5 flex items-center gap-2"
             style={{ color: '#1C1917' }}
           >
-            📊 Nota por categoria
+            <PinIcon size={16} /> Nota por categoria
             <span className="flex-1 h-px" style={{ background: '#E7E5E4' }} />
           </h3>
           <div className="flex flex-col">
@@ -144,7 +144,7 @@ export function StepScore({ clinicName, city, score, categories, place, onCaptur
                   className="flex items-center gap-3 py-2.5"
                   style={{ borderBottom: i < categories.length - 1 ? '1px solid #E7E5E4' : 'none' }}
                 >
-                  <span className="text-[18px] w-7 text-center flex-shrink-0">{getCategoryIcon(cat.name)}</span>
+                  <span className="w-7 flex-shrink-0 flex justify-center"><PinIcon size={18} /></span>
                   <span className="flex-1 text-[14px] font-medium" style={{ color: '#1C1917' }}>{cat.label}</span>
                   <div className="w-[100px] h-1.5 rounded-full overflow-hidden flex-shrink-0" style={{ background: '#E7E5E4' }}>
                     <div
@@ -174,7 +174,7 @@ export function StepScore({ clinicName, city, score, categories, place, onCaptur
             className="font-display font-bold text-[16px] mb-5 flex items-center gap-2"
             style={{ color: '#1C1917' }}
           >
-            🔴 O que está prejudicando você
+            <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: '#DC2626' }} /> O que está prejudicando você
             <span className="flex-1 h-px" style={{ background: '#E7E5E4' }} />
           </h3>
           <div className="flex flex-col">
@@ -242,10 +242,10 @@ export function StepScore({ clinicName, city, score, categories, place, onCaptur
 
             <div className="relative z-10">
               <div
-                className="text-[44px] mb-4 leading-none"
-                style={{ color: 'var(--accent)', filter: 'drop-shadow(0 0 16px rgba(14,165,233,0.6))' }}
+                className="mb-4 flex justify-center"
+                style={{ filter: 'drop-shadow(0 0 16px rgba(14,165,233,0.6))' }}
               >
-                ✦
+                <PinIcon size={44} />
               </div>
 
               <h3
@@ -269,7 +269,7 @@ export function StepScore({ clinicName, city, score, categories, place, onCaptur
                   boxShadow: '0 8px 32px rgba(14,165,233,0.5)',
                 }}
               >
-                <span>✦</span> Quero mais pacientes pelo Google.
+                <PinIcon size={16} color="#1C1917" bg="var(--accent)" /> Quero mais pacientes pelo Google.
               </button>
 
               <button

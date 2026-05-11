@@ -157,7 +157,7 @@ function Ancoragem() {
           className="font-display font-bold text-white leading-[1.15] tracking-[-1.5px] mb-6"
           style={{ fontSize: 'clamp(24px, 3.5vw, 36px)' }}
         >
-          Agências de marketing médico cobram de R$3.000 a R$8.000 por mês para fazer o que a Destaka faz no piloto automático.
+          Agências de marketing médico cobram de R$3.000 a R$8.000 por mês. A Destaka entrega posts, respostas, keywords, proteção de perfil, QR Code e relatórios semanais no piloto automático.
         </h2>
         <p className="text-[18px] mb-4" style={{ color: 'rgba(255,255,255,0.7)' }}>
           Por uma fração desse custo.
@@ -305,6 +305,10 @@ function Recursos() {
     { title: 'Respostas a avaliações', desc: 'Cada nova avaliação recebe uma resposta personalizada e gentil. Automaticamente. Inclusive as de uma estrela, que são as mais importantes.' },
     { title: 'Sugestão de fotos', desc: 'A Destaka indica exatamente quais fotos estão faltando e com qual frequência atualizar. Perfis com fotos recebem 42% mais pedidos de rota.' },
     { title: 'Serviços otimizados', desc: 'Cadastro completo dos seus serviços com as palavras-chave que seus pacientes usam para buscar. Consultórios similares têm em média 11 serviços cadastrados.' },
+    { title: 'Keywords do Google', desc: 'Descubra as buscas reais que trazem pacientes ao seu perfil. A Destaka mostra os termos mais usados e sugere palavras-chave por especialidade.' },
+    { title: 'QR Code para avaliações', desc: 'Imprima e coloque na recepção. Seus pacientes avaliam seu perfil escaneando o código, sem complicação.' },
+    { title: 'Proteção de perfil', desc: 'Receba um alerta se alguém alterar seu perfil no Google sem autorização. Você fica sabendo antes que o dano aconteça.' },
+    { title: 'Relatório semanal', desc: 'Resumo do que a Destaka fez esta semana, direto no seu email toda segunda. Sem precisar abrir nenhum painel.' },
     { title: 'Relatório mensal', desc: 'Visibilidade completa do que foi feito, o que melhorou e qual impacto nas buscas. Tudo em português, sem jargão técnico.' },
   ]
 
@@ -317,7 +321,7 @@ function Recursos() {
             className="font-display font-bold leading-[1.1] tracking-[-1.5px] mb-4"
             style={{ fontSize: 'clamp(28px, 4vw, 44px)', color: '#fff' }}
           >
-            Tudo que uma agência faria.<br />
+            10 recursos que uma agência cobraria milhares por mês.<br />
             <span style={{ color: 'rgba(255,255,255,0.7)' }}>Sem reunião. Sem espera. Sem mensalidade de agência.</span>
           </h2>
           <p className="text-[17px] max-w-2xl mx-auto" style={{ color: 'rgba(255,255,255,0.65)' }}>

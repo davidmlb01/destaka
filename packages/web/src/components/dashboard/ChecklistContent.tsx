@@ -5,7 +5,7 @@ import type { ChecklistItem } from '@/lib/gmb/checklist'
 import { Card } from '@/components/ui/Card'
 import { ChecklistSkeleton } from './Skeletons'
 import { formatDateShort } from '@/lib/utils/format-date'
-import { getCategoryIcon } from '@/lib/constants/category-meta'
+import { PinIcon } from '@/components/ui/PinIcon'
 
 interface ChecklistData {
   items: ChecklistItem[]
@@ -196,7 +196,7 @@ export function ChecklistContent() {
           className="rounded-2xl p-6 text-center"
           style={{ background: 'rgba(74,222,128,0.06)', border: '1px solid rgba(74,222,128,0.15)' }}
         >
-          <p className="text-2xl mb-2">🎉</p>
+          <div className="mb-2 flex justify-center"><PinIcon size={32} /></div>
           <p className="font-display font-bold text-white mb-1">Checklist completo!</p>
           <p className="text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>
             Seu perfil está totalmente otimizado nas ações manuais.
@@ -245,7 +245,7 @@ function ChecklistCard({
         {/* Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap mb-1">
-            <span style={{ fontSize: 14 }}>{getCategoryIcon(item.category)}</span>
+            <PinIcon size={14} />
             <span className="font-medium text-white text-sm">{item.title}</span>
             <span
               className="text-xs px-2 py-0.5 rounded-full font-medium"
