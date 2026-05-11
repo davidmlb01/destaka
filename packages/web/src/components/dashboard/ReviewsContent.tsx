@@ -1,27 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import type { Review, ReviewFilter } from '@/lib/gmb/reviews'
+import type { ReviewFilter } from '@/lib/gmb/reviews'
 import { ReviewsSkeleton } from './Skeletons'
 import { formatDateShort } from '@/lib/utils/format-date'
 import { Spinner } from '@/components/ui/Spinner'
 import { PinIcon } from '@/components/ui/PinIcon'
-
-interface ReviewsData {
-  reviews: Review[]
-  total: number
-  pendingCount: number
-  page: number
-  pageSize: number
-  profile: { id: string; name: string; category: string }
-}
-
-interface ReplyModalState {
-  review: Review
-  draft: string
-  generating: boolean
-  publishing: boolean
-}
+import { useReviews } from './hooks/useReviews'
+import { useReplyModal } from './hooks/useReplyModal'
 
 function StarRow({ rating }: { rating: number }) {
   return (
@@ -43,98 +28,32 @@ const FILTER_LABELS: Record<ReviewFilter, string> = {
 }
 
 export function ReviewsContent() {
-  const [data, setData] = useState<ReviewsData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [filter, setFilter] = useState<ReviewFilter>('all')
-  const [page, setPage] = useState(1)
-  const [modal, setModal] = useState<ReplyModalState | null>(null)
+  const {
+    data,
+    error,
+    isLoading,
+    mutate,
+    filter,
+    page,
+    totalPages,
+    changeFilter,
+    changePage,
+  } = useReviews()
 
-  async function load(f = filter, p = page) {
-    try {
-      setLoading(true)
-      setError(null)
-      const res = await fetch(`/api/reviews?filter=${f}&page=${p}`)
-      if (!res.ok) throw new Error('Erro ao carregar dados')
-      setData(await res.json())
-    } catch {
-      setError('Não foi possível carregar. Tente novamente.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => { load() }, [])
-
-  function changeFilter(f: ReviewFilter) {
-    setFilter(f)
-    setPage(1)
-    load(f, 1)
-  }
-
-  function changePage(p: number) {
-    setPage(p)
-    load(filter, p)
-  }
-
-  async function openReplyModal(review: Review) {
-    setModal({ review, draft: review.reply ?? '', generating: false, publishing: false })
-  }
-
-  async function generateReply() {
-    if (!modal) return
-    setModal(m => m ? { ...m, generating: true } : m)
-
-    const res = await fetch('/api/reviews/generate-reply', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ reviewId: modal.review.id }),
-    })
-
-    if (res.ok) {
-      const { reply } = await res.json() as { reply: string }
-      setModal(m => m ? { ...m, draft: reply, generating: false } : m)
-    } else {
-      const err = await res.json().catch(() => ({})) as { error?: string }
-      setModal(m => m ? { ...m, draft: `Erro ao gerar: ${err.error ?? res.status}`, generating: false } : m)
-    }
-  }
-
-  async function publishReply() {
-    if (!modal?.draft.trim()) return
-    setModal(m => m ? { ...m, publishing: true } : m)
-
-    const res = await fetch(`/api/reviews/${modal.review.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ reply: modal.draft, action: 'publish' }),
-    })
-
-    if (res.ok) {
-      setModal(null)
-      load()
-    } else {
-      const err = await res.json().catch(() => ({})) as { error?: string }
-      alert(err.error ?? 'Erro ao publicar resposta. Tente novamente.')
-      setModal(m => m ? { ...m, publishing: false } : m)
-    }
-  }
-
-  async function ignoreReview(reviewId: string) {
-    const res = await fetch(`/api/reviews/${reviewId}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'ignore' }),
-    })
-    if (res.ok) load()
-  }
-
-  const totalPages = data ? Math.ceil(data.total / data.pageSize) : 1
+  const {
+    modal,
+    openReplyModal,
+    closeModal,
+    setDraft,
+    generateReply,
+    publishReply,
+    ignoreReview,
+  } = useReplyModal(() => mutate())
 
   if (error) return (
     <div className="flex flex-col items-center justify-center py-20 text-center">
-      <p className="text-[15px] mb-4" style={{ color: 'rgba(255,255,255,0.7)' }}>{error}</p>
-      <button onClick={() => { setError(null); load() }} className="text-[14px] font-medium px-4 py-2 rounded-lg" style={{ background: 'var(--accent)', color: '#fff' }}>
+      <p className="text-[15px] mb-4" style={{ color: 'rgba(255,255,255,0.7)' }}>Não foi possível carregar. Tente novamente.</p>
+      <button onClick={() => mutate()} className="text-[14px] font-medium px-4 py-2 rounded-lg" style={{ background: 'var(--accent)', color: '#fff' }}>
         Tentar novamente
       </button>
     </div>
@@ -182,7 +101,7 @@ export function ReviewsContent() {
       </div>
 
       {/* Lista */}
-      {loading ? (
+      {isLoading ? (
         <ReviewsSkeleton />
       ) : !data?.reviews.length ? (
         <div
@@ -321,7 +240,7 @@ export function ReviewsContent() {
                 </div>
               </div>
               <button
-            onClick={() => setModal(null)}
+            onClick={closeModal}
             className="transition-colors"
             style={{ color: 'var(--text-tertiary)', fontSize: 18 }}
             aria-label="Fechar"
@@ -368,7 +287,7 @@ export function ReviewsContent() {
               </div>
               <textarea
                 value={modal.draft}
-                onChange={e => setModal(m => m ? { ...m, draft: e.target.value } : m)}
+                onChange={e => setDraft(e.target.value)}
                 rows={4}
                 maxLength={4096}
                 className="w-full rounded-xl px-4 py-3 text-sm resize-none"
@@ -387,7 +306,7 @@ export function ReviewsContent() {
 
             <div className="flex gap-3">
               <button
-                onClick={() => setModal(null)}
+                onClick={closeModal}
                 className="flex-1 rounded-xl py-2.5 text-sm font-medium"
                 style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.5)' }}
               >

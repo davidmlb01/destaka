@@ -1,31 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { Card } from '@/components/ui/Card'
-import { apiFetch } from '@/lib/api/client'
 import { PostsSkeleton } from './Skeletons'
 import { formatDateShort } from '@/lib/utils/format-date'
 import { Spinner } from '@/components/ui/Spinner'
-
-interface Post {
-  id: string
-  content: string
-  type: string
-  status: 'draft' | 'published' | 'scheduled' | 'failed'
-  scheduled_for: string | null
-  published_at: string | null
-  created_at: string
-}
-
-interface PostsData {
-  posts: Post[]
-  total: number
-  page: number
-  pageSize: number
-  scheduledNext: Post | null
-  autoPostMode: 'automatic' | 'approval'
-  profile: { id: string; name: string; category: string }
-}
+import { usePosts } from './hooks/usePosts'
 
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   draft: { label: 'Aguardando aprovação', color: '#FBBF24' },
@@ -45,100 +24,28 @@ function formatDate(iso: string) {
 }
 
 export function PostsContent() {
-  const [data, setData] = useState<PostsData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [generating, setGenerating] = useState(false)
-  const [publishingId, setPublishingId] = useState<string | null>(null)
-  const [deletingId, setDeletingId] = useState<string | null>(null)
-  const [savingMode, setSavingMode] = useState(false)
+  const {
+    data,
+    error,
+    isLoading,
+    generating,
+    publishingId,
+    deletingId,
+    savingMode,
+    handleGenerate,
+    handlePublish,
+    handleDiscard,
+    handleModeChange,
+  } = usePosts()
 
-  async function load() {
-    try {
-      setLoading(true)
-      setError(null)
-      const { data: result, error: fetchError } = await apiFetch<PostsData>('/api/posts')
-      if (fetchError || !result) throw new Error(fetchError ?? 'Erro ao carregar dados')
-      setData(result)
-    } catch {
-      setError('Não foi possível carregar. Tente novamente.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => { load() }, [])
-
-  async function handleGenerate() {
-    setGenerating(true)
-    try {
-      const { error } = await apiFetch('/api/posts/generate', { method: 'POST' })
-      if (error) {
-        alert(error)
-        return
-      }
-      await load()
-    } finally {
-      setGenerating(false)
-    }
-  }
-
-  async function handlePublish(postId: string) {
-    setPublishingId(postId)
-    try {
-      const { error } = await apiFetch(`/api/posts/${postId}/publish`, { method: 'POST' })
-      if (error) {
-        alert(error)
-        return
-      }
-      await load()
-    } finally {
-      setPublishingId(null)
-    }
-  }
-
-  async function handleDiscard(postId: string) {
-    setDeletingId(postId)
-    try {
-      const { error } = await apiFetch(`/api/posts/${postId}`, { method: 'DELETE' })
-      if (error) {
-        alert(error)
-        return
-      }
-      await load()
-    } finally {
-      setDeletingId(null)
-    }
-  }
-
-  async function handleModeChange(mode: 'automatic' | 'approval') {
-    if (!data || mode === data.autoPostMode) return
-    setSavingMode(true)
-    try {
-      const res = await fetch('/api/posts/settings', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ autoPostMode: mode }),
-      })
-      if (res.ok) {
-        setData(d => d ? { ...d, autoPostMode: mode } : d)
-      } else {
-        const err = await res.json().catch(() => ({})) as { error?: string }
-        alert(err.error ?? 'Erro ao salvar configuração.')
-      }
-    } finally {
-      setSavingMode(false)
-    }
-  }
-
-  if (loading) {
+  if (isLoading) {
     return <PostsSkeleton />
   }
 
   if (error) return (
     <div className="flex flex-col items-center justify-center py-20 text-center">
-      <p className="text-[15px] mb-4" style={{ color: 'rgba(255,255,255,0.7)' }}>{error}</p>
-      <button onClick={() => { setError(null); load() }} className="text-[14px] font-medium px-4 py-2 rounded-lg" style={{ background: 'var(--accent)', color: '#fff' }}>
+      <p className="text-[15px] mb-4" style={{ color: 'rgba(255,255,255,0.7)' }}>Não foi possível carregar. Tente novamente.</p>
+      <button onClick={() => window.location.reload()} className="text-[14px] font-medium px-4 py-2 rounded-lg" style={{ background: 'var(--accent)', color: '#fff' }}>
         Tentar novamente
       </button>
     </div>

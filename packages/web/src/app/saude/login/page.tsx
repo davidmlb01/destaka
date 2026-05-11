@@ -1,20 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { Logo } from '@/components/ui/Logo'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
-import { createBrowserClient } from '@supabase/ssr'
-
-const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true'
-
-function createClient() {
-  return createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-}
+import { useAuth } from '@/components/dashboard/hooks/useAuth'
 
 function getErrorMessage(): string | null {
   if (typeof window === 'undefined') return null
@@ -27,55 +16,8 @@ function getErrorMessage(): string | null {
 }
 
 export default function LoginPage() {
-  const [demoLoading, setDemoLoading] = useState(false)
-  const router = useRouter()
+  const { isDemoMode, demoLoading, handleDemoLogin, handleGoogleSignIn } = useAuth()
   const errorMessage = getErrorMessage()
-
-  // Se usuario ja esta autenticado, redirecionar para dashboard
-  useEffect(() => {
-    const supabase = createClient()
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user) {
-        router.replace('/saude/dashboard')
-      }
-    })
-  }, [router])
-
-  async function handleDemoLogin() {
-    setDemoLoading(true)
-    try {
-      const res = await fetch('/api/auth/demo-login', { method: 'POST' })
-      if (res.ok) {
-        window.location.href = '/saude/dashboard'
-      } else {
-        const data = await res.json()
-        alert('Erro no login demo: ' + (data.error ?? 'tente novamente'))
-        setDemoLoading(false)
-      }
-    } catch {
-      alert('Erro de conexão. Verifique se o servidor está rodando.')
-      setDemoLoading(false)
-    }
-  }
-
-  async function handleGoogleSignIn() {
-    const supabase = createClient()
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/api/auth/callback`,
-        scopes: 'email profile https://www.googleapis.com/auth/business.manage',
-        queryParams: {
-          access_type: 'offline',
-          prompt: 'consent',
-        },
-      },
-    })
-    if (error) {
-      console.error('OAuth error:', error.message)
-      alert('Erro ao iniciar login: ' + error.message)
-    }
-  }
 
   return (
     <main

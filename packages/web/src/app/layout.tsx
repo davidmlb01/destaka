@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Outfit, Inter } from 'next/font/google'
+import { Toaster } from 'sonner'
 import './globals.css'
 
 const outfit = Outfit({
@@ -25,6 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="pt-BR" className="h-full">
       <body className={`${outfit.variable} ${inter.variable} min-h-full antialiased`}>
         {children}
+        <Toaster theme="dark" position="top-right" richColors closeButton />
       </body>
     </html>
   )
