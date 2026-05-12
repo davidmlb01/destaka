@@ -1,6 +1,6 @@
 # MASTER BACKUP — Destaka (Projeto GMM)
-**Atualizado:** 2026-05-05
-**Status:** Auditoria tripla CTO+CMO+Design executada (77/78/70), 3 blockers UX identificados, app funcional para demo com ressalvas
+**Atualizado:** 2026-05-12
+**Status:** Content OS live (36 artigos + 49 posts). Blog destaka.com.br/blog no ar. Cron quinzenal ativo (dia 1 e 15, 19h). LinkedIn API aguardando aprovação.
 
 ---
 
@@ -58,11 +58,19 @@
 - [x] Crons Vercel: review-monitor 8h, post-generator 10h, monthly-report dia 1 (2026-04-12)
 - [x] Lazy init SDKs — build estável Vercel: Anthropic, Stripe, Resend (2026-04-12)
 - [x] Google OAuth end-to-end: Supabase URL Configuration corrigida para destaka.com.br (2026-04-12)
-- [~] LinkedIn: enxoval completo criado (docs/social/linkedin-setup.html) — criar pagina amanha
+- [x] Content OS Fase 1: Blog MDX live (36 artigos, destaka.com.br/blog)
+- [x] Pipeline automatizado: Research + Estrategista + Writer + GitHub Publisher
+- [x] Cron quinzenal Vercel (dia 1 e 15, 22h UTC = 19h Brasília)
+- [x] LLMS.txt na raiz (indexação por IAs)
+- [x] 49 posts sociais gerados (LinkedIn .md + Instagram .json em content/social/)
+- [~] LinkedIn API: Community Management API submetido 12/05, aguardando aprovação (1-4 semanas)
+- [ ] LinkedIn manual posting (2/dia, posts em content/social/)
+- [ ] Submeter sitemap no Google Search Console
+- [ ] Instagram Graph API (criar app Meta depois da LinkedIn API aprovada)
 - [ ] GBP real vinculado para teste end-to-end
 - [ ] Debugar My Business Account Management API (100% errors)
 - [ ] Stripe modo produção ativado
-- [ ] Primeiros clientes pagantes
+- [ ] Primeiros clientes pagantes (1o amanhã à noite, 2o no fim de semana)
 
 ---
 
@@ -458,3 +466,54 @@ Primeira sessão executiva completa. Fluxo: CEO → CMO → Brand → Story → 
 - Copy Chief (Cyrus) ativado — headlines e StoryBrand framework gerados
 - Brand Guidelines criados em `docs/brand/brand-guidelines.md`
 - Validação Hormozi realizada (sessão anterior): preço correto, nicho único (dentistas), garantia de resultado recomendada
+
+### 2026-05-12 — Content OS: Blog + Pipeline Automatizado
+
+**Objetivo:** Construir e automatizar o sistema de conteúdo do Destaka (prova de produto + SEO).
+
+**Infraestrutura blog:**
+- Blog MDX com Next.js App Router: `/blog`, `/blog/[slug]`, `/blog/categoria/[categoria]`, `/blog/tag/[tag]`, `/blog/feed.xml`
+- `lib/blog/posts.ts`: `getAllPosts()`, `getPostBySlug()`, `getPostsByCategory()`, `getPostsByTag()`
+- Schema markup Article/FAQ/HowTo + BreadcrumbList em todos os posts
+- LLMS.txt na raiz para indexação por IAs (ChatGPT, Gemini, Claude)
+- Design: fundo claro (#FAFAF8), tipografia editorial, verde #0F5C3A marca-mãe
+
+**Pipeline de conteúdo (8 arquivos, 1.015 linhas):**
+- `lib/content/research.ts`: Research Agent (Google Autocomplete + Claude). 20 seed keywords, 15 dias, classifica por intent/volume
+- `lib/content/strategist.ts`: Estrategista Editorial. Calendário 15 dias: 2 blog/dia + 2 LinkedIn/dia + 3 Reels/semana + 2 carrosseis
+- `lib/content/writer.ts`: Writer Agent. `writeArticle()`, `writeLinkedInPost()`, `writeInstagramCaption()` via Claude
+- `lib/content/orchestrator.ts`: Orquestrador. Suporte a batch (?batch=1 ou ?batch=2) para evitar timeout
+- `lib/content/github-publisher.ts`: GitHub Publisher. Commit automático via REST API (blob→tree→commit→ref)
+- `api/cron/content-pipeline/route.ts`: endpoint do cron quinzenal
+
+**Volume configurado:**
+- Blog: 2 posts/dia (automático)
+- LinkedIn: 2 posts/dia (manual até API aprovada)
+- Instagram: 3 Reels/semana + 2 carrosseis (deferred)
+
+**Conteúdo gerado (2 rodadas):**
+- 36 artigos MDX publicados em `content/posts/`
+- 49 posts sociais em `content/social/` (LinkedIn .md + Instagram .json)
+
+**Cron:**
+- `vercel.json`: schedule `"0 22 1,15 * *"` (dia 1 e 15, 22h UTC = 19h Brasília)
+- `GITHUB_TOKEN`: PAT fine-grained, scope Contents read/write, repo davidmlb01/destaka
+- `GITHUB_REPO`: `davidmlb01/destaka`
+- `ANTHROPIC_API_KEY`: atualizada (DESTAKA-BLOG)
+
+**Fix crítico (commit 9a9fa8e):**
+- 5 arquivos MDX com frontmatter quebrado (falta de `---` de fechamento)
+- `FAQ.tsx`: guard defensivo `if (!items) return null` para arrays undefined
+
+**LinkedIn API:**
+- App "Destaka Content" (Client ID: 775jv1gczefwca)
+- App "Destaka Publisher" (Client ID: 77nyum5tgf2qbf, verificado)
+- Community Management API submetido 12/05, aguardando 1-4 semanas
+
+**Próximos passos:**
+1. LinkedIn: postar manualmente 2/dia até API ser aprovada (posts em `content/social/`)
+2. Submeter sitemap em Google Search Console
+3. Onboardar 1o cliente real (amanhã à noite)
+4. Dia 15: primeiro cron automático dispara
+5. Após LinkedIn API aprovada: implementar publicação automática
+6. Instagram Graph API: criar app Meta (deferred)
