@@ -163,7 +163,7 @@ function Ancoragem() {
           A Destaka entrega tudo isso no piloto automático, por uma fração do custo e sem depender de você.
         </p>
         <p className="text-[15px] mb-10" style={{ color: 'rgba(255,255,255,0.5)' }}>
-          Sem contrato. Sem fidelidade. Sem reunião. Cancele quando quiser.
+          Sem contrato. Sem fidelidade. Cancele quando quiser. Garantia: se seu score não subir 15 pontos em 30 dias, devolvemos 100%.
         </p>
         <Button variant="primary" size="lg" href="/saude/verificar">
           <PinIcon size={16} color="#fff" bg="var(--accent)" /> Fazer diagnóstico gratuito
@@ -363,7 +363,7 @@ function Recursos() {
 function FAQ() {
   const faqs = [
     { q: 'Preciso dar acesso ao meu Google?', a: 'Sim, conexão segura via OAuth oficial do Google. Não armazenamos sua senha.' },
-    { q: 'Tem contrato ou fidelidade?', a: 'Não. Cancele quando quiser, sem multa.' },
+    { q: 'Tem contrato ou fidelidade?', a: 'Não. Cancele quando quiser, sem multa. E se seu score não subir pelo menos 15 pontos em 30 dias, devolvemos 100% do valor.' },
     { q: 'Funciona na minha cidade?', a: 'Sim, funciona em qualquer cidade do Brasil.' },
     { q: 'Quanto tempo para ver resultado?', a: 'Seu perfil começa a ser otimizado em minutos. Resultados visíveis nas buscas em 2 a 4 semanas.' },
     { q: 'Já uso Doctoralia. Preciso da Destaka?', a: 'São complementares. A Doctoralia é um marketplace. A Destaka otimiza seu Google, que é onde 46% das buscas locais acontecem.' },
