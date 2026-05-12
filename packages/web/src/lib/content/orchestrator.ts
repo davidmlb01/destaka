@@ -9,7 +9,7 @@ import { runResearch } from './research'
 import { buildEditorialCalendar } from './strategist'
 import { writeArticle, writeLinkedInPost, writeInstagramCaption } from './writer'
 import { logger } from '@/lib/logger'
-import type { PipelineReport, DayBrief } from './types'
+import type { PipelineReport, DayBrief, SingleBrief } from './types'
 
 const SERVICE = 'content/orchestrator'
 
@@ -115,69 +115,98 @@ export async function runContentPipeline(): Promise<PipelineReport> {
   for (const day of calendar.days) {
     const dayLabel = `[${day.date}]`
 
-    // --- Blog Article ---
-    try {
-      logger.info(SERVICE, `${dayLabel} gerando artigo: ${day.blogPost.suggestedTitle}`)
-      const mdx = await writeArticle(day)
-
-      const slug = extractSlugFromMdx(mdx) || toSlug(day.blogPost.suggestedTitle)
-      const filename = `${slug}.mdx`
-      const filepath = path.join(POSTS_DIR, filename)
-
-      // Nao sobrescreve artigo existente
-      if (fs.existsSync(filepath)) {
-        logger.warn(SERVICE, `${dayLabel} artigo ja existe: ${filename}`)
-      } else {
-        fs.writeFileSync(filepath, mdx, 'utf-8')
-        files.push(`content/posts/${filename}`)
-        articlesGenerated++
-
-        llmsEntries.push({
-          title: day.blogPost.suggestedTitle,
-          slug,
-          description: `Artigo sobre ${day.blogPost.keyword}`,
-        })
+    // --- Blog Articles (2 por dia) ---
+    for (let idx = 0; idx < day.blogPosts.length; idx++) {
+      const blogPost = day.blogPosts[idx]
+      const linkedin = day.linkedinPosts[idx] ?? day.linkedinPosts[0]
+      const brief: SingleBrief = {
+        date: day.date,
+        blogPost,
+        linkedin,
+        instagram: day.instagram,
       }
-    } catch (err) {
-      const msg = `${dayLabel} erro artigo: ${String(err)}`
-      logger.error(SERVICE, msg)
-      errors.push(msg)
+
+      try {
+        logger.info(SERVICE, `${dayLabel} gerando artigo ${idx + 1}/${day.blogPosts.length}: ${blogPost.suggestedTitle}`)
+        const mdx = await writeArticle(brief)
+
+        const slug = extractSlugFromMdx(mdx) || toSlug(blogPost.suggestedTitle)
+        const filename = `${slug}.mdx`
+        const filepath = path.join(POSTS_DIR, filename)
+
+        if (fs.existsSync(filepath)) {
+          logger.warn(SERVICE, `${dayLabel} artigo ja existe: ${filename}`)
+        } else {
+          fs.writeFileSync(filepath, mdx, 'utf-8')
+          files.push(`content/posts/${filename}`)
+          articlesGenerated++
+
+          llmsEntries.push({
+            title: blogPost.suggestedTitle,
+            slug,
+            description: `Artigo sobre ${blogPost.keyword}`,
+          })
+        }
+      } catch (err) {
+        const msg = `${dayLabel} erro artigo ${idx + 1}: ${String(err)}`
+        logger.error(SERVICE, msg)
+        errors.push(msg)
+      }
     }
 
-    // --- LinkedIn Post ---
-    try {
-      logger.info(SERVICE, `${dayLabel} gerando LinkedIn post`)
-      const linkedinText = await writeLinkedInPost(day)
+    // --- LinkedIn Posts (2 por dia) ---
+    for (let idx = 0; idx < day.linkedinPosts.length; idx++) {
+      const linkedin = day.linkedinPosts[idx]
+      const brief: SingleBrief = {
+        date: day.date,
+        blogPost: day.blogPosts[idx] ?? day.blogPosts[0],
+        linkedin,
+        instagram: day.instagram,
+      }
 
-      const linkedinFile = `${day.date}-linkedin.md`
-      const linkedinPath = path.join(SOCIAL_DIR, linkedinFile)
-      fs.writeFileSync(linkedinPath, linkedinText, 'utf-8')
-      files.push(`content/social/${linkedinFile}`)
-      linkedinPostsGenerated++
-    } catch (err) {
-      const msg = `${dayLabel} erro linkedin: ${String(err)}`
-      logger.error(SERVICE, msg)
-      errors.push(msg)
+      try {
+        logger.info(SERVICE, `${dayLabel} gerando LinkedIn post ${idx + 1}/${day.linkedinPosts.length}`)
+        const linkedinText = await writeLinkedInPost(brief)
+
+        const linkedinFile = `${day.date}-linkedin-${idx + 1}.md`
+        const linkedinPath = path.join(SOCIAL_DIR, linkedinFile)
+        fs.writeFileSync(linkedinPath, linkedinText, 'utf-8')
+        files.push(`content/social/${linkedinFile}`)
+        linkedinPostsGenerated++
+      } catch (err) {
+        const msg = `${dayLabel} erro linkedin ${idx + 1}: ${String(err)}`
+        logger.error(SERVICE, msg)
+        errors.push(msg)
+      }
     }
 
-    // --- Instagram ---
-    try {
-      logger.info(SERVICE, `${dayLabel} gerando Instagram post`)
-      const igOutput = await writeInstagramCaption(day)
+    // --- Instagram (apenas nos dias com post agendado) ---
+    if (day.instagram) {
+      const brief: SingleBrief = {
+        date: day.date,
+        blogPost: day.blogPosts[0],
+        linkedin: day.linkedinPosts[0],
+        instagram: day.instagram,
+      }
 
-      const igFile = `${day.date}-instagram.json`
-      const igPath = path.join(SOCIAL_DIR, igFile)
-      fs.writeFileSync(igPath, JSON.stringify(igOutput, null, 2), 'utf-8')
-      files.push(`content/social/${igFile}`)
-      instagramPostsGenerated++
-    } catch (err) {
-      const msg = `${dayLabel} erro instagram: ${String(err)}`
-      logger.error(SERVICE, msg)
-      errors.push(msg)
+      try {
+        logger.info(SERVICE, `${dayLabel} gerando Instagram ${day.instagram.type}`)
+        const igOutput = await writeInstagramCaption(brief)
+
+        const igFile = `${day.date}-instagram.json`
+        const igPath = path.join(SOCIAL_DIR, igFile)
+        fs.writeFileSync(igPath, JSON.stringify(igOutput, null, 2), 'utf-8')
+        files.push(`content/social/${igFile}`)
+        instagramPostsGenerated++
+      } catch (err) {
+        const msg = `${dayLabel} erro instagram: ${String(err)}`
+        logger.error(SERVICE, msg)
+        errors.push(msg)
+      }
     }
 
     // Pausa entre dias para nao estourar rate limits
-    await new Promise((r) => setTimeout(r, 500))
+    await new Promise<void>((r) => { setTimeout(r, 500) })
   }
 
   // ---- FASE 4: Atualiza llms.txt ----

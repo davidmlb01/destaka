@@ -5,7 +5,7 @@
 
 import { getAnthropic, AI_MODEL_FAST } from '@/lib/ai'
 import { logger } from '@/lib/logger'
-import type { DayBrief } from './types'
+import type { SingleBrief } from './types'
 
 const SERVICE = 'content/writer'
 
@@ -16,7 +16,7 @@ const SERVICE = 'content/writer'
 /**
  * Gera artigo completo em MDX com frontmatter, componentes e CTAs.
  */
-export async function writeArticle(brief: DayBrief): Promise<string> {
+export async function writeArticle(brief: SingleBrief): Promise<string> {
   const anthropic = getAnthropic()
   const { blogPost } = brief
 
@@ -133,7 +133,7 @@ Retorne APENAS o MDX completo, sem blocos de codigo markdown ao redor.`
 /**
  * Gera post para LinkedIn no formato hook + desenvolvimento + CTA.
  */
-export async function writeLinkedInPost(brief: DayBrief): Promise<string> {
+export async function writeLinkedInPost(brief: SingleBrief): Promise<string> {
   const anthropic = getAnthropic()
 
   const prompt = `Voce e o estrategista de conteudo do Destaka no LinkedIn.
@@ -192,30 +192,32 @@ Retorne APENAS o texto do post, sem formatacao extra.`
 // =============================================================================
 
 interface InstagramOutput {
-  type: 'carrossel' | 'estatico'
+  type: 'carrossel' | 'reel'
   caption: string
   slides?: string[] // textos de cada slide (carrossel)
-  headline?: string // headline do estatico
+  hook?: string // frase de abertura do reel
+  script?: string // roteiro resumido do reel
 }
 
 /**
  * Gera caption e conteudo para Instagram (carrossel ou estatico).
  */
 export async function writeInstagramCaption(
-  brief: DayBrief
+  brief: SingleBrief
 ): Promise<InstagramOutput> {
   const anthropic = getAnthropic()
-  const isCarrossel = brief.instagram.type === 'carrossel'
-  const numSlides = brief.instagram.slides ?? 6
+  const ig = brief.instagram!
+  const isCarrossel = ig.type === 'carrossel'
+  const numSlides = ig.slides ?? 6
 
   const prompt = `Voce e o criador de conteudo do Destaka para Instagram.
 
 ## Tarefa
-Crie conteudo para ${isCarrossel ? `um carrossel de ${numSlides} slides` : 'um post estatico'}.
+Crie conteudo para ${isCarrossel ? `um carrossel de ${numSlides} slides` : 'um Reel de 30-60 segundos'}.
 
 ## Briefing
-- Angulo: ${brief.instagram.angle}
-- Tipo: ${brief.instagram.type}
+- Angulo: ${ig.angle}
+- Tipo: ${ig.type}
 - Keyword relacionada: "${brief.blogPost.keyword}"
 
 ${
@@ -232,17 +234,18 @@ Retorne um JSON com:
   "caption": "legenda do post (max 300 caracteres, com CTA)",
   "slides": ["texto slide 1", "texto slide 2", ...]
 }`
-    : `## Formato estatico
+    : `## Formato Reel
 Crie:
-- Headline impactante (max 10 palavras)
-- Copy curto para a legenda (max 200 caracteres)
-- CTA para destaka.com.br/saude/verificar
+- Hook de abertura: frase de 1 linha que prende nos primeiros 2 segundos
+- Roteiro resumido: 3-5 bullet points com o que falar em cada momento do reel (max 60 segundos total)
+- Legenda: copy curto para a descricao do reel (max 200 caracteres, com CTA para destaka.com.br/saude/verificar)
 
 Retorne um JSON com:
 {
-  "type": "estatico",
-  "caption": "legenda do post",
-  "headline": "headline da imagem"
+  "type": "reel",
+  "caption": "legenda do reel",
+  "hook": "frase de abertura que prende",
+  "script": "bullet 1\\nbullet 2\\nbullet 3..."
 }`
 }
 
@@ -277,7 +280,7 @@ Retorne um JSON com:
 
     const output = JSON.parse(jsonMatch[0]) as InstagramOutput
 
-    logger.info(SERVICE, `instagram ${output.type} gerado: ${brief.instagram.angle}`)
+    logger.info(SERVICE, `instagram ${output.type} gerado: ${brief.instagram?.angle ?? 'sem angulo'}`)
     return output
   } catch (err) {
     logger.error(SERVICE, `erro ao gerar instagram post`, {

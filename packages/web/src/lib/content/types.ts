@@ -11,25 +11,42 @@ export interface KeywordResult {
   score: number
 }
 
+export interface BlogPostBrief {
+  keyword: string
+  secondaryKeywords: string[]
+  schema: 'article' | 'faq' | 'howto'
+  suggestedTitle: string
+  targetWordCount: number
+  tier: 1 | 2 | 3
+}
+
+export interface LinkedInBrief {
+  angle: string
+  hook: string
+}
+
+export interface InstagramBrief {
+  type: 'carrossel' | 'reel'
+  angle: string
+  slides?: number
+}
+
 export interface DayBrief {
   date: string
-  blogPost: {
-    keyword: string
-    secondaryKeywords: string[]
-    schema: 'article' | 'faq' | 'howto'
-    suggestedTitle: string
-    targetWordCount: number
-    tier: 1 | 2 | 3
-  }
-  linkedin: {
-    angle: string
-    hook: string
-  }
-  instagram: {
-    type: 'carrossel' | 'estatico'
-    angle: string
-    slides?: number
-  }
+  blogPosts: BlogPostBrief[]
+  linkedinPosts: LinkedInBrief[]
+  instagram: InstagramBrief | null
+}
+
+/**
+ * Compat: mantém acesso legado para o writer (1 blogPost + 1 linkedin por vez).
+ * O orchestrator monta este objeto ao iterar os arrays de DayBrief.
+ */
+export interface SingleBrief {
+  date: string
+  blogPost: BlogPostBrief
+  linkedin: LinkedInBrief
+  instagram: InstagramBrief | null
 }
 
 export interface EditorialCalendar {
