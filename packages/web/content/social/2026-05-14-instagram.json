@@ -1,5 +1,12 @@
 {
-  "type": "estatico",
-  "headline": "Apareça em primeiro no Google do seu jeito",
-  "caption": "Seu negócio merece ser encontrado! Descubra os passos simples para aparecer nos primeiros resultados do Google e atrair mais clientes. 🔍 Saiba como: destaka.com.br/saude/verificar 📱✨"
+  "type": "carrossel",
+  "caption": "Seu Google Ads para odontologia não está trazendo pacientes? Pode ser um desses 5 erros! 🦷 Descubra como captar mais pacientes pelo Google Ads. Confira o carrossel completo 👇 #GoogleAds #Odontologia",
+  "slides": [
+    "5 Erros que Matam suas Campanhas Google Ads para Odontologia\n\n(E como você pode estar cometendo agora mesmo)",
+    "Erro 1: Não Segmentar a Audiência\n\nAlvejar 'todos' desperdiça orçamento. Segmente por localização, idade e comportamento do seu público ideal.",
+    "Erro 2: Escolher Palavras-chave Genéricas\n\nUse termos específicos: 'dentista em São Paulo', 'implante dentário' em vez de apenas 'dentista'. Atraia quem realmente procura.",
+    "Erro 3: Ignorar Palavras-chave Negativas\n\nBloqueie buscas irrelevantes. Exclude 'dentista gratuito' ou 'como ser dentista' se não forem seu público.",
+    "Erro 4: Desistir Rápido Demais\n\nCampanhas precisam de 2 a 4 semanas para gerar dados. Otimize conforme aprende, não cancele no primeiro mês.",
+    "Erro 5: Anúncios Genéricos sem Diferencial\n\nDestaque: especialidade, diferenciais, avaliações. Seu anúncio precisa responder por que escolher sua clínica."
+  ]
 }
