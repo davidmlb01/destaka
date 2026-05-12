@@ -210,3 +210,120 @@ textarea {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ─── Blog prose ─────────────────────────────────────────────────── */
+.blog-prose {
+  font-size: 17px;
+  line-height: 28px;
+  color: #1A1A1A;
+}
+.blog-prose h2 {
+  font-family: var(--font-display, system-ui, sans-serif);
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 36px;
+  color: #0F2A1F;
+  margin-top: 48px;
+  margin-bottom: 16px;
+}
+.blog-prose h3 {
+  font-family: var(--font-display, system-ui, sans-serif);
+  font-weight: 600;
+  font-size: 22px;
+  line-height: 30px;
+  color: #0F2A1F;
+  margin-top: 36px;
+  margin-bottom: 12px;
+}
+.blog-prose p {
+  margin-bottom: 20px;
+}
+.blog-prose a {
+  color: #0F2A1F;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.15s;
+}
+.blog-prose a:hover {
+  color: #166534;
+}
+.blog-prose ul,
+.blog-prose ol {
+  margin-bottom: 20px;
+  padding-left: 24px;
+}
+.blog-prose li {
+  margin-bottom: 8px;
+}
+.blog-prose ul li {
+  list-style: disc;
+}
+.blog-prose ol li {
+  list-style: decimal;
+}
+.blog-prose blockquote {
+  border-left: 3px solid #4ade80;
+  padding-left: 16px;
+  margin: 24px 0;
+  color: #4B5563;
+  font-style: italic;
+}
+.blog-prose code {
+  background: rgba(0, 0, 0, 0.05);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+.blog-prose pre {
+  background: #0F2A1F;
+  color: #e2e8f0;
+  padding: 20px;
+  border-radius: 12px;
+  overflow-x: auto;
+  margin: 24px 0;
+}
+.blog-prose pre code {
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  font-size: 14px;
+}
+.blog-prose hr {
+  border: none;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  margin: 40px 0;
+}
+.blog-prose strong {
+  font-weight: 600;
+  color: #0F2A1F;
+}
+.blog-prose img {
+  border-radius: 12px;
+  margin: 24px 0;
+}
+.blog-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+}
+.blog-prose th,
+.blog-prose td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  font-size: 15px;
+}
+.blog-prose th {
+  font-weight: 600;
+  color: #0F2A1F;
+  background: #F0FAF0;
+}
+
+/* Scrollbar-none for filters */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}

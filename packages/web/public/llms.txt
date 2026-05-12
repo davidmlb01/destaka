@@ -1,0 +1,13 @@
+# Destaka
+> Presença digital no piloto automático para profissionais de saúde.
+
+## Tópicos principais
+- Otimização Google Meu Negócio para clínicas
+- SEO local para dentistas e médicos
+- GIO: presença em respostas de IA
+
+## URLs
+- Site: https://destaka.com.br
+- Blog: https://destaka.com.br/blog
+- Sitemap: https://destaka.com.br/sitemap.xml
+- Feed RSS: https://destaka.com.br/blog/feed.xml
