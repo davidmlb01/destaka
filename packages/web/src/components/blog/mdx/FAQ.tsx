@@ -14,6 +14,8 @@ interface FAQProps {
 export function FAQ({ items }: FAQProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
 
+  if (!items || items.length === 0) return null
+
   return (
     <div className="my-8 space-y-2">
       <h3
