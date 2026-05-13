@@ -35,8 +35,13 @@ export function useGmbLocations() {
           locations?: GmbLocation[]
           noProfiles?: boolean
         }
-        if (data.error) {
-          setErrorMsg(data.error)
+        if (!res.ok || data.error) {
+          // 401 = token expirado → força re-login
+          if (res.status === 401) {
+            window.location.href = '/saude/login'
+            return
+          }
+          setErrorMsg(data.error ?? 'Erro ao buscar perfis do Google.')
           setStep('error')
           return
         }

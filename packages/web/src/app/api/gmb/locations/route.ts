@@ -69,8 +69,16 @@ export async function GET() {
         { status: 401 }
       )
     }
+    // 404 = conta Google sem nenhum perfil GMB associado
+    if (msg.includes('404')) {
+      return NextResponse.json(
+        { locations: [], noProfiles: true, type: 'no_account' }
+      )
+    }
+    // Outros erros: loga o detalhe e retorna mensagem acionável
+    console.error('[gmb/locations] detalhe do erro:', msg)
     return NextResponse.json(
-      { error: 'Erro ao comunicar com a API do Google. Tente novamente em instantes.', type: 'api_error' },
+      { error: `Erro ao buscar perfis do Google (${msg.slice(0, 120)}). Tente novamente ou faça login novamente.`, type: 'api_error', detail: msg.slice(0, 200) },
       { status: 502 }
     )
   }

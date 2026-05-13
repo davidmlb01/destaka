@@ -82,10 +82,22 @@ function ErrorState({ message }: { message: string }) {
     <Card variant="subtle" padding="lg" className="text-center" style={{ border: '1px solid rgba(239,68,68,0.3)' }}>
       <div className="text-4xl mb-4">⚠️</div>
       <h2 className="font-display font-extrabold text-white text-xl mb-3">Algo deu errado</h2>
-      <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 15, marginBottom: 24 }}>{message}</p>
-      <Button variant="primary" size="md" href="/saude/login">
-        Tentar novamente
-      </Button>
+      <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 15, marginBottom: 8 }}>{message}</p>
+      <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13, marginBottom: 24 }}>
+        Faça login novamente para reconectar sua conta Google.
+      </p>
+      <div className="flex flex-col gap-3">
+        <Button variant="primary" size="md" href="/saude/login">
+          Fazer login novamente
+        </Button>
+        <a
+          href="mailto:suporte@destaka.com.br"
+          className="text-sm"
+          style={{ color: 'rgba(255,255,255,0.35)' }}
+        >
+          Problema persistindo? Fale com o suporte
+        </a>
+      </div>
     </Card>
   )
 }
