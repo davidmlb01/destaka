@@ -16,21 +16,35 @@ function scoreColor(score: number) {
   return getScoreColor(score)
 }
 
-function getVerdict(score: number) {
+type VerdictPart = { type: 'text' | 'em'; text: string }
+
+function getVerdict(score: number): { lines: VerdictPart[]; sub: string } {
   if (score < 40) return {
-    html: 'Situação crítica.<br /><em>Pacientes não te encontram.</em>',
+    lines: [
+      { type: 'text', text: 'Situação crítica. ' },
+      { type: 'em', text: 'Pacientes não te encontram.' },
+    ],
     sub: `Com nota ${score}, seu perfil está quase invisível no Google. A maioria dos pacientes que busca na sua cidade não chega até você.`,
   }
   if (score < 60) return {
-    html: 'Você está perdendo pacientes<br /><em>todos os dias.</em>',
+    lines: [
+      { type: 'text', text: 'Você está perdendo pacientes ' },
+      { type: 'em', text: 'todos os dias.' },
+    ],
     sub: `Seu perfil está em ${score}% do potencial. Quando um paciente pesquisa na sua cidade, há uma chance real de ele ir para o concorrente.`,
   }
   if (score < 80) return {
-    html: 'Bom começo.<br /><em>Mas ainda há dinheiro na mesa.</em>',
+    lines: [
+      { type: 'text', text: 'Bom começo. ' },
+      { type: 'em', text: 'Mas ainda há dinheiro na mesa.' },
+    ],
     sub: `Nota ${score} é melhor do que a maioria, mas os ${100 - score} pontos restantes representam pacientes que você ainda não captura.`,
   }
   return {
-    html: 'Perfil forte.<br /><em>Vamos chegar nos 100%.</em>',
+    lines: [
+      { type: 'text', text: 'Perfil forte. ' },
+      { type: 'em', text: 'Vamos chegar nos 100%.' },
+    ],
     sub: `Nota ${score} coloca você acima da média. Com os ajustes finais, você maximiza sua presença e fecha as brechas dos concorrentes.`,
   }
 }
@@ -110,13 +124,17 @@ export function StepScore({ clinicName, city, score, categories, place, onCaptur
             </div>
           </div>
 
+          {/* MED-03: substituído dangerouslySetInnerHTML por JSX para evitar risco de XSS futuro */}
           <h2
             className="font-display font-extrabold text-white tracking-[-0.5px] leading-[1.2] mb-3"
             style={{ fontSize: 'clamp(22px, 4vw, 32px)' }}
-            dangerouslySetInnerHTML={{
-              __html: verdict.html.replace(/<em>/g, '<em style="color:#0EA5E9;font-style:normal;">'),
-            }}
-          />
+          >
+            {verdict.lines.map((part, i) =>
+              part.type === 'em'
+                ? <em key={i} style={{ color: '#0EA5E9', fontStyle: 'normal' }}>{part.text}</em>
+                : <span key={i}>{part.text}</span>
+            )}
+          </h2>
           <p className="text-[15px] leading-relaxed max-w-[400px] mx-auto" style={{ color: 'rgba(255,255,255,0.55)' }}>
             {verdict.sub}
           </p>

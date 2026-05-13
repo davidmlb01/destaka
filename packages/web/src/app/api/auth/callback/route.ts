@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { encrypt } from '@/lib/crypto'
+import { logger } from '@/lib/logger'
 
 // GET /api/auth/callback
 // Supabase OAuth redireciona aqui com ?code=...
@@ -9,17 +10,22 @@ import { encrypt } from '@/lib/crypto'
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
-  const next = searchParams.get('next') ?? '/saude/onboarding'
+
+  // CRIT-03: valida next para evitar open redirect
+  const rawNext = searchParams.get('next') ?? '/saude/onboarding'
+  const next = rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/saude/onboarding'
 
   if (!code) {
     return NextResponse.redirect(`${origin}/saude/login?error=missing_code`)
   }
 
+  logger.info('auth/callback', 'iniciando troca de code por sessão')
+
   const supabase = await createClient()
   const { data, error } = await supabase.auth.exchangeCodeForSession(code)
 
   if (error || !data.session) {
-    console.error('[auth/callback] exchangeCodeForSession error:', error)
+    logger.error('auth/callback', 'exchangeCodeForSession falhou', { error: error?.message })
     return NextResponse.redirect(`${origin}/saude/login?error=auth_failed`)
   }
 
@@ -28,10 +34,12 @@ export async function GET(request: NextRequest) {
   const accessToken = session.provider_token ?? null
   const refreshToken = session.provider_refresh_token ?? null
 
+  logger.info('auth/callback', 'sessão criada', { userId: user.id })
+
   // Se o token do Google não foi retornado, o usuário não autorizou o escopo
   // business.manage. Redireciona para login para forçar nova tentativa com consent.
   if (!accessToken) {
-    console.error('[auth/callback] provider_token ausente — escopo não concedido, user:', user.id)
+    logger.error('auth/callback', 'provider_token ausente — escopo não concedido', { userId: user.id })
     return NextResponse.redirect(`${origin}/saude/login?error=missing_scope`)
   }
 
@@ -50,9 +58,10 @@ export async function GET(request: NextRequest) {
   )
 
   if (upsertError) {
-    console.error('[auth/callback] upsert user error:', upsertError)
+    logger.error('auth/callback', 'upsert user falhou', { userId: user.id, error: upsertError.message })
     return NextResponse.redirect(`${origin}/saude/login?error=db_error`)
   }
 
+  logger.info('auth/callback', 'usuário salvo, redirecionando', { userId: user.id, next })
   return NextResponse.redirect(`${origin}${next}`)
 }

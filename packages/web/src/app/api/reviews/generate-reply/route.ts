@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { generateReviewReply } from '@/lib/gmb/reviews'
+import { logger } from '@/lib/logger'
+import { rateLimit } from '@/lib/redis'
 
 // POST /api/reviews/generate-reply
 // Body: { reviewId }
@@ -9,8 +11,18 @@ export async function POST(req: NextRequest) {
   const { data: { user }, error } = await supabase.auth.getUser()
   if (error || !user) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
 
-  const { reviewId } = await req.json() as { reviewId: string }
-  if (!reviewId) return NextResponse.json({ error: 'reviewId obrigatório' }, { status: 400 })
+  // HIGH-03: rate limit — máx 30 respostas geradas por usuário por hora
+  const count = await rateLimit(`review-reply:${user.id}`, 3600)
+  if (count !== null && count > 30) {
+    logger.warn('reviews/generate-reply', 'rate limit atingido', { userId: user.id })
+    return NextResponse.json({ error: 'Muitas requisições. Tente novamente em breve.' }, { status: 429 })
+  }
+
+  const body = await req.json().catch(() => null)
+  const reviewId = body?.reviewId
+  if (!reviewId || typeof reviewId !== 'string') {
+    return NextResponse.json({ error: 'reviewId obrigatório' }, { status: 400 })
+  }
 
   const serviceClient = await createServiceClient()
 
@@ -25,22 +37,24 @@ export async function POST(req: NextRequest) {
 
   const profileData = review.gmb_profiles as { name: string; category: string; user_id: string } | null
   if (!profileData || profileData.user_id !== user.id) {
+    logger.warn('reviews/generate-reply', 'acesso negado', { userId: user.id, reviewId })
     return NextResponse.json({ error: 'Acesso negado' }, { status: 403 })
   }
 
   const segment = detectSegment(profileData.category ?? '')
 
   try {
+    logger.info('reviews/generate-reply', 'gerando resposta via Claude', { reviewId, userId: user.id })
     const reply = await generateReviewReply(
       { author: review.author, rating: review.rating, text: review.text },
       segment,
       profileData.name
     )
+    logger.info('reviews/generate-reply', 'resposta gerada com sucesso', { reviewId })
     return NextResponse.json({ reply })
   } catch (err) {
-    console.error('[generate-reply] Claude API error:', err)
-    const message = err instanceof Error ? err.message : 'Erro desconhecido'
-    return NextResponse.json({ error: `Falha ao gerar resposta: ${message}` }, { status: 502 })
+    logger.error('reviews/generate-reply', 'Claude API falhou', { reviewId, error: String(err) })
+    return NextResponse.json({ error: 'Falha ao gerar resposta' }, { status: 502 })
   }
 }
 

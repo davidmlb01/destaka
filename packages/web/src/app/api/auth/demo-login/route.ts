@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 
-const DEMO_EMAIL = 'demo@destaka.com.br'
-const DEMO_PASSWORD = 'Destaka@Demo2026'
+// CRIT-02: credenciais demo via env vars (nunca hardcoded no source)
+const DEMO_EMAIL = process.env.DEMO_EMAIL ?? 'demo@destaka.com.br'
+const DEMO_PASSWORD = process.env.DEMO_PASSWORD ?? ''
 
 // POST /api/auth/demo-login
 // Cria (ou reutiliza) o usuário demo e retorna sessão autenticada.
@@ -10,6 +11,10 @@ const DEMO_PASSWORD = 'Destaka@Demo2026'
 export async function POST() {
   if (process.env.GMB_MOCK !== 'true') {
     return NextResponse.json({ error: 'Demo não disponível' }, { status: 403 })
+  }
+
+  if (!DEMO_PASSWORD) {
+    return NextResponse.json({ error: 'Demo não configurado' }, { status: 503 })
   }
 
   const serviceClient = await createServiceClient()

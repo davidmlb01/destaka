@@ -2,6 +2,10 @@ import type { Metadata } from 'next'
 import { Outfit, Inter } from 'next/font/google'
 import { Toaster } from 'sonner'
 import './globals.css'
+import { assertEnvVars } from '@/lib/env-check'
+
+// LOW-02: valida env vars obrigatórias no startup — lança erro em produção se faltarem
+assertEnvVars()
 
 const outfit = Outfit({
   variable: '--font-display',

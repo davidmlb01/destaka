@@ -144,7 +144,7 @@ export async function POST(request: Request) {
             <p>Qualquer dúvida, responda este email.</p>
             <p>Equipe Destaka</p>
           `,
-        }).catch(() => {})
+        }).catch((err) => logger.warn('stripe/webhook', 'email de falha de pagamento não enviado', { customerId, error: String(err) }))
       }
 
       break

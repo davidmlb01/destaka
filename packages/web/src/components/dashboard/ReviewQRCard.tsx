@@ -5,6 +5,17 @@ import { Card } from '@/components/ui/Card'
 import { Spinner } from '@/components/ui/Spinner'
 import { PinIcon } from '@/components/ui/PinIcon'
 
+// HIGH-04: sanitiza SVG do QR code antes de injetar no DOM
+// Aceita apenas elementos e atributos SVG legítimos — sem scripts, eventos ou hrefs externos
+function sanitizeQrSvg(raw: string): string {
+  const sized = raw.replace('<svg ', '<svg width="116" height="116" ')
+  // Remove atributos de evento (on*) e tags script/foreignObject
+  return sized
+    .replace(/\s+on\w+="[^"]*"/gi, '')
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<foreignObject[\s\S]*?<\/foreignObject>/gi, '')
+}
+
 interface QRData {
   reviewUrl: string
   qrSvg: string
@@ -146,7 +157,7 @@ export function ReviewQRCard() {
           ref={svgContainerRef}
           className="shrink-0 rounded-xl p-3 qr-container"
           style={{ background: 'rgba(255,255,255,0.08)', width: 140, height: 140, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-          dangerouslySetInnerHTML={{ __html: data.qrSvg.replace('<svg ', '<svg width="116" height="116" ') }}
+          dangerouslySetInnerHTML={{ __html: sanitizeQrSvg(data.qrSvg) }}
         />
 
         {/* Info */}

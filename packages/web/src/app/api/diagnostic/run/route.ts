@@ -4,6 +4,8 @@ import { runDiagnosis } from '@/lib/gmb/diagnosis'
 import { syncProfileReviews } from '@/lib/gmb/reviews'
 import { sendDiagnosticReadyEmail } from '@/lib/email/diagnostic-ready'
 import { getValidGmbToken } from '@/lib/gmb/auth'
+import { logger } from '@/lib/logger'
+import { rateLimit } from '@/lib/redis'
 
 // POST /api/diagnostic/run
 // Roda o diagnóstico completo de um perfil GMB e salva no banco.
@@ -16,10 +18,20 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
   }
 
-  const { profileId } = await request.json()
-  if (!profileId) {
+  // HIGH-03: rate limit — máx 10 diagnósticos por usuário por hora
+  const rateLimitCount = await rateLimit(`diagnostic:${user.id}`, 3600)
+  if (rateLimitCount !== null && rateLimitCount > 10) {
+    logger.warn('diagnostic/run', 'rate limit atingido', { userId: user.id, count: rateLimitCount })
+    return NextResponse.json({ error: 'Muitas requisições. Tente novamente em breve.' }, { status: 429 })
+  }
+
+  const body = await request.json().catch(() => null)
+  const profileId = body?.profileId
+  if (!profileId || typeof profileId !== 'string') {
     return NextResponse.json({ error: 'profileId obrigatório' }, { status: 400 })
   }
+
+  logger.info('diagnostic/run', 'iniciando diagnóstico', { userId: user.id, profileId })
 
   const serviceClient = await createServiceClient()
 
@@ -32,6 +44,7 @@ export async function POST(request: NextRequest) {
     .single()
 
   if (profileError || !profile) {
+    logger.warn('diagnostic/run', 'perfil não encontrado', { userId: user.id, profileId })
     return NextResponse.json({ error: 'Perfil não encontrado' }, { status: 404 })
   }
 
@@ -46,7 +59,7 @@ export async function POST(request: NextRequest) {
   try {
     accessToken = await getValidGmbToken(user.id)
   } catch (tokenErr) {
-    console.error('[diagnostic/run] token indisponível:', tokenErr)
+    logger.error('diagnostic/run', 'token GBP indisponível', { userId: user.id, error: String(tokenErr) })
   }
 
   // Sem token não é possível buscar dados reais do GBP.
@@ -60,9 +73,10 @@ export async function POST(request: NextRequest) {
 
   // Sincroniza reviews reais da GBP antes do diagnóstico (dados frescos)
   await syncProfileReviews(serviceClient, profileId, profile.google_location_id, accessToken)
-    .catch(err => console.error('[diagnostic/run] sync reviews error:', err))
+    .catch(err => logger.warn('diagnostic/run', 'sync reviews falhou (não bloqueante)', { profileId, error: String(err) }))
 
   // Roda o diagnóstico com dados reais do GBP
+  logger.info('diagnostic/run', 'chamando runDiagnosis', { profileId, locationId: profile.google_location_id })
   const result = await runDiagnosis(
     profile.google_location_id,
     profile.category ?? 'dentista',
@@ -72,6 +86,7 @@ export async function POST(request: NextRequest) {
   )
 
   const { score, aiDiagnosis, profileData } = result
+  logger.info('diagnostic/run', 'diagnóstico concluído', { profileId, score: score.total })
 
   // Salva no banco (inclui snapshot dos dados reais para uso posterior em otimizações)
   const { data: diagnostic, error: saveError } = await serviceClient
@@ -92,7 +107,7 @@ export async function POST(request: NextRequest) {
     .single()
 
   if (saveError) {
-    console.error('[diagnostic/run] save error:', saveError)
+    logger.error('diagnostic/run', 'erro ao salvar diagnóstico no banco', { profileId, error: saveError.message })
     return NextResponse.json({ error: 'Erro ao salvar diagnóstico' }, { status: 500 })
   }
 
@@ -109,8 +124,10 @@ export async function POST(request: NextRequest) {
       name: userData.name ?? 'Doutor(a)',
       profileName: profile.name,
       score: score.total,
-    }).catch(err => console.error('[diagnostic/run] email error:', err))
+    }).catch(err => logger.warn('diagnostic/run', 'email de diagnóstico falhou', { userId: user.id, error: String(err) }))
   }
+
+  logger.info('diagnostic/run', 'diagnóstico salvo com sucesso', { diagnosticId: diagnostic.id, profileId, score: score.total })
 
   return NextResponse.json({
     diagnosticId: diagnostic.id,

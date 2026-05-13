@@ -79,14 +79,14 @@ export async function GET() {
   const allOk = Object.values(checks).every(c => c.ok)
   const status = allOk ? 200 : 503
 
-  return NextResponse.json(
-    {
-      ok: allOk,
-      ts: new Date().toISOString(),
-      version: process.env.NEXT_PUBLIC_APP_VERSION ?? 'unknown',
-      env: process.env.NODE_ENV,
-      checks,
-    },
-    { status }
-  )
+  // MED-02: não expor detalhes de infraestrutura publicamente
+  // Monitores externos recebem apenas ok/status. Detalhes ficam no servidor.
+  const publicResponse = { ok: allOk, ts: new Date().toISOString() }
+
+  // Log interno para Vercel Runtime Logs (visível apenas no dashboard)
+  if (!allOk) {
+    console.error('[health] checks falharam:', JSON.stringify(checks))
+  }
+
+  return NextResponse.json(publicResponse, { status })
 }
