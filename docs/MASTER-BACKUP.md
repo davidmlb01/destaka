@@ -1,6 +1,6 @@
 # MASTER BACKUP — Destaka (Projeto GMM)
-**Atualizado:** 2026-05-12
-**Status:** Content OS live (36 artigos + 49 posts). Blog destaka.com.br/blog no ar. Cron quinzenal ativo (dia 1 e 15, 19h). LinkedIn API aguardando aprovação.
+**Atualizado:** 2026-05-13
+**Status:** Primeiro onboarding de cliente realizado hoje. Auditoria de segurança completa (16 vulnerabilidades corrigidas). Code audit 6 fases aplicado. OAuth em produção, app verificado pelo Google. Health ok. CTO assessment: 8/10.
 
 ---
 
@@ -63,14 +63,27 @@
 - [x] Cron quinzenal Vercel (dia 1 e 15, 22h UTC = 19h Brasília)
 - [x] LLMS.txt na raiz (indexação por IAs)
 - [x] 49 posts sociais gerados (LinkedIn .md + Instagram .json em content/social/)
+- [x] Auditoria de segurança pré-onboarding: 16 vulnerabilidades corrigidas (commit 3c7bebe)
+  - CRIT: open redirect auth/callback, credenciais demo hardcoded
+  - HIGH: RLS profile_alerts + stripe_webhook_log, rate limiting AI, SVG injection
+  - MED: dangerouslySetInnerHTML, health details público, leads anon insert
+  - LOW: security headers, assertEnvVars no startup
+- [x] Code audit 6 fases (commit c59df25)
+  - Error handling: handleSync try/catch, OptimizationWizard try/catch, isMounted cleanup
+  - Performance: React.memo MetricCard+ScoreCard, useMemo categories, useCallback handleSync
+  - TypeScript: profile: any → GmbProfile tipado, zero erros
+  - ErrorBoundary no DashboardContent
+- [x] Google OAuth: app verificado pelo Google, em produção, tipo externo
+- [x] Health endpoint produção: {"ok":true}
 - [~] LinkedIn API: Community Management API submetido 12/05, aguardando aprovação (1-4 semanas)
+- [~] Primeiro cliente: onboarding agendado 13/05 (tarde)
 - [ ] LinkedIn manual posting (2/dia, posts em content/social/)
 - [ ] Submeter sitemap no Google Search Console
 - [ ] Instagram Graph API (criar app Meta depois da LinkedIn API aprovada)
 - [ ] GBP real vinculado para teste end-to-end
 - [ ] Debugar My Business Account Management API (100% errors)
 - [ ] Stripe modo produção ativado
-- [ ] Primeiros clientes pagantes (1o amanhã à noite, 2o no fim de semana)
+- [ ] Próxima sprint: Zod validation nos bodies de API, VerifyTool.tsx refactor (421 linhas)
 
 ---
 
