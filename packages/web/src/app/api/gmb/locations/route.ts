@@ -55,6 +55,13 @@ export async function GET() {
     const msg = err instanceof Error ? err.message : String(err)
     console.error('[gmb/locations] GMB API error:', msg)
 
+    // 429 = quota zerada no Google Cloud — API não habilitada corretamente
+    if (msg.includes('429')) {
+      return NextResponse.json(
+        { error: 'Serviço do Google temporariamente indisponível. Aguarde alguns minutos e tente novamente.', type: 'quota_exceeded' },
+        { status: 503 }
+      )
+    }
     // 403 = scope business.manage não foi concedido no OAuth
     if (msg.includes('403')) {
       return NextResponse.json(
