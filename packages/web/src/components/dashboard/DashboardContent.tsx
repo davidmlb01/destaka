@@ -1,6 +1,7 @@
 'use client'
 
 import { Card } from '@/components/ui/Card'
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { ScoreGauge } from './ScoreGauge'
 import { ScoreCard } from './ScoreCard'
 import { MetricCard } from './MetricCard'
@@ -36,6 +37,7 @@ export function DashboardContent() {
     isLoading,
     mutate,
     syncing,
+    syncError,
     diagnosticId,
     categories,
     lastSync,
@@ -66,6 +68,7 @@ export function DashboardContent() {
   const { profile, diagnostic, scoreHistory, metrics, nextActions, weeklySummary } = data
 
   return (
+    <ErrorBoundary>
     <div className="flex flex-col gap-8">
 
       {/* Resumo semanal */}
@@ -90,22 +93,27 @@ export function DashboardContent() {
             onComplete={() => mutate()}
           />
 
-          <div className="w-full flex items-center justify-between">
-            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
-              Sync: {lastSync}
-            </p>
-            <button
-              onClick={handleSync}
-              disabled={syncing}
-              className="text-xs font-medium px-3 py-1.5 rounded-lg transition-all"
-              style={{
-                background: syncing ? 'rgba(255,255,255,0.06)' : 'rgba(14,165,233,0.15)',
-                color: syncing ? 'rgba(255,255,255,0.3)' : 'var(--accent-bright)',
-                border: '1px solid rgba(14,165,233,0.2)',
-              }}
-            >
-              {syncing ? 'Sincronizando...' : 'Sincronizar'}
-            </button>
+          <div className="w-full flex flex-col gap-1">
+            {syncError && (
+              <p className="text-xs font-medium text-center" style={{ color: '#F87171' }}>{syncError}</p>
+            )}
+            <div className="flex items-center justify-between">
+              <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                Sync: {lastSync}
+              </p>
+              <button
+                onClick={handleSync}
+                disabled={syncing}
+                className="text-xs font-medium px-3 py-1.5 rounded-lg transition-all"
+                style={{
+                  background: syncing ? 'rgba(255,255,255,0.06)' : 'rgba(14,165,233,0.15)',
+                  color: syncing ? 'rgba(255,255,255,0.3)' : 'var(--accent-bright)',
+                  border: '1px solid rgba(14,165,233,0.2)',
+                }}
+              >
+                {syncing ? 'Sincronizando...' : 'Sincronizar'}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -149,5 +157,6 @@ export function DashboardContent() {
       </div>
 
     </div>
+    </ErrorBoundary>
   )
 }

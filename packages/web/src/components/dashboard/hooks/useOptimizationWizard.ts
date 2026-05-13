@@ -23,17 +23,20 @@ export function useOptimizationWizard(
   async function openWizard() {
     setStep('loading-plan')
     setErrorMsg('')
-
-    const res = await fetch('/api/optimization/plan')
-    if (!res.ok) {
-      setErrorMsg('Não foi possível gerar o plano. Execute um diagnóstico primeiro.')
+    try {
+      const res = await fetch('/api/optimization/plan')
+      if (!res.ok) {
+        setErrorMsg('Não foi possível gerar o plano. Execute um diagnóstico primeiro.')
+        setStep('error')
+        return
+      }
+      const data = (await res.json()) as OptimizationPlan
+      setPlan(data)
+      setStep('preview')
+    } catch {
+      setErrorMsg('Erro de conexão. Verifique sua internet e tente novamente.')
       setStep('error')
-      return
     }
-
-    const data = (await res.json()) as OptimizationPlan
-    setPlan(data)
-    setStep('preview')
   }
 
   async function startExecution() {
@@ -47,25 +50,30 @@ export function useOptimizationWizard(
       await new Promise((r) => setTimeout(r, 800))
     }
 
-    const res = await fetch('/api/optimization/execute', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        profileId,
-        diagnosticId,
-        actions: plan.actions,
-      }),
-    })
+    try {
+      const res = await fetch('/api/optimization/execute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          profileId,
+          diagnosticId,
+          actions: plan.actions,
+        }),
+      })
 
-    if (!res.ok) {
-      setErrorMsg('Erro durante execução. Tente novamente.')
+      if (!res.ok) {
+        setErrorMsg('Erro durante execução. Tente novamente.')
+        setStep('error')
+        return
+      }
+
+      const data = (await res.json()) as ExecutionState
+      setExecution(data)
+      setStep('done')
+    } catch {
+      setErrorMsg('Erro de conexão durante execução. Tente novamente.')
       setStep('error')
-      return
     }
-
-    const data = (await res.json()) as ExecutionState
-    setExecution(data)
-    setStep('done')
   }
 
   function reset() {

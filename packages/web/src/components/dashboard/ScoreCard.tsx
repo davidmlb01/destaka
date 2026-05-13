@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import type { CategoryScore } from '@/lib/gmb/scorer'
 import { getScoreColor, getScoreLabel } from '@/lib/utils/score-colors'
 import { PinIcon } from '@/components/ui/PinIcon'
@@ -10,7 +10,7 @@ function scoreToColor(percentage: number): string {
   return getScoreColor(percentage)
 }
 
-export function ScoreCard({ category }: { category: CategoryScore }) {
+export const ScoreCard = memo(function ScoreCard({ category }: { category: CategoryScore }) {
   const [expanded, setExpanded] = useState(false)
   const color = scoreToColor(category.percentage)
   const hasIssues = category.issues.length > 0
@@ -86,7 +86,7 @@ export function ScoreCard({ category }: { category: CategoryScore }) {
       )}
     </div>
   )
-}
+})
 
 export function TotalScoreBadge({ score }: { score: number }) {
   const color = scoreToColor(score)

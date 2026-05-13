@@ -1,6 +1,6 @@
 'use client'
 
-import { type ReactNode } from 'react'
+import { memo, type ReactNode } from 'react'
 
 interface MetricCardProps {
   label: string
@@ -9,7 +9,7 @@ interface MetricCardProps {
   hint: string
 }
 
-export function MetricCard({ label, value, icon, hint }: MetricCardProps) {
+export const MetricCard = memo(function MetricCard({ label, value, icon, hint }: MetricCardProps) {
   return (
     <div
       className="rounded-2xl p-5 relative overflow-hidden"
@@ -53,4 +53,4 @@ export function MetricCard({ label, value, icon, hint }: MetricCardProps) {
       </p>
     </div>
   )
-}
+})

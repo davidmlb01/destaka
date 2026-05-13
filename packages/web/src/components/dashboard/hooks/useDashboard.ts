@@ -1,5 +1,5 @@
 import useSWR from 'swr'
-import { useState } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { fetcher } from '@/lib/swr/fetcher'
 import type { CategoryScore } from '@/lib/gmb/scorer'
 
@@ -34,10 +34,11 @@ const CATEGORY_META = [
 export function useDashboard() {
   const { data, error, isLoading, mutate } = useSWR<DashboardData>('/api/dashboard', fetcher)
   const [syncing, setSyncing] = useState(false)
+  const [syncError, setSyncError] = useState<string | null>(null)
 
   const diagnosticId = data?.diagnostic?.id ?? ''
 
-  const categories: CategoryScore[] = CATEGORY_META.map((m) => {
+  const categories = useMemo<CategoryScore[]>(() => CATEGORY_META.map((m) => {
     const score = data?.diagnostic ? ((data.diagnostic[m.scoreField] as number) ?? 0) : 0
     const issues = !data?.diagnostic
       ? []
@@ -52,7 +53,7 @@ export function useDashboard() {
       percentage: Math.round((score / m.max) * 100),
       issues,
     }
-  })
+  }), [data?.diagnostic])
 
   const lastSync = data?.profile.last_synced_at
     ? new Date(data.profile.last_synced_at).toLocaleString('pt-BR', {
@@ -63,17 +64,27 @@ export function useDashboard() {
       })
     : 'nunca'
 
-  async function handleSync() {
+  const handleSync = useCallback(async () => {
     if (!data || syncing) return
     setSyncing(true)
-    await fetch('/api/diagnostic/run', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ profileId: data.profile.id }),
-    })
-    await mutate()
-    setSyncing(false)
-  }
+    setSyncError(null)
+    try {
+      const res = await fetch('/api/diagnostic/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ profileId: data.profile.id }),
+      })
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({})) as { error?: string }
+        throw new Error(body.error ?? 'Erro ao sincronizar')
+      }
+      await mutate()
+    } catch (e) {
+      setSyncError(e instanceof Error ? e.message : 'Erro ao sincronizar')
+    } finally {
+      setSyncing(false)
+    }
+  }, [data, syncing, mutate])
 
   return {
     data,
@@ -81,6 +92,7 @@ export function useDashboard() {
     isLoading,
     mutate,
     syncing,
+    syncError,
     diagnosticId,
     categories,
     lastSync,

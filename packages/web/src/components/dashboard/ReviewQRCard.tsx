@@ -30,6 +30,7 @@ export function ReviewQRCard() {
   const svgContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    let mounted = true
     async function load() {
       try {
         const res = await fetch('/api/reviews/qr')
@@ -37,14 +38,16 @@ export function ReviewQRCard() {
           const err = await res.json().catch(() => ({})) as { error?: string }
           throw new Error(err.error ?? 'Erro ao carregar QR code')
         }
-        setData(await res.json())
+        const json = await res.json()
+        if (mounted) setData(json)
       } catch (e) {
-        setError(e instanceof Error ? e.message : 'Erro ao carregar QR code')
+        if (mounted) setError(e instanceof Error ? e.message : 'Erro ao carregar QR code')
       } finally {
-        setLoading(false)
+        if (mounted) setLoading(false)
       }
     }
     load()
+    return () => { mounted = false }
   }, [])
 
   const copyLink = useCallback(async () => {

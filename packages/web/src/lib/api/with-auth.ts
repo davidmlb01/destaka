@@ -3,10 +3,28 @@ import { createClient, createServiceClient } from '@/lib/supabase/server'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { User } from '@supabase/supabase-js'
 
+// Campos base sempre presentes quando fields='*'. Callers podem afunilar com campos específicos.
+export type GmbProfile = {
+  id: string
+  user_id: string
+  place_id: string
+  name: string
+  address: string | null
+  phone: string | null
+  website: string | null
+  category: string | null
+  score: number
+  last_synced_at: string | null
+  created_at: string
+  updated_at: string
+  google_location_id?: string | null
+  google_place_id?: string | null
+  [key: string]: unknown
+}
+
 interface AuthSuccess {
   user: User
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  profile: any
+  profile: GmbProfile
   serviceClient: SupabaseClient
   error?: undefined
 }
@@ -36,13 +54,16 @@ export async function getAuthenticatedProfile(fields = '*'): Promise<AuthResult>
 
   const serviceClient = await createServiceClient()
 
-  const { data: profile } = await serviceClient
+  const { data: rawProfile } = await serviceClient
     .from('gmb_profiles')
     .select(fields)
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
     .limit(1)
     .single()
+
+  // Supabase returns GenericStringError when select() uses a dynamic string — cast to GmbProfile
+  const profile = rawProfile as GmbProfile | null
 
   if (!profile) {
     return { error: NextResponse.json({ error: 'Nenhum perfil encontrado' }, { status: 404 }) }
