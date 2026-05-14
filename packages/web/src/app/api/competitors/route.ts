@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { discoverCompetitors, generateBenchmark } from '@/lib/gmb/competitors'
+import { z } from 'zod'
+
+const CompetitorsPostBody = z.object({
+  benchmark: z.boolean().optional(),
+})
 
 const MOCK_COMPETITORS = [
   {
@@ -115,12 +120,13 @@ export async function POST(req: NextRequest) {
   if (!profiles?.length) return NextResponse.json({ error: 'Perfil nao encontrado' }, { status: 404 })
 
   const profileId = profiles[0].id
-  const body = await req.json().catch(() => ({})) as { benchmark?: boolean }
+  const parsed = CompetitorsPostBody.safeParse(await req.json().catch(() => ({})))
+  const benchmark = parsed.success ? parsed.data.benchmark : false
 
   const serviceDb = await createServiceClient()
   const { discovered, errors } = await discoverCompetitors(serviceDb, profileId)
 
-  if (body.benchmark && discovered > 0) {
+  if (benchmark && discovered > 0) {
     await generateBenchmark(serviceDb, profileId)
   }
 

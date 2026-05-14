@@ -3,6 +3,11 @@ import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { generateReviewReply } from '@/lib/gmb/reviews'
 import { logger } from '@/lib/logger'
 import { rateLimitStrict } from '@/lib/redis'
+import { z } from 'zod'
+
+const GenerateReplyBody = z.object({
+  reviewId: z.string().min(1),
+})
 
 // POST /api/reviews/generate-reply
 // Body: { reviewId }
@@ -22,11 +27,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Serviço temporariamente indisponível. Tente novamente em instantes.' }, { status: 503 })
   }
 
-  const body = await req.json().catch(() => null)
-  const reviewId = body?.reviewId
-  if (!reviewId || typeof reviewId !== 'string') {
+  const parsed = GenerateReplyBody.safeParse(await req.json().catch(() => null))
+  if (!parsed.success) {
     return NextResponse.json({ error: 'reviewId obrigatório' }, { status: 400 })
   }
+  const { reviewId } = parsed.data
 
   const serviceClient = await createServiceClient()
 

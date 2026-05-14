@@ -6,6 +6,11 @@ import { sendDiagnosticReadyEmail } from '@/lib/email/diagnostic-ready'
 import { getValidGmbToken } from '@/lib/gmb/auth'
 import { logger } from '@/lib/logger'
 import { rateLimitStrict } from '@/lib/redis'
+import { z } from 'zod'
+
+const DiagnosticRunBody = z.object({
+  profileId: z.string().min(1),
+})
 
 // POST /api/diagnostic/run
 // Roda o diagnóstico completo de um perfil GMB e salva no banco.
@@ -29,11 +34,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Serviço temporariamente indisponível. Tente novamente em instantes.' }, { status: 503 })
   }
 
-  const body = await request.json().catch(() => null)
-  const profileId = body?.profileId
-  if (!profileId || typeof profileId !== 'string') {
+  const parsed = DiagnosticRunBody.safeParse(await request.json().catch(() => null))
+  if (!parsed.success) {
     return NextResponse.json({ error: 'profileId obrigatório' }, { status: 400 })
   }
+  const { profileId } = parsed.data
 
   logger.info('diagnostic/run', 'iniciando diagnóstico', { userId: user.id, profileId })
 

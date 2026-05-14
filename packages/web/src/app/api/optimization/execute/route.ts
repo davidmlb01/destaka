@@ -8,6 +8,16 @@ import { trackEvent, recordScore } from '@/lib/analytics'
 import { logger } from '@/lib/logger'
 import { getValidGmbToken } from '@/lib/gmb/auth'
 import type { OptimizationAction, ExecutionResult, GmbWriteContext } from '@/lib/gmb/optimizer'
+import { z } from 'zod'
+
+const OptimizationExecuteBody = z.object({
+  profileId: z.string().min(1),
+  diagnosticId: z.string().optional(),
+  actions: z.array(z.object({
+    type: z.enum(['update_hours', 'update_categories', 'update_attributes', 'update_description', 'add_services']),
+    label: z.string(),
+  })).min(1),
+})
 
 export const dynamic = 'force-dynamic'
 
@@ -28,15 +38,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Muitas requisições. Tente novamente em breve.' }, { status: 429 })
   }
 
-  const body = await req.json() as {
-    profileId: string
-    diagnosticId: string
-    actions: OptimizationAction[]
-  }
-
-  if (!body.profileId || !body.actions?.length) {
+  const parsed = OptimizationExecuteBody.safeParse(await req.json().catch(() => null))
+  if (!parsed.success) {
     return NextResponse.json({ error: 'profileId e actions são obrigatórios' }, { status: 400 })
   }
+  const body = parsed.data as { profileId: string; diagnosticId: string; actions: OptimizationAction[] }
 
   const serviceClient = await createServiceClient()
 
