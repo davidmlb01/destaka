@@ -1,6 +1,6 @@
 # MASTER BACKUP — Destaka (Projeto GMM)
-**Atualizado:** 2026-05-13
-**Status:** Primeiro onboarding de cliente realizado hoje. Auditoria de segurança completa (16 vulnerabilidades corrigidas). Code audit 6 fases aplicado. OAuth em produção, app verificado pelo Google. Health ok. CTO assessment: 8/10.
+**Atualizado:** 2026-05-14
+**Status:** Auditoria de segurança 7 vetores completa (5 commits, 13 itens). Google API quota=0 descoberto (primeiro cliente bloqueado). UNLMTD enviado para verificação 14/05 (desbloqueador da API). OAuth verificado, app Google em produção. CTO 8/10.
 
 ---
 
@@ -75,15 +75,22 @@
   - ErrorBoundary no DashboardContent
 - [x] Google OAuth: app verificado pelo Google, em produção, tipo externo
 - [x] Health endpoint produção: {"ok":true}
+- [x] Auditoria segurança 7 vetores (5 commits, 14/05/2026):
+  - b76927a: 429 clean message em GMB locations (primeiro cliente bloqueado por quota=0)
+  - e97771e: Next.js 16.2.6 (CVE middleware bypass + postcss XSS), HSTS, rate limit 3 endpoints
+  - 19f0931: rateLimitStrict fail-closed, sanitizeForPrompt (prompt injection), CSP completo
+  - c7045f6: @anthropic-ai/sdk 0.96.0 (GHSA-5474 + GHSA-p7fg), Zod 4 endpoints
+  - d71afe3: Legal pages PT-BR corrigidas (acentuação completa + datas 14/05/2026)
+- [x] Páginas /termos e /privacidade com acentuação PT-BR correta
 - [~] LinkedIn API: Community Management API submetido 12/05, aguardando aprovação (1-4 semanas)
-- [~] Primeiro cliente: onboarding agendado 13/05 (tarde)
+- [~] Google API quota=0 (mybusinessaccountmanagement): UNLMTD enviado para verificação 14/05.
+      Caminho: verificação UNLMTD → aguardar 60 dias ativo → submeter "Pedido de acesso básico às APIs" → aprovação Google (dias/semanas)
+      Desbloqueio estimado: ~agosto 2026. Primeiros clientes via Opção B (email como gerente) enquanto aguarda.
+- [ ] Opção B onboarding: cliente adiciona app@destaka.com.br como gerente no Google Meu Negócio (funciona hoje, sem API approval)
 - [ ] LinkedIn manual posting (2/dia, posts em content/social/)
-- [ ] Submeter sitemap no Google Search Console
+- [ ] Submeter sitemap no Google Search Console (destaka.com.br/sitemap.xml)
 - [ ] Instagram Graph API (criar app Meta depois da LinkedIn API aprovada)
-- [ ] GBP real vinculado para teste end-to-end
-- [ ] Debugar My Business Account Management API (100% errors)
-- [ ] Stripe modo produção ativado
-- [ ] Próxima sprint: Zod validation nos bodies de API, VerifyTool.tsx refactor (421 linhas)
+- [ ] CORS configuration para endpoints públicos (security audit — não urgente)
 
 ---
 
