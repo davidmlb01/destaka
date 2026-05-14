@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAuthenticatedProfile } from '@/lib/api/with-auth'
 import { getAnthropic, AI_MODEL_FAST } from '@/lib/ai'
+import { rateLimit } from '@/lib/redis'
+import { createClient } from '@/lib/supabase/server'
 
 export interface KeywordSuggestion {
   keyword: string
@@ -9,6 +11,15 @@ export interface KeywordSuggestion {
 
 // GET /api/keywords/suggestions?specialty=Dentista&city=São Paulo
 export async function GET(req: NextRequest) {
+  const supabase = await createClient()
+  const { data: { user: rlUser } } = await supabase.auth.getUser()
+  if (rlUser) {
+    const count = await rateLimit(`keywords-suggestions:${rlUser.id}`, 3600)
+    if (count !== null && count > 50) {
+      return NextResponse.json({ error: 'Muitas requisições. Tente novamente em breve.' }, { status: 429 })
+    }
+  }
+
   const auth = await getAuthenticatedProfile('id, category, name')
   if (auth.error) return auth.error
 

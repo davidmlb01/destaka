@@ -2,12 +2,24 @@ import { NextResponse } from 'next/server'
 import { getAuthenticatedProfile } from '@/lib/api/with-auth'
 import { stripe, PLANS } from '@/lib/stripe'
 import { logger } from '@/lib/logger'
+import { rateLimit } from '@/lib/redis'
+import { createClient } from '@/lib/supabase/server'
 
 export const dynamic = 'force-dynamic'
 
 // POST /api/stripe/checkout
 // Cria uma Stripe Checkout Session para o plano Pro
 export async function POST(request: Request) {
+  const supabase = await createClient()
+  const { data: { user: rlUser } } = await supabase.auth.getUser()
+  if (rlUser) {
+    const count = await rateLimit(`stripe-checkout:${rlUser.id}`, 3600)
+    if (count !== null && count > 10) {
+      logger.warn('stripe/checkout', 'rate limit atingido', { userId: rlUser.id })
+      return NextResponse.json({ error: 'Muitas requisições. Tente novamente em breve.' }, { status: 429 })
+    }
+  }
+
   const auth = await getAuthenticatedProfile('id')
   if (auth.error) return auth.error
 

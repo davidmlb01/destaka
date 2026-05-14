@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { rateLimit } from '@/lib/redis'
 import { executeAction } from '@/lib/gmb/optimizer'
 import { calculateScore, type GmbProfileData } from '@/lib/gmb/scorer'
 import { MOCK_PROFILE_DATA } from '@/lib/gmb/profile-mock'
@@ -19,6 +20,12 @@ export async function POST(req: NextRequest) {
 
   if (authError || !user) {
     return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+  }
+
+  const count = await rateLimit(`optimization-execute:${user.id}`, 3600)
+  if (count !== null && count > 5) {
+    logger.warn('optimization/execute', 'rate limit atingido', { userId: user.id })
+    return NextResponse.json({ error: 'Muitas requisições. Tente novamente em breve.' }, { status: 429 })
   }
 
   const body = await req.json() as {
