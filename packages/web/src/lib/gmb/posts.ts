@@ -4,6 +4,7 @@
 // =============================================================================
 
 import { getAnthropic, AI_MODEL_FAST } from '@/lib/ai'
+import { sanitizeForPrompt } from '@/lib/sanitize'
 
 export type PostType = 'update' | 'event' | 'offer'
 
@@ -93,13 +94,16 @@ export async function generateWeeklyPost(
   const topics = SEGMENT_TOPICS[segment] ?? SEGMENT_TOPICS['médico']
   const topic = topics[Math.floor(Math.random() * topics.length)]
 
+  const safeName = sanitizeForPrompt(businessName)
+  const safeCity = sanitizeForPrompt(locationCity, 100)
+
   const message = await getAnthropic().messages.create({
     model: AI_MODEL_FAST,
     max_tokens: 400,
     messages: [
       {
         role: 'user',
-        content: `Crie um post para o Google Meu Negócio de ${businessName}, um(a) ${segment}${locationCity ? ` em ${locationCity}` : ''}.
+        content: `Crie um post para o Google Meu Negócio de ${safeName}, um(a) ${segment}${safeCity ? ` em ${safeCity}` : ''}.
 
 Tema do post: ${topic}
 Contexto sazonal: ${seasonalCtx}

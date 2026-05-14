@@ -5,7 +5,7 @@ import { syncProfileReviews } from '@/lib/gmb/reviews'
 import { sendDiagnosticReadyEmail } from '@/lib/email/diagnostic-ready'
 import { getValidGmbToken } from '@/lib/gmb/auth'
 import { logger } from '@/lib/logger'
-import { rateLimit } from '@/lib/redis'
+import { rateLimitStrict } from '@/lib/redis'
 
 // POST /api/diagnostic/run
 // Roda o diagnóstico completo de um perfil GMB e salva no banco.
@@ -19,10 +19,14 @@ export async function POST(request: NextRequest) {
   }
 
   // HIGH-03: rate limit — máx 10 diagnósticos por usuário por hora
-  const rateLimitCount = await rateLimit(`diagnostic:${user.id}`, 3600)
-  if (rateLimitCount !== null && rateLimitCount > 10) {
-    logger.warn('diagnostic/run', 'rate limit atingido', { userId: user.id, count: rateLimitCount })
-    return NextResponse.json({ error: 'Muitas requisições. Tente novamente em breve.' }, { status: 429 })
+  try {
+    const rateLimitCount = await rateLimitStrict(`diagnostic:${user.id}`, 3600)
+    if (rateLimitCount > 10) {
+      logger.warn('diagnostic/run', 'rate limit atingido', { userId: user.id, count: rateLimitCount })
+      return NextResponse.json({ error: 'Muitas requisições. Tente novamente em breve.' }, { status: 429 })
+    }
+  } catch {
+    return NextResponse.json({ error: 'Serviço temporariamente indisponível. Tente novamente em instantes.' }, { status: 503 })
   }
 
   const body = await request.json().catch(() => null)

@@ -6,6 +6,7 @@
 import type { GmbProfileData, ScoreResult } from './scorer'
 import { calculateScore } from './scorer'
 import { getAnthropic, AI_MODEL_FAST } from '@/lib/ai'
+import { sanitizeForPrompt } from '@/lib/sanitize'
 import { patchLocation } from './client'
 
 // ---------------------------------------------------------------------------
@@ -288,7 +289,7 @@ async function generateDescription(profile: GmbProfileData): Promise<string> {
         role: 'user',
         content: `Escreva uma descrição de negócio para o Google Meu Negócio de um(a) ${segment} brasileiro(a).
 
-Nome do estabelecimento: ${profile.locationName}
+Nome do estabelecimento: ${sanitizeForPrompt(profile.locationName)}
 
 Requisitos:
 - Máximo 750 caracteres
@@ -315,7 +316,7 @@ async function generateServices(profile: GmbProfileData): Promise<Array<{ name: 
     messages: [
       {
         role: 'user',
-        content: `Liste 4 serviços principais para um(a) ${segment} brasileiro(a) chamado(a) "${profile.locationName}".
+        content: `Liste 4 serviços principais para um(a) ${segment} brasileiro(a) chamado(a) "${sanitizeForPrompt(profile.locationName)}".
 
 Formato JSON (apenas o array, sem markdown):
 [

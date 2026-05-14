@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAuthenticatedProfile } from '@/lib/api/with-auth'
 import { generateWeeklyPost, detectSegment } from '@/lib/gmb/posts'
 import { logger } from '@/lib/logger'
-import { rateLimit } from '@/lib/redis'
+import { rateLimitStrict } from '@/lib/redis'
 import { createClient } from '@/lib/supabase/server'
 
 export const dynamic = 'force-dynamic'
@@ -13,10 +13,14 @@ export async function POST(request: NextRequest) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (user) {
-    const count = await rateLimit(`posts-generate:${user.id}`, 3600)
-    if (count !== null && count > 20) {
-      logger.warn('posts/generate', 'rate limit atingido', { userId: user.id })
-      return NextResponse.json({ error: 'Muitas requisições. Tente novamente em breve.' }, { status: 429 })
+    try {
+      const count = await rateLimitStrict(`posts-generate:${user.id}`, 3600)
+      if (count > 20) {
+        logger.warn('posts/generate', 'rate limit atingido', { userId: user.id })
+        return NextResponse.json({ error: 'Muitas requisições. Tente novamente em breve.' }, { status: 429 })
+      }
+    } catch {
+      return NextResponse.json({ error: 'Serviço temporariamente indisponível. Tente novamente em instantes.' }, { status: 503 })
     }
   }
 

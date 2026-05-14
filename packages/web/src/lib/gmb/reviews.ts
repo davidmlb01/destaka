@@ -5,6 +5,7 @@
 
 import { getAnthropic, AI_MODEL_FAST } from '@/lib/ai'
 import { listGmbReviews } from './client'
+import { sanitizeForPrompt } from '@/lib/sanitize'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 // ---------------------------------------------------------------------------
@@ -109,19 +110,23 @@ export async function generateReviewReply(
     ? 'agradecido e construtivo, mostre que o feedback foi recebido'
     : 'caloroso e agradecido, personalize para o comentário específico'
 
+  const safeName = sanitizeForPrompt(businessName)
+  const safeAuthor = sanitizeForPrompt(review.author, 80)
+  const safeText = sanitizeForPrompt(review.text, 500)
+
   const message = await getAnthropic().messages.create({
     model: AI_MODEL_FAST,
     max_tokens: 300,
     messages: [
       {
         role: 'user',
-        content: `Você é o(a) responsável por ${businessName}, um(a) ${segment} brasileiro(a).
+        content: `Você é o(a) responsável por ${safeName}, um(a) ${segment} brasileiro(a).
 
 Escreva uma resposta para esta avaliação do Google:
 
-Autor: ${review.author}
+Autor: ${safeAuthor}
 Nota: ${review.rating}/5
-Texto: "${review.text ?? '(sem comentário)'}"
+Texto: "${safeText || '(sem comentário)'}"
 
 Tom: ${tone}
 Regras:

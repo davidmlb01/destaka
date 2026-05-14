@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { generateReviewReply } from '@/lib/gmb/reviews'
 import { logger } from '@/lib/logger'
-import { rateLimit } from '@/lib/redis'
+import { rateLimitStrict } from '@/lib/redis'
 
 // POST /api/reviews/generate-reply
 // Body: { reviewId }
@@ -12,10 +12,14 @@ export async function POST(req: NextRequest) {
   if (error || !user) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
 
   // HIGH-03: rate limit — máx 30 respostas geradas por usuário por hora
-  const count = await rateLimit(`review-reply:${user.id}`, 3600)
-  if (count !== null && count > 30) {
-    logger.warn('reviews/generate-reply', 'rate limit atingido', { userId: user.id })
-    return NextResponse.json({ error: 'Muitas requisições. Tente novamente em breve.' }, { status: 429 })
+  try {
+    const count = await rateLimitStrict(`review-reply:${user.id}`, 3600)
+    if (count > 30) {
+      logger.warn('reviews/generate-reply', 'rate limit atingido', { userId: user.id })
+      return NextResponse.json({ error: 'Muitas requisições. Tente novamente em breve.' }, { status: 429 })
+    }
+  } catch {
+    return NextResponse.json({ error: 'Serviço temporariamente indisponível. Tente novamente em instantes.' }, { status: 503 })
   }
 
   const body = await req.json().catch(() => null)
