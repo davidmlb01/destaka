@@ -5,6 +5,22 @@ const nextConfig: NextConfig = {
   // LOW-01: security headers
   async headers() {
     return [
+      // CORS para endpoints públicos (verify, capture-lead, health)
+      {
+        source: '/api/public/(.*)',
+        headers: [
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'Access-Control-Allow-Methods', value: 'GET, POST, OPTIONS' },
+          { key: 'Access-Control-Allow-Headers', value: 'Content-Type' },
+        ],
+      },
+      {
+        source: '/api/health',
+        headers: [
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'Access-Control-Allow-Methods', value: 'GET, OPTIONS' },
+        ],
+      },
       {
         source: '/(.*)',
         headers: [
