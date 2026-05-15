@@ -1,6 +1,6 @@
 # MASTER BACKUP — Destaka (Projeto GMM)
 **Atualizado:** 2026-05-15
-**Status:** 2a rodada de auditoria de segurança (commit 5e27de2): prompt injection, Zod, rate limiting. 8 arquivos corrigidos. tsc zero erros. Google API quota=0 bloqueando onboarding — UNLMTD em verificação.
+**Status:** Backlog técnico zerado: VerifyTool refactor (421→200 linhas, commit b15e733) + CORS endpoints públicos (commit a718bcb) + rate limits 6 rotas autenticadas. Google API quota=0 — UNLMTD em verificação. Próximo: Opção B onboarding.
 
 ---
 
@@ -92,15 +92,17 @@
   - gmb/select: rate limit 10 req/hora por usuário (MED-01)
   - tsc zero erros antes do commit
   - Pendente (requer sprint separada): CSP nonce-based (HIGH-01, unsafe-inline/unsafe-eval)
+- [x] VerifyTool.tsx refactor 421→200 linhas: InfoRow.tsx + CategoryRow.tsx extraídos (commit b15e733, 15/05/2026)
+- [x] Rate limits 6 rotas autenticadas: checklist, posts/[id], posts/settings, profile/alerts, reviews/qr (commit 023239c, 15/05/2026)
+- [x] CORS endpoints públicos: /api/public/* + /api/health no next.config.ts (commit a718bcb, 15/05/2026)
 - [~] LinkedIn API: Community Management API submetido 12/05, aguardando aprovação (1-4 semanas)
 - [~] Google API quota=0 (mybusinessaccountmanagement): UNLMTD enviado para verificação 14/05.
       Caminho: verificação UNLMTD → aguardar 60 dias ativo → submeter "Pedido de acesso básico às APIs" → aprovação Google (dias/semanas)
       Desbloqueio estimado: ~agosto 2026. Primeiros clientes via Opção B (email como gerente) enquanto aguarda.
-- [ ] Opção B onboarding: cliente adiciona app@destaka.com.br como gerente no Google Meu Negócio (funciona hoje, sem API approval)
+- [ ] Opção B onboarding: implementar UI que guia cliente a adicionar app@destaka.com.br como gerente no Google Meu Negócio
 - [ ] LinkedIn manual posting (2/dia, posts em content/social/)
 - [ ] Submeter sitemap no Google Search Console (destaka.com.br/sitemap.xml)
 - [ ] Instagram Graph API (criar app Meta depois da LinkedIn API aprovada)
-- [ ] CORS configuration para endpoints públicos (security audit — não urgente)
 
 ---
 
