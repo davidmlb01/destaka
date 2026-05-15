@@ -1,6 +1,6 @@
 # MASTER BACKUP — Destaka (Projeto GMM)
-**Atualizado:** 2026-05-14
-**Status:** Auditoria de segurança 7 vetores completa (5 commits, 13 itens). Google API quota=0 descoberto (primeiro cliente bloqueado). UNLMTD enviado para verificação 14/05 (desbloqueador da API). OAuth verificado, app Google em produção. CTO 8/10.
+**Atualizado:** 2026-05-15
+**Status:** 2a rodada de auditoria de segurança (commit 5e27de2): prompt injection, Zod, rate limiting. 8 arquivos corrigidos. tsc zero erros. Google API quota=0 bloqueando onboarding — UNLMTD em verificação.
 
 ---
 
@@ -82,6 +82,16 @@
   - c7045f6: @anthropic-ai/sdk 0.96.0 (GHSA-5474 + GHSA-p7fg), Zod 4 endpoints
   - d71afe3: Legal pages PT-BR corrigidas (acentuação completa + datas 14/05/2026)
 - [x] Páginas /termos e /privacidade com acentuação PT-BR correta
+- [x] Auditoria segurança 2a rodada (commit 5e27de2, 15/05/2026) — 8 arquivos:
+  - competitors.ts: sanitizeForPrompt em profile.name, comp.name, comp.categories (CRIT-01)
+  - capture-lead: Zod z.string().email() substitui email.includes('@') (MED-02)
+  - verify: Zod VerifyBody z.string().min(1).max(500) (MED-03)
+  - checkout: Zod CheckoutBody (MED-03)
+  - reviews/route, posts/route: parseInt NaN guard || 1 (LOW-02)
+  - gmb/locations: rate limit 30 req/hora por usuário (MED-01)
+  - gmb/select: rate limit 10 req/hora por usuário (MED-01)
+  - tsc zero erros antes do commit
+  - Pendente (requer sprint separada): CSP nonce-based (HIGH-01, unsafe-inline/unsafe-eval)
 - [~] LinkedIn API: Community Management API submetido 12/05, aguardando aprovação (1-4 semanas)
 - [~] Google API quota=0 (mybusinessaccountmanagement): UNLMTD enviado para verificação 14/05.
       Caminho: verificação UNLMTD → aguardar 60 dias ativo → submeter "Pedido de acesso básico às APIs" → aprovação Google (dias/semanas)
