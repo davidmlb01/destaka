@@ -5,6 +5,7 @@
 
 import { searchPlace, getPlaceDetails } from '@/lib/places/client'
 import { getAnthropic, AI_MODEL } from '@/lib/ai'
+import { sanitizeForPrompt } from '@/lib/sanitize'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 export interface Competitor {
@@ -204,18 +205,18 @@ export async function generateBenchmark(
 Analise a comparacao entre um profissional de saude e um concorrente no Google Business Profile.
 
 PROFISSIONAL (cliente Destaka):
-- Nome: ${profile.name}
-- Categoria: ${profile.category}
+- Nome: ${sanitizeForPrompt(profile.name)}
+- Categoria: ${sanitizeForPrompt(profile.category ?? '')}
 - Nota media: ${profile.avg_rating ?? 'nao disponivel'}
 - Total de avaliacoes: ${profile.review_count ?? 0}
 
 CONCORRENTE:
-- Nome: ${comp.name}
+- Nome: ${sanitizeForPrompt(comp.name)}
 - Nota media: ${comp.avg_rating ?? 'nao disponivel'}
 - Total de avaliacoes: ${comp.review_count ?? 0}
 - Numero de fotos: ${comp.photo_count}
 - Tem website: ${comp.has_website ? 'sim' : 'nao'}
-- Categorias: ${comp.categories.slice(0, 3).join(', ')}
+- Categorias: ${comp.categories.slice(0, 3).map((c: string) => sanitizeForPrompt(c)).join(', ')}
 
 DIFERENCAS:
 - Nota: ${ratingDiff > 0 ? `nosso cliente e ${ratingDiff.toFixed(1)} estrelas ACIMA` : ratingDiff < 0 ? `concorrente e ${Math.abs(ratingDiff).toFixed(1)} estrelas acima` : 'notas iguais'}

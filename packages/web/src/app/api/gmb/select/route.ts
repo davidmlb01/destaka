@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { trackEvent } from '@/lib/analytics'
 import { logger } from '@/lib/logger'
+import { rateLimit } from '@/lib/redis'
 
 // POST /api/gmb/select
 // Salva o perfil GMB selecionado pelo usuário.
@@ -12,6 +13,12 @@ export async function POST(request: NextRequest) {
 
   if (authError || !user) {
     return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+  }
+
+  // Rate limit: 10 req/hora (onboarding não deve ser chamado repetidamente)
+  const count = await rateLimit(`gmb-select:${user.id}`, 3600)
+  if (count !== null && count > 10) {
+    return NextResponse.json({ error: 'Muitas requisições. Tente novamente em breve.' }, { status: 429 })
   }
 
   let body: {

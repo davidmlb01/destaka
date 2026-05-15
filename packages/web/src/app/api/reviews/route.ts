@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
 
   const { searchParams } = new URL(req.url)
   const filter = (searchParams.get('filter') ?? 'all') as ReviewFilter
-  const page = Math.max(1, parseInt(searchParams.get('page') ?? '1'))
+  const page = Math.max(1, parseInt(searchParams.get('page') ?? '1') || 1)
   const pageSize = 10
 
   // Se não há reviews no banco, seed com mocks

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { listGmbLocations } from '@/lib/gmb/client'
 import { getValidGmbToken } from '@/lib/gmb/auth'
+import { rateLimit } from '@/lib/redis'
 
 // GET /api/gmb/locations
 // Retorna todos os perfis GMB do usuário autenticado.
@@ -11,6 +12,12 @@ export async function GET() {
 
   if (authError || !user) {
     return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+  }
+
+  // Rate limit: 30 req/hora por usuário (Google API quota é recurso escasso)
+  const count = await rateLimit(`gmb-locations:${user.id}`, 3600)
+  if (count !== null && count > 30) {
+    return NextResponse.json({ error: 'Muitas requisições. Tente novamente em breve.' }, { status: 429 })
   }
 
   // Mock: retorna locais simulados sem exigir token Google

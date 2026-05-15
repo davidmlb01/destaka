@@ -3,8 +3,13 @@ import { createHash } from 'crypto'
 import { isPlacesAvailable, extractQueryFromUrl, searchPlace, getPlaceDetails } from '@/lib/places/client'
 import { scoreFromPlaceDetails, getMockPlaceDetails } from '@/lib/places/scorer'
 import { rateLimit } from '@/lib/redis'
+import { z } from 'zod'
 
 const MAX_VERIFY_PER_IP_PER_DAY = 20
+
+const VerifyBody = z.object({
+  input: z.string().min(1).max(500),
+})
 
 // POST /api/public/verify
 // Body: { input: string }  — URL do Google Maps ou nome do estabelecimento
@@ -21,13 +26,12 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  const body = await req.json() as { input?: string }
-
-  if (!body.input?.trim()) {
+  const parsed = VerifyBody.safeParse(await req.json().catch(() => null))
+  if (!parsed.success) {
     return NextResponse.json({ error: 'Informe o link ou nome do estabelecimento.' }, { status: 400 })
   }
 
-  const input = body.input.trim()
+  const input = parsed.data.input.trim()
   const query = await extractQueryFromUrl(input)
 
   let placeDetails = null

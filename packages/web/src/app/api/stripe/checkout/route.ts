@@ -4,6 +4,11 @@ import { stripe, PLANS } from '@/lib/stripe'
 import { logger } from '@/lib/logger'
 import { rateLimit } from '@/lib/redis'
 import { createClient } from '@/lib/supabase/server'
+import { z } from 'zod'
+
+const CheckoutBody = z.object({
+  plan: z.string().min(1).default('pro'),
+})
 
 export const dynamic = 'force-dynamic'
 
@@ -25,7 +30,8 @@ export async function POST(request: Request) {
 
   const { user, serviceClient } = auth
 
-  const { plan = 'pro' } = await request.json().catch(() => ({}))
+  const parsed = CheckoutBody.safeParse(await request.json().catch(() => ({})))
+  const { plan } = parsed.success ? parsed.data : { plan: 'pro' }
 
   const planConfig = PLANS[plan as keyof typeof PLANS]
   if (!planConfig) {

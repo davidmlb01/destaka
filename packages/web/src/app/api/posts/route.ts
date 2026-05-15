@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
   const { profile, serviceClient } = auth
 
   const { searchParams } = new URL(req.url)
-  const page = Math.max(1, parseInt(searchParams.get('page') ?? '1'))
+  const page = Math.max(1, parseInt(searchParams.get('page') ?? '1') || 1)
   const pageSize = 10
 
   const from = (page - 1) * pageSize

@@ -4,8 +4,17 @@ import { sendLeadMagnetEmail } from '@/lib/email/lead-magnet'
 import { rateLimit } from '@/lib/redis'
 import type { CategoryScore } from '@/lib/gmb/scorer'
 import { createHash } from 'crypto'
+import { z } from 'zod'
 
 const MAX_PER_IP_PER_DAY = 5
+
+const CaptureLeadBody = z.object({
+  email: z.string().email(),
+  placeName: z.string().optional(),
+  score: z.number().optional(),
+  categories: z.array(z.any()).optional(),
+  lgpdConsent: z.boolean(),
+})
 
 function getServiceDb() {
   return createClient(
@@ -34,24 +43,21 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  let body: {
-    email?: string
-    placeName?: string
-    score?: number
-    categories?: CategoryScore[]
-    lgpdConsent?: boolean
-  }
-
-  try {
-    body = await req.json()
-  } catch {
+  const parsed = CaptureLeadBody.safeParse(await req.json().catch(() => null))
+  if (!parsed.success) {
+    const emailErr = parsed.error?.issues.find(i => i.path[0] === 'email')
+    if (emailErr) return NextResponse.json({ error: 'Email invalido' }, { status: 400 })
+    const lgpdErr = parsed.error?.issues.find(i => i.path[0] === 'lgpdConsent')
+    if (lgpdErr) return NextResponse.json({ error: 'Consentimento LGPD obrigatorio' }, { status: 400 })
     return NextResponse.json({ error: 'Body invalido' }, { status: 400 })
   }
 
-  const { email, placeName, score, categories, lgpdConsent } = body
-
-  if (!email || !email.includes('@')) {
-    return NextResponse.json({ error: 'Email invalido' }, { status: 400 })
+  const { email, placeName, score, categories, lgpdConsent } = parsed.data as {
+    email: string
+    placeName?: string
+    score?: number
+    categories?: CategoryScore[]
+    lgpdConsent: boolean
   }
 
   if (!lgpdConsent) {
