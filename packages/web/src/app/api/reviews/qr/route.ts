@@ -3,12 +3,18 @@ import { getAuthenticatedProfile } from '@/lib/api/with-auth'
 import { getReviewLink } from '@/lib/gmb/review-qr'
 import { searchPlace } from '@/lib/places/client'
 import QRCode from 'qrcode'
+import { rateLimit } from '@/lib/redis'
 
 // GET /api/reviews/qr
 // Retorna o link de review + QR code como SVG para o perfil autenticado
 export async function GET() {
   const auth = await getAuthenticatedProfile('id, name, address, google_place_id')
   if (auth.error) return auth.error
+
+  const count = await rateLimit(`reviews-qr:${auth.user.id}`, 3600)
+  if (count !== null && count > 30) {
+    return NextResponse.json({ error: 'Muitas requisições. Tente novamente em breve.' }, { status: 429 })
+  }
 
   const { profile, serviceClient } = auth
 

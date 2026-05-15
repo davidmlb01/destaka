@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { rateLimit } from '@/lib/redis'
 
 export const dynamic = 'force-dynamic'
 
@@ -12,6 +13,11 @@ export async function POST(
   const supabase = await createClient()
   const { data: { user }, error } = await supabase.auth.getUser()
   if (error || !user) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+
+  const rlCount = await rateLimit(`posts-publish:${user.id}`, 3600)
+  if (rlCount !== null && rlCount > 60) {
+    return NextResponse.json({ error: 'Muitas requisições. Tente novamente em breve.' }, { status: 429 })
+  }
 
   const serviceClient = await createServiceClient()
 

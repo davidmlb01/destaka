@@ -2,11 +2,17 @@ import { NextResponse } from 'next/server'
 import { getAuthenticatedProfile } from '@/lib/api/with-auth'
 import { buildChecklist, projectedScore } from '@/lib/gmb/checklist'
 import { trackEvent } from '@/lib/analytics'
+import { rateLimit } from '@/lib/redis'
 
 // GET /api/checklist
 export async function GET() {
   const auth = await getAuthenticatedProfile('id')
   if (auth.error) return auth.error
+
+  const count = await rateLimit(`checklist:${auth.user.id}`, 3600)
+  if (count !== null && count > 120) {
+    return NextResponse.json({ error: 'Muitas requisições. Tente novamente em breve.' }, { status: 429 })
+  }
 
   const { user, profile, serviceClient } = auth
 
