@@ -85,7 +85,7 @@ export const postGenerator = inngest.createFunction(
         const address = profile?.address as { locality?: string; addressLines?: string[] } | null
         const city = address?.locality ?? 'Brasil'
 
-        // Determina próximo tipo de post (rotação)
+        // Determina próximo tipo de post (rotação) + sequência para seed de diversidade (Correção C)
         const { data: recentPosts } = await db
           .from('posts')
           .select('post_type')
@@ -93,8 +93,14 @@ export const postGenerator = inngest.createFunction(
           .order('created_at', { ascending: false })
           .limit(4)
 
+        const { count: postCount } = await db
+          .from('posts')
+          .select('*', { count: 'exact', head: true })
+          .eq('organization_id', orgId)
+
         const recentTypes = (recentPosts ?? []).map((p: { post_type: string }) => p.post_type as PostType)
         const postType = nextPostType(recentTypes)
+        const postSequence = postCount ?? 0
 
         // Para review_highlight: busca o melhor review recente
         let recentReview: string | undefined
@@ -115,7 +121,7 @@ export const postGenerator = inngest.createFunction(
           }
         }
 
-        // Gera o post via Claude
+        // Gera o post via Claude (com seed de diversidade para evitar duplicação entre clientes)
         const generated = await generatePost({
           postType,
           specialty: org.specialty,
@@ -124,6 +130,7 @@ export const postGenerator = inngest.createFunction(
           tone: org.tone as ReviewTone,
           recentReview,
           serviceAreas: org.service_areas ?? [],
+          postSequence,
         })
 
         // Bloqueia post se não passou no compliance

@@ -1,8 +1,9 @@
 // Post Generator Engine — Story 005
 // Gera posts para GBP por tipo, especialidade e tom
-// Compliance CFM/CRO automático antes de publicar
+// Compliance CFM/CRO: validador independente (Correção A) + diversidade (Correção C)
 
 import { generateContent } from '@/lib/ai/client'
+import { validateCompliance } from '@/lib/ai/compliance-validator'
 import type { ReviewTone } from './review-response-engine'
 
 export type PostType = 'educativo' | 'procedimento' | 'bairro' | 'review_highlight' | 'equipe'
@@ -44,6 +45,19 @@ export interface GeneratedPost {
   compliance_notes?: string
 }
 
+// Gera seed de diversidade para evitar conteúdo duplicado entre clientes (Correção C)
+// Combina semana do ano + sequência do post para garantir unicidade temporal
+function getDiversityContext(postSequence?: number): string {
+  const now = new Date()
+  const startOfYear = new Date(now.getFullYear(), 0, 0)
+  const weekNumber = Math.floor((now.getTime() - startOfYear.getTime()) / (7 * 24 * 60 * 60 * 1000))
+  const dayName = now.toLocaleDateString('pt-BR', { weekday: 'long' })
+  const monthName = now.toLocaleDateString('pt-BR', { month: 'long' })
+  const seq = postSequence ?? Math.floor(Math.random() * 1000)
+
+  return `DATA DE REFERÊNCIA (para gerar conteúdo único, não publicar a data): semana ${weekNumber} de ${now.getFullYear()}, ${dayName}, ${monthName}. Sequência interna: ${seq}. Use esses dados como semente de variação — o post deve ter ângulo, exemplo ou abordagem distintos de outros posts da mesma semana.`
+}
+
 export async function generatePost(params: {
   postType: PostType
   specialty: string
@@ -53,8 +67,9 @@ export async function generatePost(params: {
   tone: ReviewTone
   recentReview?: string  // para post tipo review_highlight
   serviceAreas?: string[]
+  postSequence?: number  // contador sequencial por org para seed de diversidade
 }): Promise<GeneratedPost> {
-  const { postType, specialty, professionalName, city, neighborhood, tone, recentReview, serviceAreas } = params
+  const { postType, specialty, professionalName, city, neighborhood, tone, recentReview, serviceAreas, postSequence } = params
 
   const toneInstructions: Record<ReviewTone, string> = {
     formal: 'Tom formal e profissional. Linguagem cuidada e respeitosa.',
@@ -77,6 +92,8 @@ export async function generatePost(params: {
       ? `Mencione naturalmente a localização: ${locationContext}. Conecte o conteúdo com a comunidade local.`
       : ''
 
+  const diversityContext = getDiversityContext(postSequence)
+
   const prompt = `Você é ${professionalName}, profissional de ${specialty} em ${city}.
 
 Escreva um ${POST_TYPE_LABEL[postType]} para o Google Business Profile.
@@ -88,6 +105,8 @@ CONTEXTO:
 - ${typeSpecificInstruction}
 
 TOM: ${toneInstructions[tone]}
+
+${diversityContext}
 
 FORMATO DO POST:
 - Entre 150 e 300 caracteres (ideal para GBP)
@@ -119,9 +138,20 @@ Retorne APENAS o JSON, sem texto adicional.`
         compliance_passed: boolean
         compliance_notes?: string
       }
+
+      // Segunda passagem: validação independente (Correção A)
+      // O modelo não valida seu próprio output de forma confiável.
+      const externalCheck = await validateCompliance(parsed.content)
+      const finalCompliancePassed = parsed.compliance_passed && externalCheck.passed
+
       return {
-        ...parsed,
+        content: parsed.content,
+        photo_suggestion: parsed.photo_suggestion,
         post_type: postType,
+        compliance_passed: finalCompliancePassed,
+        compliance_notes: !finalCompliancePassed
+          ? (externalCheck.violations.join('; ') || parsed.compliance_notes)
+          : undefined,
       }
     }
   } catch {

@@ -1,8 +1,10 @@
 // Review Response Engine — Story 004
 // Gera respostas personalizadas por faixa de estrelas + tom do profissional
 // Compliance CFM/CRO: sem promoção de procedimentos, sem promessa de resultado
+// LGPD Art. 11: sanitiza dados de paciente antes de entrar no prompt (Correção B)
 
 import { generateContent } from '@/lib/ai/client'
+import { sanitizePatientData } from '@/lib/ai/prompt-sanitizer'
 
 export type ReviewTone = 'formal' | 'proximo' | 'tecnico'
 
@@ -44,10 +46,13 @@ export async function generateReviewResponse(params: {
   const strategy = STAR_STRATEGY[stars] ?? STAR_STRATEGY[3]
   const toneDesc = TONE_DESCRIPTION[tone]
 
+  // LGPD Art. 11: remove dados pessoais do paciente antes de enviar ao LLM (Correção B)
+  const sanitizedComment = sanitizePatientData(reviewComment)
+
   const prompt = `Você é ${professionalName}, ${specialty} em ${city}.
 
 AVALIAÇÃO DO PACIENTE (${stars} estrela${stars > 1 ? 's' : ''}):
-"${reviewComment || '(sem comentário — apenas nota)'}"
+"${sanitizedComment || '(sem comentário — apenas nota)'}"
 
 ESTRATÉGIA PARA ESTA RESPOSTA:
 ${strategy}
