@@ -1,195 +1,216 @@
--- Destaka: schema inicial
--- Migracao 001: tabelas core com RLS
+-- =============================================================================
+-- DESTAKA — Migration 001: Schema inicial
+-- Executar no Supabase SQL Editor após criar o projeto
+-- =============================================================================
 
+-- Habilitar extensões necessárias
 create extension if not exists "uuid-ossp";
-
--- Organizations (consultórios)
-create table organizations (
-  id uuid primary key default uuid_generate_v4(),
-  name text not null,
-  specialty text not null check (specialty in ('dentista','medico','fisioterapeuta','psicologo','nutricionista','outro')),
-  tone text not null default 'formal' check (tone in ('formal','proximo','tecnico')),
-  automation_preference text not null default 'manual' check (automation_preference in ('manual','automatico')),
-  service_areas text[] default '{}',
-  created_at timestamptz default now(),
-  updated_at timestamptz default now()
+create extension if not exists "pg_trgm";
+-- =============================================================================
+-- TABELA: users
+-- =============================================================================
+create table public.users (
+  id           uuid primary key default uuid_generate_v4(),
+  email        text not null unique,
+  name         text,
+  avatar_url   text,
+  plan         text not null default 'free' check (plan in ('free', 'essencial', 'pro', 'agencia')),
+  stripe_customer_id text unique,
+  created_at   timestamptz not null default now(),
+  updated_at   timestamptz not null default now()
 );
-
--- Professionals
-create table professionals (
-  id uuid primary key default uuid_generate_v4(),
-  user_id uuid references auth.users(id) on delete cascade,
-  organization_id uuid references organizations(id) on delete cascade,
-  email text not null,
-  name text not null,
-  role text not null default 'owner' check (role in ('owner','admin')),
-  created_at timestamptz default now()
+-- =============================================================================
+-- TABELA: gmb_profiles
+-- =============================================================================
+create table public.gmb_profiles (
+  id                  uuid primary key default uuid_generate_v4(),
+  user_id             uuid not null references public.users(id) on delete cascade,
+  google_location_id  text not null unique,
+  name                text not null,
+  address             text not null,
+  phone               text,
+  website             text,
+  category            text,
+  score               integer check (score >= 0 and score <= 100),
+  last_synced_at      timestamptz,
+  created_at          timestamptz not null default now(),
+  updated_at          timestamptz not null default now()
 );
-
--- GBP Profiles
-create table gbp_profiles (
-  id uuid primary key default uuid_generate_v4(),
-  organization_id uuid references organizations(id) on delete cascade,
-  location_id text not null,
-  name text,
-  categories text[] default '{}',
-  attributes jsonb default '{}',
-  services jsonb default '[]',
-  description text,
-  phone text,
-  address jsonb,
-  hours jsonb,
-  photo_count integer default 0,
-  last_synced_at timestamptz,
-  created_at timestamptz default now(),
-  updated_at timestamptz default now(),
-  unique(organization_id, location_id)
+-- =============================================================================
+-- TABELA: diagnostics
+-- =============================================================================
+create table public.diagnostics (
+  id                  uuid primary key default uuid_generate_v4(),
+  profile_id          uuid not null references public.gmb_profiles(id) on delete cascade,
+  score_total         integer not null check (score_total >= 0 and score_total <= 100),
+  score_info_basica   integer not null default 0,
+  score_fotos         integer not null default 0,
+  score_avaliacoes    integer not null default 0,
+  score_posts         integer not null default 0,
+  score_servicos      integer not null default 0,
+  score_atributos     integer not null default 0,
+  issues              jsonb not null default '[]',
+  created_at          timestamptz not null default now()
 );
-
--- Competitors
-create table competitors (
-  id uuid primary key default uuid_generate_v4(),
-  organization_id uuid references organizations(id) on delete cascade,
-  name text not null,
-  place_id text not null,
-  categories text[] default '{}',
-  attributes jsonb default '{}',
-  review_count integer default 0,
-  avg_rating numeric(3,2),
-  post_frequency_per_week numeric(4,2),
-  last_tracked_at timestamptz,
-  created_at timestamptz default now(),
-  unique(organization_id, place_id)
+-- =============================================================================
+-- TABELA: optimization_actions
+-- =============================================================================
+create table public.optimization_actions (
+  id              uuid primary key default uuid_generate_v4(),
+  profile_id      uuid not null references public.gmb_profiles(id) on delete cascade,
+  diagnostic_id   uuid references public.diagnostics(id) on delete set null,
+  type            text not null,
+  status          text not null default 'pending' check (status in ('pending', 'in_progress', 'done', 'failed')),
+  payload         jsonb not null default '{}',
+  error_message   text,
+  executed_at     timestamptz,
+  created_at      timestamptz not null default now()
 );
-
--- Reviews
-create table reviews (
-  id uuid primary key default uuid_generate_v4(),
-  organization_id uuid references organizations(id) on delete cascade,
-  review_id text not null unique,
-  author_name text,
-  rating integer not null check (rating between 1 and 5),
-  comment text,
-  published_at timestamptz,
-  response_text text,
-  response_published_at timestamptz,
-  created_at timestamptz default now()
+-- =============================================================================
+-- TABELA: gmb_posts
+-- =============================================================================
+create table public.gmb_posts (
+  id              uuid primary key default uuid_generate_v4(),
+  profile_id      uuid not null references public.gmb_profiles(id) on delete cascade,
+  google_post_id  text unique,
+  content         text not null,
+  type            text not null default 'update' check (type in ('update', 'event', 'offer')),
+  status          text not null default 'draft' check (status in ('draft', 'published', 'scheduled', 'failed')),
+  scheduled_for   timestamptz,
+  published_at    timestamptz,
+  created_at      timestamptz not null default now()
 );
-
--- Review Responses (geradas por IA)
-create table review_responses (
-  id uuid primary key default uuid_generate_v4(),
-  review_id uuid references reviews(id) on delete cascade,
-  organization_id uuid references organizations(id) on delete cascade,
-  generated_text text not null,
-  status text not null default 'pending' check (status in ('pending','approved','published','rejected')),
-  published_at timestamptz,
-  created_at timestamptz default now()
+-- =============================================================================
+-- TABELA: gmb_reviews
+-- =============================================================================
+create table public.gmb_reviews (
+  id                uuid primary key default uuid_generate_v4(),
+  profile_id        uuid not null references public.gmb_profiles(id) on delete cascade,
+  google_review_id  text not null unique,
+  author            text not null,
+  rating            integer not null check (rating >= 1 and rating <= 5),
+  text              text,
+  reply             text,
+  reply_status      text not null default 'pending' check (reply_status in ('pending', 'replied', 'ignored')),
+  review_date       timestamptz not null,
+  created_at        timestamptz not null default now()
 );
-
--- Posts
-create table posts (
-  id uuid primary key default uuid_generate_v4(),
-  organization_id uuid references organizations(id) on delete cascade,
-  content text not null,
-  post_type text not null check (post_type in ('educativo','procedimento','bairro','review_highlight','equipe')),
-  status text not null default 'pending' check (status in ('pending','approved','published','rejected')),
-  scheduled_at timestamptz,
-  published_at timestamptz,
-  gbp_post_id text,
-  photo_suggestion text,
-  created_at timestamptz default now()
+-- =============================================================================
+-- TABELA: gmb_metrics
+-- =============================================================================
+create table public.gmb_metrics (
+  id                uuid primary key default uuid_generate_v4(),
+  profile_id        uuid not null references public.gmb_profiles(id) on delete cascade,
+  date              date not null,
+  views_search      integer not null default 0,
+  views_maps        integer not null default 0,
+  clicks_website    integer not null default 0,
+  clicks_call       integer not null default 0,
+  clicks_directions integer not null default 0,
+  unique (profile_id, date)
 );
-
--- Score Destaka (snapshots diários)
-create table scores (
-  id uuid primary key default uuid_generate_v4(),
-  organization_id uuid references organizations(id) on delete cascade,
-  total integer not null check (total between 0 and 100),
-  gmb_completude integer not null check (gmb_completude between 0 and 25),
-  reputacao integer not null check (reputacao between 0 and 25),
-  visibilidade integer not null check (visibilidade between 0 and 20),
-  retencao integer not null check (retencao between 0 and 20),
-  conversao integer not null check (conversao between 0 and 10),
-  faixa text not null check (faixa in ('fraca','funcional','forte','perfeita')),
-  tendencia text not null default 'estavel' check (tendencia in ('melhorando','estavel','declinando')),
-  snapshot_date date not null default current_date,
-  created_at timestamptz default now(),
-  unique(organization_id, snapshot_date)
+-- =============================================================================
+-- TABELA: plans (planos Stripe)
+-- =============================================================================
+create table public.plans (
+  id                  uuid primary key default uuid_generate_v4(),
+  user_id             uuid not null references public.users(id) on delete cascade unique,
+  stripe_subscription_id text unique,
+  stripe_price_id     text,
+  status              text not null default 'inactive' check (status in ('active', 'inactive', 'canceled', 'past_due')),
+  current_period_end  timestamptz,
+  created_at          timestamptz not null default now(),
+  updated_at          timestamptz not null default now()
 );
-
--- Reports (mensais)
-create table reports (
-  id uuid primary key default uuid_generate_v4(),
-  organization_id uuid references organizations(id) on delete cascade,
-  month integer not null check (month between 1 and 12),
-  year integer not null,
-  data jsonb not null,
-  sent_at timestamptz,
-  email_status text,
-  created_at timestamptz default now(),
-  unique(organization_id, month, year)
-);
-
--- Google Tokens (OAuth)
-create table google_tokens (
-  id uuid primary key default uuid_generate_v4(),
-  organization_id uuid references organizations(id) on delete cascade unique,
-  access_token text not null,
-  refresh_token text,
-  expires_at timestamptz,
-  created_at timestamptz default now(),
-  updated_at timestamptz default now()
-);
-
--- RLS: habilitar em todas as tabelas
-alter table organizations enable row level security;
-alter table professionals enable row level security;
-alter table gbp_profiles enable row level security;
-alter table competitors enable row level security;
-alter table reviews enable row level security;
-alter table review_responses enable row level security;
-alter table posts enable row level security;
-alter table scores enable row level security;
-alter table reports enable row level security;
-alter table google_tokens enable row level security;
-
--- Helper: retorna organization_id do usuario autenticado
-create or replace function get_user_organization_id()
-returns uuid
-language sql
-security definer
-as $$
-  select organization_id from professionals where user_id = auth.uid() limit 1;
-$$;
-
--- Policies
-create policy "org_owner" on organizations
-  for all using (id = get_user_organization_id());
-
-create policy "own_professional" on professionals
-  for all using (user_id = auth.uid());
-
-create policy "own_gbp" on gbp_profiles
-  for all using (organization_id = get_user_organization_id());
-
-create policy "own_competitors" on competitors
-  for all using (organization_id = get_user_organization_id());
-
-create policy "own_reviews" on reviews
-  for all using (organization_id = get_user_organization_id());
-
-create policy "own_review_responses" on review_responses
-  for all using (organization_id = get_user_organization_id());
-
-create policy "own_posts" on posts
-  for all using (organization_id = get_user_organization_id());
-
-create policy "own_scores" on scores
-  for all using (organization_id = get_user_organization_id());
-
-create policy "own_reports" on reports
-  for all using (organization_id = get_user_organization_id());
-
-create policy "own_google_tokens" on google_tokens
-  for all using (organization_id = get_user_organization_id());
+-- =============================================================================
+-- ÍNDICES
+-- =============================================================================
+create index idx_gmb_profiles_user_id on public.gmb_profiles(user_id);
+create index idx_diagnostics_profile_id on public.diagnostics(profile_id);
+create index idx_diagnostics_created_at on public.diagnostics(created_at desc);
+create index idx_optimization_actions_profile_id on public.optimization_actions(profile_id);
+create index idx_optimization_actions_status on public.optimization_actions(status);
+create index idx_gmb_posts_profile_id on public.gmb_posts(profile_id);
+create index idx_gmb_posts_status on public.gmb_posts(status);
+create index idx_gmb_reviews_profile_id on public.gmb_reviews(profile_id);
+create index idx_gmb_reviews_reply_status on public.gmb_reviews(reply_status);
+create index idx_gmb_metrics_profile_date on public.gmb_metrics(profile_id, date desc);
+-- =============================================================================
+-- UPDATED_AT trigger
+-- =============================================================================
+create or replace function public.handle_updated_at()
+returns trigger as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$ language plpgsql;
+create trigger set_updated_at_users
+  before update on public.users
+  for each row execute function public.handle_updated_at();
+create trigger set_updated_at_gmb_profiles
+  before update on public.gmb_profiles
+  for each row execute function public.handle_updated_at();
+create trigger set_updated_at_plans
+  before update on public.plans
+  for each row execute function public.handle_updated_at();
+-- =============================================================================
+-- ROW LEVEL SECURITY (RLS)
+-- =============================================================================
+alter table public.users enable row level security;
+alter table public.gmb_profiles enable row level security;
+alter table public.diagnostics enable row level security;
+alter table public.optimization_actions enable row level security;
+alter table public.gmb_posts enable row level security;
+alter table public.gmb_reviews enable row level security;
+alter table public.gmb_metrics enable row level security;
+alter table public.plans enable row level security;
+-- users: só lê/edita o próprio perfil
+create policy "users_self" on public.users
+  for all using (auth.uid() = id);
+-- gmb_profiles: só acessa os próprios
+create policy "profiles_owner" on public.gmb_profiles
+  for all using (auth.uid() = user_id);
+-- diagnostics: acessa via profile
+create policy "diagnostics_owner" on public.diagnostics
+  for all using (
+    exists (
+      select 1 from public.gmb_profiles
+      where id = diagnostics.profile_id and user_id = auth.uid()
+    )
+  );
+-- optimization_actions: acessa via profile
+create policy "actions_owner" on public.optimization_actions
+  for all using (
+    exists (
+      select 1 from public.gmb_profiles
+      where id = optimization_actions.profile_id and user_id = auth.uid()
+    )
+  );
+-- gmb_posts: acessa via profile
+create policy "posts_owner" on public.gmb_posts
+  for all using (
+    exists (
+      select 1 from public.gmb_profiles
+      where id = gmb_posts.profile_id and user_id = auth.uid()
+    )
+  );
+-- gmb_reviews: acessa via profile
+create policy "reviews_owner" on public.gmb_reviews
+  for all using (
+    exists (
+      select 1 from public.gmb_profiles
+      where id = gmb_reviews.profile_id and user_id = auth.uid()
+    )
+  );
+-- gmb_metrics: acessa via profile
+create policy "metrics_owner" on public.gmb_metrics
+  for all using (
+    exists (
+      select 1 from public.gmb_profiles
+      where id = gmb_metrics.profile_id and user_id = auth.uid()
+    )
+  );
+-- plans: só acessa o próprio plano
+create policy "plans_owner" on public.plans
+  for all using (auth.uid() = user_id);
