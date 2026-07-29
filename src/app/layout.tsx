@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Outfit } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,9 +12,15 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const outfit = Outfit({
+  variable: "--font-display",
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+});
+
 export const metadata: Metadata = {
-  title: "Destaka | Google Business Profile no piloto automático",
-  description: "Plataforma SaaS que automatiza a gestão do Google Business Profile para clínicas e consultórios de saúde no Brasil. Avaliações, posts e score — tudo automático.",
+  title: "Destaka Saude: seu perfil no Google trabalhando por voce",
+  description: "Presenca digital no piloto automatico para medicos, dentistas e profissionais de saude. Diagnostico gratuito do seu Google Meu Negocio em 30 segundos.",
 };
 
 export default function RootLayout({
@@ -25,7 +31,7 @@ export default function RootLayout({
   return (
     <html
       lang="pt-BR"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
