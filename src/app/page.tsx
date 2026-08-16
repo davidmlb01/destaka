@@ -125,6 +125,7 @@ function Hero() {
     >
       <div className="absolute pointer-events-none" style={{ inset: 0, background: 'radial-gradient(ellipse 60% 50% at 80% -10%, rgba(20,184,166,0.12) 0%, transparent 70%)' }} />
       <div className="absolute pointer-events-none" style={{ inset: 0, background: 'radial-gradient(ellipse 40% 40% at -5% 110%, rgba(20,184,166,0.07) 0%, transparent 70%)' }} />
+      <div className="absolute pointer-events-none" style={{ inset: 0, backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.10) 1px, transparent 1px)', backgroundSize: '28px 28px', opacity: 0.10 }} />
 
       <div className="max-w-6xl mx-auto w-full relative z-10">
         <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
