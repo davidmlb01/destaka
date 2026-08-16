@@ -5,6 +5,7 @@ import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { inngest } from '../client'
 import { GBPClient } from '@/lib/google/gbp-client'
 import { generateReviewResponse, type ReviewTone } from '@/lib/gbp/review-response-engine'
+import { hasLgpdConsentForAi } from '@/lib/ai/prompt-sanitizer'
 
 function admin() {
   return createAdminSupa(
@@ -52,12 +53,16 @@ export const reviewMonitor = inngest.createFunction(
         // Busca configurações da organização
         const { data: org } = await db
           .from('organizations')
-          .select('name, specialty, tone, automation_preference, gbp_location_id')
+          .select('name, specialty, tone, automation_preference, gbp_location_id, lgpd_ai_consent, lgpd_consent_date')
           .eq('id', orgId)
           .single()
 
         if (!org?.gbp_location_id) {
           return { org_id: orgId, new_reviews: 0, responses_queued: 0, error: 'gbp_location_id não configurado' }
+        }
+
+        if (!hasLgpdConsentForAi(org)) {
+          return { org_id: orgId, new_reviews: 0, responses_queued: 0, error: 'sem consentimento LGPD para uso de IA' }
         }
 
         // Busca token
