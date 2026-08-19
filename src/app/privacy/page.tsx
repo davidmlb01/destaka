@@ -3,6 +3,7 @@ import Link from 'next/link'
 export const metadata = {
   title: 'Política de Privacidade | Destaka',
   description: 'Como o Destaka coleta, usa e protege seus dados pessoais em conformidade com a LGPD.',
+  alternates: { canonical: 'https://destaka.com.br/privacy' },
 }
 
 const teal = '#14B8A6'

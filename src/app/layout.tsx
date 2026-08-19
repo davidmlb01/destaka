@@ -20,6 +20,7 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://destaka.com.br'),
   title: "Destaka Saude: seu perfil no Google trabalhando por voce",
   description: "Presenca digital no piloto automatico para medicos, dentistas e profissionais de saude. Diagnostico gratuito do seu Google Meu Negocio em 30 segundos.",
 };

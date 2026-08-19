@@ -3,6 +3,7 @@ import Link from 'next/link'
 export const metadata = {
   title: 'Termos de Uso | Destaka',
   description: 'Termos e condições de uso da plataforma Destaka.',
+  alternates: { canonical: 'https://destaka.com.br/termos' },
 }
 
 const teal = '#14B8A6'
