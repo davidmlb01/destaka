@@ -4,6 +4,19 @@ export const metadata = {
   title: 'Termos de Uso | Destaka',
   description: 'Termos e condições de uso da plataforma Destaka.',
   alternates: { canonical: 'https://destaka.com.br/termos' },
+  openGraph: {
+    title: 'Termos de Uso | Destaka',
+    description: 'Termos e condições de uso da plataforma Destaka.',
+    url: 'https://destaka.com.br/termos',
+    siteName: 'Destaka',
+    locale: 'pt_BR',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Termos de Uso | Destaka',
+    description: 'Termos e condições de uso da plataforma Destaka.',
+  },
 }
 
 const teal = '#14B8A6'

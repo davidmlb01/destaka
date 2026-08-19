@@ -4,6 +4,19 @@ export const metadata = {
   title: 'Política de Privacidade | Destaka',
   description: 'Como o Destaka coleta, usa e protege seus dados pessoais em conformidade com a LGPD.',
   alternates: { canonical: 'https://destaka.com.br/privacy' },
+  openGraph: {
+    title: 'Política de Privacidade | Destaka',
+    description: 'Como o Destaka coleta, usa e protege seus dados pessoais em conformidade com a LGPD.',
+    url: 'https://destaka.com.br/privacy',
+    siteName: 'Destaka',
+    locale: 'pt_BR',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Política de Privacidade | Destaka',
+    description: 'Como o Destaka coleta, usa e protege seus dados pessoais em conformidade com a LGPD.',
+  },
 }
 
 const teal = '#14B8A6'
