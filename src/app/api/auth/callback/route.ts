@@ -56,10 +56,10 @@ export async function GET(request: NextRequest) {
             updated_at: new Date().toISOString(),
           }, { onConflict: 'organization_id' })
 
-          await inngest.send({
+          inngest.send({
             name: 'destaka/gbp.audit.requested',
             data: { organization_id: professional.organization_id },
-          })
+          }).catch(() => {})
         }
 
         return NextResponse.redirect(`${origin}/dashboard`)
