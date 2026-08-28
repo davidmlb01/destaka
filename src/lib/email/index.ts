@@ -1,0 +1,16 @@
+import { Resend } from 'resend'
+
+let _resend: Resend | null = null
+export function getResend(): Resend {
+  if (!_resend) _resend = new Resend(process.env.RESEND_API_KEY!)
+  return _resend
+}
+
+// Mantem compatibilidade com imports existentes
+export const resend = {
+  emails: {
+    send: (...args: Parameters<Resend['emails']['send']>) => getResend().emails.send(...args),
+  },
+}
+
+export const FROM = process.env.RESEND_FROM_EMAIL ?? 'noreply@destaka.com.br'

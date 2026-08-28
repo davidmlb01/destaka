@@ -1,0 +1,184 @@
+// =============================================================================
+// DESTAKA - Score Calculator
+// Algoritmo conforme docs/architecture/gmm-architecture.md secao 7
+// =============================================================================
+
+export interface GmbProfileData {
+  // Informacoes basicas
+  hasName: boolean
+  hasPhone: boolean
+  hasAddress: boolean
+  hasHours: boolean
+  hasWebsite: boolean
+  hasCategory: boolean
+  // Fotos
+  hasLogoPhoto: boolean
+  spacePhotosCount: number   // fotos do espaco/interior
+  totalPhotosCount: number
+  hasCoverPhoto: boolean
+  // Avaliacoes
+  reviewsCount: number
+  reviewsAvgRating: number
+  reviewsRepliedCount: number
+  // Posts
+  lastPostDaysAgo: number | null  // null = nunca postou
+  // Servicos
+  servicesCount: number
+  servicesWithDescCount: number
+  // Atributos
+  attributesCount: number
+  // Metadata
+  category: string
+  locationName: string
+}
+
+export interface CategoryScore {
+  name: string
+  label: string
+  score: number
+  maxScore: number
+  percentage: number
+  issues: ScoreIssue[]
+}
+
+export interface ScoreIssue {
+  field: string
+  severity: 'critical' | 'warning' | 'info'
+  message: string
+  impact: number
+}
+
+export interface ScoreResult {
+  total: number
+  categories: {
+    info: CategoryScore
+    photos: CategoryScore
+    reviews: CategoryScore
+    posts: CategoryScore
+    services: CategoryScore
+    attributes: CategoryScore
+  }
+}
+
+export function calculateScore(profile: GmbProfileData): ScoreResult {
+  const info = scoreInfo(profile)
+  const photos = scorePhotos(profile)
+  const reviews = scoreReviews(profile)
+  const posts = scorePosts(profile)
+  const services = scoreServices(profile)
+  const attributes = scoreAttributes(profile)
+
+  const total = info.score + photos.score + reviews.score + posts.score + services.score + attributes.score
+
+  return { total, categories: { info, photos, reviews, posts, services, attributes } }
+}
+
+function scoreInfo(p: GmbProfileData): CategoryScore {
+  const issues: ScoreIssue[] = []
+  let score = 0
+
+  if (p.hasName) score += 5
+  else issues.push({ field: 'name', severity: 'critical', message: 'Nome do negocio nao preenchido', impact: 5 })
+
+  if (p.hasPhone) score += 5
+  else issues.push({ field: 'phone', severity: 'critical', message: 'Telefone nao cadastrado, clientes nao conseguem ligar', impact: 5 })
+
+  if (p.hasAddress) score += 5
+  else issues.push({ field: 'address', severity: 'critical', message: 'Endereco nao configurado, nao aparece no Maps', impact: 5 })
+
+  if (p.hasHours) score += 5
+  else issues.push({ field: 'hours', severity: 'warning', message: 'Horario de funcionamento nao definido', impact: 5 })
+
+  if (p.hasWebsite) score += 3
+  else issues.push({ field: 'website', severity: 'info', message: 'Website nao vinculado', impact: 3 })
+
+  if (p.hasCategory) score += 2
+  else issues.push({ field: 'category', severity: 'warning', message: 'Categoria principal nao definida', impact: 2 })
+
+  return makeCategory('info', 'Informacoes Basicas', score, 25, issues)
+}
+
+function scorePhotos(p: GmbProfileData): CategoryScore {
+  const issues: ScoreIssue[] = []
+  let score = 0
+
+  if (p.hasLogoPhoto) score += 5
+  else issues.push({ field: 'logo', severity: 'warning', message: 'Sem foto de logotipo, passa menos credibilidade', impact: 5 })
+
+  if (p.spacePhotosCount >= 3) score += 5
+  else issues.push({ field: 'space_photos', severity: 'warning', message: `So ${p.spacePhotosCount} ${p.spacePhotosCount === 1 ? 'foto' : 'fotos'} do espaco, ideal: 3+`, impact: 5 })
+
+  if (p.totalPhotosCount >= 5) score += 5
+  else issues.push({ field: 'total_photos', severity: 'warning', message: `Apenas ${p.totalPhotosCount} ${p.totalPhotosCount === 1 ? 'foto' : 'fotos'} no total, ideal: 5+`, impact: 5 })
+
+  if (p.hasCoverPhoto) score += 5
+  else issues.push({ field: 'cover', severity: 'info', message: 'Sem foto de capa personalizada', impact: 5 })
+
+  return makeCategory('photos', 'Fotos', score, 20, issues)
+}
+
+function scoreReviews(p: GmbProfileData): CategoryScore {
+  const issues: ScoreIssue[] = []
+  let score = 0
+
+  if (p.reviewsCount >= 10) score += 10
+  else issues.push({ field: 'reviews_count', severity: 'critical', message: `Apenas ${p.reviewsCount} ${p.reviewsCount === 1 ? 'avaliacao' : 'avaliacoes'}, ideal: 10+`, impact: 10 })
+
+  if (p.reviewsAvgRating >= 4.0) score += 10
+  else issues.push({ field: 'rating', severity: 'critical', message: `Nota media ${p.reviewsAvgRating.toFixed(1)}, meta: 4.0+`, impact: 10 })
+
+  const replyRate = p.reviewsCount > 0 ? p.reviewsRepliedCount / p.reviewsCount : 0
+  if (replyRate >= 0.8) score += 5
+  else issues.push({ field: 'reply_rate', severity: 'warning', message: `So ${Math.round(replyRate * 100)}% das avaliacoes respondidas, ideal: 80%+`, impact: 5 })
+
+  return makeCategory('reviews', 'Avaliacoes', score, 25, issues)
+}
+
+function scorePosts(p: GmbProfileData): CategoryScore {
+  const issues: ScoreIssue[] = []
+  let score = 0
+
+  if (p.lastPostDaysAgo !== null && p.lastPostDaysAgo <= 7) {
+    score += 10
+  } else if (p.lastPostDaysAgo !== null && p.lastPostDaysAgo <= 30) {
+    score += 5
+    issues.push({ field: 'post_recency', severity: 'info', message: 'Ultimo post ha mais de 7 dias, poste toda semana', impact: 5 })
+  } else {
+    issues.push({ field: 'posts', severity: 'critical', message: p.lastPostDaysAgo === null ? 'Nunca publicou um post' : `Ultimo post ha ${p.lastPostDaysAgo} dias`, impact: 15 })
+  }
+
+  return makeCategory('posts', 'Posts', score, 15, issues)
+}
+
+function scoreServices(p: GmbProfileData): CategoryScore {
+  const issues: ScoreIssue[] = []
+  let score = 0
+
+  if (p.servicesCount >= 3) score += 5
+  else issues.push({ field: 'services_count', severity: 'warning', message: `Apenas ${p.servicesCount} ${p.servicesCount === 1 ? 'servico listado' : 'servicos listados'}, ideal: 3+`, impact: 5 })
+
+  if (p.servicesWithDescCount >= p.servicesCount && p.servicesCount > 0) score += 5
+  else issues.push({ field: 'services_desc', severity: 'info', message: 'Servicos sem descricao detalhada', impact: 5 })
+
+  return makeCategory('services', 'Servicos', score, 10, issues)
+}
+
+function scoreAttributes(p: GmbProfileData): CategoryScore {
+  const issues: ScoreIssue[] = []
+  let score = 0
+
+  if (p.attributesCount >= 5) score += 5
+  else issues.push({ field: 'attributes', severity: 'warning', message: `Apenas ${p.attributesCount} ${p.attributesCount === 1 ? 'atributo' : 'atributos'}, ideal: 5+ (ex: Wi-Fi, estacionamento, acessivel)`, impact: 5 })
+
+  return makeCategory('attributes', 'Atributos', score, 5, issues)
+}
+
+function makeCategory(
+  name: string,
+  label: string,
+  score: number,
+  maxScore: number,
+  issues: ScoreIssue[]
+): CategoryScore {
+  return { name, label, score, maxScore, percentage: Math.round((score / maxScore) * 100), issues }
+}

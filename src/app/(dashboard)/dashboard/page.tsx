@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 import { ScoreHero } from './components/ScoreHero'
 import { ReviewsCard } from './components/ReviewsCard'
 import { PostsCard } from './components/PostsCard'
@@ -64,6 +65,7 @@ async function getDashboardData() {
     : 0
 
   return {
+    userEmail: user.email ?? '',
     organization: { id: orgId, name: org?.name, specialty: org?.specialty },
     professional: { name: professional.name, role: professional.role },
     score: latestScore ?? null,
@@ -96,21 +98,11 @@ export default async function DashboardPage() {
     (data.pending.responses.length) + (data.pending.posts.length) > 0
 
   return (
-    <main className="min-h-screen bg-slate-50">
-      {/* Header */}
-      <div className="bg-white border-b border-slate-100">
-        <div className="max-w-3xl mx-auto px-6 py-5 flex items-center justify-between">
-          <div>
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Destaka</p>
-            <h1 className="text-base font-semibold text-slate-900">{data.organization.name}</h1>
-          </div>
-          <div className="text-right">
-            <p className="text-xs text-slate-400">{data.professional.name}</p>
-            <p className="text-xs text-slate-400 capitalize">{data.professional.role}</p>
-          </div>
-        </div>
-      </div>
-
+    <DashboardLayout
+      activeHref="/dashboard"
+      profileName={data.organization.name ?? 'Meu Perfil'}
+      userEmail={data.userEmail}
+    >
       <div className="max-w-3xl mx-auto px-6 py-8 space-y-4">
 
         {/* Ações pendentes aparecem primeiro quando existem */}
@@ -137,6 +129,6 @@ export default async function DashboardPage() {
         <PostsCard posts={data.posts.recent} />
 
       </div>
-    </main>
+    </DashboardLayout>
   )
 }

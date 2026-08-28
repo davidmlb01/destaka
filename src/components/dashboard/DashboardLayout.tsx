@@ -1,0 +1,114 @@
+'use client'
+
+import { ReactNode } from 'react'
+import Link from 'next/link'
+import { Logo } from '@/components/ui/Logo'
+import { PinIcon } from '@/components/ui/PinIcon'
+import { MobileNav } from './MobileNav'
+
+export const NAV_ITEMS = [
+  { label: 'Dashboard', href: '/dashboard' },
+  { label: 'Avaliações', href: '/dashboard/reviews' },
+  { label: 'Posts', href: '/dashboard/posts' },
+  { label: 'Otimizações', href: '/dashboard/optimizations' },
+  { label: 'Keywords', href: '/dashboard/keywords' },
+  { label: 'Concorrentes', href: '/dashboard/competitors' },
+  { label: 'Plano', href: '/dashboard/plan' },
+  { label: 'Indicar', href: '/indicar' },
+]
+
+interface Props {
+  children: ReactNode
+  activeHref: string
+  profileName: string
+  userEmail: string
+}
+
+export function DashboardLayout({ children, activeHref, profileName, userEmail }: Props) {
+  return (
+    <div
+      className="min-h-screen flex"
+      style={{ background: 'var(--bg-gradient)' }}
+    >
+      {/* Orb accent */}
+      <div
+        className="fixed pointer-events-none blur-[160px] rounded-full"
+        style={{ width: 600, height: 600, background: 'var(--accent-bg)', top: -200, right: -200 }}
+      />
+
+      {/* Sidebar */}
+      <aside
+        className="hidden lg:flex flex-col w-56 shrink-0 fixed top-0 left-0 bottom-0 z-40 px-4 py-6"
+        style={{
+          background: 'var(--sidebar-bg)',
+          borderRight: '1px solid var(--border-subtle)',
+          backdropFilter: 'blur(16px)',
+        }}
+      >
+        {/* Logo */}
+        <div className="px-2 mb-4">
+          <Logo size="md" href="/dashboard" vertical="Saúde" />
+        </div>
+
+        {/* Perfil */}
+        <p className="px-2 mb-6 text-sm truncate font-semibold text-white">
+          {profileName}
+        </p>
+
+        {/* Nav */}
+        <nav className="flex flex-col gap-1 flex-1">
+          {NAV_ITEMS.map(item => {
+            const isActive = item.href === activeHref
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`group flex items-center gap-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 nav-link ${isActive ? 'nav-active' : ''}`}
+                style={{
+                  paddingLeft: isActive ? '10px' : '12px',
+                  paddingRight: '12px',
+                  background: isActive ? 'var(--accent-bg)' : 'transparent',
+                  color: isActive ? 'var(--accent-bright)' : 'var(--text-tertiary)',
+                  borderLeft: isActive ? '2px solid var(--accent)' : '2px solid transparent',
+                  borderRadius: isActive ? '0 12px 12px 0' : '12px',
+                  textDecoration: 'none',
+                }}
+              >
+                <PinIcon size={15} color={isActive ? 'var(--accent)' : 'var(--text-tertiary)'} bg="transparent" />
+                {item.label}
+              </Link>
+            )
+          })}
+        </nav>
+
+        {/* Email + logout */}
+        <div className="px-2 pt-4" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+          <p className="text-xs truncate mb-2" style={{ color: 'var(--text-muted)' }}>{userEmail}</p>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/configuracoes"
+              className="text-xs transition-colors"
+              style={{ color: 'var(--text-muted)' }}
+            >
+              Configurações
+            </Link>
+            <span style={{ color: 'var(--border-subtle)' }}>·</span>
+            <a
+              href="/api/auth/signout"
+              className="text-xs transition-colors hover-signout"
+              style={{ color: 'var(--text-muted)' }}
+            >
+              Sair
+            </a>
+          </div>
+        </div>
+      </aside>
+
+      {/* Main */}
+      <main className="flex-1 lg:ml-56 relative z-10">
+        <MobileNav profileName={profileName} userEmail={userEmail} activeHref={activeHref} />
+        {children}
+      </main>
+    </div>
+  )
+}
