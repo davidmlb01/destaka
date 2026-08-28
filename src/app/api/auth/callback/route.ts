@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { inngest } from '@/lib/inngest/client'
+import { populateFromPlaces } from '@/lib/places/populate'
 
 function createServiceClient() {
   return createAdminSupa(
@@ -61,6 +62,10 @@ export async function GET(request: NextRequest) {
             data: { organization_id: professional.organization_id },
           }).catch(() => {})
         }
+
+        // Fire-and-forget: popula dashboard com dados do Places API
+        // Garante que o usuario veja dados reais mesmo sem Business Profile API
+        populateFromPlaces(professional.organization_id).catch(() => {})
 
         return NextResponse.redirect(`${origin}/dashboard`)
       }

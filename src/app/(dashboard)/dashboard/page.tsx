@@ -7,6 +7,7 @@ import { PostsCard } from './components/PostsCard'
 import { AuditGapsCard } from './components/AuditGapsCard'
 import { CompetitorsCard } from './components/CompetitorsCard'
 import { PendingActions } from './components/PendingActions'
+import { PopulateTrigger } from './components/PopulateTrigger'
 
 async function getDashboardData() {
   const supabase = await createClient()
@@ -105,7 +106,14 @@ export default async function DashboardPage() {
     >
       <div className="max-w-3xl mx-auto px-6 py-8 space-y-4">
 
-        {/* Ações pendentes aparecem primeiro quando existem */}
+        {/* Auto-populate: busca dados do Places API se dashboard vazio */}
+        <PopulateTrigger
+          orgName={data.organization.name ?? ''}
+          hasScore={!!data.score}
+          hasProfile={!!data.profile}
+        />
+
+        {/* Acoes pendentes aparecem primeiro quando existem */}
         {hasPending && (
           <PendingActions
             responses={data.pending.responses}
