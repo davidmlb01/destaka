@@ -3,7 +3,7 @@
 // Pode ser chamado fire-and-forget (auth callback) ou sincrono (API route)
 
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
-import { isPlacesAvailable, searchPlace, getPlaceDetails } from './client'
+import { isPlacesAvailable, searchPlace, getPlaceDetails, extractQueryFromUrl } from './client'
 import { placeDetailsToProfileData } from './scorer'
 import { buildScoreInput, calculateScore } from '@/lib/score/score-calculator'
 import type { PlaceDetails } from './client'
@@ -46,10 +46,10 @@ export async function populateFromPlaces(orgId: string): Promise<PopulateResult>
     return { status: 'skipped' }
   }
 
-  // Busca nome da org
+  // Busca nome e location da org
   const { data: org } = await db
     .from('organizations')
-    .select('name, specialty')
+    .select('name, specialty, gbp_location_id')
     .eq('id', orgId)
     .single()
 
@@ -57,8 +57,21 @@ export async function populateFromPlaces(orgId: string): Promise<PopulateResult>
     return { status: 'error', error: 'Organizacao sem nome' }
   }
 
-  // Pesquisa no Google Places
-  const placeId = await searchPlace(org.name)
+  // Se tem Maps URL salvo, usa ele para buscar. Senao, busca por nome.
+  let placeId: string | null = null
+
+  if (org.gbp_location_id?.startsWith('maps_url:')) {
+    const mapsUrl = org.gbp_location_id.replace('maps_url:', '')
+    const query = await extractQueryFromUrl(mapsUrl)
+    if (query) {
+      placeId = await searchPlace(query)
+    }
+  }
+
+  if (!placeId) {
+    placeId = await searchPlace(org.name)
+  }
+
   if (!placeId) {
     return { status: 'error', error: `"${org.name}" nao encontrado no Google Maps` }
   }

@@ -23,7 +23,7 @@ export function PopulateTrigger({ orgName, hasScore, hasProfile }: PopulateTrigg
     setErrorMsg('')
 
     try {
-      const res = await fetch('/api/dashboard/populate', { method: 'POST' })
+      const res = await fetch('/api/places/populate', { method: 'POST' })
       const data = await res.json()
 
       if (!res.ok) {
