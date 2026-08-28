@@ -8,9 +8,9 @@ interface AuditReport {
 export function AuditGapsCard({ auditReport }: { auditReport: AuditReport | null }) {
   if (!auditReport) {
     return (
-      <div className="bg-white rounded-2xl border border-slate-100 p-6">
-        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1">Diagnóstico do perfil</p>
-        <p className="text-sm text-slate-400">Auditoria em andamento. Disponível em instantes.</p>
+      <div className="rounded-2xl p-6" style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}>
+        <p className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--text-muted)' }}>Diagnostico do perfil</p>
+        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Auditoria em andamento. Disponivel em instantes.</p>
       </div>
     )
   }
@@ -21,25 +21,25 @@ export function AuditGapsCard({ auditReport }: { auditReport: AuditReport | null
   if (gaps.length === 0 && actions.length === 0) return null
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
-      <div className="px-6 py-4 border-b border-slate-100">
-        <h2 className="font-semibold text-slate-900">O que melhorar no seu perfil</h2>
+    <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}>
+      <div className="px-6 py-4" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+        <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>O que melhorar no seu perfil</h2>
       </div>
 
       <div className="px-6 py-4 space-y-3">
         {actions.slice(0, 3).map((action, i) => (
           <div key={i} className="flex gap-3">
-            <span className="flex-shrink-0 w-5 h-5 rounded-full bg-slate-900 text-white text-xs font-bold flex items-center justify-center mt-0.5">
+            <span className="flex-shrink-0 w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center mt-0.5" style={{ background: 'var(--accent)', color: '#fff' }}>
               {i + 1}
             </span>
-            <p className="text-sm text-slate-700 leading-relaxed">{action}</p>
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{action}</p>
           </div>
         ))}
 
         {gaps.slice(0, 2).map((gap, i) => (
           <div key={`gap-${i}`} className="flex gap-3">
-            <span className="flex-shrink-0 w-5 h-5 rounded-full bg-amber-100 text-amber-700 text-xs font-bold flex items-center justify-center mt-0.5">!</span>
-            <p className="text-sm text-slate-600 leading-relaxed">{gap}</p>
+            <span className="flex-shrink-0 w-5 h-5 rounded-full bg-amber-500/15 text-amber-400 text-xs font-bold flex items-center justify-center mt-0.5">!</span>
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--text-tertiary)' }}>{gap}</p>
           </div>
         ))}
       </div>

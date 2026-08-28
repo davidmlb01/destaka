@@ -25,10 +25,10 @@ const FAIXA_COLOR: Record<string, string> = {
 }
 
 const FAIXA_BG: Record<string, string> = {
-  fraca: 'bg-red-50 text-red-700',
-  funcional: 'bg-amber-50 text-amber-700',
-  forte: 'bg-green-50 text-green-700',
-  perfeita: 'bg-blue-50 text-blue-700',
+  fraca: 'bg-red-500/15 text-red-400',
+  funcional: 'bg-amber-500/15 text-amber-400',
+  forte: 'bg-green-500/15 text-green-400',
+  perfeita: 'bg-blue-500/15 text-blue-400',
 }
 
 const FAIXA_BAR: Record<string, string> = {
@@ -50,11 +50,11 @@ function ScoreBar({ label, value, max }: { label: string; value: number; max: nu
   return (
     <div>
       <div className="flex items-center justify-between mb-1">
-        <span className="text-xs text-slate-500">{label}</span>
-        <span className="text-xs font-semibold text-slate-700">{value}/{max}</span>
+        <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>{label}</span>
+        <span className="text-xs font-semibold" style={{ color: 'var(--text-secondary)' }}>{value}/{max}</span>
       </div>
-      <div className="h-1.5 bg-slate-100 rounded-full">
-        <div className="h-1.5 bg-slate-900 rounded-full" style={{ width: `${pct}%` }} />
+      <div className="h-1.5 rounded-full" style={{ background: 'var(--border-subtle)' }}>
+        <div className="h-1.5 rounded-full" style={{ width: `${pct}%`, background: 'var(--accent)' }} />
       </div>
     </div>
   )
@@ -69,30 +69,30 @@ export function ScoreHero({
 }) {
   if (!score) {
     return (
-      <div className="bg-white rounded-2xl border border-slate-100 p-6">
-        <p className="text-sm text-slate-400">Score ainda sendo calculado. Volte em instantes.</p>
+      <div className="rounded-2xl p-6" style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}>
+        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Score ainda sendo calculado. Volte em instantes.</p>
       </div>
     )
   }
 
-  const colorClass = FAIXA_COLOR[score.faixa] ?? 'text-slate-900'
-  const barClass = FAIXA_BAR[score.faixa] ?? 'bg-slate-900'
-  const badgeClass = FAIXA_BG[score.faixa] ?? 'bg-slate-100 text-slate-700'
+  const colorClass = FAIXA_COLOR[score.faixa] ?? 'text-white'
+  const barClass = FAIXA_BAR[score.faixa] ?? 'bg-white'
+  const badgeClass = FAIXA_BG[score.faixa] ?? 'bg-white/10 text-white/70'
   const faixaLabel = FAIXA_LABEL[score.faixa] ?? 'Presença'
 
   // Delta vs yesterday (last history entry before today)
   const delta = history.length >= 2 ? score.total - history[1].total : null
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 p-6">
+    <div className="rounded-2xl p-6" style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}>
       <div className="flex items-start justify-between mb-4">
         <div>
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1">Score Destaka</p>
+          <p className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--text-muted)' }}>Score Destaka</p>
           <div className="flex items-baseline gap-2">
             <span className={`text-6xl font-black leading-none tracking-tight ${colorClass}`}>
               {score.total}
             </span>
-            <span className="text-xl text-slate-300 font-light">/100</span>
+            <span className="text-xl font-light" style={{ color: 'var(--text-muted)' }}>/100</span>
           </div>
           {delta !== null && delta !== 0 && (
             <p className={`text-xs font-semibold mt-1 ${delta > 0 ? 'text-green-600' : 'text-red-500'}`}>
@@ -105,7 +105,7 @@ export function ScoreHero({
         </span>
       </div>
 
-      <div className="h-2 bg-slate-100 rounded-full mb-5">
+      <div className="h-2 rounded-full mb-5" style={{ background: 'var(--border-subtle)' }}>
         <div className={`h-2 rounded-full transition-all duration-500 ${barClass}`} style={{ width: `${score.total}%` }} />
       </div>
 

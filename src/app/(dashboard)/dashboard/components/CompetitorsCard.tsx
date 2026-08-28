@@ -9,21 +9,21 @@ export function CompetitorsCard({ competitors }: { competitors: Competitor[] }) 
   if (competitors.length === 0) return null
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
-      <div className="px-6 py-4 border-b border-slate-100">
-        <h2 className="font-semibold text-slate-900">Concorrentes próximos</h2>
+    <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}>
+      <div className="px-6 py-4" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+        <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Concorrentes proximos</h2>
       </div>
 
-      <div className="divide-y divide-slate-50">
+      <div>
         {competitors.map((c, i) => (
-          <div key={i} className="px-6 py-4 flex items-center justify-between">
+          <div key={i} className="px-6 py-4 flex items-center justify-between" style={i > 0 ? { borderTop: '1px solid var(--border-subtle)' } : undefined}>
             <div>
-              <p className="text-sm font-semibold text-slate-800">{c.name}</p>
-              <p className="text-xs text-slate-400">{c.review_count} avaliações</p>
+              <p className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>{c.name}</p>
+              <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{c.review_count} avaliacoes</p>
             </div>
             <div className="text-right">
-              <p className="text-sm font-bold text-slate-900">{c.avg_rating.toFixed(1)}</p>
-              <p className="text-xs text-amber-500">★ nota</p>
+              <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>{c.avg_rating.toFixed(1)}</p>
+              <p className="text-xs text-amber-400">&#9733; nota</p>
             </div>
           </div>
         ))}

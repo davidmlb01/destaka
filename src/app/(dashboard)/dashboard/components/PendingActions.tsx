@@ -53,36 +53,38 @@ export function PendingActions({
 
   if (remaining === 0) {
     return (
-      <div className="bg-green-50 border border-green-100 rounded-2xl p-6">
-        <p className="text-green-700 font-semibold text-sm">Tudo aprovado. Nenhuma ação pendente.</p>
+      <div className="rounded-2xl p-6" style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.15)' }}>
+        <p className="text-green-400 font-semibold text-sm">Tudo aprovado. Nenhuma acao pendente.</p>
       </div>
     )
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
-      <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-        <h2 className="font-semibold text-slate-900">Ações pendentes</h2>
-        <span className="bg-amber-100 text-amber-700 text-xs font-bold px-2.5 py-1 rounded-full">{remaining}</span>
+    <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}>
+      <div className="px-6 py-4 flex items-center justify-between" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+        <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Acoes pendentes</h2>
+        <span className="bg-amber-500/15 text-amber-400 text-xs font-bold px-2.5 py-1 rounded-full">{remaining}</span>
       </div>
 
-      <div className="divide-y divide-slate-50">
-        {activeResponses.map(r => (
-          <div key={r.id} className="px-6 py-4">
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">Resposta de review</p>
-            <p className="text-sm text-slate-700 leading-relaxed mb-3 bg-slate-50 rounded-lg px-4 py-3">
+      <div>
+        {activeResponses.map((r, i) => (
+          <div key={r.id} className="px-6 py-4" style={i > 0 || false ? { borderTop: '1px solid var(--border-subtle)' } : undefined}>
+            <p className="text-xs font-semibold uppercase tracking-wide mb-2" style={{ color: 'var(--text-muted)' }}>Resposta de review</p>
+            <p className="text-sm leading-relaxed mb-3 rounded-lg px-4 py-3" style={{ color: 'var(--text-secondary)', background: 'var(--card-dark)' }}>
               {r.generated_text}
             </p>
             <div className="flex gap-2">
               <button
                 onClick={() => handleResponse(r.id, 'approve')}
-                className="text-xs font-semibold bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-slate-700 transition-colors"
+                className="text-xs font-semibold text-white px-4 py-2 rounded-lg transition-colors"
+                style={{ background: 'var(--accent)' }}
               >
                 Publicar
               </button>
               <button
                 onClick={() => handleResponse(r.id, 'reject')}
-                className="text-xs font-semibold text-slate-400 px-4 py-2 rounded-lg hover:text-slate-600 transition-colors"
+                className="text-xs font-semibold px-4 py-2 rounded-lg transition-colors"
+                style={{ color: 'var(--text-muted)' }}
               >
                 Descartar
               </button>
@@ -90,29 +92,31 @@ export function PendingActions({
           </div>
         ))}
 
-        {activePosts.map(p => (
-          <div key={p.id} className="px-6 py-4">
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">
+        {activePosts.map((p, i) => (
+          <div key={p.id} className="px-6 py-4" style={(i > 0 || activeResponses.length > 0) ? { borderTop: '1px solid var(--border-subtle)' } : undefined}>
+            <p className="text-xs font-semibold uppercase tracking-wide mb-2" style={{ color: 'var(--text-muted)' }}>
               Post {p.post_type}
             </p>
-            <p className="text-sm text-slate-700 leading-relaxed mb-2 bg-slate-50 rounded-lg px-4 py-3">
+            <p className="text-sm leading-relaxed mb-2 rounded-lg px-4 py-3" style={{ color: 'var(--text-secondary)', background: 'var(--card-dark)' }}>
               {p.content}
             </p>
             {p.photo_suggestion && (
-              <p className="text-xs text-slate-400 mb-3">
+              <p className="text-xs mb-3" style={{ color: 'var(--text-muted)' }}>
                 Foto sugerida: {p.photo_suggestion}
               </p>
             )}
             <div className="flex gap-2">
               <button
                 onClick={() => handlePost(p.id, 'approve')}
-                className="text-xs font-semibold bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-slate-700 transition-colors"
+                className="text-xs font-semibold text-white px-4 py-2 rounded-lg transition-colors"
+                style={{ background: 'var(--accent)' }}
               >
                 Publicar no Google
               </button>
               <button
                 onClick={() => handlePost(p.id, 'reject')}
-                className="text-xs font-semibold text-slate-400 px-4 py-2 rounded-lg hover:text-slate-600 transition-colors"
+                className="text-xs font-semibold px-4 py-2 rounded-lg transition-colors"
+                style={{ color: 'var(--text-muted)' }}
               >
                 Descartar
               </button>

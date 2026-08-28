@@ -30,43 +30,43 @@ export function ReviewsCard({ reviews }: { reviews: ReviewsData }) {
   const responseRatePct = Math.round(reviews.response_rate * 100)
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
-      <div className="px-6 py-4 border-b border-slate-100">
-        <h2 className="font-semibold text-slate-900">Avaliações</h2>
+    <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}>
+      <div className="px-6 py-4" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+        <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Avaliações</h2>
       </div>
 
-      <div className="px-6 py-4 grid grid-cols-3 gap-4 border-b border-slate-50">
+      <div className="px-6 py-4 grid grid-cols-3 gap-4" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
         <div className="text-center">
-          <p className="text-3xl font-black text-slate-900 leading-none">{reviews.avg_rating.toFixed(1)}</p>
-          <p className="text-xs text-slate-400 mt-1">nota média</p>
+          <p className="text-3xl font-black leading-none" style={{ color: 'var(--text-primary)' }}>{reviews.avg_rating.toFixed(1)}</p>
+          <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>nota média</p>
         </div>
         <div className="text-center">
-          <p className="text-3xl font-black text-slate-900 leading-none">{reviews.new_this_month}</p>
-          <p className="text-xs text-slate-400 mt-1">este mês</p>
+          <p className="text-3xl font-black leading-none" style={{ color: 'var(--text-primary)' }}>{reviews.new_this_month}</p>
+          <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>este mês</p>
         </div>
         <div className="text-center">
-          <p className="text-3xl font-black text-slate-900 leading-none">{responseRatePct}%</p>
-          <p className="text-xs text-slate-400 mt-1">respondidas</p>
+          <p className="text-3xl font-black leading-none" style={{ color: 'var(--text-primary)' }}>{responseRatePct}%</p>
+          <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>respondidas</p>
         </div>
       </div>
 
       {reviews.recent.length === 0 ? (
         <div className="px-6 py-8 text-center">
-          <p className="text-sm text-slate-400">Nenhuma avaliação ainda.</p>
+          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Nenhuma avaliação ainda.</p>
         </div>
       ) : (
-        <div className="divide-y divide-slate-50">
-          {reviews.recent.slice(0, 3).map(r => (
-            <div key={r.id} className="px-6 py-4">
+        <div>
+          {reviews.recent.slice(0, 3).map((r, i) => (
+            <div key={r.id} className="px-6 py-4" style={i > 0 ? { borderTop: '1px solid var(--border-subtle)' } : undefined}>
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-2">
                   <Stars rating={r.rating} />
-                  <span className="text-xs font-semibold text-slate-700">{r.author_name}</span>
+                  <span className="text-xs font-semibold" style={{ color: 'var(--text-secondary)' }}>{r.author_name}</span>
                 </div>
-                <span className="text-xs text-slate-400">{formatDate(r.published_at)}</span>
+                <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{formatDate(r.published_at)}</span>
               </div>
               {r.comment && (
-                <p className="text-sm text-slate-600 line-clamp-2 leading-relaxed">{r.comment}</p>
+                <p className="text-sm line-clamp-2 leading-relaxed" style={{ color: 'var(--text-tertiary)' }}>{r.comment}</p>
               )}
             </div>
           ))}
