@@ -1,0 +1,156 @@
+// =============================================================================
+// DESTAKA — Posts Generator
+// Story 1.7 — Posts Automáticos Semanais
+// =============================================================================
+
+import { getAnthropic, AI_MODEL_FAST } from '@/lib/ai'
+import { sanitizeForPrompt } from '@/lib/sanitize'
+import { detectSegment } from './segment'
+
+export type PostType = 'update' | 'event' | 'offer'
+
+export interface GeneratedPost {
+  content: string
+  type: PostType
+  cta: string
+}
+
+// ---------------------------------------------------------------------------
+// Contexto sazonal brasileiro por mês
+// ---------------------------------------------------------------------------
+
+const SEASONAL_CONTEXT: Record<number, string> = {
+  1: 'Janeiro: verão, férias, volta às aulas se aproximando',
+  2: 'Fevereiro: carnaval, calor, verão ainda',
+  3: 'Março: início do outono, Páscoa se aproximando',
+  4: 'Abril: Páscoa, outono, dias mais frescos',
+  5: 'Maio: Dia das Mães, outono, gripe sazonal aumentando',
+  6: 'Junho: festa junina, inverno, doenças respiratórias',
+  7: 'Julho: férias escolares, inverno, gripe e resfriados comuns',
+  8: 'Agosto: inverno ainda, Dia dos Pais se aproximando',
+  9: 'Setembro: primavera, Dia do Cliente (15/09)',
+  10: 'Outubro: primavera, mês do médico (18/10), dengue preventivo',
+  11: 'Novembro: calor voltando, novembro azul (saúde do homem)',
+  12: 'Dezembro: verão, Natal, fim de ano, férias',
+}
+
+// ---------------------------------------------------------------------------
+// Prompts por segmento
+// ---------------------------------------------------------------------------
+
+const SEGMENT_TOPICS: Record<string, string[]> = {
+  dentista: [
+    'saúde bucal preventiva',
+    'clareamento dental',
+    'aparelho e ortodontia',
+    'implantes dentários',
+    'higiene após refeições',
+    'saúde bucal em crianças',
+  ],
+  médico: [
+    'check-up preventivo',
+    'controle de pressão arterial',
+    'importância do sono',
+    'alimentação saudável',
+    'vacinação em dia',
+    'atividade física',
+  ],
+  psicólogo: [
+    'saúde mental no trabalho',
+    'ansiedade e como lidar',
+    'terapia online e presencial',
+    'autocuidado no dia a dia',
+    'relacionamentos saudáveis',
+    'burnout: sinais de alerta',
+  ],
+  fisioterapeuta: [
+    'dores nas costas e postura',
+    'lesões esportivas',
+    'reabilitação pós-cirurgia',
+    'pilates e fortalecimento',
+    'dores no pescoço e ombro',
+    'fisioterapia preventiva',
+  ],
+  advogado: [
+    'direitos do consumidor',
+    'planejamento sucessório',
+    'contratos e precauções',
+    'direitos trabalhistas',
+    'consulta jurídica preventiva',
+    'documentação imobiliária',
+  ],
+}
+
+// ---------------------------------------------------------------------------
+// Gerador principal
+// ---------------------------------------------------------------------------
+
+export async function generateWeeklyPost(
+  segment: string,
+  businessName: string,
+  locationCity?: string,
+  specialty?: string,
+  servicesInput?: string[],
+  bio?: string
+): Promise<GeneratedPost | null> {
+  const month = new Date().getMonth() + 1
+  const seasonalCtx = SEASONAL_CONTEXT[month]
+
+  // Sorteia tópico dos serviços reais quando disponíveis; caso contrário usa lista genérica
+  let topic: string
+  if (servicesInput?.length) {
+    topic = servicesInput[Math.floor(Math.random() * servicesInput.length)]
+  } else {
+    const topics = SEGMENT_TOPICS[segment] ?? SEGMENT_TOPICS['médico']
+    topic = topics[Math.floor(Math.random() * topics.length)]
+  }
+
+  const safeName = sanitizeForPrompt(businessName)
+  const safeCity = sanitizeForPrompt(locationCity, 100)
+  const safeSpecialty = specialty ? sanitizeForPrompt(specialty) : segment
+  const servicesLine = servicesInput?.length
+    ? `Serviços reais: ${servicesInput.map(s => sanitizeForPrompt(s)).join(', ')}`
+    : ''
+  const bioLine = bio ? `Sobre o profissional: ${sanitizeForPrompt(bio, 500)}` : ''
+
+  const message = await getAnthropic().messages.create({
+    model: AI_MODEL_FAST,
+    max_tokens: 400,
+    messages: [
+      {
+        role: 'user',
+        content: `Crie um post para o Google Meu Negócio de ${safeName}, ${safeSpecialty}${safeCity ? ` em ${safeCity}` : ''}.
+
+${servicesLine}
+${bioLine}
+Tema do post: ${topic}
+Contexto sazonal: ${seasonalCtx}
+
+Responda APENAS com JSON neste formato exato (sem markdown):
+{
+  "content": "texto do post em até 300 caracteres, sem travessão, sem emojis",
+  "type": "update",
+  "cta": "frase de call-to-action curta, ex: Agende sua consulta"
+}
+
+Regras:
+- Use apenas as informações reais fornecidas acima. Não invente serviços, especialidades ou diferenciais.
+- NUNCA mencione horários de atendimento, dias da semana ou disponibilidade específica.
+- Linguagem acessível, direta, sem jargões técnicos
+- Mencione o contexto sazonal se relevante
+- O content já deve incluir o CTA no final
+- Sem travessão (use vírgula ou dois-pontos)`,
+      },
+    ],
+  })
+
+  const content = message.content[0]
+  if (content.type !== 'text') return null
+
+  try {
+    const parsed = JSON.parse(content.text.replace(/```json|```/g, '').trim()) as GeneratedPost
+    return parsed
+  } catch {
+    return null
+  }
+}
