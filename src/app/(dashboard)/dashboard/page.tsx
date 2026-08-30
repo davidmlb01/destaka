@@ -1,154 +1,78 @@
 import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
-import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
-import { ScoreHero } from './components/ScoreHero'
-import { ReviewsCard } from './components/ReviewsCard'
-import { PostsCard } from './components/PostsCard'
-import { AuditGapsCard } from './components/AuditGapsCard'
-import { CompetitorsCard } from './components/CompetitorsCard'
-import { PendingActions } from './components/PendingActions'
-import { PopulateTrigger } from './components/PopulateTrigger'
 
-async function getDashboardData() {
+export default async function DashboardPage() {
+  let debugInfo = 'starting'
+
   try {
+    debugInfo = 'creating supabase client'
     const supabase = await createClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) {
-      console.error('[Dashboard] Auth error:', authError?.message)
-      return null
+
+    debugInfo = 'getting user'
+    const { data: authData, error: authError } = await supabase.auth.getUser()
+
+    if (authError || !authData.user) {
+      debugInfo = `no user: ${authError?.message ?? 'null'}`
+      return (
+        <div style={{ padding: 40, color: 'white', background: '#071a19', minHeight: '100vh' }}>
+          <h1 style={{ fontSize: 24, marginBottom: 16 }}>Dashboard Debug</h1>
+          <p>Status: {debugInfo}</p>
+          <p style={{ marginTop: 16 }}>
+            <a href="/login" style={{ color: '#14B8A6' }}>Ir para login</a>
+          </p>
+        </div>
+      )
     }
 
+    debugInfo = 'querying professional'
     const { data: professional, error: profError } = await supabase
       .from('professionals')
       .select('id, name, organization_id, role')
-      .eq('user_id', user.id)
+      .eq('user_id', authData.user.id)
       .maybeSingle()
 
     if (profError) {
-      console.error('[Dashboard] Professional query error:', profError.message)
-      return null
+      debugInfo = `professional error: ${profError.message} (${profError.code})`
+    } else if (!professional) {
+      debugInfo = 'no professional row found'
+    } else if (!professional.organization_id) {
+      debugInfo = 'professional has no organization_id'
+    } else {
+      debugInfo = `professional found: ${professional.name}, org: ${professional.organization_id}`
+
+      const { data: org } = await supabase
+        .from('organizations')
+        .select('name')
+        .eq('id', professional.organization_id)
+        .maybeSingle()
+
+      debugInfo += ` | org name: ${org?.name ?? 'not found'}`
     }
-    if (!professional?.organization_id) return null
 
-    const orgId = professional.organization_id
-    const thirtyDaysAgo = new Date()
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
-
-    const [
-      { data: org },
-      { data: latestScore },
-      { data: scoreHistory },
-      { data: profile },
-      { data: reviews },
-      { data: pendingResponses },
-      { data: pendingPosts },
-      { data: recentPosts },
-      { data: competitors },
-    ] = await Promise.all([
-      supabase.from('organizations').select('name, specialty').eq('id', orgId).maybeSingle(),
-      supabase.from('scores').select('*').eq('organization_id', orgId).order('snapshot_date', { ascending: false }).limit(1).maybeSingle(),
-      supabase.from('scores').select('total, snapshot_date, faixa').eq('organization_id', orgId).order('snapshot_date', { ascending: false }).limit(30),
-      supabase.from('gbp_profiles').select('description, categories, photo_count, audit_report, benchmark_report, optimization_report').eq('organization_id', orgId).maybeSingle(),
-      supabase.from('reviews').select('id, rating, comment, author_name, published_at').eq('organization_id', orgId).order('published_at', { ascending: false }).limit(50),
-      supabase.from('review_responses').select('id, generated_text, review_id').eq('organization_id', orgId).eq('status', 'pending'),
-      supabase.from('posts').select('id, content, post_type, photo_suggestion').eq('organization_id', orgId).eq('status', 'pending'),
-      supabase.from('posts').select('id, content, post_type, published_at, status').eq('organization_id', orgId).order('created_at', { ascending: false }).limit(10),
-      supabase.from('competitors').select('name, avg_rating, review_count, last_tracked_at').eq('organization_id', orgId).limit(3),
-    ])
-
-    const reviewList = reviews ?? []
-    const totalReviews = reviewList.length
-    const avgRating = totalReviews > 0
-      ? reviewList.reduce((s, r) => s + (r.rating ?? 0), 0) / totalReviews
-      : 0
-    const newThisMonth = reviewList.filter(r => r.published_at && new Date(r.published_at) >= thirtyDaysAgo).length
-
-    const { data: publishedResponses } = await supabase
-      .from('review_responses')
-      .select('id')
-      .eq('organization_id', orgId)
-      .eq('status', 'published')
-
-    const responseRate = totalReviews > 0
-      ? (publishedResponses?.length ?? 0) / totalReviews
-      : 0
-
-    return {
-      userEmail: user.email ?? '',
-      organization: { id: orgId, name: org?.name, specialty: org?.specialty },
-      professional: { name: professional.name, role: professional.role },
-      score: latestScore ?? null,
-      score_history: scoreHistory ?? [],
-      profile: profile ?? null,
-      reviews: {
-        total: totalReviews,
-        avg_rating: parseFloat(avgRating.toFixed(1)),
-        new_this_month: newThisMonth,
-        response_rate: parseFloat(responseRate.toFixed(2)),
-        recent: reviewList.slice(0, 5),
-      },
-      pending: {
-        responses: pendingResponses ?? [],
-        posts: pendingPosts ?? [],
-      },
-      posts: {
-        recent: recentPosts ?? [],
-      },
-      competitors: competitors ?? [],
-    }
-  } catch (err) {
-    console.error('[Dashboard] Unexpected error:', err)
-    return null
-  }
-}
-
-export default async function DashboardPage() {
-  const data = await getDashboardData()
-
-  if (!data) redirect('/onboarding')
-
-  const hasPending =
-    (data.pending.responses.length) + (data.pending.posts.length) > 0
-
-  return (
-    <DashboardLayout
-      activeHref="/dashboard"
-      profileName={data.organization.name ?? 'Meu Perfil'}
-      userEmail={data.userEmail}
-    >
-      <div className="max-w-3xl mx-auto px-6 py-8 space-y-4">
-
-        {/* Auto-populate: busca dados do Places API se dashboard vazio */}
-        <PopulateTrigger
-          orgName={data.organization.name ?? ''}
-          hasScore={!!data.score}
-          hasProfile={!!data.profile}
-        />
-
-        {/* Acoes pendentes aparecem primeiro quando existem */}
-        {hasPending && (
-          <PendingActions
-            responses={data.pending.responses}
-            posts={data.pending.posts}
-          />
-        )}
-
-        {/* Score */}
-        <ScoreHero score={data.score} history={data.score_history} />
-
-        {/* Diagnóstico */}
-        <AuditGapsCard auditReport={data.profile?.audit_report ?? null} />
-
-        {/* Avaliações */}
-        <ReviewsCard reviews={data.reviews} />
-
-        {/* Concorrentes */}
-        <CompetitorsCard competitors={data.competitors} />
-
-        {/* Posts recentes */}
-        <PostsCard posts={data.posts.recent} />
-
+    return (
+      <div style={{ padding: 40, color: 'white', background: '#071a19', minHeight: '100vh' }}>
+        <h1 style={{ fontSize: 24, marginBottom: 16 }}>Dashboard Debug</h1>
+        <p>User: {authData.user.email}</p>
+        <p>Status: {debugInfo}</p>
+        <p style={{ marginTop: 16 }}>
+          <a href="/api/auth/signout" style={{ color: '#14B8A6', marginRight: 16 }}>Sair</a>
+          <a href="/" style={{ color: '#14B8A6' }}>Home</a>
+        </p>
       </div>
-    </DashboardLayout>
-  )
+    )
+  } catch (err) {
+    return (
+      <div style={{ padding: 40, color: 'white', background: '#071a19', minHeight: '100vh' }}>
+        <h1 style={{ fontSize: 24, marginBottom: 16 }}>Dashboard Debug - CATCH</h1>
+        <p>Last step: {debugInfo}</p>
+        <p>Error: {err instanceof Error ? err.message : String(err)}</p>
+        <p style={{ marginTop: 8, fontSize: 12, opacity: 0.5 }}>
+          {err instanceof Error ? err.stack : ''}
+        </p>
+        <p style={{ marginTop: 16 }}>
+          <a href="/api/auth/signout" style={{ color: '#14B8A6', marginRight: 16 }}>Sair</a>
+          <a href="/" style={{ color: '#14B8A6' }}>Home</a>
+        </p>
+      </div>
+    )
+  }
 }
