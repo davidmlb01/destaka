@@ -10,83 +10,95 @@ import { PendingActions } from './components/PendingActions'
 import { PopulateTrigger } from './components/PopulateTrigger'
 
 async function getDashboardData() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return null
+  try {
+    const supabase = await createClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      console.error('[Dashboard] Auth error:', authError?.message)
+      return null
+    }
 
-  const { data: professional } = await supabase
-    .from('professionals')
-    .select('id, name, organization_id, role')
-    .eq('user_id', user.id)
-    .maybeSingle()
+    const { data: professional, error: profError } = await supabase
+      .from('professionals')
+      .select('id, name, organization_id, role')
+      .eq('user_id', user.id)
+      .maybeSingle()
 
-  if (!professional?.organization_id) return null
+    if (profError) {
+      console.error('[Dashboard] Professional query error:', profError.message)
+      return null
+    }
+    if (!professional?.organization_id) return null
 
-  const orgId = professional.organization_id
-  const thirtyDaysAgo = new Date()
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+    const orgId = professional.organization_id
+    const thirtyDaysAgo = new Date()
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
-  const [
-    { data: org },
-    { data: latestScore },
-    { data: scoreHistory },
-    { data: profile },
-    { data: reviews },
-    { data: pendingResponses },
-    { data: pendingPosts },
-    { data: recentPosts },
-    { data: competitors },
-  ] = await Promise.all([
-    supabase.from('organizations').select('name, specialty').eq('id', orgId).single(),
-    supabase.from('scores').select('*').eq('organization_id', orgId).order('snapshot_date', { ascending: false }).limit(1).maybeSingle(),
-    supabase.from('scores').select('total, snapshot_date, faixa').eq('organization_id', orgId).order('snapshot_date', { ascending: false }).limit(30),
-    supabase.from('gbp_profiles').select('description, categories, photo_count, audit_report, benchmark_report, optimization_report').eq('organization_id', orgId).maybeSingle(),
-    supabase.from('reviews').select('id, rating, comment, author_name, published_at').eq('organization_id', orgId).order('published_at', { ascending: false }).limit(50),
-    supabase.from('review_responses').select('id, generated_text, review_id').eq('organization_id', orgId).eq('status', 'pending'),
-    supabase.from('posts').select('id, content, post_type, photo_suggestion').eq('organization_id', orgId).eq('status', 'pending'),
-    supabase.from('posts').select('id, content, post_type, published_at, status').eq('organization_id', orgId).order('created_at', { ascending: false }).limit(10),
-    supabase.from('competitors').select('name, avg_rating, review_count, last_tracked_at').eq('organization_id', orgId).limit(3),
-  ])
+    const [
+      { data: org },
+      { data: latestScore },
+      { data: scoreHistory },
+      { data: profile },
+      { data: reviews },
+      { data: pendingResponses },
+      { data: pendingPosts },
+      { data: recentPosts },
+      { data: competitors },
+    ] = await Promise.all([
+      supabase.from('organizations').select('name, specialty').eq('id', orgId).maybeSingle(),
+      supabase.from('scores').select('*').eq('organization_id', orgId).order('snapshot_date', { ascending: false }).limit(1).maybeSingle(),
+      supabase.from('scores').select('total, snapshot_date, faixa').eq('organization_id', orgId).order('snapshot_date', { ascending: false }).limit(30),
+      supabase.from('gbp_profiles').select('description, categories, photo_count, audit_report, benchmark_report, optimization_report').eq('organization_id', orgId).maybeSingle(),
+      supabase.from('reviews').select('id, rating, comment, author_name, published_at').eq('organization_id', orgId).order('published_at', { ascending: false }).limit(50),
+      supabase.from('review_responses').select('id, generated_text, review_id').eq('organization_id', orgId).eq('status', 'pending'),
+      supabase.from('posts').select('id, content, post_type, photo_suggestion').eq('organization_id', orgId).eq('status', 'pending'),
+      supabase.from('posts').select('id, content, post_type, published_at, status').eq('organization_id', orgId).order('created_at', { ascending: false }).limit(10),
+      supabase.from('competitors').select('name, avg_rating, review_count, last_tracked_at').eq('organization_id', orgId).limit(3),
+    ])
 
-  const reviewList = reviews ?? []
-  const totalReviews = reviewList.length
-  const avgRating = totalReviews > 0
-    ? reviewList.reduce((s, r) => s + (r.rating ?? 0), 0) / totalReviews
-    : 0
-  const newThisMonth = reviewList.filter(r => r.published_at && new Date(r.published_at) >= thirtyDaysAgo).length
+    const reviewList = reviews ?? []
+    const totalReviews = reviewList.length
+    const avgRating = totalReviews > 0
+      ? reviewList.reduce((s, r) => s + (r.rating ?? 0), 0) / totalReviews
+      : 0
+    const newThisMonth = reviewList.filter(r => r.published_at && new Date(r.published_at) >= thirtyDaysAgo).length
 
-  const { data: publishedResponses } = await supabase
-    .from('review_responses')
-    .select('id')
-    .eq('organization_id', orgId)
-    .eq('status', 'published')
+    const { data: publishedResponses } = await supabase
+      .from('review_responses')
+      .select('id')
+      .eq('organization_id', orgId)
+      .eq('status', 'published')
 
-  const responseRate = totalReviews > 0
-    ? (publishedResponses?.length ?? 0) / totalReviews
-    : 0
+    const responseRate = totalReviews > 0
+      ? (publishedResponses?.length ?? 0) / totalReviews
+      : 0
 
-  return {
-    userEmail: user.email ?? '',
-    organization: { id: orgId, name: org?.name, specialty: org?.specialty },
-    professional: { name: professional.name, role: professional.role },
-    score: latestScore ?? null,
-    score_history: scoreHistory ?? [],
-    profile: profile ?? null,
-    reviews: {
-      total: totalReviews,
-      avg_rating: parseFloat(avgRating.toFixed(1)),
-      new_this_month: newThisMonth,
-      response_rate: parseFloat(responseRate.toFixed(2)),
-      recent: reviewList.slice(0, 5),
-    },
-    pending: {
-      responses: pendingResponses ?? [],
-      posts: pendingPosts ?? [],
-    },
-    posts: {
-      recent: recentPosts ?? [],
-    },
-    competitors: competitors ?? [],
+    return {
+      userEmail: user.email ?? '',
+      organization: { id: orgId, name: org?.name, specialty: org?.specialty },
+      professional: { name: professional.name, role: professional.role },
+      score: latestScore ?? null,
+      score_history: scoreHistory ?? [],
+      profile: profile ?? null,
+      reviews: {
+        total: totalReviews,
+        avg_rating: parseFloat(avgRating.toFixed(1)),
+        new_this_month: newThisMonth,
+        response_rate: parseFloat(responseRate.toFixed(2)),
+        recent: reviewList.slice(0, 5),
+      },
+      pending: {
+        responses: pendingResponses ?? [],
+        posts: pendingPosts ?? [],
+      },
+      posts: {
+        recent: recentPosts ?? [],
+      },
+      competitors: competitors ?? [],
+    }
+  } catch (err) {
+    console.error('[Dashboard] Unexpected error:', err)
+    return null
   }
 }
 
