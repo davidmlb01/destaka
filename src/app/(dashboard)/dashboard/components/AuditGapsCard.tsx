@@ -5,8 +5,13 @@ interface AuditReport {
   overall_health?: string
 }
 
+function toStringArray(val: unknown): string[] {
+  if (!Array.isArray(val)) return []
+  return val.map(item => typeof item === 'string' ? item : JSON.stringify(item))
+}
+
 export function AuditGapsCard({ auditReport }: { auditReport: AuditReport | null }) {
-  if (!auditReport) {
+  if (!auditReport || typeof auditReport !== 'object') {
     return (
       <div className="rounded-2xl p-6" style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}>
         <p className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--text-muted)' }}>Diagnostico do perfil</p>
@@ -15,8 +20,8 @@ export function AuditGapsCard({ auditReport }: { auditReport: AuditReport | null
     )
   }
 
-  const gaps = auditReport.gaps ?? []
-  const actions = auditReport.priority_actions ?? []
+  const gaps = toStringArray(auditReport.gaps)
+  const actions = toStringArray(auditReport.priority_actions)
 
   if (gaps.length === 0 && actions.length === 0) return null
 

@@ -109,13 +109,15 @@ export function ScoreHero({
         <div className={`h-2 rounded-full transition-all duration-500 ${barClass}`} style={{ width: `${score.total}%` }} />
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <ScoreBar label="Perfil no Google" value={score.components.gmb_completude} max={25} />
-        <ScoreBar label="Reputação" value={score.components.reputacao} max={25} />
-        <ScoreBar label="Visibilidade" value={score.components.visibilidade} max={20} />
-        <ScoreBar label="Retenção" value={score.components.retencao} max={20} />
-        <ScoreBar label="Conversão" value={score.components.conversao} max={10} />
-      </div>
+      {score.components && (
+        <div className="grid grid-cols-2 gap-3">
+          <ScoreBar label="Perfil no Google" value={score.components.gmb_completude ?? 0} max={25} />
+          <ScoreBar label="Reputação" value={score.components.reputacao ?? 0} max={25} />
+          <ScoreBar label="Visibilidade" value={score.components.visibilidade ?? 0} max={20} />
+          <ScoreBar label="Retenção" value={score.components.retencao ?? 0} max={20} />
+          <ScoreBar label="Conversão" value={score.components.conversao ?? 0} max={10} />
+        </div>
+      )}
     </div>
   )
 }
