@@ -18,7 +18,7 @@ async function getDashboardData() {
     .from('professionals')
     .select('id, name, organization_id, role')
     .eq('user_id', user.id)
-    .single()
+    .maybeSingle()
 
   if (!professional?.organization_id) return null
 

@@ -22,7 +22,7 @@ export default async function ConfiguracoesPage() {
     .from('users')
     .select('plan, gmb_token_invalid')
     .eq('id', user.id)
-    .single()
+    .maybeSingle()
 
   return (
     <DashboardLayout activeHref="/configuracoes" profileName={profile.name} userEmail={user.email ?? ''}>

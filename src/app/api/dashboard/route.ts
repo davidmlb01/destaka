@@ -11,7 +11,7 @@ export async function GET() {
     .from('professionals')
     .select('id, name, organization_id, role')
     .eq('user_id', user.id)
-    .single()
+    .maybeSingle()
 
   if (!professional?.organization_id) {
     return NextResponse.json({ error: 'Organização não encontrada' }, { status: 404 })
