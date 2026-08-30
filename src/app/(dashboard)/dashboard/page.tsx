@@ -38,9 +38,9 @@ async function getDashboardData() {
     { data: competitors },
   ] = await Promise.all([
     supabase.from('organizations').select('name, specialty').eq('id', orgId).single(),
-    supabase.from('scores').select('*').eq('organization_id', orgId).order('snapshot_date', { ascending: false }).limit(1).single(),
+    supabase.from('scores').select('*').eq('organization_id', orgId).order('snapshot_date', { ascending: false }).limit(1).maybeSingle(),
     supabase.from('scores').select('total, snapshot_date, faixa').eq('organization_id', orgId).order('snapshot_date', { ascending: false }).limit(30),
-    supabase.from('gbp_profiles').select('description, categories, photo_count, audit_report, benchmark_report, optimization_report').eq('organization_id', orgId).single(),
+    supabase.from('gbp_profiles').select('description, categories, photo_count, audit_report, benchmark_report, optimization_report').eq('organization_id', orgId).maybeSingle(),
     supabase.from('reviews').select('id, rating, comment, author_name, published_at').eq('organization_id', orgId).order('published_at', { ascending: false }).limit(50),
     supabase.from('review_responses').select('id, generated_text, review_id').eq('organization_id', orgId).eq('status', 'pending'),
     supabase.from('posts').select('id, content, post_type, photo_suggestion').eq('organization_id', orgId).eq('status', 'pending'),
