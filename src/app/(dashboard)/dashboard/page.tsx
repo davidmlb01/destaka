@@ -105,7 +105,7 @@ async function getDashboardData() {
 export default async function DashboardPage() {
   const data = await getDashboardData()
 
-  if (!data) redirect('/login')
+  if (!data) redirect('/onboarding')
 
   const hasPending =
     (data.pending.responses.length) + (data.pending.posts.length) > 0
