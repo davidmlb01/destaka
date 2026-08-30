@@ -7,7 +7,11 @@ interface AuditReport {
 
 function toStringArray(val: unknown): string[] {
   if (!Array.isArray(val)) return []
-  return val.map(item => typeof item === 'string' ? item : JSON.stringify(item))
+  return val.map(item => {
+    if (typeof item === 'string') return item
+    if (item && typeof item === 'object' && 'message' in item) return (item as { message: string }).message
+    return String(item)
+  })
 }
 
 export function AuditGapsCard({ auditReport }: { auditReport: AuditReport | null }) {
