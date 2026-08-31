@@ -638,15 +638,23 @@ function Footer() {
         <p className="text-[13px]" style={{ color: 'rgba(255,255,255,0.5)' }}>
           Google Business Profile no piloto automático. Para profissionais de saúde que merecem aparecer primeiro.
         </p>
-        <div className="flex items-center gap-5">
-          <Link href="/privacy" className="text-[12px] hover:text-white transition-colors" style={{ color: 'rgba(255,255,255,0.5)' }}>
-            Privacidade
-          </Link>
-          <Link href="/termos" className="text-[12px] hover:text-white transition-colors" style={{ color: 'rgba(255,255,255,0.5)' }}>
-            Termos
-          </Link>
-          <p className="text-[12px]" style={{ color: 'rgba(255,255,255,0.2)' }}>
-            © 2026 Destaka
+        <div className="flex flex-col items-center md:items-end gap-2">
+          <div className="flex items-center gap-5">
+            <Link href="/privacy" className="text-[12px] hover:text-white transition-colors" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              Privacidade
+            </Link>
+            <Link href="/termos" className="text-[12px] hover:text-white transition-colors" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              Termos
+            </Link>
+            <p className="text-[12px]" style={{ color: 'rgba(255,255,255,0.2)' }}>
+              © 2026 Destaka
+            </p>
+          </div>
+          <p className="text-[11px]" style={{ color: 'rgba(255,255,255,0.3)' }}>
+            Destaka é uma plataforma desenvolvida e operada por{' '}
+            <a href="https://unlmtd.etc.br" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors" style={{ color: 'rgba(255,255,255,0.4)' }}>
+              UNLMTD
+            </a>
           </p>
         </div>
       </div>
