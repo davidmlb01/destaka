@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createHash } from 'crypto'
-import { isPlacesAvailable, extractQueryFromUrl, searchPlace, getPlaceDetails } from '@/lib/places/client'
+import { isPlacesAvailable, resolveInput, searchPlace, getPlaceDetails } from '@/lib/places/client'
 import { scoreFromPlaceDetails, getMockPlaceDetails } from '@/lib/places/scorer'
 import { rateLimit } from '@/lib/redis'
 import { z } from 'zod'
@@ -31,14 +31,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Informe o link ou nome do estabelecimento.' }, { status: 400 })
   }
 
+  // Resolve input UMA vez: short URL → URL completa → query + coordenadas
   const input = parsed.data.input.trim()
-  const query = await extractQueryFromUrl(input)
+  const resolved = await resolveInput(input)
+
+  console.log('[verify] resolved:', { query: resolved.query, lat: resolved.lat, lng: resolved.lng, resolvedUrl: resolved.resolvedUrl.slice(0, 100) })
 
   let placeDetails = null
   const usingMock = !isPlacesAvailable()
 
   if (!usingMock) {
-    const placeId = await searchPlace(query, input)
+    // Passa query + coordenadas para busca com location bias
+    const placeId = await searchPlace(resolved.query, resolved.lat, resolved.lng)
     if (placeId) {
       placeDetails = await getPlaceDetails(placeId)
     }
@@ -49,7 +53,7 @@ export async function POST(req: NextRequest) {
       )
     }
   } else {
-    placeDetails = getMockPlaceDetails(query)
+    placeDetails = getMockPlaceDetails(resolved.query)
   }
 
   const { score, profileData } = scoreFromPlaceDetails(placeDetails)
