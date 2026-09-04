@@ -64,59 +64,87 @@ async function resolveShortUrl(input: string): Promise<string> {
   return url
 }
 
-// Resultado da extracao: pode ser um place_id direto ou uma query de texto
-export interface ExtractedInput {
-  type: 'place_id' | 'query'
-  value: string
+// Resultado da extracao de URL do Google Maps
+interface ParsedMapsUrl {
+  query: string
+  lat: number | null
+  lng: number | null
 }
 
-// Extrai place_id ou nome legivel de uma URL do Google Maps
+// Extrai nome e coordenadas de uma URL do Google Maps
 export async function extractQueryFromUrl(input: string): Promise<string> {
-  const extracted = await extractFromUrl(input)
-  return extracted.value
+  const parsed = await parseMapsUrl(input)
+  return parsed.query
 }
 
-export async function extractFromUrl(input: string): Promise<ExtractedInput> {
+async function parseMapsUrl(input: string): Promise<ParsedMapsUrl> {
   let url = input.trim()
 
   if (isShortUrl(url)) {
     url = await resolveShortUrl(url)
   }
 
+  let query = input
+  let lat: number | null = null
+  let lng: number | null = null
+
   try {
-    // Tenta extrair place_id direto da URL (formato ftid=0x...:0x...)
-    const ftidMatch = url.match(/ftid=(0x[0-9a-f]+:0x[0-9a-f]+)/i)
-    if (ftidMatch) {
-      // ftid nao e place_id, mas podemos usar o nome do lugar
+    // Extrai coordenadas precisas do lugar (!3d=lat !4d=lng no data param)
+    const lat3d = url.match(/!3d(-?[\d.]+)/)
+    const lng4d = url.match(/!4d(-?[\d.]+)/)
+    if (lat3d && lng4d) {
+      lat = parseFloat(lat3d[1])
+      lng = parseFloat(lng4d[1])
+    }
+
+    // Fallback: coordenadas do viewport (@lat,lng)
+    if (lat === null) {
+      const atMatch = url.match(/@(-?[\d.]+),(-?[\d.]+)/)
+      if (atMatch) {
+        lat = parseFloat(atMatch[1])
+        lng = parseFloat(atMatch[2])
+      }
     }
 
     // Formato: /maps/place/Nome+do+Local/@...
     const placeMatch = url.match(/\/maps\/place\/([^/@?]+)/)
     if (placeMatch) {
-      return { type: 'query', value: decodeURIComponent(placeMatch[1].replace(/\+/g, ' ')) }
+      query = decodeURIComponent(placeMatch[1].replace(/\+/g, ' '))
+      return { query, lat, lng }
     }
     // Formato: ?q=Nome+do+Local
     const qMatch = url.match(/[?&]q=([^&]+)/)
     if (qMatch) {
-      return { type: 'query', value: decodeURIComponent(qMatch[1].replace(/\+/g, ' ')) }
+      query = decodeURIComponent(qMatch[1].replace(/\+/g, ' '))
+      return { query, lat, lng }
     }
     // Formato: /maps/search/Nome+do+Local
     const searchMatch = url.match(/\/maps\/search\/([^/@?]+)/)
     if (searchMatch) {
-      return { type: 'query', value: decodeURIComponent(searchMatch[1].replace(/\+/g, ' ')) }
+      query = decodeURIComponent(searchMatch[1].replace(/\+/g, ' '))
+      return { query, lat, lng }
     }
   } catch {
     // ignora erros de parsing
   }
 
-  // Se nao e URL reconhecivel, usa o input direto como query de busca
-  return { type: 'query', value: input }
+  return { query, lat, lng }
 }
 
-export async function searchPlace(query: string): Promise<string | null> {
+// searchPlace agora recebe input original para extrair coordenadas como bias
+export async function searchPlace(query: string, input?: string): Promise<string | null> {
   if (!API_KEY) return null
 
-  const url = `${PLACES_BASE}/textsearch/json?query=${encodeURIComponent(query)}&language=pt-BR&key=${API_KEY}`
+  // Tenta extrair coordenadas do input original (URL) para location bias
+  let locationParam = ''
+  if (input) {
+    const parsed = await parseMapsUrl(input)
+    if (parsed.lat !== null && parsed.lng !== null) {
+      locationParam = `&location=${parsed.lat},${parsed.lng}&radius=5000`
+    }
+  }
+
+  const url = `${PLACES_BASE}/textsearch/json?query=${encodeURIComponent(query)}&language=pt-BR${locationParam}&key=${API_KEY}`
   const res = await fetch(url)
   const data = await res.json() as TextSearchResponse
 

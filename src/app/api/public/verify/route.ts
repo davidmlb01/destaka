@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
   const usingMock = !isPlacesAvailable()
 
   if (!usingMock) {
-    const placeId = await searchPlace(query)
+    const placeId = await searchPlace(query, input)
     if (placeId) {
       placeDetails = await getPlaceDetails(placeId)
     }
