@@ -46,15 +46,39 @@ function isShortUrl(input: string): boolean {
 
 // Resolve URL curta seguindo redirects manualmente (mais confiavel em serverless)
 async function resolveShortUrl(input: string): Promise<string> {
+  // Estrategia 1: seguir redirects manualmente com GET + redirect:manual
   let url = input
-  const maxRedirects = 5
+  const maxRedirects = 10
   for (let i = 0; i < maxRedirects; i++) {
     try {
-      const res = await fetch(url, { method: 'HEAD', redirect: 'manual' })
+      const res = await fetch(url, {
+        method: 'GET',
+        redirect: 'manual',
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; DestakaBot/1.0)',
+          'Accept': 'text/html',
+        },
+      })
       const location = res.headers.get('location')
-      if (location && (res.status === 301 || res.status === 302 || res.status === 303 || res.status === 307 || res.status === 308)) {
+      if (location && res.status >= 300 && res.status < 400) {
         url = location.startsWith('http') ? location : new URL(location, url).href
+        // Se ja chegou numa URL do Google Maps, para aqui
+        if (url.includes('/maps/place/') || url.includes('maps.google.com')) {
+          return url
+        }
         continue
+      }
+      // Se nao redirecionou, tenta extrair da pagina HTML (Google retorna meta refresh)
+      if (res.status === 200) {
+        const html = await res.text()
+        const metaRefresh = html.match(/content=["'][^"']*url=([^"'\s>]+)/i)
+        if (metaRefresh) {
+          return decodeURIComponent(metaRefresh[1].replace(/&amp;/g, '&'))
+        }
+        const windowLocation = html.match(/window\.location\.href\s*=\s*["']([^"']+)/i)
+        if (windowLocation) {
+          return decodeURIComponent(windowLocation[1].replace(/&amp;/g, '&'))
+        }
       }
       return url
     } catch {
@@ -131,17 +155,34 @@ async function parseMapsUrl(input: string): Promise<ParsedMapsUrl> {
   return { query, lat, lng }
 }
 
-// searchPlace agora recebe input original para extrair coordenadas como bias
+// searchPlace: usa Find Place com location bias quando ha coordenadas, senao Text Search
 export async function searchPlace(query: string, input?: string): Promise<string | null> {
   if (!API_KEY) return null
 
-  // Tenta extrair coordenadas do input original (URL) para location bias
-  let locationParam = ''
+  // Extrai coordenadas do input original (URL) para location bias
+  let lat: number | null = null
+  let lng: number | null = null
   if (input) {
     const parsed = await parseMapsUrl(input)
-    if (parsed.lat !== null && parsed.lng !== null) {
-      locationParam = `&location=${parsed.lat},${parsed.lng}&radius=5000`
+    lat = parsed.lat
+    lng = parsed.lng
+  }
+
+  // Se temos coordenadas, usa Find Place From Text (mais preciso com bias)
+  if (lat !== null && lng !== null) {
+    const findUrl = `${PLACES_BASE}/findplacefromtext/json?input=${encodeURIComponent(query)}&inputtype=textquery&locationbias=circle:2000@${lat},${lng}&fields=place_id,name,formatted_address&language=pt-BR&key=${API_KEY}`
+    const findRes = await fetch(findUrl)
+    const findData = await findRes.json() as { candidates: Array<{ place_id: string }>; status: string }
+
+    if (findData.status === 'OK' && findData.candidates?.length) {
+      return findData.candidates[0].place_id
     }
+  }
+
+  // Fallback: Text Search com location bias
+  let locationParam = ''
+  if (lat !== null && lng !== null) {
+    locationParam = `&location=${lat},${lng}&radius=5000`
   }
 
   const url = `${PLACES_BASE}/textsearch/json?query=${encodeURIComponent(query)}&language=pt-BR${locationParam}&key=${API_KEY}`
