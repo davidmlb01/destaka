@@ -18,17 +18,28 @@ export async function GET() {
 
   const orgId = professional.organization_id
 
+  // Buscar gmb_profile do usuario para FK de competitors
+  const { data: gmbProfile } = await supabase
+    .from('gmb_profiles')
+    .select('id')
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  const gmbProfileId = gmbProfile?.id
+
   // Fetch competitors, org info, and GBP profile in parallel
   const [
     { data: competitors },
     { data: org },
     { data: gbp },
   ] = await Promise.all([
-    supabase
-      .from('competitors')
-      .select('id, place_id, name, avg_rating, review_count, address, photo_count, categories, has_website, benchmark_data, last_tracked_at')
-      .eq('organization_id', orgId)
-      .order('last_tracked_at', { ascending: false }),
+    gmbProfileId
+      ? supabase
+          .from('competitors')
+          .select('id, place_id, name, avg_rating, review_count, address, photo_count, categories, has_website, benchmark_data, last_tracked_at')
+          .eq('profile_id', gmbProfileId)
+          .order('last_tracked_at', { ascending: false, nullsFirst: false })
+      : Promise.resolve({ data: [] }),
     supabase
       .from('organizations')
       .select('name')

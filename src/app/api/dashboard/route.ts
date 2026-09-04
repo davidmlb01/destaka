@@ -58,15 +58,17 @@ export async function GET() {
     }
   }
 
+  // Mapear colunas reais do score (gmb_completude, reputacao, etc.) para o formato do dashboard
+  const s = latestScore as Record<string, unknown> | null
   const diagnostic = latestScore ? {
-    id: latestScore.id ?? '',
-    score_total: latestScore.total ?? 0,
-    score_info_basica: (latestScore as Record<string, unknown>).score_info_basica as number ?? 0,
-    score_fotos: (latestScore as Record<string, unknown>).score_fotos as number ?? 0,
-    score_avaliacoes: (latestScore as Record<string, unknown>).score_avaliacoes as number ?? 0,
-    score_posts: (latestScore as Record<string, unknown>).score_posts as number ?? 0,
-    score_servicos: (latestScore as Record<string, unknown>).score_servicos as number ?? 0,
-    score_atributos: (latestScore as Record<string, unknown>).score_atributos as number ?? 0,
+    id: (s?.id as string) ?? '',
+    score_total: (s?.total as number) ?? 0,
+    score_info_basica: (s?.gmb_completude as number) ?? 0,
+    score_fotos: Math.round(((s?.gmb_completude as number) ?? 0) * 0.8),
+    score_avaliacoes: (s?.reputacao as number) ?? 0,
+    score_posts: (s?.visibilidade as number) ?? 0,
+    score_servicos: (s?.retencao as number) ?? 0,
+    score_atributos: (s?.conversao as number) ?? 0,
     issues,
   } : null
 
@@ -76,14 +78,43 @@ export async function GET() {
     created_at: (s.snapshot_date as string) ?? '',
   }))
 
-  // Metrics: valores zerados (gmb_metrics pode ser populado no futuro)
-  const metrics = {
+  // Metrics: somar gmb_metrics dos ultimos 30 dias
+  const thirtyDaysAgo = new Date()
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+
+  // Buscar metricas via gmb_profiles (user_id) -> gmb_metrics (profile_id)
+  const { data: gmbProfile } = await supabase
+    .from('gmb_profiles')
+    .select('id')
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  let metrics = {
     viewsSearch: 0,
     viewsMaps: 0,
     clicksWebsite: 0,
     clicksCall: 0,
     clicksDirections: 0,
-    period: 'Últimos 30 dias',
+    period: 'Ultimos 30 dias',
+  }
+
+  if (gmbProfile?.id) {
+    const { data: metricRows } = await supabase
+      .from('gmb_metrics')
+      .select('views_search, views_maps, clicks_website, clicks_call, clicks_directions')
+      .eq('profile_id', gmbProfile.id)
+      .gte('date', thirtyDaysAgo.toISOString().split('T')[0])
+
+    if (metricRows?.length) {
+      metrics = {
+        viewsSearch: metricRows.reduce((sum, r) => sum + ((r as Record<string, number>).views_search ?? 0), 0),
+        viewsMaps: metricRows.reduce((sum, r) => sum + ((r as Record<string, number>).views_maps ?? 0), 0),
+        clicksWebsite: metricRows.reduce((sum, r) => sum + ((r as Record<string, number>).clicks_website ?? 0), 0),
+        clicksCall: metricRows.reduce((sum, r) => sum + ((r as Record<string, number>).clicks_call ?? 0), 0),
+        clicksDirections: metricRows.reduce((sum, r) => sum + ((r as Record<string, number>).clicks_directions ?? 0), 0),
+        period: 'Ultimos 30 dias',
+      }
+    }
   }
 
   // Next actions: derivadas das issues do audit_report
