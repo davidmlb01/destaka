@@ -38,7 +38,6 @@ export async function GET() {
           .from('competitors')
           .select('id, place_id, name, avg_rating, review_count, address, photo_count, categories, has_website, benchmark_data, last_tracked_at')
           .eq('profile_id', gmbProfileId)
-          .order('last_tracked_at', { ascending: false, nullsFirst: false })
       : Promise.resolve({ data: [] }),
     supabase
       .from('organizations')
