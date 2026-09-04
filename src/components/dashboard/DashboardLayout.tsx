@@ -11,7 +11,6 @@ export const NAV_ITEMS = [
   { label: 'Avaliações', href: '/dashboard/reviews' },
   { label: 'Posts', href: '/dashboard/posts' },
   { label: 'Otimizações', href: '/dashboard/optimizations' },
-  { label: 'Keywords', href: '/dashboard/keywords' },
   { label: 'Concorrentes', href: '/dashboard/competitors' },
   { label: 'Plano', href: '/dashboard/plan' },
   { label: 'Indicar', href: '/indicar' },
