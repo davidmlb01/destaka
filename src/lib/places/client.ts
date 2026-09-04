@@ -187,30 +187,32 @@ export async function extractQueryFromUrl(input: string): Promise<string> {
   return parsed.query
 }
 
-// Busca place_id usando coordenadas quando disponíveis
+// Busca place_id: Nearby Search com coordenadas (restringe por raio), senao Text Search
 export async function searchPlace(query: string, lat?: number | null, lng?: number | null): Promise<string | null> {
   if (!API_KEY) return null
 
   console.log('[places] searchPlace:', { query, lat, lng })
 
-  // Se temos coordenadas, usa Find Place From Text (mais preciso)
   if (lat != null && lng != null) {
-    const findUrl = `${PLACES_BASE}/findplacefromtext/json?input=${encodeURIComponent(query)}&inputtype=textquery&locationbias=circle:2000@${lat},${lng}&fields=place_id,name,formatted_address&language=pt-BR&key=${API_KEY}`
-    const findRes = await fetch(findUrl)
-    const findData = await findRes.json() as FindPlaceResponse
+    // Nearby Search: keyword + location + radius (restringe geograficamente, nao apenas bias)
+    const nearbyUrl = `${PLACES_BASE}/nearbysearch/json?keyword=${encodeURIComponent(query)}&location=${lat},${lng}&radius=50000&language=pt-BR&key=${API_KEY}`
+    const nearbyRes = await fetch(nearbyUrl)
+    const nearbyData = await nearbyRes.json() as TextSearchResponse
 
-    console.log('[places] findPlace result:', findData.status, findData.candidates?.length)
+    console.log('[places] nearbySearch:', nearbyData.status, nearbyData.results?.length,
+      nearbyData.results?.[0]?.name, nearbyData.results?.[0]?.formatted_address)
 
-    if (findData.status === 'OK' && findData.candidates?.length) {
-      return findData.candidates[0].place_id
+    if (nearbyData.status === 'OK' && nearbyData.results?.length) {
+      return nearbyData.results[0].place_id
     }
 
-    // Fallback: Text Search com location bias
-    const tsUrl = `${PLACES_BASE}/textsearch/json?query=${encodeURIComponent(query)}&language=pt-BR&location=${lat},${lng}&radius=5000&key=${API_KEY}`
+    // Fallback: Text Search com location
+    const tsUrl = `${PLACES_BASE}/textsearch/json?query=${encodeURIComponent(query)}&language=pt-BR&location=${lat},${lng}&radius=50000&key=${API_KEY}`
     const tsRes = await fetch(tsUrl)
     const tsData = await tsRes.json() as TextSearchResponse
 
-    console.log('[places] textSearch (biased) result:', tsData.status, tsData.results?.length)
+    console.log('[places] textSearch biased:', tsData.status, tsData.results?.length,
+      tsData.results?.[0]?.name, tsData.results?.[0]?.formatted_address)
 
     if (tsData.status === 'OK' && tsData.results?.length) {
       return tsData.results[0].place_id
