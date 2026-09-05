@@ -31,7 +31,7 @@ export async function GET() {
       .from('posts')
       .select('id, content, post_type, status, scheduled_for, published_at, created_at', { count: 'exact' })
       .eq('organization_id', orgId)
-      .in('status', ['draft', 'published', 'scheduled', 'failed', 'pending'])
+      .in('status', ['draft', 'published', 'scheduled', 'failed'])
       .order('created_at', { ascending: false })
       .limit(PAGE_SIZE),
     supabase

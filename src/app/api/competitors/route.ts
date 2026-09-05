@@ -1,5 +1,43 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+
+export async function POST(request: NextRequest) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const { data: professional } = await supabase
+    .from('professionals')
+    .select('organization_id')
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  if (!professional?.organization_id) {
+    return NextResponse.json({ error: 'Organizacao nao encontrada' }, { status: 404 })
+  }
+
+  const { data: gmbProfile } = await supabase
+    .from('gmb_profiles')
+    .select('id')
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  if (!gmbProfile?.id) {
+    return NextResponse.json({ discovered: 0, errors: ['Perfil GMB nao encontrado. Configure seu Google Meu Negocio primeiro.'] })
+  }
+
+  // Por enquanto, retorna os concorrentes existentes como "descobertos"
+  // Quando a GBP API for aprovada, aqui chamara a Places API para descobrir novos
+  const { data: existing } = await supabase
+    .from('competitors')
+    .select('id')
+    .eq('profile_id', gmbProfile.id)
+
+  return NextResponse.json({
+    discovered: existing?.length ?? 0,
+    errors: [],
+  })
+}
 
 export async function GET() {
   const supabase = await createClient()
@@ -72,7 +110,7 @@ export async function GET() {
     last_tracked_at: string
   }) => ({
     id: c.id,
-    profile_id: orgId,
+    profile_id: gmbProfileId ?? orgId,
     place_id: c.place_id,
     name: c.name,
     avg_rating: c.avg_rating,
