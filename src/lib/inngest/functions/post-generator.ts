@@ -54,6 +54,17 @@ export const postGenerator = inngest.createFunction(
 
     for (const orgId of orgIds) {
       const result = await step.run(`generate-post-${orgId}`, async () => {
+        // Instagram tem prioridade: se ha posts ready do Instagram, pular geracao IA
+        const { count: instagramReady } = await db
+          .from('instagram_posts')
+          .select('*', { count: 'exact', head: true })
+          .eq('organization_id', orgId)
+          .eq('status', 'ready')
+
+        if (instagramReady && instagramReady > 0) {
+          return { org_id: orgId, status: 'skip_instagram_priority', post_type: 'instagram_adapted' }
+        }
+
         // Busca configurações da org
         const { data: org } = await db
           .from('organizations')
