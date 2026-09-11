@@ -55,6 +55,7 @@ export default function ProfileSetupPage() {
   // Step 1
   const [specialty, setSpecialty] = useState('')
   const [bio, setBio] = useState('')
+  const [instagramHandle, setInstagramHandle] = useState('')
 
   // Step 2
   const [hours, setHours] = useState<BusinessHours>(DEFAULT_HOURS)
@@ -124,6 +125,7 @@ export default function ProfileSetupPage() {
       servicesInput: services.filter(s => s.trim()),
       attributesSelected: Array.from(selectedAttrs),
       bio: bio.trim() || undefined,
+      instagram_handle: instagramHandle.trim() || undefined,
     }
 
     try {
@@ -170,7 +172,14 @@ export default function ProfileSetupPage() {
 
         <div className="mt-8">
           {step === 1 && (
-            <StepSpecialty specialty={specialty} onChangeSpecialty={setSpecialty} bio={bio} onChangeBio={setBio} />
+            <StepSpecialty
+              specialty={specialty}
+              onChangeSpecialty={setSpecialty}
+              bio={bio}
+              onChangeBio={setBio}
+              instagramHandle={instagramHandle}
+              onChangeInstagramHandle={setInstagramHandle}
+            />
           )}
           {step === 2 && (
             <StepHours hours={hours} updateDay={updateDay} />
@@ -290,11 +299,15 @@ function StepSpecialty({
   onChangeSpecialty,
   bio,
   onChangeBio,
+  instagramHandle,
+  onChangeInstagramHandle,
 }: {
   specialty: string
   onChangeSpecialty: (v: string) => void
   bio: string
   onChangeBio: (v: string) => void
+  instagramHandle: string
+  onChangeInstagramHandle: (v: string) => void
 }) {
   return (
     <div>
@@ -343,9 +356,28 @@ function StepSpecialty({
         {bio.length}/500
       </p>
 
+      <label className="block text-sm font-medium mb-2 mt-5" style={{ color: 'rgba(255,255,255,0.7)' }}>
+        Instagram da clinica ou perfil profissional <span className="text-xs font-normal" style={{ color: 'rgba(255,255,255,0.5)' }}>(opcional)</span>
+      </label>
+      <input
+        type="text"
+        value={instagramHandle}
+        onChange={e => onChangeInstagramHandle(e.target.value)}
+        placeholder="@suaclinica"
+        maxLength={100}
+        className="w-full rounded-xl px-4 py-3 text-white text-sm outline-none transition-all"
+        style={{
+          background: 'rgba(255,255,255,0.06)',
+          border: '1px solid rgba(255,255,255,0.12)',
+        }}
+      />
+      <p className="mt-1 text-xs" style={{ color: 'rgba(255,255,255,0.25)' }}>
+        Se informar, o Destaka puxa seus posts do Instagram e transforma em conteudo otimizado para o Google.
+      </p>
+
       <div className="mt-5 rounded-xl p-4" style={{ background: 'rgba(14,165,233,0.08)', border: '1px solid rgba(14,165,233,0.15)' }}>
         <p className="text-xs" style={{ color: 'rgba(14,165,233,0.8)' }}>
-          <strong>Por que pedimos isso?</strong> O Google ranqueia melhor perfis com descrições precisas. Um endodontista que aparece como "dentista genérico" perde posições para concorrentes com especialidade detalhada.
+          <strong>Por que pedimos isso?</strong> O Google ranqueia melhor perfis com descricoes precisas. Um endodontista que aparece como "dentista generico" perde posicoes para concorrentes com especialidade detalhada.
         </p>
       </div>
     </div>

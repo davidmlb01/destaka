@@ -20,16 +20,23 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json()
-  const { name, specialty, tone, automation_preference } = body
+  const { name, specialty, tone, automation_preference, instagram_handle } = body
 
   if (!name || !specialty || !tone || !automation_preference) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
   }
 
   // Cria organização via service role (bypass RLS — novo usuário sem professional ainda)
+  const orgPayload: Record<string, string> = { name, specialty, tone, automation_preference }
+  if (instagram_handle) {
+    orgPayload.instagram_handle = instagram_handle.startsWith('@')
+      ? instagram_handle
+      : `@${instagram_handle}`
+  }
+
   const { data: org, error: orgError } = await admin
     .from('organizations')
-    .insert({ name, specialty, tone, automation_preference })
+    .insert(orgPayload)
     .select()
     .single()
 
