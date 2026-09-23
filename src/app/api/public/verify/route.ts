@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createHash } from 'crypto'
 import { isPlacesAvailable, resolveInput, searchPlace, getPlaceDetails } from '@/lib/places/client'
 import { scoreFromPlaceDetails, getMockPlaceDetails } from '@/lib/places/scorer'
-import { rateLimitStrict } from '@/lib/redis'
+import { rateLimit } from '@/lib/redis'
 import { z } from 'zod'
 
 const MAX_VERIFY_PER_IP_PER_DAY = 20
@@ -20,13 +20,8 @@ export async function POST(req: NextRequest) {
     ?? req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
     ?? 'unknown'
   const ipHash = createHash('sha256').update(ip + (process.env.ENCRYPTION_KEY ?? '')).digest('hex').slice(0, 16)
-  let count: number
-  try {
-    count = await rateLimitStrict(`ratelimit:verify:${ipHash}`, 86400)
-  } catch {
-    return NextResponse.json({ error: 'Servico temporariamente indisponivel.' }, { status: 503 })
-  }
-  if (count > MAX_VERIFY_PER_IP_PER_DAY) {
+  const count = await rateLimit(`ratelimit:verify:${ipHash}`, 86400)
+  if (count !== null && count > MAX_VERIFY_PER_IP_PER_DAY) {
     return NextResponse.json(
       { error: 'Limite de verificacoes diarias atingido. Tente novamente amanha.' },
       { status: 429 }

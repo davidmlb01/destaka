@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { sendLeadMagnetEmail } from '@/lib/email/lead-magnet'
-import { rateLimitStrict } from '@/lib/redis'
+import { rateLimit } from '@/lib/redis'
 import type { CategoryScore } from '@/lib/gmb/scorer'
 import { createHash } from 'crypto'
 import { z } from 'zod'
@@ -37,13 +37,8 @@ export async function POST(req: NextRequest) {
 
   // Rate limiting por IP — fail-closed (rotas publicas de custo)
   const key = `ratelimit:lead:${ipHash}`
-  let count: number
-  try {
-    count = await rateLimitStrict(key, 86400)
-  } catch {
-    return NextResponse.json({ error: 'Servico temporariamente indisponivel.' }, { status: 503 })
-  }
-  if (count > MAX_PER_IP_PER_DAY) {
+  const count = await rateLimit(key, 86400)
+  if (count !== null && count > MAX_PER_IP_PER_DAY) {
     return NextResponse.json(
       { error: 'Limite de auditorias diarias atingido. Tente novamente amanha.' },
       { status: 429 }
