@@ -2,6 +2,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
+import { GBPClient } from '@/lib/google/gbp-client'
+import { getValidGmbToken } from '@/lib/gmb/auth'
 
 function createServiceClient() {
   return createAdminSupa(
@@ -40,37 +42,33 @@ export async function POST(request: NextRequest) {
 
   if (!post) return NextResponse.json({ error: 'Post não encontrado ou já processado' }, { status: 404 })
 
-  // Busca token e location_id
-  const [{ data: tokenRow }, { data: org }] = await Promise.all([
-    admin.from('google_tokens').select('access_token').eq('organization_id', professional.organization_id).single(),
-    admin.from('organizations').select('gbp_location_id').eq('id', professional.organization_id).single(),
-  ])
+  // Busca location_id
+  const { data: org } = await admin
+    .from('organizations')
+    .select('gbp_location_id')
+    .eq('id', professional.organization_id)
+    .single()
 
-  if (!tokenRow?.access_token || !org?.gbp_location_id) {
-    return NextResponse.json({ error: 'Token ou location não configurado' }, { status: 500 })
+  if (!org?.gbp_location_id) {
+    return NextResponse.json({ error: 'Location GBP não configurado' }, { status: 500 })
+  }
+
+  // Token com refresh automatico
+  let accessToken: string
+  try {
+    accessToken = await getValidGmbToken(user.id)
+  } catch {
+    return NextResponse.json({ error: 'Token Google expirado. Reconecte sua conta.' }, { status: 401 })
   }
 
   // Publica no GBP
-  const gbpUrl = `https://mybusiness.googleapis.com/v4/${org.gbp_location_id}/localPosts`
-  const gbpRes = await fetch(gbpUrl, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${tokenRow.access_token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      languageCode: 'pt-BR',
-      summary: post.content,
-      topicType: 'STANDARD',
-    }),
-  })
-
-  if (!gbpRes.ok) {
-    const body = await gbpRes.text()
-    return NextResponse.json({ error: `GBP API error: ${body}` }, { status: 502 })
+  let gbpData: { name?: string }
+  try {
+    const gbpClient = new GBPClient(accessToken)
+    gbpData = await gbpClient.createPost(org.gbp_location_id, { summary: post.content })
+  } catch (err) {
+    return NextResponse.json({ error: `GBP API error: ${err instanceof Error ? err.message : 'unknown'}` }, { status: 502 })
   }
-
-  const gbpData = await gbpRes.json() as { name?: string }
 
   await admin
     .from('posts')

@@ -2,6 +2,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
+import { GBPClient } from '@/lib/google/gbp-client'
+import { getValidGmbToken } from '@/lib/gmb/auth'
 
 function createServiceClient() {
   return createAdminSupa(
@@ -44,37 +46,30 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Resposta não encontrada ou já processada' }, { status: 404 })
   }
 
-  // Busca o review_id original do GBP e o token
+  // Busca o review_id original do GBP
   const { data: review } = await admin
     .from('reviews')
     .select('review_id')
     .eq('id', reviewResponse.review_id)
     .single()
 
-  const { data: tokenRow } = await admin
-    .from('google_tokens')
-    .select('access_token')
-    .eq('organization_id', professional.organization_id)
-    .single()
-
-  if (!review?.review_id || !tokenRow?.access_token) {
-    return NextResponse.json({ error: 'Token ou review não encontrado' }, { status: 500 })
+  if (!review?.review_id) {
+    return NextResponse.json({ error: 'Review não encontrado' }, { status: 500 })
   }
 
-  // Publica via GBP API
-  const gbpUrl = `https://mybusiness.googleapis.com/v4/${review.review_id}/reply`
-  const gbpRes = await fetch(gbpUrl, {
-    method: 'PUT',
-    headers: {
-      Authorization: `Bearer ${tokenRow.access_token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ comment: reviewResponse.generated_text }),
-  })
+  // Publica via GBP API com token refresh automatico
+  let accessToken: string
+  try {
+    accessToken = await getValidGmbToken(user.id)
+  } catch {
+    return NextResponse.json({ error: 'Token Google expirado. Reconecte sua conta.' }, { status: 401 })
+  }
 
-  if (!gbpRes.ok) {
-    const body = await gbpRes.text()
-    return NextResponse.json({ error: `GBP API error: ${body}` }, { status: 502 })
+  try {
+    const gbpClient = new GBPClient(accessToken)
+    await gbpClient.replyToReview(review.review_id, reviewResponse.generated_text)
+  } catch (err) {
+    return NextResponse.json({ error: `GBP API error: ${err instanceof Error ? err.message : 'unknown'}` }, { status: 502 })
   }
 
   // Atualiza status para published

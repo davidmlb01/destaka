@@ -1,6 +1,8 @@
 // API de dados do dashboard, retorna o shape esperado por useDashboard
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { GBPClient } from '@/lib/google/gbp-client'
+import { getValidGmbToken } from '@/lib/gmb/auth'
 
 export async function GET() {
   const supabase = await createClient()
@@ -78,17 +80,7 @@ export async function GET() {
     created_at: (s.snapshot_date as string) ?? '',
   }))
 
-  // Metrics: somar gmb_metrics dos ultimos 30 dias
-  const thirtyDaysAgo = new Date()
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
-
-  // Buscar metricas via gmb_profiles (user_id) -> gmb_metrics (profile_id)
-  const { data: gmbProfile } = await supabase
-    .from('gmb_profiles')
-    .select('id')
-    .eq('user_id', user.id)
-    .maybeSingle()
-
+  // Metrics: buscar da GBP Performance API (real), fallback para gmb_metrics (banco)
   let metrics = {
     viewsSearch: 0,
     viewsMaps: 0,
@@ -96,23 +88,73 @@ export async function GET() {
     clicksCall: 0,
     clicksDirections: 0,
     period: 'Ultimos 30 dias',
+    source: 'none' as 'api' | 'database' | 'none',
   }
 
-  if (gmbProfile?.id) {
-    const { data: metricRows } = await supabase
-      .from('gmb_metrics')
-      .select('views_search, views_maps, clicks_website, clicks_call, clicks_directions')
-      .eq('profile_id', gmbProfile.id)
-      .gte('date', thirtyDaysAgo.toISOString().split('T')[0])
+  // Buscar gbp_location_id da org
+  const { data: orgForLocation } = await supabase
+    .from('organizations')
+    .select('gbp_location_id')
+    .eq('id', orgId)
+    .maybeSingle()
 
-    if (metricRows?.length) {
-      metrics = {
-        viewsSearch: metricRows.reduce((sum, r) => sum + ((r as Record<string, number>).views_search ?? 0), 0),
-        viewsMaps: metricRows.reduce((sum, r) => sum + ((r as Record<string, number>).views_maps ?? 0), 0),
-        clicksWebsite: metricRows.reduce((sum, r) => sum + ((r as Record<string, number>).clicks_website ?? 0), 0),
-        clicksCall: metricRows.reduce((sum, r) => sum + ((r as Record<string, number>).clicks_call ?? 0), 0),
-        clicksDirections: metricRows.reduce((sum, r) => sum + ((r as Record<string, number>).clicks_directions ?? 0), 0),
-        period: 'Ultimos 30 dias',
+  const locationName = orgForLocation?.gbp_location_id
+
+  // Tentar API real primeiro
+  if (locationName) {
+    try {
+      const accessToken = await getValidGmbToken(user.id)
+      const gbpClient = new GBPClient(accessToken)
+      const perfData = await gbpClient.getPerformanceMetrics(locationName)
+
+      if (perfData.metricValues?.length) {
+        for (const mv of perfData.metricValues) {
+          const total = mv.dimensionalValues?.reduce(
+            (sum, dv) => sum + (parseInt(dv.value, 10) || 0), 0
+          ) ?? (mv.totalValue ? parseInt(String(mv.totalValue.metricOption), 10) || 0 : 0)
+
+          const metric = mv.metric?.toUpperCase() ?? ''
+          if (metric.includes('SEARCH') && metric.includes('IMPRESSION')) metrics.viewsSearch = total
+          else if (metric.includes('MAPS') && metric.includes('IMPRESSION')) metrics.viewsMaps = total
+          else if (metric.includes('WEBSITE')) metrics.clicksWebsite = total
+          else if (metric.includes('CALL')) metrics.clicksCall = total
+          else if (metric.includes('DIRECTION')) metrics.clicksDirections = total
+        }
+        metrics.source = 'api'
+      }
+    } catch {
+      // API falhou, cai no fallback abaixo
+    }
+  }
+
+  // Fallback: dados do banco (gmb_metrics)
+  if (metrics.source === 'none') {
+    const thirtyDaysAgo = new Date()
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+
+    const { data: gmbProfile } = await supabase
+      .from('gmb_profiles')
+      .select('id')
+      .eq('user_id', user.id)
+      .maybeSingle()
+
+    if (gmbProfile?.id) {
+      const { data: metricRows } = await supabase
+        .from('gmb_metrics')
+        .select('views_search, views_maps, clicks_website, clicks_call, clicks_directions')
+        .eq('profile_id', gmbProfile.id)
+        .gte('date', thirtyDaysAgo.toISOString().split('T')[0])
+
+      if (metricRows?.length) {
+        metrics = {
+          viewsSearch: metricRows.reduce((sum, r) => sum + ((r as Record<string, number>).views_search ?? 0), 0),
+          viewsMaps: metricRows.reduce((sum, r) => sum + ((r as Record<string, number>).views_maps ?? 0), 0),
+          clicksWebsite: metricRows.reduce((sum, r) => sum + ((r as Record<string, number>).clicks_website ?? 0), 0),
+          clicksCall: metricRows.reduce((sum, r) => sum + ((r as Record<string, number>).clicks_call ?? 0), 0),
+          clicksDirections: metricRows.reduce((sum, r) => sum + ((r as Record<string, number>).clicks_directions ?? 0), 0),
+          period: 'Ultimos 30 dias',
+          source: 'database',
+        }
       }
     }
   }

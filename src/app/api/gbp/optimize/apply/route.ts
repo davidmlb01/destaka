@@ -3,6 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
+import { getValidGmbToken } from '@/lib/gmb/auth'
 
 type OptimizationType = 'description'
 
@@ -41,13 +42,21 @@ export async function POST(request: NextRequest) {
 
   const orgId = professional.organization_id
 
-  const [{ data: tokenRow }, { data: org }] = await Promise.all([
-    admin.from('google_tokens').select('access_token').eq('organization_id', orgId).single(),
-    admin.from('organizations').select('gbp_location_id').eq('id', orgId).single(),
-  ])
+  const { data: org } = await admin
+    .from('organizations')
+    .select('gbp_location_id')
+    .eq('id', orgId)
+    .single()
 
-  if (!tokenRow?.access_token || !org?.gbp_location_id) {
-    return NextResponse.json({ error: 'Token ou location não configurado' }, { status: 500 })
+  if (!org?.gbp_location_id) {
+    return NextResponse.json({ error: 'Location GBP não configurado' }, { status: 500 })
+  }
+
+  let accessToken: string
+  try {
+    accessToken = await getValidGmbToken(user.id)
+  } catch {
+    return NextResponse.json({ error: 'Token Google expirado. Reconecte sua conta.' }, { status: 401 })
   }
 
   const locationName = org.gbp_location_id
@@ -61,7 +70,7 @@ export async function POST(request: NextRequest) {
     const res = await fetch(url, {
       method: 'PATCH',
       headers: {
-        Authorization: `Bearer ${tokenRow.access_token}`,
+        Authorization: `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ profile: { description: value } }),
