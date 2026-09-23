@@ -5,6 +5,8 @@ import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { inngest } from '../client'
 import { generatePost, nextPostType, type PostType } from '@/lib/gbp/post-generator-engine'
 import type { ReviewTone } from '@/lib/gbp/review-response-engine'
+import { GBPClient } from '@/lib/google/gbp-client'
+import { getValidTokenForOrg } from '@/lib/google/token-refresh'
 
 function admin() {
   return createAdminSupa(
@@ -18,23 +20,14 @@ async function publishGbpPost(
   locationName: string,
   content: string
 ): Promise<string | null> {
-  // locationName = "accounts/{}/locations/{}"
-  const url = `https://mybusiness.googleapis.com/v4/${locationName}/localPosts`
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      languageCode: 'pt-BR',
-      summary: content,
-      topicType: 'STANDARD',
-    }),
-  })
-  if (!res.ok) return null
-  const data = await res.json() as { name?: string }
-  return data.name ?? null
+  try {
+    const client = new GBPClient(accessToken)
+    const post = await client.createPost(locationName, { summary: content })
+    return post.name ?? null
+  } catch (err) {
+    console.error('[post-generator] Falha ao publicar no GBP:', err)
+    return null
+  }
 }
 
 export const postGenerator = inngest.createFunction(
@@ -76,13 +69,9 @@ export const postGenerator = inngest.createFunction(
           return { org_id: orgId, status: 'skip', error: 'gbp_location_id não configurado' }
         }
 
-        const { data: tokenRow } = await db
-          .from('google_tokens')
-          .select('access_token')
-          .eq('organization_id', orgId)
-          .single()
+        const validToken = await getValidTokenForOrg(db, orgId)
 
-        if (!tokenRow?.access_token) {
+        if (!validToken) {
           return { org_id: orgId, status: 'skip', error: 'sem token Google' }
         }
 
@@ -161,7 +150,7 @@ export const postGenerator = inngest.createFunction(
         if (isAutomatic) {
           // Publica direto no GBP
           const gbpPostId = await publishGbpPost(
-            tokenRow.access_token,
+            validToken,
             org.gbp_location_id,
             generated.content
           )

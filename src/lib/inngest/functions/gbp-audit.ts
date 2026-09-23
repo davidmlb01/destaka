@@ -5,6 +5,7 @@ import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { inngest } from '../client'
 import { GBPClient } from '@/lib/google/gbp-client'
 import { runAudit } from '@/lib/gbp/audit-engine'
+import { getValidTokenForOrg } from '@/lib/google/token-refresh'
 
 function admin() {
   return createAdminSupa(
@@ -40,14 +41,10 @@ export const gbpAudit = inngest.createFunction(
 
     for (const orgId of orgIds) {
       const result = await step.run(`audit-org-${orgId}`, async () => {
-        // Busca token
-        const { data: tokenRow } = await db
-          .from('google_tokens')
-          .select('access_token, refresh_token')
-          .eq('organization_id', orgId)
-          .single()
+        // Busca token com refresh automatico
+        const validToken = await getValidTokenForOrg(db, orgId)
 
-        if (!tokenRow?.access_token) {
+        if (!validToken) {
           return { org_id: orgId, status: 'skip', error: 'sem token Google' }
         }
 
@@ -61,7 +58,7 @@ export const gbpAudit = inngest.createFunction(
         const specialty = org?.specialty ?? 'outro'
 
         // Inicializa cliente GBP e busca dados
-        const gbp = new GBPClient(tokenRow.access_token)
+        const gbp = new GBPClient(validToken)
 
         let accounts: Awaited<ReturnType<GBPClient['listAccounts']>> = []
         try {

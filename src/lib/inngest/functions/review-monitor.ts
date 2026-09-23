@@ -6,6 +6,7 @@ import { inngest } from '../client'
 import { GBPClient } from '@/lib/google/gbp-client'
 import { generateReviewResponse, type ReviewTone } from '@/lib/gbp/review-response-engine'
 import { hasLgpdConsentForAi } from '@/lib/ai/prompt-sanitizer'
+import { getValidTokenForOrg } from '@/lib/google/token-refresh'
 
 function admin() {
   return createAdminSupa(
@@ -19,17 +20,14 @@ async function publishReviewReply(
   reviewName: string,
   comment: string
 ): Promise<boolean> {
-  // reviewName = "accounts/{}/locations/{}/reviews/{}"
-  const url = `https://mybusiness.googleapis.com/v4/${reviewName}/reply`
-  const res = await fetch(url, {
-    method: 'PUT',
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ comment }),
-  })
-  return res.ok
+  try {
+    const client = new GBPClient(accessToken)
+    await client.replyToReview(reviewName, comment)
+    return true
+  } catch (err) {
+    console.error('[review-monitor] Falha ao responder review:', err)
+    return false
+  }
 }
 
 export const reviewMonitor = inngest.createFunction(
@@ -65,14 +63,10 @@ export const reviewMonitor = inngest.createFunction(
           return { org_id: orgId, new_reviews: 0, responses_queued: 0, error: 'sem consentimento LGPD para uso de IA' }
         }
 
-        // Busca token
-        const { data: tokenRow } = await db
-          .from('google_tokens')
-          .select('access_token')
-          .eq('organization_id', orgId)
-          .single()
+        // Busca token com refresh automatico
+        const validToken = await getValidTokenForOrg(db, orgId)
 
-        if (!tokenRow?.access_token) {
+        if (!validToken) {
           return { org_id: orgId, new_reviews: 0, responses_queued: 0, error: 'sem token Google' }
         }
 
@@ -87,7 +81,7 @@ export const reviewMonitor = inngest.createFunction(
         const city = address?.locality ?? 'Brasil'
 
         // Busca reviews via GBP API
-        const gbp = new GBPClient(tokenRow.access_token)
+        const gbp = new GBPClient(validToken)
         let reviews: Awaited<ReturnType<GBPClient['listReviews']>> = []
         try {
           reviews = await gbp.listReviews(org.gbp_location_id)
@@ -156,7 +150,7 @@ export const reviewMonitor = inngest.createFunction(
           if (isAutomatic) {
             // Publica direto via GBP API
             const published = await publishReviewReply(
-              tokenRow.access_token,
+              validToken,
               review.name,
               responseText
             )

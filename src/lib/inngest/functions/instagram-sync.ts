@@ -6,6 +6,8 @@ import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { inngest } from '../client'
 import { scrapeInstagramPosts } from '@/lib/instagram/scraper'
 import { rewriteCaption } from '@/lib/instagram/rewriter'
+import { GBPClient } from '@/lib/google/gbp-client'
+import { getValidTokenForOrg } from '@/lib/google/token-refresh'
 
 const MAX_POSTS_PER_WEEK = 3
 
@@ -22,33 +24,17 @@ async function publishGbpPost(
   content: string,
   imageUrl?: string
 ): Promise<string | null> {
-  const body: Record<string, unknown> = {
-    languageCode: 'pt-BR',
-    summary: content,
-    topicType: 'STANDARD',
+  try {
+    const client = new GBPClient(accessToken)
+    const post = await client.createPost(locationName, {
+      summary: content,
+      imageUrl: imageUrl ?? undefined,
+    })
+    return post.name ?? null
+  } catch (err) {
+    console.error('[instagram-sync] Falha ao publicar no GBP:', err)
+    return null
   }
-
-  // Se tem imagem do Instagram, inclui no post GBP
-  if (imageUrl) {
-    body.media = {
-      mediaFormat: 'PHOTO',
-      sourceUrl: imageUrl,
-    }
-  }
-
-  const url = `https://mybusiness.googleapis.com/v4/${locationName}/localPosts`
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  })
-
-  if (!res.ok) return null
-  const data = (await res.json()) as { name?: string }
-  return data.name ?? null
 }
 
 export const instagramSync = inngest.createFunction(
@@ -219,17 +205,12 @@ export const instagramSync = inngest.createFunction(
           continue
         }
 
-        // Buscar token Google
-        const { data: tokenRow } = await db
-          .from('google_tokens')
-          .select('access_token')
-          .eq('organization_id', post.organization_id)
-          .single()
-
-        if (!tokenRow?.access_token) continue
+        // Buscar token Google com refresh automatico
+        const validToken = await getValidTokenForOrg(db, post.organization_id)
+        if (!validToken) continue
 
         const gbpPostId = await publishGbpPost(
-          tokenRow.access_token,
+          validToken,
           orgData.gbp_location_id,
           post.rewritten_caption,
           post.image_url
