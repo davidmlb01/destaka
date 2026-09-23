@@ -161,13 +161,17 @@ export class GBPClient {
 
   // Deletar reply de review
   async deleteReviewReply(reviewName: string): Promise<void> {
-    await globalThis.fetch(
+    const res = await globalThis.fetch(
       `https://mybusiness.googleapis.com/v4/${reviewName}/reply`,
       {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${this.accessToken}` },
       }
     )
+    if (!res.ok) {
+      const body = await res.text()
+      throw new Error(`GBP API error ${res.status}: ${body}`)
+    }
   }
 
   // Metricas de performance (buscas, views, acoes)

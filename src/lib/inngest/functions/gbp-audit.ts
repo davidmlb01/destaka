@@ -48,14 +48,15 @@ export const gbpAudit = inngest.createFunction(
           return { org_id: orgId, status: 'skip', error: 'sem token Google' }
         }
 
-        // Busca specialty da organização para contexto do audit
+        // Busca specialty e gbp_location_id da organização
         const { data: org } = await db
           .from('organizations')
-          .select('specialty')
+          .select('specialty, gbp_location_id')
           .eq('id', orgId)
           .single()
 
         const specialty = org?.specialty ?? 'outro'
+        const existingLocationId = org?.gbp_location_id as string | null
 
         // Inicializa cliente GBP e busca dados
         const gbp = new GBPClient(validToken)
@@ -84,7 +85,11 @@ export const gbpAudit = inngest.createFunction(
           return { org_id: orgId, status: 'skip', error: 'nenhuma location GBP encontrada' }
         }
 
-        const location = locations[0]
+        // Se a org ja tem gbp_location_id, buscar a location correspondente
+        // Se nao, usar a primeira (onboarding)
+        const location = existingLocationId
+          ? locations.find(l => l.name === existingLocationId) ?? locations[0]
+          : locations[0]
         const locationName = location.name
 
         // Busca reviews e mídias em paralelo
@@ -137,11 +142,13 @@ export const gbpAudit = inngest.createFunction(
             .upsert(reviewPayloads, { onConflict: 'review_id', ignoreDuplicates: true })
         }
 
-        // Atualiza gbp_location_id na organização
-        await db
-          .from('organizations')
-          .update({ gbp_location_id: locationName })
-          .eq('id', orgId)
+        // Atualiza gbp_location_id na organização (so se nao estava definido)
+        if (!existingLocationId) {
+          await db
+            .from('organizations')
+            .update({ gbp_location_id: locationName })
+            .eq('id', orgId)
+        }
 
         // Executa auditoria via Claude
         const auditReport = await runAudit({

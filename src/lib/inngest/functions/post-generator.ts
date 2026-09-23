@@ -99,7 +99,7 @@ export const postGenerator = inngest.createFunction(
           .eq('organization_id', orgId)
 
         const recentTypes = (recentPosts ?? []).map((p: { post_type: string }) => p.post_type as PostType)
-        const postType = nextPostType(recentTypes)
+        let postType = nextPostType(recentTypes)
         const postSequence = postCount ?? 0
 
         // Para review_highlight: busca o melhor review recente
@@ -115,9 +115,9 @@ export const postGenerator = inngest.createFunction(
             .limit(1)
             .single()
           recentReview = topReview?.comment ?? undefined
-          // Se não há review 5 estrelas, troca para educativo
+          // Se nao ha review 5 estrelas, troca para educativo (nao pula)
           if (!recentReview) {
-            return { org_id: orgId, status: 'skip', error: 'sem review 5 estrelas para highlight' }
+            postType = 'educativo' as PostType
           }
         }
 

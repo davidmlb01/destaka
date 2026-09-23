@@ -18,19 +18,37 @@ const PATIENT_NAME_PATTERN = /(?:paciente|sr\.?|sra\.?|dra?\.)\s+[A-Z][a-z]+(?:\
 
 const MAX_REVIEW_LENGTH = 500
 
+// Padroes de prompt injection
+const INJECTION_PATTERNS = [
+  /ignore\s+(all\s+)?(previous|prior|above)\s+instructions?/gi,
+  /\bsystem\s*:/gi,
+  /\bassistant\s*:/gi,
+  /\bhuman\s*:/gi,
+]
+const CONTROL_CHARS = /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g
+const ZERO_WIDTH_CHARS = /\u200B|\u200C|\u200D|\uFEFF/g
+
 /**
  * Sanitiza texto de avaliação de paciente antes de enviar ao LLM.
- * Remove CPF, telefone, email e nomes próprios identificados.
- * Trunca para MAX_REVIEW_LENGTH para evitar exfiltração de contexto extenso.
+ * Remove CPF, telefone, email, nomes proprios, prompt injection e controle.
+ * Trunca para MAX_REVIEW_LENGTH para evitar exfiltracao de contexto extenso.
  */
 export function sanitizePatientData(reviewComment: string): string {
   if (!reviewComment) return ''
 
   let sanitized = reviewComment
+    // LGPD: remove PII
     .replace(CPF_PATTERN, '[dado removido]')
     .replace(PHONE_PATTERN, '[dado removido]')
     .replace(EMAIL_PATTERN, '[dado removido]')
     .replace(PATIENT_NAME_PATTERN, '[paciente]')
+    // Anti-injection: remove padroes de manipulacao de prompt
+    .replace(CONTROL_CHARS, '')
+    .replace(ZERO_WIDTH_CHARS, '')
+
+  for (const pattern of INJECTION_PATTERNS) {
+    sanitized = sanitized.replace(pattern, '')
+  }
 
   if (sanitized.length > MAX_REVIEW_LENGTH) {
     sanitized = sanitized.slice(0, MAX_REVIEW_LENGTH) + '...'

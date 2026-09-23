@@ -78,7 +78,8 @@ export async function POST(request: NextRequest) {
 
     if (!res.ok) {
       const errBody = await res.text()
-      return NextResponse.json({ error: `GBP API error: ${errBody}` }, { status: 502 })
+      console.error('[gbp/optimize] GBP API error:', errBody)
+      return NextResponse.json({ error: 'Falha ao aplicar otimizacao no Google. Tente novamente.' }, { status: 502 })
     }
 
     // Atualiza localmente também

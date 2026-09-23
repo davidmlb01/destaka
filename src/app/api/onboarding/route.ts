@@ -3,6 +3,15 @@ import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { inngest } from '@/lib/inngest/client'
 import { encrypt } from '@/lib/crypto'
+import { z } from 'zod'
+
+const OnboardingSchema = z.object({
+  name: z.string().min(1).max(200),
+  specialty: z.string().min(1).max(100),
+  tone: z.enum(['formal', 'proximo', 'tecnico']),
+  automation_preference: z.enum(['automatico', 'manual']),
+  instagram_handle: z.string().max(50).optional(),
+})
 
 function createServiceClient() {
   return createAdminClient(
@@ -20,12 +29,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const body = await request.json()
-  const { name, specialty, tone, automation_preference, instagram_handle } = body
-
-  if (!name || !specialty || !tone || !automation_preference) {
-    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+  const parsed = OnboardingSchema.safeParse(await request.json().catch(() => null))
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Dados invalidos. Verifique os campos.' }, { status: 400 })
   }
+  const { name, specialty, tone, automation_preference, instagram_handle } = parsed.data
 
   // Cria organização via service role (bypass RLS — novo usuário sem professional ainda)
   const orgPayload: Record<string, string> = { name, specialty, tone, automation_preference }
