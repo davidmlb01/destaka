@@ -41,7 +41,8 @@ export async function POST(request: NextRequest) {
     .single()
 
   if (orgError) {
-    return NextResponse.json({ error: orgError.message }, { status: 500 })
+    console.error('[onboarding] Falha ao criar organizacao:', orgError.message)
+    return NextResponse.json({ error: 'Falha ao criar organizacao. Tente novamente.' }, { status: 500 })
   }
 
   // Cria professional vinculado ao usuário
@@ -56,7 +57,8 @@ export async function POST(request: NextRequest) {
     })
 
   if (profError) {
-    return NextResponse.json({ error: profError.message }, { status: 500 })
+    console.error('[onboarding] Falha ao criar professional:', profError.message)
+    return NextResponse.json({ error: 'Falha ao criar perfil profissional. Tente novamente.' }, { status: 500 })
   }
 
   // Recupera token do Google armazenado nos metadados durante o callback
@@ -69,6 +71,16 @@ export async function POST(request: NextRequest) {
       access_token: meta.gbp_access_token,
       refresh_token: meta.gbp_refresh_token ?? null,
       expires_at: meta.gbp_token_expires_at ?? null,
+    })
+
+    // Limpar tokens do user_metadata (nao devem ficar acessiveis client-side)
+    await admin.auth.admin.updateUserById(user.id, {
+      user_metadata: {
+        ...meta,
+        gbp_access_token: undefined,
+        gbp_refresh_token: undefined,
+        gbp_token_expires_at: undefined,
+      },
     })
   }
 

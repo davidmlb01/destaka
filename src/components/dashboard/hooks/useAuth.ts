@@ -1,9 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '@supabase/ssr'
-
-const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true'
 
 function createClient() {
   return createBrowserClient(
@@ -13,7 +11,6 @@ function createClient() {
 }
 
 export function useAuth() {
-  const [demoLoading, setDemoLoading] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -24,23 +21,6 @@ export function useAuth() {
       }
     })
   }, [router])
-
-  async function handleDemoLogin() {
-    setDemoLoading(true)
-    try {
-      const res = await fetch('/api/auth/demo-login', { method: 'POST' })
-      if (res.ok) {
-        window.location.href = '/dashboard'
-      } else {
-        const data = await res.json()
-        toast.error('Erro no login demo: ' + (data.error ?? 'tente novamente'))
-        setDemoLoading(false)
-      }
-    } catch {
-      toast.error('Erro de conexão. Verifique se o servidor está rodando.')
-      setDemoLoading(false)
-    }
-  }
 
   async function handleGoogleSignIn() {
     const supabase = createClient()
@@ -67,9 +47,6 @@ export function useAuth() {
   }
 
   return {
-    isDemoMode,
-    demoLoading,
-    handleDemoLogin,
     handleGoogleSignIn,
   }
 }
