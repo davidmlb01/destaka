@@ -81,9 +81,8 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     const errMsg = err instanceof Error ? `${err.message}\n${err.stack}` : String(err)
     console.error('[verify] Erro nao capturado:', errMsg)
-    // TEMPORARIO: retornar erro real para diagnostico (remover depois)
     return NextResponse.json(
-      { error: 'Erro ao verificar o estabelecimento.', _debug: errMsg },
+      { error: 'Erro ao verificar o estabelecimento. Tente novamente.' },
       { status: 500 }
     )
   }
