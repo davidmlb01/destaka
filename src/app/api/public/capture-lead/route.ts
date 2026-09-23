@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { sendLeadMagnetEmail } from '@/lib/email/lead-magnet'
-import { rateLimit } from '@/lib/redis'
+import { rateLimitStrict } from '@/lib/redis'
 import type { CategoryScore } from '@/lib/gmb/scorer'
 import { createHash } from 'crypto'
 import { z } from 'zod'
@@ -30,13 +30,20 @@ function hashIp(ip: string): string {
 // POST /api/public/capture-lead
 // Body: { email, placeName, score, categories, lgpdConsent }
 export async function POST(req: NextRequest) {
-  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
+  const ip = req.headers.get('x-real-ip')
+    ?? req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+    ?? 'unknown'
   const ipHash = hashIp(ip)
 
-  // Rate limiting por IP — fail-open se Redis indisponivel
+  // Rate limiting por IP — fail-closed (rotas publicas de custo)
   const key = `ratelimit:lead:${ipHash}`
-  const count = await rateLimit(key, 86400)
-  if (count !== null && count > MAX_PER_IP_PER_DAY) {
+  let count: number
+  try {
+    count = await rateLimitStrict(key, 86400)
+  } catch {
+    return NextResponse.json({ error: 'Servico temporariamente indisponivel.' }, { status: 503 })
+  }
+  if (count > MAX_PER_IP_PER_DAY) {
     return NextResponse.json(
       { error: 'Limite de auditorias diarias atingido. Tente novamente amanha.' },
       { status: 429 }

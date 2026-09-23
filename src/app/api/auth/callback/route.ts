@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { inngest } from '@/lib/inngest/client'
 import { populateFromPlaces } from '@/lib/places/populate'
+import { encrypt } from '@/lib/crypto'
 
 function createServiceClient() {
   return createAdminSupa(
@@ -23,16 +24,14 @@ export async function GET(request: NextRequest) {
       const user = session.user
       const admin = createServiceClient()
 
-      // Persiste provider_token nos metadados do usuário para uso posterior
+      // Persiste provider_token temporariamente nos metadados (limpo apos onboarding)
+      // Necessario porque o onboarding cria a org e precisa do token para google_tokens
       if (session.provider_token) {
         await admin.auth.admin.updateUserById(user.id, {
           user_metadata: {
             ...user.user_metadata,
             gbp_access_token: session.provider_token,
             gbp_refresh_token: session.provider_refresh_token ?? null,
-            gbp_token_expires_at: session.expires_at
-              ? new Date(session.expires_at * 1000).toISOString()
-              : null,
           },
         })
       }
@@ -49,13 +48,21 @@ export async function GET(request: NextRequest) {
         if (session.provider_token) {
           await admin.from('google_tokens').upsert({
             organization_id: professional.organization_id,
-            access_token: session.provider_token,
-            refresh_token: session.provider_refresh_token ?? null,
-            expires_at: session.expires_at
-              ? new Date(session.expires_at * 1000).toISOString()
+            access_token: encrypt(session.provider_token),
+            refresh_token: session.provider_refresh_token
+              ? encrypt(session.provider_refresh_token)
               : null,
             updated_at: new Date().toISOString(),
           }, { onConflict: 'organization_id' })
+
+          // Limpar tokens do user_metadata (nao devem ficar client-side)
+          await admin.auth.admin.updateUserById(user.id, {
+            user_metadata: {
+              ...user.user_metadata,
+              gbp_access_token: undefined,
+              gbp_refresh_token: undefined,
+            },
+          })
 
           inngest.send({
             name: 'destaka/gbp.audit.requested',
