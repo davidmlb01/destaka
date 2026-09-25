@@ -107,7 +107,7 @@ export class GBPClient {
   }
 
   async listLocations(accountName: string): Promise<GBPLocation[]> {
-    const url = `https://mybusinessbusinessinformation.googleapis.com/v1/${accountName}/locations?readMask=name,title,categories,storefrontAddress,phoneNumbers,regularHours,profile,attributes,serviceItems,metadata`
+    const url = `https://mybusinessbusinessinformation.googleapis.com/v1/${accountName}/locations?readMask=name,title,categories,storefrontAddress,phoneNumbers,regularHours,profile,websiteUri,metadata`
     const data = await this.fetch<{ locations?: GBPLocation[] }>(url)
     return data.locations ?? []
   }
