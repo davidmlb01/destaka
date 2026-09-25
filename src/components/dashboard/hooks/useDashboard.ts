@@ -69,10 +69,8 @@ export function useDashboard() {
     setSyncing(true)
     setSyncError(null)
     try {
-      const res = await fetch('/api/diagnostic/run', {
+      const res = await fetch('/api/gbp/import', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ profileId: data.profile.id }),
       })
       if (!res.ok) {
         const body = await res.json().catch(() => ({})) as { error?: string }
