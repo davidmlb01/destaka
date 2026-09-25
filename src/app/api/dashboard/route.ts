@@ -35,7 +35,7 @@ export async function GET() {
     supabase.from('organizations').select('name, specialty').eq('id', orgId).single(),
     supabase.from('scores').select('*').eq('organization_id', orgId).order('snapshot_date', { ascending: false }).limit(1).maybeSingle(),
     supabase.from('scores').select('total, snapshot_date, faixa').eq('organization_id', orgId).order('snapshot_date', { ascending: false }).limit(30),
-    supabase.from('gbp_profiles').select('id, description, categories, photo_count, audit_report, benchmark_report, optimization_report').eq('organization_id', orgId).maybeSingle(),
+    supabase.from('gbp_profiles').select('id, description, categories, photo_count, audit_report, benchmark_report, optimization_report, last_synced_at').eq('organization_id', orgId).maybeSingle(),
     supabase.from('posts').select('id, published_at').eq('organization_id', orgId).eq('status', 'published').gte('published_at', sevenDaysAgo.toISOString()),
     supabase.from('review_responses').select('id, created_at').eq('organization_id', orgId).eq('status', 'published').gte('created_at', sevenDaysAgo.toISOString()),
   ])
@@ -46,7 +46,7 @@ export async function GET() {
     name: org?.name ?? 'Meu Perfil',
     address: '',
     score: latestScore?.total ?? 0,
-    last_synced_at: latestScore?.snapshot_date ?? null,
+    last_synced_at: (gbpProfile as Record<string, unknown> | null)?.last_synced_at ?? latestScore?.snapshot_date ?? null,
   }
 
   // Construir diagnostic a partir do score e audit_report

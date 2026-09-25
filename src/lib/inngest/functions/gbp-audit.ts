@@ -168,11 +168,11 @@ export const gbpAudit = inngest.createFunction(
           .eq('organization_id', orgId)
           .eq('location_id', locationName)
 
-        // Dispara otimizador (Story 006) após auditoria concluída
-        await inngest.send({
-          name: 'destaka/gbp.optimize.requested',
-          data: { organization_id: orgId },
-        })
+        // Dispara otimizador + score calculator apos auditoria concluida
+        await inngest.send([
+          { name: 'destaka/gbp.optimize.requested', data: { organization_id: orgId } },
+          { name: 'destaka/score.calculate.requested', data: { organization_id: orgId } },
+        ])
 
         return { org_id: orgId, status: 'ok', gaps: auditReport.gaps.length }
       })
