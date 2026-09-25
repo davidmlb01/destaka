@@ -41,13 +41,46 @@ export function useOptimizationWizard(
 
   async function startExecution() {
     if (!plan) return
+
+    // Verificar assinatura ativa antes de executar
+    try {
+      const statusRes = await fetch('/api/stripe/status')
+      const statusData = (await statusRes.json()) as { active: boolean }
+
+      if (!statusData.active) {
+        // Sem assinatura: redirecionar para checkout
+        const checkoutRes = await fetch('/api/stripe/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ plan: 'pro' }),
+        })
+
+        if (checkoutRes.ok) {
+          const { url } = (await checkoutRes.json()) as { url: string }
+          if (url) {
+            window.location.href = url
+            return
+          }
+        }
+
+        setErrorMsg('Erro ao iniciar pagamento. Tente novamente.')
+        setStep('error')
+        return
+      }
+    } catch {
+      setErrorMsg('Erro ao verificar assinatura. Tente novamente.')
+      setStep('error')
+      return
+    }
+
+    // Assinatura ativa: executar otimizacao
     setStep('executing')
     setCurrentActionIndex(0)
 
     const actionCount = plan.actions.length
     for (let i = 0; i < actionCount; i++) {
       setCurrentActionIndex(i)
-      await new Promise((r) => setTimeout(r, 800))
+      await new Promise((r) => setTimeout(r, 1500))
     }
 
     try {
@@ -62,7 +95,7 @@ export function useOptimizationWizard(
       })
 
       if (!res.ok) {
-        setErrorMsg('Erro durante execução. Tente novamente.')
+        setErrorMsg('Erro durante execucao. Tente novamente.')
         setStep('error')
         return
       }
@@ -71,7 +104,7 @@ export function useOptimizationWizard(
       setExecution(data)
       setStep('done')
     } catch {
-      setErrorMsg('Erro de conexão durante execução. Tente novamente.')
+      setErrorMsg('Erro de conexao durante execucao. Tente novamente.')
       setStep('error')
     }
   }
