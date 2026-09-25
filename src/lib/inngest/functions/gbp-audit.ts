@@ -64,8 +64,10 @@ export const gbpAudit = inngest.createFunction(
         let accounts: Awaited<ReturnType<GBPClient['listAccounts']>> = []
         try {
           accounts = await gbp.listAccounts()
-        } catch {
-          return { org_id: orgId, status: 'error', error: 'falha ao listar accounts GBP' }
+          console.log('[gbp-audit] accounts:', JSON.stringify(accounts.map(a => ({ name: a.name, type: a.type }))))
+        } catch (err) {
+          console.error('[gbp-audit] listAccounts error:', err instanceof Error ? err.message : err)
+          return { org_id: orgId, status: 'error', error: `falha ao listar accounts GBP: ${err instanceof Error ? err.message : 'unknown'}` }
         }
 
         if (accounts.length === 0) {
@@ -77,8 +79,9 @@ export const gbpAudit = inngest.createFunction(
         let locations: Awaited<ReturnType<GBPClient['listLocations']>> = []
         try {
           locations = await gbp.listLocations(accountName)
-        } catch {
-          return { org_id: orgId, status: 'error', error: 'falha ao listar locations GBP' }
+        } catch (err) {
+          console.error('[gbp-audit] listLocations error:', err instanceof Error ? err.message : err)
+          return { org_id: orgId, status: 'error', error: `falha ao listar locations GBP: ${err instanceof Error ? err.message : 'unknown'}` }
         }
 
         if (locations.length === 0) {
