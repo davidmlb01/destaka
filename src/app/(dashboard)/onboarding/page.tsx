@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-type Step = 'permissions' | 'specialty' | 'name' | 'tone' | 'automation' | 'calculating' | 'done'
+type Step = 'permissions' | 'specialty' | 'name' | 'contact' | 'tone' | 'automation' | 'calculating' | 'done'
 
 const SPECIALTIES = [
   { value: 'dentista', label: 'Dentista' },
@@ -53,6 +53,8 @@ export default function OnboardingPage() {
   const [step, setStep] = useState<Step>('permissions')
   const [specialty, setSpecialty] = useState('')
   const [clinicName, setClinicName] = useState('')
+  const [phone, setPhone] = useState('')
+  const [instagramHandle, setInstagramHandle] = useState('')
   const [tone, setTone] = useState('')
   const [automation, setAutomation] = useState('')
   const [loading, setLoading] = useState(false)
@@ -71,6 +73,8 @@ export default function OnboardingPage() {
           specialty,
           tone,
           automation_preference: automation,
+          phone,
+          instagram_handle: instagramHandle || null,
         }),
       })
 
@@ -90,15 +94,16 @@ export default function OnboardingPage() {
     }
   }
 
-  const totalSteps = 5
+  const totalSteps = 6
   const stepIndex: Record<Step, number> = {
     permissions: 1,
     specialty: 2,
     name: 3,
-    tone: 4,
-    automation: 5,
-    calculating: 5,
-    done: 5,
+    contact: 4,
+    tone: 5,
+    automation: 6,
+    calculating: 6,
+    done: 6,
   }
   const progress = (stepIndex[step] / totalSteps) * 100
 
@@ -214,8 +219,75 @@ export default function OnboardingPage() {
                 autoFocus
               />
               <button
-                onClick={() => setStep('tone')}
+                onClick={() => setStep('contact')}
                 disabled={!clinicName.trim()}
+                className="w-full bg-slate-900 text-white rounded-xl px-6 py-3.5 font-medium hover:bg-slate-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                Continuar
+              </button>
+            </div>
+          )}
+
+          {/* STEP: Contact (Phone + Instagram) */}
+          {step === 'contact' && (
+            <div>
+              <h1 className="text-xl font-semibold text-slate-900 mb-2">
+                Como seus pacientes entram em contato?
+              </h1>
+              <p className="text-slate-500 text-sm mb-6">
+                Usamos o WhatsApp para notificações e o Instagram para conectar suas redes.
+              </p>
+              <div className="space-y-4 mb-8">
+                <div>
+                  <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-1.5">
+                    WhatsApp para contato
+                  </label>
+                  <input
+                    id="phone"
+                    type="tel"
+                    value={phone}
+                    onChange={e => {
+                      const digits = e.target.value.replace(/\D/g, '').slice(0, 11)
+                      let formatted = digits
+                      if (digits.length > 2) {
+                        formatted = `(${digits.slice(0, 2)}) ${digits.slice(2)}`
+                      }
+                      if (digits.length > 7) {
+                        formatted = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`
+                      }
+                      setPhone(formatted)
+                    }}
+                    placeholder="(11) 99999-9999"
+                    className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                    autoFocus
+                  />
+                </div>
+                <div>
+                  <label htmlFor="instagram" className="block text-sm font-medium text-slate-700 mb-1.5">
+                    Instagram do consultorio (opcional)
+                  </label>
+                  <input
+                    id="instagram"
+                    type="text"
+                    value={instagramHandle}
+                    onChange={e => {
+                      let val = e.target.value.trim()
+                      if (val && !val.startsWith('@')) {
+                        val = `@${val}`
+                      }
+                      setInstagramHandle(val)
+                    }}
+                    placeholder="@seuinstagram"
+                    className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                  />
+                  <p className="text-xs text-slate-400 mt-1">
+                    Comece com @ ou deixe em branco.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setStep('tone')}
+                disabled={phone.replace(/\D/g, '').length < 10}
                 className="w-full bg-slate-900 text-white rounded-xl px-6 py-3.5 font-medium hover:bg-slate-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Continuar

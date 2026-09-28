@@ -10,6 +10,7 @@ const OnboardingSchema = z.object({
   specialty: z.string().min(1).max(100),
   tone: z.enum(['formal', 'proximo', 'tecnico']),
   automation_preference: z.enum(['automatico', 'manual']),
+  phone: z.string().min(10).max(20),
   instagram_handle: z.string().max(50).optional(),
 })
 
@@ -33,10 +34,15 @@ export async function POST(request: NextRequest) {
   if (!parsed.success) {
     return NextResponse.json({ error: 'Dados invalidos. Verifique os campos.' }, { status: 400 })
   }
-  const { name, specialty, tone, automation_preference, instagram_handle } = parsed.data
+  const { name, specialty, tone, automation_preference, phone, instagram_handle } = parsed.data
+
+  // Valida formato do instagram_handle se fornecido
+  if (instagram_handle && !instagram_handle.startsWith('@')) {
+    return NextResponse.json({ error: 'Instagram deve comecar com @' }, { status: 400 })
+  }
 
   // Cria organização via service role (bypass RLS — novo usuário sem professional ainda)
-  const orgPayload: Record<string, string> = { name, specialty, tone, automation_preference }
+  const orgPayload: Record<string, string> = { name, specialty, tone, automation_preference, phone }
   if (instagram_handle) {
     orgPayload.instagram_handle = instagram_handle.startsWith('@')
       ? instagram_handle

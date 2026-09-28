@@ -28,6 +28,8 @@ export interface Organization {
   specialty: Specialty
   tone: ToneCommunication
   automation_preference: AutomationPreference
+  instagram_handle: string | null
+  phone: string
   service_areas: string[]
   gbp_location_id: string | null
   created_at: string
