@@ -4,6 +4,7 @@
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { inngest } from '../client'
 import { calculateScore, buildScoreInput } from '@/lib/score/score-calculator'
+import { getActivePlan, updatePlanProgress, updatePlanInDb } from '@/lib/plan/plan-generator'
 
 function admin() {
   return createAdminSupa(
@@ -125,6 +126,33 @@ export const scoreCalculator = inngest.createFunction(
           tendencia: breakdown.tendencia,
           snapshot_date: snapshotDate,
         }, { onConflict: 'organization_id,snapshot_date' })
+
+        // Atualizar plano de superacao (se existir)
+        try {
+          const activePlan = await getActivePlan(db, orgId)
+          if (activePlan) {
+            const planCtx = {
+              hasDescription: input.hasDescription,
+              categoryCount: input.categoryCount,
+              attributeCount: input.attributeCount,
+              photoCount: input.photoCount,
+              hasHours: input.hasHours,
+              recentPostCount: input.recentPostCount,
+              reviewCount: input.reviewCount,
+              avgRating: input.avgRating,
+              reviewResponseRate: input.reviewResponseRate,
+              hasWebsite: true,
+              totalScore: breakdown.total,
+            }
+            const { updated, plan: updatedPlan } = updatePlanProgress(activePlan, planCtx)
+            if (updated) {
+              await updatePlanInDb(db, updatedPlan)
+              console.log(`[score-calculator] surpass plan updated for org ${orgId}: ${updatedPlan.steps.filter(s => s.status === 'done').length}/${updatedPlan.steps.length} done`)
+            }
+          }
+        } catch (err) {
+          console.error('[score-calculator] surpass plan update error:', err instanceof Error ? err.message : err)
+        }
 
         return {
           org_id: orgId,

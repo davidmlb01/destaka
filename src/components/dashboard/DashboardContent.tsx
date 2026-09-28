@@ -10,6 +10,7 @@ import dynamic from 'next/dynamic'
 const ScoreChart = dynamic(() => import('./ScoreChart').then(m => m.ScoreChart), { ssr: false, loading: () => <div className="h-[200px]" /> })
 import { OptimizationHistory } from './OptimizationHistory'
 import { OptimizationWizard } from './OptimizationWizard'
+import { SurpassPlanCard } from './SurpassPlanCard'
 import { ProfileAlerts } from './ProfileAlerts'
 import { PendingDescriptionBanner } from './PendingDescriptionBanner'
 import { TokenInvalidBanner } from './TokenInvalidBanner'
@@ -133,6 +134,9 @@ export function DashboardContent() {
           <MetricCard label="Ligações geradas" value={metrics.clicksCall} icon={<PinIcon size={16} />} hint={metrics.period} />
         </div>
       </div>
+
+      {/* Plano de Superacao */}
+      <SurpassPlanCard />
 
       {/* Linha 2: Cards de categoria */}
       <div className="animate-fade-in-up stagger-2">
