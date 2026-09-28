@@ -53,7 +53,7 @@ export function OptimizationWizard({ profileId, diagnosticId, onComplete }: {
         }}
       >
         <span>⚡</span>
-        Otimizar Automaticamente
+        Otimizar meu perfil
       </button>
     )
   }
@@ -73,14 +73,14 @@ export function OptimizationWizard({ profileId, diagnosticId, onComplete }: {
           <span style={{ fontSize: 22 }}>⚡</span>
           <div>
             <h2 className="font-display font-bold text-white" style={{ fontSize: 17 }}>
-              Otimização Automática
+              Otimizar seu perfil
             </h2>
             <p className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
-              {step === 'loading-plan' && 'Analisando perfil...'}
-              {step === 'preview' && `${plan?.actions.length} ações identificadas`}
-              {step === 'executing' && `Executando ${currentActionIndex + 1} de ${plan?.actions.length}...`}
-              {step === 'done' && 'Concluído!'}
-              {step === 'error' && 'Algo deu errado'}
+              {step === 'loading-plan' && 'Analisando seu perfil...'}
+              {step === 'preview' && `${plan?.actions.length} melhorias prontas para aplicar`}
+              {step === 'executing' && `Aplicando ${currentActionIndex + 1} de ${plan?.actions.length}...`}
+              {step === 'done' && 'Pronto!'}
+              {step === 'error' && 'Não foi possível aplicar'}
             </p>
           </div>
         </div>
@@ -163,7 +163,7 @@ export function OptimizationWizard({ profileId, diagnosticId, onComplete }: {
                 className="flex-1 rounded-xl py-2.5 text-sm font-bold"
                 style={{ background: 'rgba(14,165,233,0.25)', border: '1px solid rgba(14,165,233,0.4)', color: 'var(--accent-bright)' }}
               >
-                Confirmar e Otimizar
+                Aplicar melhorias
               </button>
             </div>
           </>

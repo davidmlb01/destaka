@@ -135,9 +135,9 @@ function CompetitorCard({ comp, profile }: { comp: Competitor; profile: Profile 
 }
 
 const PRIORITY_CONFIG = {
-  high: { label: 'ALTA', color: '#F87171', bg: 'rgba(248,113,113,0.1)', border: 'rgba(248,113,113,0.2)' },
-  medium: { label: 'MEDIA', color: '#FBBF24', bg: 'rgba(251,191,36,0.1)', border: 'rgba(251,191,36,0.2)' },
-  low: { label: 'BAIXA', color: '#60A5FA', bg: 'rgba(96,165,250,0.1)', border: 'rgba(96,165,250,0.2)' },
+  high: { label: 'Prioridade', color: '#F87171', bg: 'rgba(248,113,113,0.1)', border: 'rgba(248,113,113,0.2)' },
+  medium: { label: 'Recomendado', color: '#FBBF24', bg: 'rgba(251,191,36,0.1)', border: 'rgba(251,191,36,0.2)' },
+  low: { label: 'Opcional', color: '#60A5FA', bg: 'rgba(96,165,250,0.1)', border: 'rgba(96,165,250,0.2)' },
 }
 
 function OpportunitiesSection() {
@@ -207,19 +207,19 @@ function OpportunitiesSection() {
                   className="inline-block mt-2.5 text-xs font-bold"
                   style={{ color: 'var(--accent-bright)' }}
                 >
-                  Otimizar perfil →
+                  Aplicar no meu perfil →
                 </a>
               )}
 
               {!gap.suggested_action && gap.type === 'photos' && (
                 <p className="mt-2 text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                  Adicione fotos do consultorio, equipe e procedimentos diretamente no Google.
+                  Adicione fotos do seu espaço e equipe diretamente no Google.
                 </p>
               )}
 
               {!gap.suggested_action && gap.type === 'reviews' && (
                 <p className="mt-2 text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                  Peca avaliacoes aos pacientes apos cada consulta.
+                  Peça uma avaliação ao paciente no final de cada consulta.
                 </p>
               )}
             </div>
@@ -230,7 +230,7 @@ function OpportunitiesSection() {
       {analysis.keyword_opportunities.length > 0 && (
         <div className="mt-4">
           <p className="text-xs font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
-            Termos mais buscados pelos pacientes dos concorrentes:
+            O que os pacientes mais buscam na sua região:
           </p>
           <div className="flex flex-wrap gap-1.5">
             {analysis.keyword_opportunities.slice(0, 8).map((kw: string, i: number) => (
@@ -248,7 +248,7 @@ function OpportunitiesSection() {
 
       {analysis.analyzed_at && (
         <p className="text-[10px] mt-4" style={{ color: 'var(--text-muted)' }}>
-          Ultima analise: {new Date(analysis.analyzed_at).toLocaleDateString('pt-BR')}
+          Última atualização: {new Date(analysis.analyzed_at).toLocaleDateString('pt-BR')}
         </p>
       )}
     </div>

@@ -71,12 +71,17 @@ export async function POST() {
   const orgId = professional.organization_id
 
   // Buscar dados para gerar plano
-  const [{ data: gbpProfile }, { data: reviews }, { data: competitors }, { data: score }] = await Promise.all([
-    supabase.from('gbp_profiles').select('description, categories, attributes, photo_count, hours, services').eq('organization_id', orgId).maybeSingle(),
+  const [{ data: gbpProfile }, { data: reviews }, { data: score }] = await Promise.all([
+    supabase.from('gbp_profiles').select('id, description, categories, attributes, photo_count, hours, services').eq('organization_id', orgId).maybeSingle(),
     supabase.from('reviews').select('id, rating, response_text').eq('organization_id', orgId),
-    supabase.from('competitors').select('avg_rating, review_count, photo_count').eq('profile_id', orgId),
     supabase.from('scores').select('total').eq('organization_id', orgId).order('snapshot_date', { ascending: false }).limit(1).maybeSingle(),
   ])
+
+  // Competitors usa profile_id (FK para gmb_profiles.id), nao organization_id
+  const gmbProfileId = gbpProfile?.id
+  const { data: competitors } = gmbProfileId
+    ? await supabase.from('competitors').select('avg_rating, review_count, photo_count').eq('profile_id', gmbProfileId)
+    : { data: [] }
 
   const reviewList = reviews ?? []
   const repliedCount = reviewList.filter((r: { response_text: string | null }) => !!r.response_text).length

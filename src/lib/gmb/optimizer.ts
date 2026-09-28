@@ -79,8 +79,8 @@ export function buildOptimizationPlan(
   if (!profile.hasHours) {
     actions.push({
       type: 'update_hours',
-      label: 'Definir horário de funcionamento',
-      description: 'Horário padrão para dias úteis (08:00–18:00) e sábado (08:00–12:00).',
+      label: 'Definir seu horário de atendimento',
+      description: 'Perfis sem horário perdem posição na busca. Vamos configurar o seu.',
       impact: 5,
     })
   }
@@ -88,8 +88,8 @@ export function buildOptimizationPlan(
   if (!profile.hasCategory) {
     actions.push({
       type: 'update_categories',
-      label: 'Configurar categorias do negócio',
-      description: 'Adicionar categorias secundárias relevantes para o segmento.',
+      label: 'Ajustar categorias do perfil',
+      description: 'Categorias definem em quais buscas você aparece. Vamos adicionar as que faltam.',
       impact: 2,
     })
   }
@@ -98,8 +98,8 @@ export function buildOptimizationPlan(
   if (profile.attributesCount < 5) {
     actions.push({
       type: 'update_attributes',
-      label: 'Adicionar atributos do estabelecimento',
-      description: 'Wi-Fi, estacionamento, acessibilidade, formas de pagamento e outros.',
+      label: 'Completar informações do consultório',
+      description: 'Wi-Fi, estacionamento, acessibilidade. Cada detalhe conta para o Google te recomendar.',
       impact: 5,
     })
   }
@@ -107,8 +107,8 @@ export function buildOptimizationPlan(
   // Descrição (gerada por Claude)
   actions.push({
     type: 'update_description',
-    label: 'Gerar descrição profissional do negócio',
-    description: 'Claude cria uma descrição otimizada para SEO local, específica para o segmento.',
+    label: 'Criar sua descrição no Google',
+    description: 'Uma descrição feita para o seu perfil aparecer nas buscas certas da sua região.',
     impact: 3,
   })
 
@@ -116,8 +116,8 @@ export function buildOptimizationPlan(
   if (profile.servicesCount < 3) {
     actions.push({
       type: 'add_services',
-      label: 'Adicionar serviços com descrição',
-      description: 'Claude gera lista de serviços com descrições claras para pacientes.',
+      label: 'Listar seus serviços no perfil',
+      description: 'Pacientes filtram por serviço no Google Maps. Quem não lista, não aparece.',
       impact: 10,
     })
   }

@@ -66,8 +66,8 @@ interface CompetitorContext {
 const ACTION_MATRIX = [
   {
     id: 'categories',
-    title: 'Otimizar categorias do perfil',
-    description: 'Adicionar categorias que seus concorrentes usam e voce nao tem.',
+    title: 'Ajustar suas categorias no Google',
+    description: 'Seus concorrentes aparecem em buscas que você ainda não aparece. Vamos corrigir isso.',
     mode: 'auto' as StepMode,
     impact: 5,
     component: 'gmb_completude',
@@ -77,8 +77,8 @@ const ACTION_MATRIX = [
   },
   {
     id: 'description',
-    title: 'Reescrever descricao com keywords',
-    description: 'Descricao otimizada com termos que pacientes usam ao buscar na sua regiao.',
+    title: 'Melhorar sua descrição no Google',
+    description: 'Vamos incluir os termos que pacientes realmente usam quando procuram por você.',
     mode: 'auto' as StepMode,
     impact: 6,
     component: 'gmb_completude',
@@ -88,8 +88,8 @@ const ACTION_MATRIX = [
   },
   {
     id: 'services',
-    title: 'Listar servicos com descricao',
-    description: 'Servicos aparecem como filtro na busca do Google Maps.',
+    title: 'Colocar seus serviços no perfil',
+    description: 'No Google Maps, pacientes filtram por serviço. Sem lista, você fica invisível.',
     mode: 'auto' as StepMode,
     impact: 5,
     component: 'gmb_completude',
@@ -99,8 +99,8 @@ const ACTION_MATRIX = [
   },
   {
     id: 'hours',
-    title: 'Definir horario de funcionamento',
-    description: 'Perfis sem horario perdem posicoes na busca local.',
+    title: 'Configurar seu horário de atendimento',
+    description: 'O Google rebaixa perfis sem horário. Vamos resolver em segundos.',
     mode: 'auto' as StepMode,
     impact: 3,
     component: 'gmb_completude',
@@ -110,8 +110,8 @@ const ACTION_MATRIX = [
   },
   {
     id: 'attributes',
-    title: 'Adicionar atributos do estabelecimento',
-    description: 'Wi-Fi, estacionamento, acessibilidade, formas de pagamento.',
+    title: 'Completar informações do consultório',
+    description: 'Wi-Fi, estacionamento, acessibilidade. Cada detalhe conta para o Google te recomendar.',
     mode: 'auto' as StepMode,
     impact: 4,
     component: 'gmb_completude',
@@ -121,8 +121,8 @@ const ACTION_MATRIX = [
   },
   {
     id: 'posts',
-    title: 'Ativar posts semanais automaticos',
-    description: 'O Destaka publica conteudo toda semana no seu perfil.',
+    title: 'Ativar publicações semanais',
+    description: 'O Destaka publica no seu perfil toda semana, sem você precisar fazer nada.',
     mode: 'auto' as StepMode,
     impact: 2,
     component: 'gmb_completude',
@@ -132,8 +132,8 @@ const ACTION_MATRIX = [
   },
   {
     id: 'photos',
-    title: 'Adicionar fotos do consultorio',
-    description: 'Fotos do espaco, equipe e procedimentos. Seus concorrentes tem mais fotos que voce.',
+    title: 'Adicionar fotos do seu espaço',
+    description: 'Pacientes confiam mais em perfis com fotos reais. Seus concorrentes têm mais fotos que você.',
     mode: 'manual' as StepMode,
     impact: 5,
     component: 'gmb_completude',
@@ -143,8 +143,8 @@ const ACTION_MATRIX = [
   },
   {
     id: 'review-responses',
-    title: 'Responder todas as avaliacoes',
-    description: 'O Destaka responde automaticamente. Taxa ideal: 80%+.',
+    title: 'Responder suas avaliações',
+    description: 'O Destaka já responde por você. Profissionais que respondem recebem mais pacientes.',
     mode: 'auto' as StepMode,
     impact: 5,
     component: 'reputacao',
@@ -154,8 +154,8 @@ const ACTION_MATRIX = [
   },
   {
     id: 'request-reviews',
-    title: 'Pedir avaliacoes aos pacientes',
-    description: 'Envie o link de avaliacao apos cada consulta. Meta: 2+ reviews por mes.',
+    title: 'Conseguir mais avaliações',
+    description: 'Peça uma avaliação ao final de cada consulta. Dois por mês já faz diferença.',
     mode: 'manual' as StepMode,
     impact: 8,
     component: 'reputacao',
@@ -165,8 +165,8 @@ const ACTION_MATRIX = [
   },
   {
     id: 'website',
-    title: 'Vincular website ao perfil',
-    description: 'Perfis com site recebem mais cliques e transmitem mais credibilidade.',
+    title: 'Vincular seu site ao perfil',
+    description: 'Perfis com site recebem mais cliques e passam mais confiança.',
     mode: 'manual' as StepMode,
     impact: 3,
     component: 'gmb_completude',
@@ -190,10 +190,10 @@ export function generatePlan(
     let description = action.description
     if (competitorCtx) {
       if (action.id === 'photos' && competitorCtx.avgPhotoCount > 0) {
-        description = `Adicione fotos do consultorio, equipe e procedimentos. Seus concorrentes tem em media ${Math.round(competitorCtx.avgPhotoCount)} fotos.`
+        description = `Adicione fotos do seu espaço e equipe. Seus concorrentes têm em média ${Math.round(competitorCtx.avgPhotoCount)} fotos.`
       }
       if (action.id === 'request-reviews' && competitorCtx.avgReviewCount > 0) {
-        description = `Envie o link de avaliacao apos cada consulta. Seus concorrentes tem em media ${Math.round(competitorCtx.avgReviewCount)} avaliacoes.`
+        description = `Peça uma avaliação ao final de cada consulta. Seus concorrentes têm em média ${Math.round(competitorCtx.avgReviewCount)} avaliações.`
       }
     }
 
