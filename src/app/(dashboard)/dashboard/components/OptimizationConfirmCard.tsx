@@ -41,6 +41,12 @@ interface OptimizationReport {
 
 type ApplyStatus = 'idle' | 'confirming' | 'applying' | 'done' | 'error'
 
+const FOCUS_LABELS: Record<string, { label: string; color: string; bg: string }> = {
+  seo: { label: 'Focada em palavras-chave', color: '#14B8A6', bg: 'rgba(20,184,166,0.15)' },
+  conversao: { label: 'Focada em conversão', color: '#F59E0B', bg: 'rgba(245,158,11,0.15)' },
+  confianca: { label: 'Focada em credibilidade', color: '#8B5CF6', bg: 'rgba(139,92,246,0.15)' },
+}
+
 export function OptimizationConfirmCard({
   optimizationReport,
   currentDescription,
@@ -111,7 +117,6 @@ export function OptimizationConfirmCard({
     const results: Array<{ label: string; ok: boolean }> = []
 
     try {
-      // Apply selected description
       if (selectedDescription !== null) {
         const variant = description_variants[selectedDescription]
         const res = await fetch('/api/gbp/optimize/apply', {
@@ -119,50 +124,36 @@ export function OptimizationConfirmCard({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ type: 'description', value: variant.text }),
         })
-        results.push({
-          label: `Descricao: ${variant.label}`,
-          ok: res.ok,
-        })
+        results.push({ label: `Descrição: ${variant.label}`, ok: res.ok })
       }
 
-      // Categories, attributes and services are informational for now
-      // (the API only supports description at this time)
       if (selectedCategories.size > 0) {
         for (const idx of selectedCategories) {
-          results.push({
-            label: `Categoria: ${category_suggestions[idx].category}`,
-            ok: true, // informational: noted for manual action
-          })
+          results.push({ label: `Categoria: ${category_suggestions[idx].category}`, ok: true })
         }
       }
 
       if (selectedAttributes.size > 0) {
         for (const idx of selectedAttributes) {
-          results.push({
-            label: `Atributo: ${attribute_suggestions[idx].attribute}`,
-            ok: true,
-          })
+          results.push({ label: `Atributo: ${attribute_suggestions[idx].attribute}`, ok: true })
         }
       }
 
       if (selectedServices.size > 0) {
         for (const idx of selectedServices) {
-          results.push({
-            label: `Servico: ${service_optimizations[idx].optimized}`,
-            ok: true,
-          })
+          results.push({ label: `Serviço: ${service_optimizations[idx].optimized}`, ok: true })
         }
       }
 
       setApplyResults(results)
       setStatus('done')
     } catch {
-      setErrorMessage('Erro ao aplicar otimizacoes. Tente novamente.')
+      setErrorMessage('Não foi possível aplicar as mudanças. Tente novamente.')
       setStatus('error')
     }
   }
 
-  // IDLE state: show overview with button to review
+  // IDLE: overview
   if (status === 'idle') {
     const totalSuggestions =
       description_variants.length +
@@ -171,42 +162,53 @@ export function OptimizationConfirmCard({
       service_optimizations.length
 
     return (
-      <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-          <h2 className="font-semibold text-slate-900">Otimizacoes sugeridas</h2>
-          <span className="bg-teal-100 text-teal-700 text-xs font-bold px-2.5 py-1 rounded-full">
-            {totalSuggestions} {totalSuggestions === 1 ? 'sugestao' : 'sugestoes'}
+      <div
+        className="rounded-2xl overflow-hidden"
+        style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}
+      >
+        <div className="px-5 py-4 flex items-center justify-between" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+          <h2 className="font-display font-bold text-white text-sm">Melhorias encontradas</h2>
+          <span
+            className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+            style={{ background: 'rgba(20,184,166,0.15)', color: '#14B8A6' }}
+          >
+            {totalSuggestions} {totalSuggestions === 1 ? 'sugestão' : 'sugestões'}
           </span>
         </div>
 
-        <div className="px-6 py-4 space-y-2">
+        <div className="px-5 py-4 space-y-1.5">
           {description_variants.length > 0 && (
-            <p className="text-sm text-slate-600">
-              {description_variants.length} {description_variants.length === 1 ? 'versao de descricao' : 'versoes de descricao'}
+            <p className="text-[13px]" style={{ color: 'var(--text-secondary)' }}>
+              {description_variants.length} {description_variants.length === 1 ? 'versão de descrição' : 'versões de descrição'}
             </p>
           )}
           {category_suggestions.length > 0 && (
-            <p className="text-sm text-slate-600">
+            <p className="text-[13px]" style={{ color: 'var(--text-secondary)' }}>
               {category_suggestions.length} {category_suggestions.length === 1 ? 'categoria sugerida' : 'categorias sugeridas'}
             </p>
           )}
           {attribute_suggestions.length > 0 && (
-            <p className="text-sm text-slate-600">
+            <p className="text-[13px]" style={{ color: 'var(--text-secondary)' }}>
               {attribute_suggestions.length} {attribute_suggestions.length === 1 ? 'atributo sugerido' : 'atributos sugeridos'}
             </p>
           )}
           {service_optimizations.length > 0 && (
-            <p className="text-sm text-slate-600">
-              {service_optimizations.length} {service_optimizations.length === 1 ? 'servico otimizado' : 'servicos otimizados'}
+            <p className="text-[13px]" style={{ color: 'var(--text-secondary)' }}>
+              {service_optimizations.length} {service_optimizations.length === 1 ? 'serviço otimizado' : 'serviços otimizados'}
             </p>
           )}
 
           <div className="pt-3">
             <button
               onClick={handleReviewChanges}
-              className="w-full text-sm font-semibold bg-slate-900 text-white px-5 py-2.5 rounded-lg hover:bg-slate-700 transition-colors"
+              className="w-full text-sm font-bold px-5 py-2.5 rounded-xl transition-all"
+              style={{
+                background: 'rgba(20,184,166,0.15)',
+                border: '1px solid rgba(20,184,166,0.25)',
+                color: '#14B8A6',
+              }}
             >
-              Revisar mudancas antes de aplicar
+              Revisar antes de aplicar
             </button>
           </div>
         </div>
@@ -214,26 +216,28 @@ export function OptimizationConfirmCard({
     )
   }
 
-  // DONE state: show results
+  // DONE
   if (status === 'done') {
     return (
-      <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
-        <div className="px-6 py-4 border-b border-slate-100">
-          <h2 className="font-semibold text-slate-900">Otimizacoes aplicadas</h2>
+      <div
+        className="rounded-2xl overflow-hidden"
+        style={{ background: 'rgba(74,222,128,0.06)', border: '1px solid rgba(74,222,128,0.15)' }}
+      >
+        <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(74,222,128,0.1)' }}>
+          <h2 className="font-display font-bold text-white text-sm">Mudanças aplicadas</h2>
         </div>
-        <div className="px-6 py-4 space-y-2">
+        <div className="px-5 py-4 space-y-2">
           {applyResults.map((r, i) => (
             <div key={i} className="flex items-center gap-2">
-              <span className={`text-sm ${r.ok ? 'text-green-600' : 'text-red-500'}`}>
-                {r.ok ? '\u2713' : '\u2717'}
-              </span>
-              <span className="text-sm text-slate-700">{r.label}</span>
+              <span className="text-sm">{r.ok ? '✅' : '❌'}</span>
+              <span className="text-[13px]" style={{ color: r.ok ? 'var(--text-secondary)' : '#F87171' }}>{r.label}</span>
             </div>
           ))}
-          <div className="pt-3">
+          <div className="pt-2">
             <button
               onClick={handleCancel}
-              className="text-sm font-semibold text-slate-500 hover:text-slate-700 transition-colors"
+              className="text-xs font-medium"
+              style={{ color: 'var(--text-tertiary)' }}
             >
               Fechar
             </button>
@@ -243,25 +247,30 @@ export function OptimizationConfirmCard({
     )
   }
 
-  // ERROR state
+  // ERROR
   if (status === 'error') {
     return (
-      <div className="bg-white rounded-2xl border border-red-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-red-100">
-          <h2 className="font-semibold text-red-700">Erro ao aplicar</h2>
+      <div
+        className="rounded-2xl overflow-hidden"
+        style={{ background: 'rgba(248,113,113,0.06)', border: '1px solid rgba(248,113,113,0.15)' }}
+      >
+        <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(248,113,113,0.1)' }}>
+          <h2 className="font-display font-bold text-white text-sm">Não foi possível aplicar</h2>
         </div>
-        <div className="px-6 py-4 space-y-3">
-          <p className="text-sm text-red-600">{errorMessage}</p>
-          <div className="flex gap-2">
+        <div className="px-5 py-4 space-y-3">
+          <p className="text-[13px]" style={{ color: '#FCA5A5' }}>{errorMessage}</p>
+          <div className="flex gap-3">
             <button
               onClick={() => setStatus('confirming')}
-              className="text-sm font-semibold bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-slate-700 transition-colors"
+              className="text-sm font-bold px-4 py-2 rounded-xl"
+              style={{ background: 'rgba(255,255,255,0.06)', color: 'white' }}
             >
               Tentar novamente
             </button>
             <button
               onClick={handleCancel}
-              className="text-sm font-semibold text-slate-500 px-4 py-2 hover:text-slate-700 transition-colors"
+              className="text-sm font-medium px-4 py-2"
+              style={{ color: 'var(--text-tertiary)' }}
             >
               Cancelar
             </button>
@@ -271,38 +280,45 @@ export function OptimizationConfirmCard({
     )
   }
 
-  // CONFIRMING state: show all changes with checkboxes
+  // CONFIRMING
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
-      <div className="px-6 py-4 border-b border-slate-100">
-        <h2 className="font-semibold text-slate-900">Confirme as mudancas</h2>
-        <p className="text-xs text-slate-400 mt-1">
-          Revise cada sugestao e marque o que deseja aplicar ao seu perfil Google.
+    <div
+      className="rounded-2xl overflow-hidden"
+      style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}
+    >
+      <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <h2 className="font-display font-bold text-white text-sm">Confirme as mudanças</h2>
+        <p className="text-xs mt-1" style={{ color: 'var(--text-tertiary)' }}>
+          Revise cada sugestão e marque o que deseja aplicar ao seu perfil.
         </p>
       </div>
 
-      <div className="divide-y divide-slate-50">
-        {/* Description variants */}
-        {description_variants.length > 0 && (
-          <div className="px-6 py-4">
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">
-              Descricao do perfil
-            </p>
-            {currentDescription && (
-              <div className="mb-3 bg-slate-50 rounded-lg px-4 py-3">
-                <p className="text-xs font-semibold text-slate-400 mb-1">Atual</p>
-                <p className="text-sm text-slate-500 leading-relaxed">{currentDescription}</p>
-              </div>
-            )}
-            <div className="space-y-3">
-              {description_variants.map((variant, i) => (
+      {/* Description variants */}
+      {description_variants.length > 0 && (
+        <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+          <p className="text-[10px] font-bold tracking-widest uppercase mb-3" style={{ color: 'var(--text-muted)' }}>
+            Descrição do perfil
+          </p>
+          {currentDescription && (
+            <div
+              className="mb-3 rounded-xl px-4 py-3"
+              style={{ background: 'rgba(255,255,255,0.04)' }}
+            >
+              <p className="text-[10px] font-bold mb-1" style={{ color: 'var(--text-muted)' }}>Atual</p>
+              <p className="text-[13px] leading-relaxed" style={{ color: 'var(--text-tertiary)' }}>{currentDescription}</p>
+            </div>
+          )}
+          <div className="flex flex-col gap-2">
+            {description_variants.map((variant, i) => {
+              const focusCfg = FOCUS_LABELS[variant.focus] ?? FOCUS_LABELS.seo
+              return (
                 <label
                   key={i}
-                  className={`block border rounded-lg px-4 py-3 cursor-pointer transition-colors ${
-                    selectedDescription === i
-                      ? 'border-teal-400 bg-teal-50/50'
-                      : 'border-slate-100 hover:border-slate-200'
-                  }`}
+                  className="block rounded-xl px-4 py-3 cursor-pointer transition-all"
+                  style={{
+                    background: selectedDescription === i ? 'rgba(20,184,166,0.06)' : 'rgba(255,255,255,0.02)',
+                    border: selectedDescription === i ? '1px solid rgba(20,184,166,0.25)' : '1px solid rgba(255,255,255,0.06)',
+                  }}
                 >
                   <div className="flex items-start gap-3">
                     <input
@@ -310,154 +326,179 @@ export function OptimizationConfirmCard({
                       name="description"
                       checked={selectedDescription === i}
                       onChange={() => setSelectedDescription(i)}
-                      className="mt-1 accent-teal-600"
+                      className="mt-1 accent-teal-500"
+                      style={{ accentColor: '#14B8A6' }}
                     />
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-semibold text-teal-700 bg-teal-100 px-2 py-0.5 rounded">
-                          {variant.label}
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <span
+                          className="text-[10px] font-bold px-2 py-0.5 rounded"
+                          style={{ background: focusCfg.bg, color: focusCfg.color }}
+                        >
+                          {focusCfg.label}
                         </span>
-                        <span className="text-xs text-slate-400">{variant.char_count || variant.text.length} chars</span>
+                        <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
+                          {variant.char_count || variant.text.length} chars
+                        </span>
                       </div>
-                      <p className="text-sm text-slate-700 leading-relaxed">{variant.text}</p>
+                      <p className="text-[13px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{variant.text}</p>
                     </div>
                   </div>
                 </label>
-              ))}
-            </div>
+              )
+            })}
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Category suggestions */}
-        {category_suggestions.length > 0 && (
-          <div className="px-6 py-4">
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">
-              Categorias sugeridas
-            </p>
-            <div className="space-y-2">
-              {category_suggestions.map((cat, i) => (
-                <label
-                  key={i}
-                  className={`flex items-start gap-3 border rounded-lg px-4 py-3 cursor-pointer transition-colors ${
-                    selectedCategories.has(i)
-                      ? 'border-teal-400 bg-teal-50/50'
-                      : 'border-slate-100 hover:border-slate-200'
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedCategories.has(i)}
-                    onChange={() => setSelectedCategories(toggleSet(selectedCategories, i))}
-                    className="mt-1 accent-teal-600"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-slate-800">{cat.category}</p>
-                    <p className="text-xs text-slate-500 mt-0.5">{cat.justification}</p>
-                    {cat.used_by_competitors && (
-                      <span className="inline-block mt-1 text-xs text-amber-600 bg-amber-50 px-2 py-0.5 rounded">
-                        Usada por concorrentes
-                      </span>
-                    )}
+      {/* Categories */}
+      {category_suggestions.length > 0 && (
+        <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+          <p className="text-[10px] font-bold tracking-widest uppercase mb-3" style={{ color: 'var(--text-muted)' }}>
+            Categorias sugeridas
+          </p>
+          <div className="flex flex-col gap-2">
+            {category_suggestions.map((cat, i) => (
+              <label
+                key={i}
+                className="flex items-start gap-3 rounded-xl px-4 py-3 cursor-pointer transition-all"
+                style={{
+                  background: selectedCategories.has(i) ? 'rgba(20,184,166,0.06)' : 'rgba(255,255,255,0.02)',
+                  border: selectedCategories.has(i) ? '1px solid rgba(20,184,166,0.25)' : '1px solid rgba(255,255,255,0.06)',
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedCategories.has(i)}
+                  onChange={() => setSelectedCategories(toggleSet(selectedCategories, i))}
+                  className="mt-1"
+                  style={{ accentColor: '#14B8A6' }}
+                />
+                <div className="flex-1 min-w-0">
+                  <p className="text-[13px] font-medium text-white">{cat.category}</p>
+                  <p className="text-[11px] mt-0.5" style={{ color: 'var(--text-tertiary)' }}>{cat.justification}</p>
+                  {cat.used_by_competitors && (
+                    <span
+                      className="inline-block mt-1.5 text-[10px] font-bold px-1.5 py-0.5 rounded"
+                      style={{ background: 'rgba(168,85,247,0.15)', color: '#C084FC' }}
+                    >
+                      Usada pelos concorrentes
+                    </span>
+                  )}
+                </div>
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Attributes */}
+      {attribute_suggestions.length > 0 && (
+        <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+          <p className="text-[10px] font-bold tracking-widest uppercase mb-3" style={{ color: 'var(--text-muted)' }}>
+            Atributos sugeridos
+          </p>
+          <div
+            className="rounded-xl px-3 py-2 mb-3 text-[11px]"
+            style={{ background: 'rgba(251,191,36,0.08)', color: '#FBBF24', border: '1px solid rgba(251,191,36,0.15)' }}
+          >
+            Confirme apenas atributos verdadeiros para o seu consultório.
+          </div>
+          <div className="flex flex-col gap-2">
+            {attribute_suggestions.map((attr, i) => (
+              <label
+                key={i}
+                className="flex items-start gap-3 rounded-xl px-4 py-3 cursor-pointer transition-all"
+                style={{
+                  background: selectedAttributes.has(i) ? 'rgba(20,184,166,0.06)' : 'rgba(255,255,255,0.02)',
+                  border: selectedAttributes.has(i) ? '1px solid rgba(20,184,166,0.25)' : '1px solid rgba(255,255,255,0.06)',
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedAttributes.has(i)}
+                  onChange={() => setSelectedAttributes(toggleSet(selectedAttributes, i))}
+                  className="mt-1"
+                  style={{ accentColor: '#14B8A6' }}
+                />
+                <div className="flex-1 min-w-0">
+                  <p className="text-[13px] font-medium text-white">{attr.attribute}</p>
+                  <p className="text-[11px] mt-0.5" style={{ color: 'var(--text-tertiary)' }}>{attr.justification}</p>
+                </div>
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Services */}
+      {service_optimizations.length > 0 && (
+        <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+          <p className="text-[10px] font-bold tracking-widest uppercase mb-3" style={{ color: 'var(--text-muted)' }}>
+            Serviços otimizados
+          </p>
+          <div className="flex flex-col gap-2">
+            {service_optimizations.map((svc, i) => (
+              <label
+                key={i}
+                className="flex items-start gap-3 rounded-xl px-4 py-3 cursor-pointer transition-all"
+                style={{
+                  background: selectedServices.has(i) ? 'rgba(20,184,166,0.06)' : 'rgba(255,255,255,0.02)',
+                  border: selectedServices.has(i) ? '1px solid rgba(20,184,166,0.25)' : '1px solid rgba(255,255,255,0.06)',
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedServices.has(i)}
+                  onChange={() => setSelectedServices(toggleSet(selectedServices, i))}
+                  className="mt-1"
+                  style={{ accentColor: '#14B8A6' }}
+                />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 text-[13px]">
+                    <span style={{ color: 'var(--text-muted)', textDecoration: 'line-through' }}>{svc.original}</span>
+                    <span style={{ color: 'var(--text-muted)' }}>→</span>
+                    <span className="font-medium text-white">{svc.optimized}</span>
                   </div>
-                </label>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Attribute suggestions */}
-        {attribute_suggestions.length > 0 && (
-          <div className="px-6 py-4">
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">
-              Atributos sugeridos
-            </p>
-            <p className="text-xs text-amber-600 bg-amber-50 rounded-lg px-3 py-2 mb-3">
-              Confirme apenas atributos que sao verdadeiros para o seu estabelecimento.
-              Informacoes incorretas podem prejudicar seu perfil.
-            </p>
-            <div className="space-y-2">
-              {attribute_suggestions.map((attr, i) => (
-                <label
-                  key={i}
-                  className={`flex items-start gap-3 border rounded-lg px-4 py-3 cursor-pointer transition-colors ${
-                    selectedAttributes.has(i)
-                      ? 'border-teal-400 bg-teal-50/50'
-                      : 'border-slate-100 hover:border-slate-200'
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedAttributes.has(i)}
-                    onChange={() => setSelectedAttributes(toggleSet(selectedAttributes, i))}
-                    className="mt-1 accent-teal-600"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-slate-800">{attr.attribute}</p>
-                    <p className="text-xs text-slate-500 mt-0.5">{attr.justification}</p>
-                  </div>
-                </label>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Service optimizations */}
-        {service_optimizations.length > 0 && (
-          <div className="px-6 py-4">
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">
-              Servicos otimizados
-            </p>
-            <div className="space-y-2">
-              {service_optimizations.map((svc, i) => (
-                <label
-                  key={i}
-                  className={`flex items-start gap-3 border rounded-lg px-4 py-3 cursor-pointer transition-colors ${
-                    selectedServices.has(i)
-                      ? 'border-teal-400 bg-teal-50/50'
-                      : 'border-slate-100 hover:border-slate-200'
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedServices.has(i)}
-                    onChange={() => setSelectedServices(toggleSet(selectedServices, i))}
-                    className="mt-1 accent-teal-600"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 text-sm">
-                      <span className="text-slate-400 line-through">{svc.original}</span>
-                      <span className="text-slate-300">&rarr;</span>
-                      <span className="text-slate-800 font-medium">{svc.optimized}</span>
+                  {svc.keywords_added.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-1.5">
+                      {svc.keywords_added.map((kw, j) => (
+                        <span
+                          key={j}
+                          className="text-[10px] px-1.5 py-0.5 rounded"
+                          style={{ background: 'rgba(20,184,166,0.1)', color: '#14B8A6' }}
+                        >
+                          {kw}
+                        </span>
+                      ))}
                     </div>
-                    {svc.keywords_added.length > 0 && (
-                      <p className="text-xs text-slate-400 mt-0.5">
-                        Keywords: {svc.keywords_added.join(', ')}
-                      </p>
-                    )}
-                  </div>
-                </label>
-              ))}
-            </div>
+                  )}
+                </div>
+              </label>
+            ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
-      {/* Action buttons */}
-      <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between">
+      {/* Actions */}
+      <div className="px-5 py-4 flex items-center justify-between">
         <button
           onClick={handleCancel}
-          className="text-sm font-semibold text-slate-500 px-4 py-2 rounded-lg hover:text-slate-700 transition-colors"
+          className="text-sm font-medium px-4 py-2 rounded-xl"
+          style={{ color: 'var(--text-tertiary)' }}
         >
           Cancelar
         </button>
         <button
           onClick={handleConfirmAndApply}
           disabled={!hasSelection || status === 'applying'}
-          className={`text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors ${
-            hasSelection
-              ? 'bg-teal-600 text-white hover:bg-teal-500'
-              : 'bg-slate-200 text-slate-400 cursor-not-allowed'
-          }`}
+          className="text-sm font-bold px-5 py-2.5 rounded-xl transition-all"
+          style={{
+            background: hasSelection ? 'rgba(20,184,166,0.2)' : 'rgba(255,255,255,0.04)',
+            border: hasSelection ? '1px solid rgba(20,184,166,0.3)' : '1px solid rgba(255,255,255,0.06)',
+            color: hasSelection ? '#14B8A6' : 'var(--text-muted)',
+            cursor: hasSelection ? 'pointer' : 'not-allowed',
+          }}
         >
           {status === 'applying' ? 'Aplicando...' : 'Confirmar e aplicar'}
         </button>
