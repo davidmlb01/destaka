@@ -31,6 +31,7 @@ const EMAIL_SCHEDULE: Array<{ day: OnboardingEmailDay; sleepDuration: string }> 
 export const onboardingEmailSequence = inngest.createFunction(
   {
     id: 'onboarding-email-sequence',
+    triggers: [{ event: 'destaka/subscription.activated' }],
     cancelOn: [
       {
         event: 'destaka/subscription.cancelled',
@@ -38,7 +39,6 @@ export const onboardingEmailSequence = inngest.createFunction(
       },
     ],
   },
-  { event: 'destaka/subscription.activated' },
   async ({ event, step }) => {
     const { organization_id, user_email } =
       event.data as SubscriptionActivatedData

@@ -20,6 +20,7 @@ const DASHBOARD_BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://app.desta
 export const onboardingWhatsappSequence = inngest.createFunction(
   {
     id: 'onboarding-whatsapp-sequence',
+    triggers: [{ event: 'destaka/subscription.activated' }],
     cancelOn: [
       {
         event: 'destaka/subscription.cancelled',
@@ -27,7 +28,6 @@ export const onboardingWhatsappSequence = inngest.createFunction(
       },
     ],
   },
-  { event: 'destaka/subscription.activated' },
   async ({ event, step }) => {
     const orgId = (event as unknown as { data: { organization_id: string } }).data
       .organization_id
