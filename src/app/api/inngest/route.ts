@@ -8,6 +8,8 @@ import { postGenerator } from '@/lib/inngest/functions/post-generator'
 import { scoreCalculator } from '@/lib/inngest/functions/score-calculator'
 import { monthlyReport } from '@/lib/inngest/functions/monthly-report'
 import { instagramSync } from '@/lib/inngest/functions/instagram-sync'
+import { onboardingWhatsappSequence } from '@/lib/inngest/functions/onboarding-whatsapp-sequence'
+import { onboardingEmailSequence } from '@/lib/inngest/functions/onboarding-email-sequence'
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -20,5 +22,7 @@ export const { GET, POST, PUT } = serve({
     scoreCalculator,
     monthlyReport,
     instagramSync,
+    onboardingWhatsappSequence,
+    onboardingEmailSequence,
   ],
 })

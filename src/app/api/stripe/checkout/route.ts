@@ -71,6 +71,9 @@ export async function POST(request: NextRequest) {
     success_url: `${origin}/dashboard?checkout=success`,
     cancel_url: `${origin}/dashboard?checkout=cancel`,
     metadata: { organization_id: professional.organization_id },
+    subscription_data: {
+      metadata: { organization_id: professional.organization_id },
+    },
   })
 
   return NextResponse.json({ url: session.url })
