@@ -6,6 +6,7 @@
 import { searchPlace, getPlaceDetails } from '@/lib/places/client'
 import { getAnthropic, AI_MODEL } from '@/lib/ai'
 import { sanitizeForPrompt } from '@/lib/sanitize'
+import { extractReviewKeywords } from './competitive-analyzer'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 export interface Competitor {
@@ -19,6 +20,8 @@ export interface Competitor {
   photo_count: number
   categories: string[]
   has_website: boolean
+  description: string | null
+  review_keywords: string[]
   benchmark_data: BenchmarkData | null
   last_tracked_at: string
 }
@@ -119,6 +122,7 @@ export async function discoverCompetitors(
           photo_count: details.photos?.length ?? 0,
           categories: details.types ?? [],
           has_website: !!details.website,
+          description: null, // Places API nao retorna descricao de terceiros
           last_tracked_at: new Date().toISOString(),
         },
         { onConflict: 'profile_id,place_id' }
@@ -173,7 +177,47 @@ export async function refreshCompetitors(
     }
   }
 
+  // Apos refresh, extrair keywords dos reviews dos concorrentes
+  if (refreshed > 0) {
+    await enrichCompetitorKeywords(db, profileId)
+  }
+
   return { refreshed, errors }
+}
+
+// Enriquece concorrentes com keywords extraidos dos reviews via Places API + Claude
+export async function enrichCompetitorKeywords(
+  db: SupabaseClient,
+  profileId: string
+): Promise<void> {
+  const { data: competitors } = await db
+    .from('competitors')
+    .select('id, place_id, name')
+    .eq('profile_id', profileId)
+
+  if (!competitors?.length) return
+
+  // Buscar reviews de cada concorrente via Places API
+  const competitorReviews: Array<{ name: string; reviews: string[] }> = []
+
+  for (const comp of competitors) {
+    const details = await getPlaceDetails(comp.place_id)
+    const reviews = (details?.reviews ?? [])
+      .map(r => r.text)
+      .filter(Boolean)
+    competitorReviews.push({ name: comp.name, reviews })
+  }
+
+  // Extrair keywords em batch via Claude
+  const keywords = await extractReviewKeywords(competitorReviews)
+
+  // Salvar keywords em cada concorrente (keywords sao do conjunto, nao individuais)
+  for (const comp of competitors) {
+    await db
+      .from('competitors')
+      .update({ review_keywords: keywords })
+      .eq('id', comp.id)
+  }
 }
 
 // Gera benchmark via Claude e salva em cada concorrente

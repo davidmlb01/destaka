@@ -59,6 +59,7 @@ export function getMockPlaceDetails(query: string): PlaceDetails {
     user_ratings_total: 12,
     opening_hours: null,
     photos: Array(2).fill({ photo_reference: 'mock' }),
+    reviews: null,
     types: ['establishment'],
     business_status: 'OPERATIONAL',
   }

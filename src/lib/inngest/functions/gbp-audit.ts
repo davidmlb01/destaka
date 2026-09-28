@@ -6,6 +6,8 @@ import { inngest } from '../client'
 import { GBPClient } from '@/lib/google/gbp-client'
 import { runAudit } from '@/lib/gbp/audit-engine'
 import { getValidTokenForOrg } from '@/lib/google/token-refresh'
+import { enrichCompetitorKeywords } from '@/lib/gmb/competitors'
+import { analyzeCompetitivePosition, saveCompetitiveAnalysis, type CompetitorProfile } from '@/lib/gmb/competitive-analyzer'
 
 function admin() {
   return createAdminSupa(
@@ -167,6 +169,61 @@ export const gbpAudit = inngest.createFunction(
           .update({ audit_report: auditReport })
           .eq('organization_id', orgId)
           .eq('location_id', locationName)
+
+        // Analise competitiva: enriquecer keywords + gerar gaps
+        try {
+          // Buscar gmb_profile id para FK de competitors
+          const { data: gmbProfile } = await db
+            .from('gmb_profiles')
+            .select('id, categories, description, photo_count, services')
+            .eq('organization_id', orgId)
+            .eq('location_id', locationName)
+            .maybeSingle()
+
+          if (gmbProfile) {
+            // Enriquecer concorrentes com keywords dos reviews
+            await enrichCompetitorKeywords(db, gmbProfile.id)
+
+            // Buscar concorrentes enriquecidos
+            const { data: competitors } = await db
+              .from('competitors')
+              .select('place_id, name, categories, avg_rating, review_count, photo_count, has_website, description, review_keywords')
+              .eq('profile_id', gmbProfile.id)
+
+            if (competitors && competitors.length > 0) {
+              const compProfiles: CompetitorProfile[] = competitors.map(c => ({
+                place_id: c.place_id,
+                name: c.name,
+                categories: c.categories ?? [],
+                avg_rating: c.avg_rating,
+                review_count: c.review_count ?? 0,
+                photo_count: c.photo_count ?? 0,
+                has_website: c.has_website ?? false,
+                description: c.description,
+                review_keywords: (c.review_keywords as string[]) ?? [],
+              }))
+
+              const analysisResult = await analyzeCompetitivePosition(
+                {
+                  categories: (gmbProfile.categories as string[]) ?? [],
+                  description: gmbProfile.description as string | null,
+                  photo_count: (gmbProfile.photo_count as number) ?? 0,
+                  review_count: reviewList.length,
+                  avg_rating: reviewList.length > 0
+                    ? reviewList.reduce((sum: number, r: { starRating: string }) => sum + GBPClient.starRatingToNumber(r.starRating), 0) / reviewList.length
+                    : null,
+                  services: (gmbProfile.services as Array<{ displayName?: string }>) ?? [],
+                },
+                compProfiles
+              )
+
+              await saveCompetitiveAnalysis(db, orgId, analysisResult)
+              console.log(`[gbp-audit] competitive analysis saved for org ${orgId}: ${analysisResult.gaps.length} gaps`)
+            }
+          }
+        } catch (err) {
+          console.error('[gbp-audit] competitive analysis error:', err instanceof Error ? err.message : err)
+        }
 
         // Dispara otimizador + score calculator apos auditoria concluida
         await inngest.send([

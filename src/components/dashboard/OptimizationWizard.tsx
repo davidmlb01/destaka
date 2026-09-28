@@ -11,6 +11,15 @@ const ACTION_ICONS: Record<string, string> = {
   add_services: '🏥',
 }
 
+interface ActionWithSource {
+  type: string
+  label: string
+  description: string
+  impact: number
+  source?: string
+  payload?: Record<string, unknown>
+}
+
 export function OptimizationWizard({ profileId, diagnosticId, onComplete }: {
   profileId: string
   diagnosticId: string
@@ -110,20 +119,35 @@ export function OptimizationWizard({ profileId, diagnosticId, onComplete }: {
 
             {/* Lista de ações */}
             <div className="flex flex-col gap-2 mb-5">
-              {plan.actions.map((action, i) => (
-                <div
-                  key={i}
-                  className="flex items-start gap-3 rounded-xl px-4 py-3"
-                  style={{ background: 'rgba(255,255,255,0.04)' }}
-                >
-                  <span style={{ fontSize: 16 }}>{ACTION_ICONS[action.type] ?? '🔧'}</span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-white">{action.label}</p>
-                    <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.4)' }}>{action.description}</p>
+              {plan.actions.map((action, i) => {
+                const a = action as unknown as ActionWithSource
+                const isCompetitive = a.source === 'competitive'
+                return (
+                  <div
+                    key={i}
+                    className="flex items-start gap-3 rounded-xl px-4 py-3"
+                    style={{
+                      background: isCompetitive ? 'rgba(168,85,247,0.06)' : 'rgba(255,255,255,0.04)',
+                      border: isCompetitive ? '1px solid rgba(168,85,247,0.15)' : '1px solid transparent',
+                    }}
+                  >
+                    <span style={{ fontSize: 16 }}>{ACTION_ICONS[action.type] ?? '🔧'}</span>
+                    <div className="flex-1 min-w-0">
+                      {isCompetitive && (
+                        <span
+                          className="inline-block text-[10px] font-bold px-1.5 py-0.5 rounded mb-1"
+                          style={{ background: 'rgba(168,85,247,0.15)', color: '#C084FC' }}
+                        >
+                          Baseado nos concorrentes
+                        </span>
+                      )}
+                      <p className="text-sm font-medium text-white">{action.label}</p>
+                      <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.4)' }}>{action.description}</p>
+                    </div>
+                    <span className="text-xs font-bold shrink-0" style={{ color: '#4ADE80' }}>+{action.impact}pts</span>
                   </div>
-                  <span className="text-xs font-bold shrink-0" style={{ color: '#4ADE80' }}>+{action.impact}pts</span>
-                </div>
-              ))}
+                )
+              })}
             </div>
 
             <div className="flex gap-3">

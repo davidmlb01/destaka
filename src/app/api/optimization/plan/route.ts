@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { buildOptimizationPlan } from '@/lib/gmb/optimizer'
+import { buildOptimizationPlan, type OptimizationAction } from '@/lib/gmb/optimizer'
 import { calculateScore, type GmbProfileData } from '@/lib/gmb/scorer'
+import { getLatestAnalysis, type CompetitiveGap } from '@/lib/gmb/competitive-analyzer'
 
 export async function GET() {
   const supabase = await createClient()
@@ -67,5 +68,39 @@ export async function GET() {
   const score = calculateScore(profileData)
   const plan = buildOptimizationPlan(profileData, score)
 
-  return NextResponse.json(plan)
+  // Enriquecer com acoes competitivas
+  const analysis = await getLatestAnalysis(supabase, orgId)
+  let competitiveActions: Array<OptimizationAction & { source: string }> = []
+  let competitiveSummary = null
+
+  if (analysis && analysis.gaps.length > 0) {
+    competitiveActions = analysis.gaps
+      .filter((g: CompetitiveGap) => g.suggested_action !== null)
+      .map((g: CompetitiveGap) => ({
+        ...g.suggested_action!,
+        source: 'competitive',
+      }))
+
+    competitiveSummary = {
+      analyzed_at: analysis.analyzed_at,
+      total_gaps: analysis.gaps.length,
+      high_priority: analysis.gaps.filter((g: CompetitiveGap) => g.priority === 'high').length,
+      estimated_score_gain: competitiveActions.reduce((sum, a) => sum + a.impact, 0),
+    }
+  }
+
+  // Merge: acoes de completude (source: audit) + acoes competitivas (source: competitive)
+  const allActions = [
+    ...plan.actions.map(a => ({ ...a, source: 'audit' })),
+    ...competitiveActions,
+  ]
+
+  const totalGain = allActions.reduce((sum, a) => sum + a.impact, 0)
+
+  return NextResponse.json({
+    actions: allActions,
+    currentScore: plan.currentScore,
+    projectedScore: Math.min(100, plan.currentScore + totalGain),
+    competitive_summary: competitiveSummary,
+  })
 }

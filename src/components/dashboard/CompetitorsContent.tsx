@@ -4,6 +4,7 @@ import type { Competitor, BenchmarkData } from '@/lib/gmb/competitors'
 import { CompetitorsSkeleton } from './Skeletons'
 import { Spinner } from '@/components/ui/Spinner'
 import { useCompetitors } from './hooks/useCompetitors'
+import { useCompetitiveAnalysis } from './hooks/useCompetitiveAnalysis'
 
 interface Profile {
   id: string
@@ -133,6 +134,127 @@ function CompetitorCard({ comp, profile }: { comp: Competitor; profile: Profile 
   )
 }
 
+const PRIORITY_CONFIG = {
+  high: { label: 'ALTA', color: '#F87171', bg: 'rgba(248,113,113,0.1)', border: 'rgba(248,113,113,0.2)' },
+  medium: { label: 'MEDIA', color: '#FBBF24', bg: 'rgba(251,191,36,0.1)', border: 'rgba(251,191,36,0.2)' },
+  low: { label: 'BAIXA', color: '#60A5FA', bg: 'rgba(96,165,250,0.1)', border: 'rgba(96,165,250,0.2)' },
+}
+
+function OpportunitiesSection() {
+  const { analysis, isLoading } = useCompetitiveAnalysis()
+
+  if (isLoading) return null
+  if (!analysis || analysis.gaps.length === 0) return null
+
+  return (
+    <div className="mt-8">
+      <div className="flex items-center gap-2 mb-4">
+        <h2 className="font-display font-bold text-white text-base">Oportunidades</h2>
+        <span
+          className="text-[10px] font-bold px-1.5 py-0.5 rounded"
+          style={{ background: 'rgba(168,85,247,0.15)', color: '#C084FC' }}
+        >
+          Baseado nos concorrentes
+        </span>
+      </div>
+
+      <p className="text-xs mb-4" style={{ color: 'var(--text-tertiary)', lineHeight: 1.6 }}>
+        {analysis.summary}
+      </p>
+
+      <div className="flex flex-col gap-3">
+        {analysis.gaps.map((gap: {
+          type: string
+          priority: 'high' | 'medium' | 'low'
+          gap_description: string
+          missing: string[]
+          suggested_action: { label: string } | null
+        }, i: number) => {
+          const cfg = PRIORITY_CONFIG[gap.priority]
+          return (
+            <div
+              key={i}
+              className="rounded-xl px-4 py-3"
+              style={{ background: cfg.bg, border: `1px solid ${cfg.border}` }}
+            >
+              <div className="flex items-start gap-2 mb-1.5">
+                <span
+                  className="text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0 mt-0.5"
+                  style={{ background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.border}` }}
+                >
+                  {cfg.label}
+                </span>
+                <p className="text-sm font-medium text-white">{gap.gap_description}</p>
+              </div>
+
+              {gap.missing.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {gap.missing.slice(0, 5).map((item: string, j: number) => (
+                    <span
+                      key={j}
+                      className="text-[11px] px-2 py-0.5 rounded-full"
+                      style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-secondary)' }}
+                    >
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {gap.suggested_action && (
+                <a
+                  href="/dashboard/optimizations"
+                  className="inline-block mt-2.5 text-xs font-bold"
+                  style={{ color: 'var(--accent-bright)' }}
+                >
+                  Otimizar perfil →
+                </a>
+              )}
+
+              {!gap.suggested_action && gap.type === 'photos' && (
+                <p className="mt-2 text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                  Adicione fotos do consultorio, equipe e procedimentos diretamente no Google.
+                </p>
+              )}
+
+              {!gap.suggested_action && gap.type === 'reviews' && (
+                <p className="mt-2 text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                  Peca avaliacoes aos pacientes apos cada consulta.
+                </p>
+              )}
+            </div>
+          )
+        })}
+      </div>
+
+      {analysis.keyword_opportunities.length > 0 && (
+        <div className="mt-4">
+          <p className="text-xs font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+            Termos mais buscados pelos pacientes dos concorrentes:
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {analysis.keyword_opportunities.slice(0, 8).map((kw: string, i: number) => (
+              <span
+                key={i}
+                className="text-[11px] px-2.5 py-1 rounded-full font-medium"
+                style={{ background: 'rgba(168,85,247,0.1)', color: '#C084FC', border: '1px solid rgba(168,85,247,0.2)' }}
+              >
+                {kw}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {analysis.analyzed_at && (
+        <p className="text-[10px] mt-4" style={{ color: 'var(--text-muted)' }}>
+          Ultima analise: {new Date(analysis.analyzed_at).toLocaleDateString('pt-BR')}
+        </p>
+      )}
+    </div>
+  )
+}
+
 export function CompetitorsContent() {
   const {
     data,
@@ -220,9 +342,12 @@ export function CompetitorsContent() {
           </button>
         </div>
       ) : (
-        data.competitors.map(comp => (
-          <CompetitorCard key={comp.id} comp={comp} profile={data.profile} />
-        ))
+        <>
+          {data.competitors.map(comp => (
+            <CompetitorCard key={comp.id} comp={comp} profile={data.profile} />
+          ))}
+          <OpportunitiesSection />
+        </>
       )}
     </div>
   )

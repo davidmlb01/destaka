@@ -17,6 +17,7 @@ export interface PlaceDetails {
   user_ratings_total: number | null
   opening_hours: { weekday_text: string[] } | null
   photos: Array<{ photo_reference: string }> | null
+  reviews: Array<{ text: string; rating: number; author_name: string }> | null
   types: string[]
   business_status: string | null
   place_id: string
@@ -234,7 +235,7 @@ export async function getPlaceDetails(placeId: string): Promise<PlaceDetails | n
   const fields = [
     'name', 'formatted_address', 'formatted_phone_number',
     'website', 'rating', 'user_ratings_total', 'opening_hours',
-    'photos', 'types', 'business_status', 'place_id',
+    'photos', 'types', 'business_status', 'place_id', 'reviews',
   ].join(',')
 
   const url = `${PLACES_BASE}/details/json?place_id=${placeId}&fields=${fields}&language=pt-BR&key=${API_KEY}`
