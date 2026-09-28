@@ -43,12 +43,21 @@ export function useSurpassPlan() {
     { revalidateOnFocus: false }
   )
   const [generating, setGenerating] = useState(false)
+  const [generateError, setGenerateError] = useState<string | null>(null)
 
   async function generatePlan() {
     setGenerating(true)
+    setGenerateError(null)
     try {
       const res = await fetch('/api/plan/surpass', { method: 'POST' })
-      if (res.ok) await mutate()
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({})) as { error?: string }
+        setGenerateError(body.error ?? 'Não foi possível gerar o plano.')
+        return
+      }
+      await mutate()
+    } catch {
+      setGenerateError('Erro de conexão. Tente novamente.')
     } finally {
       setGenerating(false)
     }
@@ -59,6 +68,7 @@ export function useSurpassPlan() {
     error,
     isLoading,
     generating,
+    generateError,
     generatePlan,
     mutate,
   }

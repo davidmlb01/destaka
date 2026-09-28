@@ -16,7 +16,7 @@ const STATUS_ICON = {
 }
 
 export function SurpassPlanCard() {
-  const { plan, isLoading, generating, generatePlan } = useSurpassPlan()
+  const { plan, isLoading, generating, generateError, generatePlan } = useSurpassPlan()
 
   if (isLoading) return null
 
@@ -47,6 +47,9 @@ export function SurpassPlanCard() {
             {generating ? <><Spinner size="sm" /> Gerando...</> : 'Criar meu plano'}
           </button>
         </div>
+        {generateError && (
+          <p className="text-xs mt-2 px-5 pb-3" style={{ color: '#F87171' }}>{generateError}</p>
+        )}
       </div>
     )
   }

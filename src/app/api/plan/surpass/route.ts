@@ -110,7 +110,13 @@ export async function POST() {
   } : null
 
   const plan = generatePlan(scoreCtx, competitorCtx)
-  await savePlan(supabase, orgId, plan)
+
+  try {
+    await savePlan(supabase, orgId, plan)
+  } catch (err) {
+    console.error('[plan/surpass] save error:', err instanceof Error ? err.message : err)
+    return NextResponse.json({ error: 'Erro ao salvar plano' }, { status: 500 })
+  }
 
   return NextResponse.json({ success: true, steps: plan.steps.length })
 }

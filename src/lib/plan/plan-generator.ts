@@ -353,10 +353,15 @@ export async function savePlan(
     .eq('organization_id', organizationId)
     .eq('status', 'active')
 
-  await db.from('surpass_plans').insert({
+  const { error } = await db.from('surpass_plans').insert({
     organization_id: organizationId,
     ...plan,
   })
+
+  if (error) {
+    console.error('[plan-generator] insert error:', error.message, error.code)
+    throw new Error(`Falha ao salvar plano: ${error.message}`)
+  }
 }
 
 export async function updatePlanInDb(
