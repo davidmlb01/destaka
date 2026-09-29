@@ -39,7 +39,7 @@ export default function DashboardError({
       <div className="flex gap-3">
         <button
           onClick={reset}
-          className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+          className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer hover:opacity-80"
           style={{
             background: 'var(--accent-bg)',
             border: '1px solid var(--border-accent)',
