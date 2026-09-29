@@ -13,7 +13,6 @@ const FREE_ITEMS = [
   { label: 'Posts', href: '/dashboard/posts', locked: true },
   { label: 'Otimizacoes', href: '/dashboard/optimizations', locked: true },
   { label: 'Concorrentes', href: '/dashboard/competitors', locked: true },
-  { label: 'Plano', href: '/dashboard/plan', locked: true },
 ]
 
 const PAID_ITEMS = [
@@ -22,7 +21,6 @@ const PAID_ITEMS = [
   { label: 'Posts', href: '/dashboard/posts', locked: false },
   { label: 'Otimizacoes', href: '/dashboard/optimizations', locked: false },
   { label: 'Concorrentes', href: '/dashboard/competitors', locked: false },
-  { label: 'Plano', href: '/dashboard/plan', locked: false },
   { label: 'Indicar', href: '/indicar', locked: false },
 ]
 
