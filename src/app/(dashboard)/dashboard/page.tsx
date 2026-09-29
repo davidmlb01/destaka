@@ -57,6 +57,7 @@ export default async function DashboardPage({
           score={scoreData?.score_total ?? 0}
           profileName={profileName}
           specialty={org?.specialty ?? ''}
+          isNewUser={!scoreData}
         />
       </DashboardLayout>
     )

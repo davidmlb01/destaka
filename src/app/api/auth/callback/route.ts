@@ -144,11 +144,11 @@ export async function GET(request: NextRequest) {
         })
       }
 
-      // Dispara auditoria + populacao em background
-      inngest.send({
-        name: 'destaka/gbp.audit.requested',
-        data: { organization_id: org.id },
-      }).catch(() => {})
+      // Dispara auditoria + score + populacao em background
+      inngest.send([
+        { name: 'destaka/gbp.audit.requested', data: { organization_id: org.id } },
+        { name: 'destaka/score.calculate.requested', data: { organization_id: org.id } },
+      ]).catch(() => {})
 
       populateFromPlaces(org.id).catch(() => {})
 
