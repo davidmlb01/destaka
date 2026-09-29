@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { isActiveSubscriber } from '@/lib/subscription'
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 import { ReviewsContent } from '@/components/dashboard/ReviewsContent'
 import { ReviewQRCard } from '@/components/dashboard/ReviewQRCard'
@@ -14,6 +15,7 @@ export default async function ReviewsPage() {
     .from('professionals').select('id, name, organization_id').eq('user_id', user.id).maybeSingle()
 
   if (!professional?.organization_id) redirect('/onboarding')
+  if (!await isActiveSubscriber(professional.organization_id)) redirect('/dashboard/upgrade?feature=reviews')
 
   const { data: org } = await supabase
     .from('organizations').select('name').eq('id', professional.organization_id).single()

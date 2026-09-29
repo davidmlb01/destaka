@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { isActiveSubscriber } from '@/lib/subscription'
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 import { PostsContent } from '@/components/dashboard/PostsContent'
 import { Badge } from '@/components/ui/Badge'
@@ -13,6 +14,7 @@ export default async function PostsPage() {
     .from('professionals').select('id, name, organization_id').eq('user_id', user.id).maybeSingle()
 
   if (!professional?.organization_id) redirect('/onboarding')
+  if (!await isActiveSubscriber(professional.organization_id)) redirect('/dashboard/upgrade?feature=posts')
 
   const { data: org } = await supabase
     .from('organizations').select('name').eq('id', professional.organization_id).single()

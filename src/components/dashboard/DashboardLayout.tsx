@@ -2,28 +2,52 @@
 
 import { ReactNode } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Logo } from '@/components/ui/Logo'
 import { PinIcon } from '@/components/ui/PinIcon'
 import { MobileNav } from './MobileNav'
 
-export const NAV_ITEMS = [
-  { label: 'Dashboard', href: '/dashboard' },
-  { label: 'Avaliações', href: '/dashboard/reviews' },
-  { label: 'Posts', href: '/dashboard/posts' },
-  { label: 'Otimizações', href: '/dashboard/optimizations' },
-  { label: 'Concorrentes', href: '/dashboard/competitors' },
-  { label: 'Plano', href: '/dashboard/plan' },
-  { label: 'Indicar', href: '/indicar' },
+const FREE_ITEMS = [
+  { label: 'Dashboard', href: '/dashboard', locked: false },
+  { label: 'Avaliacoes', href: '/dashboard/reviews', locked: true },
+  { label: 'Posts', href: '/dashboard/posts', locked: true },
+  { label: 'Otimizacoes', href: '/dashboard/optimizations', locked: true },
+  { label: 'Concorrentes', href: '/dashboard/competitors', locked: true },
+  { label: 'Plano', href: '/dashboard/plan', locked: true },
 ]
+
+const PAID_ITEMS = [
+  { label: 'Dashboard', href: '/dashboard', locked: false },
+  { label: 'Avaliacoes', href: '/dashboard/reviews', locked: false },
+  { label: 'Posts', href: '/dashboard/posts', locked: false },
+  { label: 'Otimizacoes', href: '/dashboard/optimizations', locked: false },
+  { label: 'Concorrentes', href: '/dashboard/competitors', locked: false },
+  { label: 'Plano', href: '/dashboard/plan', locked: false },
+  { label: 'Indicar', href: '/indicar', locked: false },
+]
+
+// Export for backward compatibility
+export const NAV_ITEMS = PAID_ITEMS.map(i => ({ label: i.label, href: i.href }))
 
 interface Props {
   children: ReactNode
   activeHref: string
   profileName: string
   userEmail: string
+  isSubscriber?: boolean
 }
 
-export function DashboardLayout({ children, activeHref, profileName, userEmail }: Props) {
+export function DashboardLayout({ children, activeHref, profileName, userEmail, isSubscriber = true }: Props) {
+  const router = useRouter()
+  const items = isSubscriber ? PAID_ITEMS : FREE_ITEMS
+
+  function handleNavClick(e: React.MouseEvent, item: { href: string; locked: boolean }) {
+    if (item.locked) {
+      e.preventDefault()
+      router.push(`/dashboard/upgrade?feature=${encodeURIComponent(item.href.split('/').pop() || '')}`)
+    }
+  }
+
   return (
     <div
       className="min-h-screen flex"
@@ -46,7 +70,7 @@ export function DashboardLayout({ children, activeHref, profileName, userEmail }
       >
         {/* Logo */}
         <div className="px-2 mb-4">
-          <Logo size="md" href="/dashboard" vertical="Saúde" />
+          <Logo size="md" href="/dashboard" vertical="Saude" />
         </div>
 
         {/* Perfil */}
@@ -56,24 +80,37 @@ export function DashboardLayout({ children, activeHref, profileName, userEmail }
 
         {/* Nav */}
         <nav className="flex flex-col gap-1 flex-1">
-          {NAV_ITEMS.map(item => {
+          {items.map(item => {
             const isActive = item.href === activeHref
             return (
               <Link
                 key={item.href}
-                href={item.href}
+                href={item.locked ? '#' : item.href}
+                onClick={(e) => handleNavClick(e, item)}
                 className={`group flex items-center gap-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 nav-link ${isActive ? 'nav-active' : ''}`}
                 style={{
                   paddingLeft: isActive ? '10px' : '12px',
                   paddingRight: '12px',
                   background: isActive ? 'var(--accent-bg)' : 'transparent',
-                  color: isActive ? 'var(--accent-bright)' : 'var(--text-tertiary)',
+                  color: item.locked
+                    ? 'rgba(255,255,255,0.25)'
+                    : isActive
+                      ? 'var(--accent-bright)'
+                      : 'var(--text-tertiary)',
                   borderLeft: isActive ? '2px solid var(--accent)' : '2px solid transparent',
                   borderRadius: isActive ? '0 12px 12px 0' : '12px',
                   textDecoration: 'none',
+                  cursor: item.locked ? 'pointer' : undefined,
                 }}
               >
-                <PinIcon size={15} color={isActive ? 'var(--accent)' : 'var(--text-tertiary)'} bg="transparent" />
+                {item.locked ? (
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                ) : (
+                  <PinIcon size={15} color={isActive ? 'var(--accent)' : 'var(--text-tertiary)'} bg="transparent" />
+                )}
                 {item.label}
               </Link>
             )
@@ -89,7 +126,7 @@ export function DashboardLayout({ children, activeHref, profileName, userEmail }
               className="text-xs transition-colors"
               style={{ color: 'var(--text-muted)' }}
             >
-              Configurações
+              Configuracoes
             </Link>
             <span style={{ color: 'var(--border-subtle)' }}>·</span>
             <a
