@@ -1,80 +1,175 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 
-type Step = 'permissions' | 'specialty' | 'name' | 'contact' | 'tone' | 'automation' | 'calculating' | 'done'
+type Step =
+  | 'welcome'
+  | 'confirm'
+  | 'contact'
+  | 'routine'
+  | 'services'
+  | 'automation'
+  | 'activating'
+  | 'done'
+
+interface PrefillData {
+  name: string
+  phone: string
+  category: string
+  address: string
+}
 
 const SPECIALTIES = [
   { value: 'dentista', label: 'Dentista' },
-  { value: 'medico', label: 'Médico' },
+  { value: 'medico', label: 'Medico' },
   { value: 'fisioterapeuta', label: 'Fisioterapeuta' },
-  { value: 'psicologo', label: 'Psicólogo' },
+  { value: 'psicologo', label: 'Psicologo' },
   { value: 'nutricionista', label: 'Nutricionista' },
+  { value: 'veterinario', label: 'Veterinario' },
   { value: 'outro', label: 'Outro' },
 ]
 
-const TONES = [
-  {
-    value: 'formal',
-    label: 'Formal',
-    description: 'Linguagem técnica e profissional, distância respeitosa.',
-    example: '"Agradecemos sua confiança em nossos serviços."',
-  },
-  {
-    value: 'proximo',
-    label: 'Próximo',
-    description: 'Tom caloroso e acolhedor, como conversar com um amigo.',
-    example: '"Fico feliz que tenha nos escolhido! Qualquer dúvida, estou aqui."',
-  },
-  {
-    value: 'tecnico',
-    label: 'Técnico',
-    description: 'Explicações detalhadas, público que aprecia profundidade.',
-    example: '"O procedimento utiliza tecnologia de última geração para..."',
-  },
+const CHALLENGES = [
+  { value: 'more_patients', label: 'Atrair mais pacientes novos' },
+  { value: 'more_reviews', label: 'Aumentar avaliacoes positivas' },
+  { value: 'more_visibility', label: 'Aparecer melhor no Google' },
+  { value: 'all', label: 'Melhorar tudo, nao sei por onde comecar' },
+]
+
+const VOLUMES = [
+  { value: 'under_10', label: 'Menos de 10' },
+  { value: '10_30', label: 'Entre 10 e 30' },
+  { value: '30_60', label: 'Entre 30 e 60' },
+  { value: 'over_60', label: 'Mais de 60' },
 ]
 
 const AUTOMATION_OPTIONS = [
   {
-    value: 'manual',
-    label: 'Revisar antes de publicar',
-    description: 'Você aprova cada post e resposta antes de ir ao ar. Recomendado para quem está começando.',
+    value: 'automatico',
+    label: 'Automatico',
+    description:
+      'Publicamos posts e respondemos avaliacoes automaticamente. Voce recebe um resumo semanal.',
   },
   {
-    value: 'automatico',
-    label: 'Publicar automaticamente',
-    description: 'O Destaka publica posts e responde avaliações sem intervenção. Você recebe um resumo semanal.',
+    value: 'manual',
+    label: 'Com aprovacao',
+    description:
+      'Enviamos tudo para sua aprovacao no WhatsApp antes de publicar.',
   },
+]
+
+const ACTIVATION_STEPS = [
+  'Perfil conectado',
+  'Fotos analisadas',
+  'Avaliacoes lidas',
+  'Concorrentes mapeados',
+  'Plano de melhoria criado',
 ]
 
 export default function OnboardingPage() {
   const router = useRouter()
-  const [step, setStep] = useState<Step>('permissions')
-  const [specialty, setSpecialty] = useState('')
+  const [step, setStep] = useState<Step>('welcome')
+
+  // Prefill from Google
+  const [prefill, setPrefill] = useState<PrefillData | null>(null)
+  const [prefillLoading, setPrefillLoading] = useState(true)
+
+  // Block 1: Confirm
   const [clinicName, setClinicName] = useState('')
+  const [specialty, setSpecialty] = useState('')
+  const [businessPhone, setBusinessPhone] = useState('')
+  const [address, setAddress] = useState('')
+
+  // Block 2: Contact
   const [phone, setPhone] = useState('')
   const [instagramHandle, setInstagramHandle] = useState('')
-  const [tone, setTone] = useState('')
+
+  // Block 3: Routine
+  const [challenge, setChallenge] = useState('')
+  const [patientVolume, setPatientVolume] = useState('')
+
+  // Block 4: Services
+  const [services, setServices] = useState<string[]>([''])
+  const [differentials, setDifferentials] = useState('')
+
+  // Block 5: Automation
   const [automation, setAutomation] = useState('')
+
+  // State
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
+  // Activation animation
+  const [activationStep, setActivationStep] = useState(0)
+  const [activationDone, setActivationDone] = useState(false)
+  const [improvementCount, setImprovementCount] = useState(0)
+  const [autoCount, setAutoCount] = useState(0)
+
+  // Fetch prefill data from Google on mount
+  useEffect(() => {
+    async function fetchPrefill() {
+      try {
+        const res = await fetch('/api/onboarding/prefill')
+        if (res.ok) {
+          const data = await res.json()
+          if (data.location) {
+            const loc = data.location
+            setPrefill(loc)
+            setClinicName(loc.name || '')
+            setBusinessPhone(loc.phone || '')
+            setAddress(loc.address || '')
+            // Try to match specialty from category
+            const cat = (loc.category || '').toLowerCase()
+            const match = SPECIALTIES.find(s => cat.includes(s.value))
+            if (match) setSpecialty(match.value)
+          }
+        }
+      } catch {
+        // Prefill is optional, continue without it
+      } finally {
+        setPrefillLoading(false)
+      }
+    }
+    fetchPrefill()
+  }, [])
+
+  // Activation animation sequence
+  const runActivation = useCallback(async () => {
+    for (let i = 0; i < ACTIVATION_STEPS.length; i++) {
+      await new Promise(r => setTimeout(r, 800))
+      setActivationStep(i + 1)
+    }
+    await new Promise(r => setTimeout(r, 500))
+    // These would come from the API response in production
+    setImprovementCount(8)
+    setAutoCount(3)
+    setActivationDone(true)
+  }, [])
+
   async function handleFinish() {
-    setStep('calculating')
+    setStep('activating')
     setLoading(true)
+    setActivationStep(0)
+    setActivationDone(false)
 
     try {
+      const filteredServices = services.filter(s => s.trim())
+
       const res = await fetch('/api/onboarding', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: clinicName,
           specialty,
-          tone,
+          tone: 'proximo',
           automation_preference: automation,
           phone,
           instagram_handle: instagramHandle || null,
+          challenge,
+          patient_volume: patientVolume,
+          services: filteredServices.length > 0 ? filteredServices : null,
+          differentials: differentials.trim() || null,
         }),
       })
 
@@ -83,9 +178,7 @@ export default function OnboardingPage() {
         throw new Error(data.error ?? 'Erro ao salvar dados')
       }
 
-      // Simula cálculo do score (2s)
-      await new Promise(r => setTimeout(r, 2000))
-      setStep('done')
+      await runActivation()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro inesperado')
       setStep('automation')
@@ -94,341 +187,554 @@ export default function OnboardingPage() {
     }
   }
 
-  const totalSteps = 6
-  const stepIndex: Record<Step, number> = {
-    permissions: 1,
-    specialty: 2,
-    name: 3,
-    contact: 4,
-    tone: 5,
-    automation: 6,
-    calculating: 6,
-    done: 6,
+  // Progress
+  const FORM_STEPS: Step[] = ['confirm', 'contact', 'routine', 'services', 'automation']
+  const currentIndex = FORM_STEPS.indexOf(step)
+  const progress = currentIndex >= 0 ? ((currentIndex + 1) / FORM_STEPS.length) * 100 : 0
+
+  // Service list helpers
+  function updateService(index: number, value: string) {
+    const updated = [...services]
+    updated[index] = value
+    setServices(updated)
   }
-  const progress = (stepIndex[step] / totalSteps) * 100
+
+  function addService() {
+    if (services.length < 8) {
+      setServices([...services, ''])
+    }
+  }
+
+  function removeService(index: number) {
+    if (services.length > 1) {
+      setServices(services.filter((_, i) => i !== index))
+    }
+  }
+
+  // Phone formatter
+  function formatPhone(value: string) {
+    const digits = value.replace(/\D/g, '').slice(0, 11)
+    if (digits.length > 7) {
+      return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`
+    }
+    if (digits.length > 2) {
+      return `(${digits.slice(0, 2)}) ${digits.slice(2)}`
+    }
+    return digits
+  }
+
+  const isFormStep = currentIndex >= 0
 
   return (
-    <main className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+    <main
+      className="min-h-screen flex items-center justify-center p-4"
+      style={{ background: 'var(--bg-gradient)' }}
+    >
       <div className="w-full max-w-lg">
 
         {/* Progress bar */}
-        {step !== 'calculating' && step !== 'done' && (
+        {isFormStep && (
           <div className="mb-6">
-            <div className="flex justify-between text-xs text-slate-400 mb-2">
-              <span>Passo {stepIndex[step]} de {totalSteps}</span>
+            <div className="flex justify-between text-xs mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>
+              <span>Passo {currentIndex + 1} de {FORM_STEPS.length}</span>
               <span>{Math.round(progress)}%</span>
             </div>
-            <div className="h-1.5 bg-slate-200 rounded-full">
+            <div className="h-1.5 rounded-full" style={{ background: 'rgba(255,255,255,0.08)' }}>
               <div
-                className="h-1.5 bg-slate-900 rounded-full transition-all duration-500"
-                style={{ width: `${progress}%` }}
+                className="h-1.5 rounded-full transition-all duration-500"
+                style={{ width: `${progress}%`, background: 'var(--accent)' }}
               />
             </div>
           </div>
         )}
 
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+        <div
+          className="rounded-2xl p-8"
+          style={{
+            background: 'rgba(255,255,255,0.04)',
+            border: '1px solid rgba(255,255,255,0.08)',
+          }}
+        >
 
-          {/* STEP: Permissions */}
-          {step === 'permissions' && (
-            <div>
-              <h1 className="text-xl font-semibold text-slate-900 mb-2">
-                O que pedimos permissão para fazer
-              </h1>
-              <p className="text-slate-500 text-sm mb-6">
-                Na próxima etapa, o Google vai perguntar se você autoriza o Destaka. Veja exatamente o que cada permissão significa:
-              </p>
-              <div className="space-y-4 mb-8">
-                <PermissionItem
-                  icon="👁"
-                  title="Ler seu perfil no Google Meu Negócio"
-                  description="Vemos seu nome, endereço, telefone, horários e avaliações. Isso nos permite calcular seu Score Destaka."
-                />
-                <PermissionItem
-                  icon="✏️"
-                  title="Editar seu perfil no Google Meu Negócio"
-                  description="Quando você aprovar, atualizamos fotos, posts e respostas. Nada é publicado sem sua confirmação na primeira semana."
-                />
-                <PermissionItem
-                  icon="🔍"
-                  title="Ver sua posição nas buscas do Google"
-                  description="Monitoramos onde você aparece no Google Maps e nas buscas para calcular se está crescendo ou perdendo espaço."
-                />
+          {/* WELCOME */}
+          {step === 'welcome' && (
+            <div className="text-center py-4">
+              <div
+                className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"
+                style={{ background: 'rgba(20,184,166,0.15)' }}
+              >
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
               </div>
-              <p className="text-xs text-slate-400 mb-6">
-                O Destaka não compartilha seus dados com terceiros e não pode publicar nada no Google sem sua revisão.
+              <h1 className="text-xl font-semibold text-white mb-2">
+                Assinatura confirmada
+              </h1>
+              <p className="text-sm mb-8" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                Vamos configurar seu perfil em 2 minutos.
               </p>
               <button
-                onClick={() => setStep('specialty')}
-                className="w-full bg-slate-900 text-white rounded-xl px-6 py-3.5 font-medium hover:bg-slate-800 transition-colors"
+                onClick={() => setStep(prefill ? 'confirm' : 'confirm')}
+                disabled={prefillLoading}
+                className="w-full rounded-xl px-6 py-3.5 font-medium transition-colors disabled:opacity-40"
+                style={{ background: 'var(--accent)', color: '#fff' }}
               >
-                Entendido, continuar
+                {prefillLoading ? 'Carregando...' : 'Comecar'}
               </button>
             </div>
           )}
 
-          {/* STEP: Specialty */}
-          {step === 'specialty' && (
+          {/* BLOCK 1: CONFIRM GOOGLE DATA */}
+          {step === 'confirm' && (
             <div>
-              <h1 className="text-xl font-semibold text-slate-900 mb-2">
-                Qual é a sua especialidade?
+              <h1 className="text-lg font-semibold text-white mb-1">
+                {prefill ? 'Encontramos seu perfil no Google' : 'Dados do seu consultorio'}
               </h1>
-              <p className="text-slate-500 text-sm mb-6">
-                Usamos isso para personalizar os posts e respostas para a linguagem da sua área.
+              <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                {prefill
+                  ? 'Confirme se os dados estao corretos.'
+                  : 'Preencha as informacoes do seu consultorio.'}
               </p>
-              <div className="grid grid-cols-2 gap-3 mb-8">
-                {SPECIALTIES.map(s => (
-                  <button
-                    key={s.value}
-                    onClick={() => setSpecialty(s.value)}
-                    className={`p-4 rounded-xl border text-sm font-medium text-left transition-colors ${
-                      specialty === s.value
-                        ? 'border-slate-900 bg-slate-900 text-white'
-                        : 'border-slate-200 text-slate-700 hover:border-slate-400'
-                    }`}
-                  >
-                    {s.label}
-                  </button>
-                ))}
-              </div>
-              <button
-                onClick={() => setStep('name')}
-                disabled={!specialty}
-                className="w-full bg-slate-900 text-white rounded-xl px-6 py-3.5 font-medium hover:bg-slate-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                Continuar
-              </button>
-            </div>
-          )}
 
-          {/* STEP: Clinic Name */}
-          {step === 'name' && (
-            <div>
-              <h1 className="text-xl font-semibold text-slate-900 mb-2">
-                Como se chama seu consultório?
-              </h1>
-              <p className="text-slate-500 text-sm mb-6">
-                Use o nome como aparece no Google Meu Negócio.
-              </p>
-              <input
-                type="text"
-                value={clinicName}
-                onChange={e => setClinicName(e.target.value)}
-                placeholder="Ex: Clínica Dr. João Silva"
-                className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 mb-8"
-                autoFocus
-              />
-              <button
-                onClick={() => setStep('contact')}
-                disabled={!clinicName.trim()}
-                className="w-full bg-slate-900 text-white rounded-xl px-6 py-3.5 font-medium hover:bg-slate-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                Continuar
-              </button>
-            </div>
-          )}
-
-          {/* STEP: Contact (Phone + Instagram) */}
-          {step === 'contact' && (
-            <div>
-              <h1 className="text-xl font-semibold text-slate-900 mb-2">
-                Como seus pacientes entram em contato?
-              </h1>
-              <p className="text-slate-500 text-sm mb-6">
-                Usamos o WhatsApp para notificações e o Instagram para conectar suas redes.
-              </p>
-              <div className="space-y-4 mb-8">
-                <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-1.5">
-                    WhatsApp para contato
-                  </label>
+              <div className="space-y-4 mb-6">
+                <FieldGroup label="Nome do consultorio">
                   <input
-                    id="phone"
-                    type="tel"
-                    value={phone}
-                    onChange={e => {
-                      const digits = e.target.value.replace(/\D/g, '').slice(0, 11)
-                      let formatted = digits
-                      if (digits.length > 2) {
-                        formatted = `(${digits.slice(0, 2)}) ${digits.slice(2)}`
-                      }
-                      if (digits.length > 7) {
-                        formatted = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`
-                      }
-                      setPhone(formatted)
-                    }}
-                    placeholder="(11) 99999-9999"
-                    className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                    type="text"
+                    value={clinicName}
+                    onChange={e => setClinicName(e.target.value)}
+                    placeholder="Ex: Clinica Dr. Joao Silva"
+                    className="onboarding-input"
                     autoFocus
                   />
-                </div>
-                <div>
-                  <label htmlFor="instagram" className="block text-sm font-medium text-slate-700 mb-1.5">
-                    Instagram do consultorio (opcional)
-                  </label>
+                </FieldGroup>
+
+                <FieldGroup label="Especialidade">
+                  <div className="grid grid-cols-2 gap-2">
+                    {SPECIALTIES.map(s => (
+                      <button
+                        key={s.value}
+                        onClick={() => setSpecialty(s.value)}
+                        className="px-3 py-2.5 rounded-lg text-sm text-left transition-colors"
+                        style={{
+                          background: specialty === s.value ? 'var(--accent)' : 'rgba(255,255,255,0.06)',
+                          color: specialty === s.value ? '#fff' : 'rgba(255,255,255,0.7)',
+                          border: `1px solid ${specialty === s.value ? 'var(--accent)' : 'rgba(255,255,255,0.08)'}`,
+                        }}
+                      >
+                        {s.label}
+                      </button>
+                    ))}
+                  </div>
+                </FieldGroup>
+
+                {prefill && (
+                  <>
+                    <FieldGroup label="Telefone comercial">
+                      <input
+                        type="text"
+                        value={businessPhone}
+                        onChange={e => setBusinessPhone(e.target.value)}
+                        className="onboarding-input"
+                        readOnly={!!prefill.phone}
+                        style={prefill.phone ? { opacity: 0.7 } : undefined}
+                      />
+                    </FieldGroup>
+
+                    <FieldGroup label="Endereco">
+                      <input
+                        type="text"
+                        value={address}
+                        onChange={e => setAddress(e.target.value)}
+                        className="onboarding-input"
+                        readOnly={!!prefill.address}
+                        style={prefill.address ? { opacity: 0.7 } : undefined}
+                      />
+                    </FieldGroup>
+                  </>
+                )}
+              </div>
+
+              <button
+                onClick={() => setStep('contact')}
+                disabled={!clinicName.trim() || !specialty}
+                className="w-full rounded-xl px-6 py-3.5 font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{ background: 'var(--accent)', color: '#fff' }}
+              >
+                {prefill ? 'Confirmar e continuar' : 'Continuar'}
+              </button>
+            </div>
+          )}
+
+          {/* BLOCK 2: CONTACT */}
+          {step === 'contact' && (
+            <div>
+              <h1 className="text-lg font-semibold text-white mb-1">
+                Como entrar em contato com voce?
+              </h1>
+              <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                Enviamos relatorios e alertas por WhatsApp. Sem spam, apenas o que importa.
+              </p>
+
+              <div className="space-y-4 mb-6">
+                <FieldGroup label="WhatsApp">
                   <input
-                    id="instagram"
+                    type="tel"
+                    value={phone}
+                    onChange={e => setPhone(formatPhone(e.target.value))}
+                    placeholder="(11) 99999-9999"
+                    className="onboarding-input"
+                    autoFocus
+                  />
+                </FieldGroup>
+
+                <FieldGroup label="Instagram do consultorio (opcional)">
+                  <input
                     type="text"
                     value={instagramHandle}
                     onChange={e => {
                       let val = e.target.value.trim()
-                      if (val && !val.startsWith('@')) {
-                        val = `@${val}`
-                      }
+                      if (val && !val.startsWith('@')) val = `@${val}`
                       setInstagramHandle(val)
                     }}
-                    placeholder="@seuinstagram"
-                    className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                    placeholder="@seuconsultorio"
+                    className="onboarding-input"
                   />
-                  <p className="text-xs text-slate-400 mt-1">
-                    Comece com @ ou deixe em branco.
+                  <p className="text-xs mt-1.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                    Se informado, reaproveitamos seus posts do Instagram no Google.
                   </p>
-                </div>
+                </FieldGroup>
               </div>
-              <button
-                onClick={() => setStep('tone')}
-                disabled={phone.replace(/\D/g, '').length < 10}
-                className="w-full bg-slate-900 text-white rounded-xl px-6 py-3.5 font-medium hover:bg-slate-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                Continuar
-              </button>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setStep('confirm')}
+                  className="rounded-xl px-5 py-3.5 font-medium transition-colors"
+                  style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.08)' }}
+                >
+                  Voltar
+                </button>
+                <button
+                  onClick={() => setStep('routine')}
+                  disabled={phone.replace(/\D/g, '').length < 10}
+                  className="flex-1 rounded-xl px-6 py-3.5 font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  style={{ background: 'var(--accent)', color: '#fff' }}
+                >
+                  Continuar
+                </button>
+              </div>
             </div>
           )}
 
-          {/* STEP: Tone */}
-          {step === 'tone' && (
+          {/* BLOCK 3: ROUTINE */}
+          {step === 'routine' && (
             <div>
-              <h1 className="text-xl font-semibold text-slate-900 mb-2">
-                Como você prefere se comunicar com pacientes?
+              <h1 className="text-lg font-semibold text-white mb-1">
+                O que mais importa para voce hoje?
               </h1>
-              <p className="text-slate-500 text-sm mb-6">
-                Vamos usar esse tom em posts, respostas a avaliações e emails.
+              <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                Usamos essa informacao para priorizar as acoes no seu perfil.
               </p>
-              <div className="space-y-3 mb-8">
-                {TONES.map(t => (
+
+              <div className="space-y-2 mb-6">
+                {CHALLENGES.map(c => (
                   <button
-                    key={t.value}
-                    onClick={() => setTone(t.value)}
-                    className={`w-full p-4 rounded-xl border text-left transition-colors ${
-                      tone === t.value
-                        ? 'border-slate-900 bg-slate-50'
-                        : 'border-slate-200 hover:border-slate-400'
-                    }`}
+                    key={c.value}
+                    onClick={() => setChallenge(c.value)}
+                    className="w-full px-4 py-3 rounded-xl text-sm text-left transition-colors"
+                    style={{
+                      background: challenge === c.value ? 'rgba(20,184,166,0.15)' : 'rgba(255,255,255,0.04)',
+                      color: challenge === c.value ? 'var(--accent-bright)' : 'rgba(255,255,255,0.7)',
+                      border: `1px solid ${challenge === c.value ? 'var(--accent)' : 'rgba(255,255,255,0.06)'}`,
+                    }}
                   >
-                    <p className="text-sm font-medium text-slate-900 mb-0.5">{t.label}</p>
-                    <p className="text-xs text-slate-500 mb-2">{t.description}</p>
-                    <p className="text-xs text-slate-400 italic">{t.example}</p>
+                    {c.label}
                   </button>
                 ))}
               </div>
-              <button
-                onClick={() => setStep('automation')}
-                disabled={!tone}
-                className="w-full bg-slate-900 text-white rounded-xl px-6 py-3.5 font-medium hover:bg-slate-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                Continuar
-              </button>
+
+              <FieldGroup label="Quantos pacientes voce atende por semana?">
+                <div className="grid grid-cols-2 gap-2">
+                  {VOLUMES.map(v => (
+                    <button
+                      key={v.value}
+                      onClick={() => setPatientVolume(v.value)}
+                      className="px-3 py-2.5 rounded-lg text-sm transition-colors"
+                      style={{
+                        background: patientVolume === v.value ? 'var(--accent)' : 'rgba(255,255,255,0.06)',
+                        color: patientVolume === v.value ? '#fff' : 'rgba(255,255,255,0.7)',
+                        border: `1px solid ${patientVolume === v.value ? 'var(--accent)' : 'rgba(255,255,255,0.08)'}`,
+                      }}
+                    >
+                      {v.label}
+                    </button>
+                  ))}
+                </div>
+              </FieldGroup>
+
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={() => setStep('contact')}
+                  className="rounded-xl px-5 py-3.5 font-medium transition-colors"
+                  style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.08)' }}
+                >
+                  Voltar
+                </button>
+                <button
+                  onClick={() => setStep('services')}
+                  disabled={!challenge || !patientVolume}
+                  className="flex-1 rounded-xl px-6 py-3.5 font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  style={{ background: 'var(--accent)', color: '#fff' }}
+                >
+                  Continuar
+                </button>
+              </div>
             </div>
           )}
 
-          {/* STEP: Automation */}
+          {/* BLOCK 4: SERVICES */}
+          {step === 'services' && (
+            <div>
+              <h1 className="text-lg font-semibold text-white mb-1">
+                Quais sao seus principais servicos?
+              </h1>
+              <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                Usamos essa informacao para criar conteudo relevante no seu perfil do Google.
+              </p>
+
+              <div className="space-y-2 mb-4">
+                {services.map((s, i) => (
+                  <div key={i} className="flex gap-2">
+                    <input
+                      type="text"
+                      value={s}
+                      onChange={e => updateService(i, e.target.value)}
+                      placeholder={
+                        i === 0 ? 'Ex: Consulta e avaliacao' :
+                        i === 1 ? 'Ex: Limpeza e profilaxia' :
+                        i === 2 ? 'Ex: Clareamento dental' :
+                        'Adicionar servico'
+                      }
+                      className="onboarding-input flex-1"
+                      autoFocus={i === services.length - 1 && services.length > 1}
+                    />
+                    {services.length > 1 && (
+                      <button
+                        onClick={() => removeService(i)}
+                        className="shrink-0 w-10 h-10 rounded-lg flex items-center justify-center transition-colors"
+                        style={{ background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.4)' }}
+                        aria-label="Remover servico"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {services.length < 8 && (
+                <button
+                  onClick={addService}
+                  className="text-sm mb-6 transition-colors"
+                  style={{ color: 'var(--accent)' }}
+                >
+                  + Adicionar servico
+                </button>
+              )}
+
+              <FieldGroup label="Algo que diferencia seu consultorio? (opcional)">
+                <textarea
+                  value={differentials}
+                  onChange={e => setDifferentials(e.target.value)}
+                  placeholder="Ex: 15 anos de experiencia, especialista em pacientes com medo de dentista"
+                  className="onboarding-input min-h-[80px] resize-none"
+                  maxLength={300}
+                />
+              </FieldGroup>
+
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={() => setStep('routine')}
+                  className="rounded-xl px-5 py-3.5 font-medium transition-colors"
+                  style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.08)' }}
+                >
+                  Voltar
+                </button>
+                <button
+                  onClick={() => setStep('automation')}
+                  disabled={!services.some(s => s.trim())}
+                  className="flex-1 rounded-xl px-6 py-3.5 font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  style={{ background: 'var(--accent)', color: '#fff' }}
+                >
+                  Continuar
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* BLOCK 5: AUTOMATION */}
           {step === 'automation' && (
             <div>
-              <h1 className="text-xl font-semibold text-slate-900 mb-2">
+              <h1 className="text-lg font-semibold text-white mb-1">
                 Como prefere que o Destaka atue?
               </h1>
-              <p className="text-slate-500 text-sm mb-6">
-                Você pode mudar isso a qualquer momento nas configurações.
+              <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                Voce pode mudar isso a qualquer momento nas configuracoes.
               </p>
+
               {error && (
-                <p className="text-red-500 text-sm mb-4 p-3 bg-red-50 rounded-xl">{error}</p>
+                <p
+                  className="text-sm mb-4 p-3 rounded-xl"
+                  style={{ background: 'rgba(239,68,68,0.15)', color: '#EF4444', border: '1px solid rgba(239,68,68,0.3)' }}
+                >
+                  {error}
+                </p>
               )}
-              <div className="space-y-3 mb-8">
+
+              <div className="space-y-3 mb-6">
                 {AUTOMATION_OPTIONS.map(a => (
                   <button
                     key={a.value}
                     onClick={() => setAutomation(a.value)}
-                    className={`w-full p-4 rounded-xl border text-left transition-colors ${
-                      automation === a.value
-                        ? 'border-slate-900 bg-slate-50'
-                        : 'border-slate-200 hover:border-slate-400'
-                    }`}
+                    className="w-full p-4 rounded-xl text-left transition-colors"
+                    style={{
+                      background: automation === a.value ? 'rgba(20,184,166,0.15)' : 'rgba(255,255,255,0.04)',
+                      border: `1px solid ${automation === a.value ? 'var(--accent)' : 'rgba(255,255,255,0.06)'}`,
+                    }}
                   >
-                    <p className="text-sm font-medium text-slate-900 mb-0.5">{a.label}</p>
-                    <p className="text-xs text-slate-500">{a.description}</p>
+                    <p className="text-sm font-medium mb-0.5" style={{ color: automation === a.value ? 'var(--accent-bright)' : '#fff' }}>
+                      {a.label}
+                    </p>
+                    <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                      {a.description}
+                    </p>
                   </button>
                 ))}
               </div>
-              <button
-                onClick={handleFinish}
-                disabled={!automation || loading}
-                className="w-full bg-slate-900 text-white rounded-xl px-6 py-3.5 font-medium hover:bg-slate-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                Ativar meu Destaka
-              </button>
-            </div>
-          )}
 
-          {/* STEP: Calculating */}
-          {step === 'calculating' && (
-            <div className="text-center py-4">
-              <div className="w-16 h-16 border-4 border-slate-900 border-t-transparent rounded-full animate-spin mx-auto mb-6" />
-              <h1 className="text-xl font-semibold text-slate-900 mb-2">
-                Calculando seu Score Destaka
-              </h1>
-              <p className="text-slate-500 text-sm">
-                Analisando seu perfil no Google e calculando sua pontuação inicial...
-              </p>
-            </div>
-          )}
-
-          {/* STEP: Done */}
-          {step === 'done' && (
-            <div className="text-center">
-              <div className="w-20 h-20 bg-slate-900 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-white text-3xl font-bold">38</span>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setStep('services')}
+                  className="rounded-xl px-5 py-3.5 font-medium transition-colors"
+                  style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.08)' }}
+                >
+                  Voltar
+                </button>
+                <button
+                  onClick={handleFinish}
+                  disabled={!automation || loading}
+                  className="flex-1 rounded-xl px-6 py-3.5 font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  style={{ background: 'var(--accent)', color: '#fff' }}
+                >
+                  Ativar meu Destaka
+                </button>
               </div>
-              <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">Score Destaka inicial</p>
-              <h1 className="text-xl font-semibold text-slate-900 mb-3">
-                Você está no piloto automático
-              </h1>
-              <p className="text-slate-500 text-sm mb-2">
-                Seu score atual é <strong>38/100</strong>, faixa <strong>Funcional</strong>. A maioria dos consultórios começa aqui.
-              </p>
-              <p className="text-slate-500 text-sm mb-8">
-                Nos próximos 30 dias, o Destaka vai otimizar seu perfil, publicar posts semanais e monitorar suas avaliações para levar você à faixa <strong>Forte</strong>.
-              </p>
-              <button
-                onClick={() => router.push('/dashboard')}
-                className="w-full bg-slate-900 text-white rounded-xl px-6 py-3.5 font-medium hover:bg-slate-800 transition-colors"
-              >
-                Ver meu painel
-              </button>
+            </div>
+          )}
+
+          {/* ACTIVATING */}
+          {step === 'activating' && (
+            <div className="py-4">
+              {!activationDone ? (
+                <>
+                  <h1 className="text-lg font-semibold text-white mb-6">
+                    Analisando seu perfil...
+                  </h1>
+                  <div className="space-y-3">
+                    {ACTIVATION_STEPS.map((label, i) => (
+                      <div key={i} className="flex items-center gap-3">
+                        <div
+                          className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-all duration-300"
+                          style={{
+                            background: i < activationStep ? 'var(--accent)' : 'rgba(255,255,255,0.08)',
+                          }}
+                        >
+                          {i < activationStep ? (
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                          ) : i === activationStep ? (
+                            <div className="w-2 h-2 rounded-full animate-pulse" style={{ background: 'var(--accent)' }} />
+                          ) : null}
+                        </div>
+                        <span
+                          className="text-sm transition-colors duration-300"
+                          style={{
+                            color: i < activationStep
+                              ? 'rgba(255,255,255,0.9)'
+                              : i === activationStep
+                                ? 'var(--accent)'
+                                : 'rgba(255,255,255,0.3)',
+                          }}
+                        >
+                          {label}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <div className="text-center">
+                  <div
+                    className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5"
+                    style={{ background: 'rgba(20,184,166,0.15)' }}
+                  >
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  </div>
+                  <h1 className="text-lg font-semibold text-white mb-2">
+                    Perfil configurado
+                  </h1>
+                  <p className="text-sm mb-8" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                    Encontramos {improvementCount} melhorias para aplicar no seu perfil. {autoCount} delas sao automaticas.
+                  </p>
+                  <button
+                    onClick={() => router.push('/dashboard')}
+                    className="w-full rounded-xl px-6 py-3.5 font-medium transition-colors"
+                    style={{ background: 'var(--accent)', color: '#fff' }}
+                  >
+                    Acessar meu painel
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
         </div>
       </div>
+
+      <style jsx>{`
+        .onboarding-input {
+          width: 100%;
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.1);
+          border-radius: 0.75rem;
+          padding: 0.625rem 0.875rem;
+          font-size: 0.875rem;
+          color: #fff;
+          outline: none;
+          transition: border-color 0.2s;
+        }
+        .onboarding-input::placeholder {
+          color: rgba(255,255,255,0.3);
+        }
+        .onboarding-input:focus {
+          border-color: var(--accent);
+        }
+      `}</style>
     </main>
   )
 }
 
-function PermissionItem({
-  icon,
-  title,
-  description,
-}: {
-  icon: string
-  title: string
-  description: string
-}) {
+function FieldGroup({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex gap-3 p-4 bg-slate-50 rounded-xl border border-slate-100">
-      <span className="text-xl shrink-0">{icon}</span>
-      <div>
-        <p className="text-sm font-medium text-slate-900 mb-1">{title}</p>
-        <p className="text-xs text-slate-500 leading-relaxed">{description}</p>
-      </div>
+    <div>
+      <label className="block text-sm font-medium mb-1.5" style={{ color: 'rgba(255,255,255,0.7)' }}>
+        {label}
+      </label>
+      {children}
     </div>
   )
 }

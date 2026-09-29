@@ -11,7 +11,11 @@ const OnboardingSchema = z.object({
   tone: z.enum(['formal', 'proximo', 'tecnico']),
   automation_preference: z.enum(['automatico', 'manual']),
   phone: z.string().min(10).max(20),
-  instagram_handle: z.string().max(50).optional(),
+  instagram_handle: z.string().max(50).nullable().optional(),
+  challenge: z.enum(['more_patients', 'more_reviews', 'more_visibility', 'all']).optional(),
+  patient_volume: z.enum(['under_10', '10_30', '30_60', 'over_60']).optional(),
+  services: z.array(z.string().max(200)).max(8).nullable().optional(),
+  differentials: z.string().max(500).nullable().optional(),
 })
 
 function createServiceClient() {
@@ -34,20 +38,31 @@ export async function POST(request: NextRequest) {
   if (!parsed.success) {
     return NextResponse.json({ error: 'Dados invalidos. Verifique os campos.' }, { status: 400 })
   }
-  const { name, specialty, tone, automation_preference, phone, instagram_handle } = parsed.data
+  const {
+    name, specialty, tone, automation_preference, phone,
+    instagram_handle, challenge, patient_volume, services, differentials,
+  } = parsed.data
 
   // Valida formato do instagram_handle se fornecido
   if (instagram_handle && !instagram_handle.startsWith('@')) {
     return NextResponse.json({ error: 'Instagram deve comecar com @' }, { status: 400 })
   }
 
-  // Cria organização via service role (bypass RLS — novo usuário sem professional ainda)
-  const orgPayload: Record<string, string> = { name, specialty, tone, automation_preference, phone }
+  // Monta payload da organizacao
+  const orgPayload: Record<string, unknown> = {
+    name, specialty, tone, automation_preference, phone,
+  }
+
   if (instagram_handle) {
     orgPayload.instagram_handle = instagram_handle.startsWith('@')
       ? instagram_handle
       : `@${instagram_handle}`
   }
+
+  if (challenge) orgPayload.challenge = challenge
+  if (patient_volume) orgPayload.patient_volume = patient_volume
+  if (services && services.length > 0) orgPayload.services = services
+  if (differentials) orgPayload.differentials = differentials
 
   const { data: org, error: orgError } = await admin
     .from('organizations')
@@ -60,7 +75,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Falha ao criar organizacao. Tente novamente.' }, { status: 500 })
   }
 
-  // Cria professional vinculado ao usuário
+  // Cria professional vinculado ao usuario
   const { error: profError } = await admin
     .from('professionals')
     .insert({
@@ -100,7 +115,7 @@ export async function POST(request: NextRequest) {
     })
   }
 
-  // Dispara importação + auditoria GBP via Inngest
+  // Dispara importacao + auditoria GBP via Inngest
   await inngest.send({
     name: 'destaka/gbp.audit.requested',
     data: { organization_id: org.id },
