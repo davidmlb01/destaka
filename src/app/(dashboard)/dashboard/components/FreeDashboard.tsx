@@ -101,6 +101,25 @@ export function FreeDashboard({ score, profileName, specialty }: FreeDashboardPr
         </div>
       </div>
 
+      {/* Teaser de acoes */}
+      <div
+        className="rounded-2xl p-6 mb-8"
+        style={{
+          background: 'rgba(255,255,255,0.04)',
+          border: '1px solid rgba(255,255,255,0.08)',
+        }}
+      >
+        <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'rgba(255,255,255,0.4)' }}>
+          Proximas acoes
+        </p>
+        <p className="text-sm text-white mb-1">
+          O Destaka encontrou melhorias para o seu perfil.
+        </p>
+        <p className="text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>
+          Ative sua assinatura para aplicar automaticamente.
+        </p>
+      </div>
+
       {/* CTA */}
       <div
         className="rounded-2xl p-8 text-center"
@@ -110,11 +129,11 @@ export function FreeDashboard({ score, profileName, specialty }: FreeDashboardPr
         }}
       >
         <p className="text-lg font-semibold text-white mb-2">
-          O Destaka encontrou melhorias para aplicar no seu perfil
+          Pare de perder {patientWord}
         </p>
         <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.6)' }}>
-          Ative sua assinatura para otimizar seu perfil automaticamente, responder avaliacoes,
-          publicar posts e monitorar concorrentes.
+          O Destaka otimiza seu perfil automaticamente, responde avaliacoes,
+          publica posts e monitora concorrentes. Tudo no piloto automatico.
         </p>
 
         <button
