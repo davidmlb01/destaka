@@ -13,7 +13,7 @@ export default async function OptimizationsPage() {
   const { data: professional } = await supabase
     .from('professionals').select('id, name, organization_id').eq('user_id', user.id).maybeSingle()
 
-  if (!professional?.organization_id) redirect('/onboarding')
+  if (!professional?.organization_id) redirect('/login')
   if (!await isActiveSubscriber(professional.organization_id)) redirect('/dashboard/upgrade?feature=optimizations')
 
   const { data: org } = await supabase

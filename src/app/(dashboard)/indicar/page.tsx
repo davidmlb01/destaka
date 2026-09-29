@@ -15,7 +15,7 @@ export default async function IndicarPage() {
     .order('created_at', { ascending: false })
     .limit(1)
 
-  if (!profiles?.length) redirect('/onboarding')
+  if (!profiles?.length) redirect('/login')
   const profile = profiles[0]
 
   return (

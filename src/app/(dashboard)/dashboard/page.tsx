@@ -41,7 +41,7 @@ export default async function DashboardPage() {
     .eq('user_id', user.id)
     .maybeSingle()
 
-  if (!professional?.organization_id) redirect('/onboarding')
+  if (!professional?.organization_id) redirect('/login')
 
   const orgId = professional.organization_id
   const isSubscriber = await checkSubscription(supabase, orgId)

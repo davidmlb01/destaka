@@ -32,7 +32,7 @@ export default async function PlanPage() {
   const { data: professional } = await supabase
     .from('professionals').select('id, name, organization_id').eq('user_id', user.id).maybeSingle()
 
-  if (!professional?.organization_id) redirect('/onboarding')
+  if (!professional?.organization_id) redirect('/login')
 
   const { data: org } = await supabase
     .from('organizations').select('name').eq('id', professional.organization_id).single()
