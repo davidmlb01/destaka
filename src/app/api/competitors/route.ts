@@ -6,12 +6,12 @@ import { getAuthOrg, privateJson } from '@/lib/api/with-auth'
 export async function POST() {
   const auth = await getAuthOrg()
   if (auth.error) return auth.error
-  const { user, supabase } = auth
+  const { orgId, supabase } = auth
 
   const { data: gmbProfile } = await supabase
     .from('gmb_profiles')
     .select('id')
-    .eq('user_id', user.id)
+    .eq('organization_id', orgId)
     .maybeSingle()
 
   if (!gmbProfile?.id) {
@@ -34,13 +34,13 @@ export async function POST() {
 export async function GET() {
   const auth = await getAuthOrg()
   if (auth.error) return auth.error
-  const { user, orgId, supabase } = auth
+  const { orgId, supabase } = auth
 
-  // Buscar gmb_profile do usuario para FK de competitors
+  // Buscar gmb_profile da org para FK de competitors
   const { data: gmbProfile } = await supabase
     .from('gmb_profiles')
     .select('id')
-    .eq('user_id', user.id)
+    .eq('organization_id', orgId)
     .maybeSingle()
 
   const gmbProfileId = gmbProfile?.id

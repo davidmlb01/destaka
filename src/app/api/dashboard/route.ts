@@ -125,7 +125,7 @@ export async function GET() {
     const { data: gmbProfile } = await supabase
       .from('gmb_profiles')
       .select('id')
-      .eq('user_id', user.id)
+      .eq('organization_id', orgId)
       .maybeSingle()
 
     if (gmbProfile?.id) {
