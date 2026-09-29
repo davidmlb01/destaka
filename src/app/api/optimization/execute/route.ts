@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     .single()
 
   if (!org?.gbp_location_id) {
-    return NextResponse.json({ error: 'Location GBP nao configurado' }, { status: 500 })
+    return NextResponse.json({ error: 'Location GBP não configurado' }, { status: 500 })
   }
 
   // Token com refresh
@@ -105,7 +105,7 @@ Inclua keywords de SEO local. Sem travessao. Retorne APENAS o texto da descricao
             results.push({ action, status: 'failed', error: 'Falha ao atualizar descricao no Google' })
           }
         } else {
-          results.push({ action, status: 'failed', error: 'IA nao gerou descricao valida' })
+          results.push({ action, status: 'failed', error: 'IA não gerou descrição válida' })
         }
       } else if (action.type === 'update_categories' || action.type === 'update_attributes' || action.type === 'add_services') {
         // Delega para a rota /api/gbp/optimize/apply que faz PATCH real na GBP API
@@ -129,7 +129,7 @@ Inclua keywords de SEO local. Sem travessao. Retorne APENAS o texto da descricao
           results.push({ action, status: 'failed', error: (errData as { error?: string }).error ?? 'Falha ao aplicar no Google' })
         }
       } else {
-        results.push({ action, status: 'failed', error: `Tipo '${action.type}' ainda nao suportado` })
+        results.push({ action, status: 'failed', error: `Tipo '${action.type}' ainda não suportado` })
       }
     } catch (err) {
       console.error(`[optimization/execute] Action ${action.type} error:`, err)

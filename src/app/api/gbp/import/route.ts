@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    return NextResponse.json({ error: 'Nao autorizado' }, { status: 401 })
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
   }
 
   const { data: professional } = await supabase
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     .single()
 
   if (!professional?.organization_id) {
-    return NextResponse.json({ error: 'Organizacao nao encontrada' }, { status: 404 })
+    return NextResponse.json({ error: 'Organização não encontrada' }, { status: 404 })
   }
 
   // Enfileira auditoria via Inngest (processa de forma assíncrona)

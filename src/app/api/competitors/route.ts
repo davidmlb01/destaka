@@ -15,7 +15,7 @@ export async function POST() {
     .maybeSingle()
 
   if (!gmbProfile?.id) {
-    return NextResponse.json({ discovered: 0, errors: ['Perfil GMB nao encontrado. Configure seu Google Meu Negocio primeiro.'] })
+    return NextResponse.json({ discovered: 0, errors: ['Perfil GMB não encontrado. Configure seu Google Meu Negocio primeiro.'] })
   }
 
   // Por enquanto, retorna os concorrentes existentes como "descobertos"

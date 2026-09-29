@@ -19,7 +19,7 @@ export async function PATCH(
     .maybeSingle()
 
   if (!professional?.organization_id) {
-    return NextResponse.json({ error: 'Organizacao nao encontrada' }, { status: 404 })
+    return NextResponse.json({ error: 'Organização não encontrada' }, { status: 404 })
   }
 
   const orgId = professional.organization_id

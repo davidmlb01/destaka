@@ -13,7 +13,7 @@ export async function POST() {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    return NextResponse.json({ error: 'Nao autorizado' }, { status: 401 })
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
   }
 
   const { data: professional } = await supabase
@@ -23,7 +23,7 @@ export async function POST() {
     .single()
 
   if (!professional?.organization_id) {
-    return NextResponse.json({ error: 'Organizacao nao encontrada' }, { status: 404 })
+    return NextResponse.json({ error: 'Organização não encontrada' }, { status: 404 })
   }
 
   const result = await populateFromPlaces(professional.organization_id)

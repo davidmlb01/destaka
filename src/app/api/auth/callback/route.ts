@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
         .single()
 
       if (orgError) {
-        console.error('[callback] Falha ao criar organizacao:', orgError.message)
+        console.error('[callback] Falha ao criar organização:', orgError.message)
         return NextResponse.redirect(`${origin}/login?error=org_creation_failed`)
       }
 

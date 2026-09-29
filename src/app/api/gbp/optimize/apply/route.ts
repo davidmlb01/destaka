@@ -186,7 +186,7 @@ export async function POST(request: NextRequest) {
   }
 
   return NextResponse.json(
-    { status: 'not_implemented', type, error: `Tipo '${type}' ainda nao possui implementacao` },
+    { status: 'not_implemented', type, error: `Tipo '${type}' ainda não possui implementação` },
     { status: 422 }
   )
 }

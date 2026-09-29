@@ -17,7 +17,7 @@ export async function GET() {
     .maybeSingle()
 
   if (!professional?.organization_id) {
-    return NextResponse.json({ error: 'Organizacao nao encontrada' }, { status: 404 })
+    return NextResponse.json({ error: 'Organização não encontrada' }, { status: 404 })
   }
 
   const plan = await getActivePlan(supabase, professional.organization_id)
@@ -68,7 +68,7 @@ export async function POST() {
     .maybeSingle()
 
   if (!professional?.organization_id) {
-    return NextResponse.json({ error: 'Organizacao nao encontrada' }, { status: 404 })
+    return NextResponse.json({ error: 'Organização não encontrada' }, { status: 404 })
   }
 
   const orgId = professional.organization_id
@@ -107,7 +107,7 @@ export async function POST() {
 
   const compList = competitors ?? []
   const competitorCtx = compList.length > 0 ? {
-    maxScore: 78, // estimativa, concorrentes nao tem score Destaka
+    maxScore: 78, // estimativa, concorrentes não têm score Destaka
     avgPhotoCount: compList.reduce((sum: number, c: { photo_count: number }) => sum + (c.photo_count ?? 0), 0) / compList.length,
     avgReviewCount: compList.reduce((sum: number, c: { review_count: number }) => sum + (c.review_count ?? 0), 0) / compList.length,
   } : null

@@ -16,7 +16,7 @@ export async function GET() {
     .maybeSingle()
 
   if (!professional?.organization_id) {
-    return NextResponse.json({ error: 'Organizacao nao encontrada' }, { status: 404 })
+    return NextResponse.json({ error: 'Organização não encontrada' }, { status: 404 })
   }
 
   const orgId = professional.organization_id
@@ -28,7 +28,7 @@ export async function GET() {
     .maybeSingle()
 
   if (!org?.google_place_id) {
-    return NextResponse.json({ error: 'Google Place ID nao encontrado' }, { status: 404 })
+    return NextResponse.json({ error: 'Google Place ID não encontrado' }, { status: 404 })
   }
 
   const reviewUrl = `https://search.google.com/local/writereview?placeid=${org.google_place_id}`

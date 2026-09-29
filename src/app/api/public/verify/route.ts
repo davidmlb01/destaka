@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
       }
       if (!placeDetails) {
         return NextResponse.json(
-          { error: 'Estabelecimento nao encontrado. Verifique o link ou tente pesquisar pelo nome e cidade.' },
+          { error: 'Estabelecimento não encontrado. Verifique o link ou tente pesquisar pelo nome e cidade.' },
           { status: 404 }
         )
       }
@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
     })
   } catch (err) {
     const errMsg = err instanceof Error ? `${err.message}\n${err.stack}` : String(err)
-    console.error('[verify] Erro nao capturado:', errMsg)
+    console.error('[verify] Erro não capturado:', errMsg)
     return NextResponse.json(
       { error: 'Erro ao verificar o estabelecimento. Tente novamente.' },
       { status: 500 }

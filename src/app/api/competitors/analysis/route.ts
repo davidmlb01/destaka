@@ -17,7 +17,7 @@ export async function GET() {
     .maybeSingle()
 
   if (!professional?.organization_id) {
-    return NextResponse.json({ error: 'Organizacao nao encontrada' }, { status: 404 })
+    return NextResponse.json({ error: 'Organização não encontrada' }, { status: 404 })
   }
 
   const analysis = await getLatestAnalysis(supabase, professional.organization_id)
@@ -26,7 +26,7 @@ export async function GET() {
     return NextResponse.json({
       gaps: [],
       keyword_opportunities: [],
-      summary: 'Analise competitiva ainda nao disponivel. Sera gerada apos a proxima sincronizacao.',
+      summary: 'Análise competitiva ainda não disponível. Será gerada após a próxima sincronização.',
       analyzed_at: null,
     })
   }

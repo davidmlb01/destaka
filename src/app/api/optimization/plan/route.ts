@@ -19,7 +19,7 @@ export async function GET() {
   ])
 
   if (!gbpProfile) {
-    return NextResponse.json({ error: 'Perfil GBP nao encontrado. Sincronize primeiro.' }, { status: 404 })
+    return NextResponse.json({ error: 'Perfil GBP não encontrado. Sincronize primeiro.' }, { status: 404 })
   }
 
   const profile = gbpProfile as Record<string, unknown>
