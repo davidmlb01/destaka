@@ -6,8 +6,6 @@ import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { inngest } from '../client'
 import { scrapeInstagramPosts } from '@/lib/instagram/scraper'
 import { rewriteCaption } from '@/lib/instagram/rewriter'
-import { GBPClient } from '@/lib/google/gbp-client'
-import { getValidTokenForOrg } from '@/lib/google/token-refresh'
 
 const MAX_POSTS_PER_WEEK = 3
 
@@ -16,25 +14,6 @@ function admin() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
-}
-
-async function publishGbpPost(
-  accessToken: string,
-  locationName: string,
-  content: string,
-  imageUrl?: string
-): Promise<string | null> {
-  try {
-    const client = new GBPClient(accessToken)
-    const post = await client.createPost(locationName, {
-      summary: content,
-      imageUrl: imageUrl ?? undefined,
-    })
-    return post.name ?? null
-  } catch (err) {
-    console.error('[instagram-sync] Falha ao publicar no GBP:', err)
-    return null
-  }
 }
 
 export const instagramSync = inngest.createFunction(
@@ -68,7 +47,7 @@ export const instagramSync = inngest.createFunction(
       const result = await step.run(`sync-instagram-${org.id}`, async () => {
         try {
           // Step 2: scrape posts recentes
-          const scrapedPosts = await scrapeInstagramPosts(org.instagram_handle, 10)
+          const scrapedPosts = await scrapeInstagramPosts(org.instagram_handle, 30)
 
           if (scrapedPosts.length === 0) {
             return { org_id: org.id, status: 'no_new_posts', posts_scraped: 0 }
@@ -182,78 +161,12 @@ export const instagramSync = inngest.createFunction(
       results.push(result)
     }
 
-    // Step 7: publicar posts ready no GBP (para orgs com automation_preference = automatico)
-    const publishResults = await step.run('publish-ready-posts', async () => {
-      const { data: readyPosts } = await db
-        .from('instagram_posts')
-        .select('id, organization_id, rewritten_caption, image_url')
-        .eq('status', 'ready')
-
-      if (!readyPosts || readyPosts.length === 0) return { published: 0 }
-
-      let published = 0
-
-      for (const post of readyPosts) {
-        // Verificar se org tem publicacao automatica
-        const { data: orgData } = await db
-          .from('organizations')
-          .select('automation_preference, gbp_location_id')
-          .eq('id', post.organization_id)
-          .single()
-
-        if (!orgData?.gbp_location_id || orgData.automation_preference !== 'automatico') {
-          continue
-        }
-
-        // Buscar token Google com refresh automatico
-        const validToken = await getValidTokenForOrg(db, post.organization_id)
-        if (!validToken) continue
-
-        const gbpPostId = await publishGbpPost(
-          validToken,
-          orgData.gbp_location_id,
-          post.rewritten_caption,
-          post.image_url
-        )
-
-        if (gbpPostId) {
-          await db
-            .from('instagram_posts')
-            .update({
-              status: 'published',
-              gbp_post_id: gbpPostId,
-              published_to_gbp_at: new Date().toISOString(),
-            })
-            .eq('id', post.id)
-
-          // Tambem inserir na tabela posts para aparecer no dashboard
-          await db.from('posts').insert({
-            organization_id: post.organization_id,
-            content: post.rewritten_caption,
-            post_type: 'instagram_adapted',
-            status: 'published',
-            published_at: new Date().toISOString(),
-            gbp_post_id: gbpPostId,
-            photo_suggestion: 'Foto original do Instagram',
-            source: 'instagram',
-          })
-
-          published++
-        } else {
-          await db
-            .from('instagram_posts')
-            .update({ status: 'failed', skip_reason: 'Publicacao GBP falhou' })
-            .eq('id', post.id)
-        }
-      }
-
-      return { published }
-    })
+    // Posts ficam como 'ready' para o post-generator publicar 1 por vez (seg/qua/sex)
+    // Isso distribui o conteudo ao longo da semana em vez de publicar tudo de uma vez
 
     return {
       processed: results.length,
       results,
-      published: publishResults.published,
     }
   }
 )

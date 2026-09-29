@@ -18,11 +18,12 @@ function admin() {
 async function publishGbpPost(
   accessToken: string,
   locationName: string,
-  content: string
+  content: string,
+  imageUrl?: string
 ): Promise<string | null> {
   try {
     const client = new GBPClient(accessToken)
-    const post = await client.createPost(locationName, { summary: content })
+    const post = await client.createPost(locationName, { summary: content, imageUrl })
     return post.name ?? null
   } catch (err) {
     console.error('[post-generator] Falha ao publicar no GBP:', err)
@@ -47,18 +48,7 @@ export const postGenerator = inngest.createFunction(
 
     for (const orgId of orgIds) {
       const result = await step.run(`generate-post-${orgId}`, async () => {
-        // Instagram tem prioridade: se ha posts ready do Instagram, pular geracao IA
-        const { count: instagramReady } = await db
-          .from('instagram_posts')
-          .select('*', { count: 'exact', head: true })
-          .eq('organization_id', orgId)
-          .eq('status', 'ready')
-
-        if (instagramReady && instagramReady > 0) {
-          return { org_id: orgId, status: 'skip_instagram_priority', post_type: 'instagram_adapted' }
-        }
-
-        // Busca configurações da org
+        // Busca configuracoes da org (necessario para Instagram e IA)
         const { data: org } = await db
           .from('organizations')
           .select('name, specialty, tone, automation_preference, gbp_location_id, service_areas')
@@ -66,7 +56,65 @@ export const postGenerator = inngest.createFunction(
           .single()
 
         if (!org?.gbp_location_id) {
-          return { org_id: orgId, status: 'skip', error: 'gbp_location_id não configurado' }
+          return { org_id: orgId, status: 'skip', error: 'gbp_location_id nao configurado' }
+        }
+
+        // Instagram tem prioridade: se ha posts ready, publicar 1 em vez de gerar IA
+        const { data: instagramReady } = await db
+          .from('instagram_posts')
+          .select('id, rewritten_caption, image_url')
+          .eq('organization_id', orgId)
+          .eq('status', 'ready')
+          .order('engagement_score', { ascending: false })
+          .limit(1)
+
+        if (instagramReady && instagramReady.length > 0) {
+          const igPost = instagramReady[0]
+
+          const isAutomatic = org.automation_preference === 'automatico'
+
+          if (isAutomatic) {
+            const validToken = await getValidTokenForOrg(db, orgId)
+            if (validToken) {
+              const gbpPostId = await publishGbpPost(validToken, org.gbp_location_id, igPost.rewritten_caption, igPost.image_url)
+
+              await db.from('instagram_posts')
+                .update({
+                  status: gbpPostId ? 'published' : 'failed',
+                  gbp_post_id: gbpPostId,
+                  published_to_gbp_at: gbpPostId ? new Date().toISOString() : null,
+                  ...(gbpPostId ? {} : { skip_reason: 'Publicacao GBP falhou' }),
+                })
+                .eq('id', igPost.id)
+
+              if (gbpPostId) {
+                await db.from('posts').insert({
+                  organization_id: orgId,
+                  content: igPost.rewritten_caption,
+                  post_type: 'instagram_adapted',
+                  status: 'published',
+                  published_at: new Date().toISOString(),
+                  gbp_post_id: gbpPostId,
+                  photo_suggestion: 'Foto original do Instagram',
+                  source: 'instagram',
+                })
+              }
+
+              return { org_id: orgId, status: gbpPostId ? 'published' : 'failed', post_type: 'instagram_adapted' }
+            }
+          }
+
+          // Se nao e automatico, marca como pending para aprovacao
+          await db.from('posts').insert({
+            organization_id: orgId,
+            content: igPost.rewritten_caption,
+            post_type: 'instagram_adapted',
+            status: 'pending',
+            photo_suggestion: 'Foto original do Instagram',
+            source: 'instagram',
+          })
+
+          return { org_id: orgId, status: 'pending', post_type: 'instagram_adapted' }
         }
 
         const validToken = await getValidTokenForOrg(db, orgId)
