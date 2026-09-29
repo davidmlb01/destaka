@@ -9,17 +9,17 @@ import { MobileNav } from './MobileNav'
 
 const FREE_ITEMS = [
   { label: 'Dashboard', href: '/dashboard', locked: false },
-  { label: 'Avaliacoes', href: '/dashboard/reviews', locked: true },
+  { label: 'Avaliações', href: '/dashboard/reviews', locked: true },
   { label: 'Posts', href: '/dashboard/posts', locked: true },
-  { label: 'Otimizacoes', href: '/dashboard/optimizations', locked: true },
+  { label: 'Otimizações', href: '/dashboard/optimizations', locked: true },
   { label: 'Concorrentes', href: '/dashboard/competitors', locked: true },
 ]
 
 const PAID_ITEMS = [
   { label: 'Dashboard', href: '/dashboard', locked: false },
-  { label: 'Avaliacoes', href: '/dashboard/reviews', locked: false },
+  { label: 'Avaliações', href: '/dashboard/reviews', locked: false },
   { label: 'Posts', href: '/dashboard/posts', locked: false },
-  { label: 'Otimizacoes', href: '/dashboard/optimizations', locked: false },
+  { label: 'Otimizações', href: '/dashboard/optimizations', locked: false },
   { label: 'Concorrentes', href: '/dashboard/competitors', locked: false },
   { label: 'Indicar', href: '/indicar', locked: false },
 ]

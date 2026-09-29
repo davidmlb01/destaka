@@ -1,8 +1,21 @@
 'use client'
 
+import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { Suspense } from 'react'
 
-export default function LoginPage() {
+const ERROR_MESSAGES: Record<string, string> = {
+  auth_callback_failed: 'Falha na autenticação. Tente novamente.',
+  org_creation_failed: 'Não foi possível criar sua conta. Tente novamente.',
+  profile_creation_failed: 'Não foi possível criar seu perfil. Tente novamente.',
+  profile_link_failed: 'Não foi possível vincular seu perfil. Tente novamente.',
+}
+
+function LoginContent() {
+  const searchParams = useSearchParams()
+  const errorCode = searchParams.get('error')
+  const errorMessage = errorCode ? (ERROR_MESSAGES[errorCode] ?? 'Ocorreu um erro. Tente novamente.') : null
+
   async function handleGoogleLogin() {
     const supabase = createClient()
     await supabase.auth.signInWithOAuth({
@@ -19,30 +32,52 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-slate-50">
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-10 w-full max-w-md text-center">
-        <h1 className="text-2xl font-semibold text-slate-900 mb-2">
+    <main className="min-h-screen flex items-center justify-center p-4" style={{ background: 'var(--bg-gradient, #071a19)' }}>
+      <div
+        className="rounded-2xl p-10 w-full max-w-md text-center"
+        style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+      >
+        <h1 className="text-2xl font-semibold text-white mb-2">
           Bem-vindo ao Destaka
         </h1>
-        <p className="text-slate-500 mb-8 text-sm leading-relaxed">
+        <p className="text-sm leading-relaxed mb-8" style={{ color: 'rgba(255,255,255,0.6)' }}>
           Sua presença digital no piloto automático.
           <br />
           Conecte sua conta Google para começar.
         </p>
+
+        {errorMessage && (
+          <div
+            className="rounded-xl px-4 py-3 mb-6 text-sm"
+            style={{ background: 'rgba(248,113,113,0.1)', color: '#F87171', border: '1px solid rgba(248,113,113,0.2)' }}
+          >
+            {errorMessage}
+          </div>
+        )}
+
         <button
           onClick={handleGoogleLogin}
-          className="w-full flex items-center justify-center gap-3 bg-slate-900 text-white rounded-xl px-6 py-3.5 font-medium hover:bg-slate-800 transition-colors"
+          className="w-full flex items-center justify-center gap-3 rounded-xl px-6 py-3.5 font-medium transition-all hover:brightness-110 cursor-pointer"
+          style={{ background: 'var(--accent, #14B8A6)', color: '#fff' }}
         >
           <GoogleIcon />
           Continuar com Google
         </button>
-        <p className="text-xs text-slate-400 mt-6 leading-relaxed">
+        <p className="text-xs mt-6 leading-relaxed" style={{ color: 'rgba(255,255,255,0.4)' }}>
           Ao continuar, você autoriza o Destaka a gerenciar seu
           perfil no Google Meu Negócio. Você pode revogar esse
           acesso a qualquer momento.
         </p>
       </div>
     </main>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginContent />
+    </Suspense>
   )
 }
 

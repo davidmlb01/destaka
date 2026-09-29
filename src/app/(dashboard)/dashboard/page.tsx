@@ -5,32 +5,14 @@ import { DashboardContent } from '@/components/dashboard/DashboardContent'
 import { OptimizationConfirmCard } from './components/OptimizationConfirmCard'
 import { ManualTasksCard } from './components/ManualTasksCard'
 import { FreeDashboard } from './components/FreeDashboard'
-import { getStripe } from '@/lib/stripe'
+import { CheckoutBanner } from './components/CheckoutBanner'
+import { isActiveSubscriber } from '@/lib/subscription'
 
-async function checkSubscription(supabase: Awaited<ReturnType<typeof createClient>>, orgId: string): Promise<boolean> {
-  const { data: org } = await supabase
-    .from('organizations')
-    .select('stripe_customer_id')
-    .eq('id', orgId)
-    .single()
-
-  const customerId = (org as Record<string, unknown>)?.stripe_customer_id as string | null
-  if (!customerId) return false
-
-  try {
-    const stripe = getStripe()
-    const subscriptions = await stripe.subscriptions.list({
-      customer: customerId,
-      status: 'active',
-      limit: 1,
-    })
-    return subscriptions.data.length > 0
-  } catch {
-    return false
-  }
-}
-
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ checkout?: string }>
+}) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
@@ -44,28 +26,25 @@ export default async function DashboardPage() {
   if (!professional?.organization_id) redirect('/login')
 
   const orgId = professional.organization_id
-  const isSubscriber = await checkSubscription(supabase, orgId)
+  const params = await searchParams
+  const checkoutStatus = params.checkout ?? null
 
-  const { data: org } = await supabase
-    .from('organizations')
-    .select('name, specialty')
-    .eq('id', orgId)
-    .single()
+  const [{ data: org }, isSubscriber] = await Promise.all([
+    supabase.from('organizations').select('name, specialty').eq('id', orgId).single(),
+    isActiveSubscriber(orgId),
+  ])
 
   const profileName = org?.name ?? 'Meu Perfil'
 
-  // Dados do score para dashboard gratuito
-  const { data: scoreData } = await supabase
-    .from('scores')
-    .select('score_total')
-    .eq('organization_id', orgId)
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .maybeSingle()
-
-  const score = scoreData?.score_total ?? 0
-
   if (!isSubscriber) {
+    const { data: scoreData } = await supabase
+      .from('scores')
+      .select('score_total')
+      .eq('organization_id', orgId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+
     return (
       <DashboardLayout
         activeHref="/dashboard"
@@ -73,8 +52,9 @@ export default async function DashboardPage() {
         userEmail={user.email ?? ''}
         isSubscriber={false}
       >
+        {checkoutStatus && <CheckoutBanner status={checkoutStatus} />}
         <FreeDashboard
-          score={score}
+          score={scoreData?.score_total ?? 0}
           profileName={profileName}
           specialty={org?.specialty ?? ''}
         />
@@ -82,18 +62,10 @@ export default async function DashboardPage() {
     )
   }
 
-  // Dashboard completo para assinantes
-  const { data: profile } = await supabase
-    .from('gbp_profiles')
-    .select('optimization_report, description, photo_count')
-    .eq('organization_id', orgId)
-    .maybeSingle()
-
-  const { count: unrepliedReviewCount } = await supabase
-    .from('reviews')
-    .select('id', { count: 'exact', head: true })
-    .eq('organization_id', orgId)
-    .is('reply', null)
+  const [{ data: profile }, { count: unrepliedReviewCount }] = await Promise.all([
+    supabase.from('gbp_profiles').select('optimization_report, description, photo_count').eq('organization_id', orgId).maybeSingle(),
+    supabase.from('reviews').select('id', { count: 'exact', head: true }).eq('organization_id', orgId).is('reply', null),
+  ])
 
   return (
     <DashboardLayout
@@ -103,6 +75,8 @@ export default async function DashboardPage() {
       isSubscriber={true}
     >
       <div className="max-w-5xl mx-auto px-6 py-8 space-y-6">
+        {checkoutStatus && <CheckoutBanner status={checkoutStatus} />}
+
         <DashboardContent />
 
         <ManualTasksCard
