@@ -4,6 +4,7 @@ import { getAuthOrg } from '@/lib/api/with-auth'
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { getValidGmbToken } from '@/lib/gmb/auth'
 import { generateContent } from '@/lib/ai/client'
+import { rateLimitStrict } from '@/lib/redis'
 import type { OptimizationAction, ExecutionResult } from '@/lib/gmb/optimizer'
 
 const GBP_INFO_BASE = 'https://mybusinessbusinessinformation.googleapis.com/v1'
@@ -56,6 +57,18 @@ export async function POST(request: NextRequest) {
   for (const action of body.actions) {
     try {
       if (action.type === 'update_description') {
+        // Rate limit: 3 chamadas Claude por hora por org (descricao)
+        try {
+          const rlCount = await rateLimitStrict(`claude:desc:${orgId}`, 3600)
+          if (rlCount > 3) {
+            results.push({ action, status: 'failed', error: 'Limite de gerações de descrição atingido. Tente novamente em 1 hora.' })
+            continue
+          }
+        } catch {
+          results.push({ action, status: 'failed', error: 'Serviço de limite de requisições indisponível. Tente novamente em instantes.' })
+          continue
+        }
+
         // Gerar descricao via Claude
         const prompt = `Escreva uma descricao profissional para o Google Meu Negocio.
 Empresa: ${org.name}, ${org.specialty}.

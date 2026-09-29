@@ -1,9 +1,18 @@
 // Webhook do Stripe: recebe eventos de checkout e subscription
-// Dispara a regua de email de onboarding via Inngest
+// Persiste status no banco e dispara régua de email via Inngest
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getStripe } from '@/lib/stripe'
 import { inngest } from '@/lib/inngest/client'
+import { createClient as createAdminClient } from '@supabase/supabase-js'
+import { cacheSet } from '@/lib/redis'
+
+function getAdmin() {
+  return createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
 
 export async function POST(request: NextRequest) {
   const body = await request.text()
@@ -31,11 +40,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
   }
 
+  const admin = getAdmin()
+
   switch (event.type) {
     case 'checkout.session.completed': {
       const session = event.data.object
 
-      // Somente subscriptions (ignora pagamentos avulsos)
       if (session.mode !== 'subscription') break
 
       const organizationId = session.metadata?.organization_id
@@ -45,6 +55,18 @@ export async function POST(request: NextRequest) {
         console.error('[stripe/webhook] checkout.session.completed sem organization_id no metadata')
         break
       }
+
+      // Persiste status ativo no banco (evita chamar Stripe API no SSR)
+      await admin
+        .from('organizations')
+        .update({
+          subscription_status: 'active',
+          stripe_customer_id: session.customer,
+        })
+        .eq('id', organizationId)
+
+      // Invalida cache de subscription
+      await cacheSet(`sub:${organizationId}`, true, 300)
 
       // Dispara sequência de email pós-contratação (idempotente via event.id)
       await inngest.send({
@@ -56,7 +78,7 @@ export async function POST(request: NextRequest) {
         },
       })
 
-      console.log(`[stripe/webhook] Sequencia de onboarding disparada para org ${organizationId}`)
+      console.log(`[stripe/webhook] Assinatura ativada para org ${organizationId}`)
       break
     }
 
@@ -65,7 +87,15 @@ export async function POST(request: NextRequest) {
       const orgId = subscription.metadata?.organization_id
 
       if (orgId) {
-        // Cancela a sequencia de onboarding em andamento (se houver)
+        // Marca como cancelada no banco
+        await admin
+          .from('organizations')
+          .update({ subscription_status: 'cancelled' })
+          .eq('id', orgId)
+
+        // Invalida cache
+        await cacheSet(`sub:${orgId}`, false, 300)
+
         await inngest.send({
           id: `sub-cancelled-${event.id}`,
           name: 'destaka/subscription.cancelled',
@@ -76,7 +106,6 @@ export async function POST(request: NextRequest) {
     }
 
     default:
-      // Evento não tratado, apenas acknowledge
       break
   }
 

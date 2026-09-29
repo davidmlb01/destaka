@@ -15,7 +15,7 @@ import { TokenInvalidBanner } from './TokenInvalidBanner'
 import { WeeklyHighlights } from './WeeklyHighlights'
 import { DashboardSkeleton } from './Skeletons'
 import { PinIcon } from '@/components/ui/PinIcon'
-import { useDashboard } from './hooks/useDashboard'
+import { useDashboard, type DashboardData } from './hooks/useDashboard'
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
@@ -57,9 +57,10 @@ interface DashboardContentProps {
   isSubscriber?: boolean
   onCheckout?: () => void
   impactText?: string
+  initialData?: DashboardData
 }
 
-export function DashboardContent({ isSubscriber = true, onCheckout, impactText }: DashboardContentProps) {
+export function DashboardContent({ isSubscriber = true, onCheckout, impactText, initialData }: DashboardContentProps) {
   const {
     data,
     error,
@@ -71,7 +72,7 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText }
     categories,
     lastSync,
     handleSync,
-  } = useDashboard()
+  } = useDashboard(initialData)
 
   if (isLoading) return <DashboardSkeleton />
 

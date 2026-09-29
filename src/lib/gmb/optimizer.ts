@@ -5,7 +5,7 @@
 
 import type { GmbProfileData, ScoreResult } from './scorer'
 import { calculateScore } from './scorer'
-import { getAnthropic, AI_MODEL_FAST } from '@/lib/ai'
+import { getAnthropic, AI_MODEL_FAST, cachedSystemPrompt } from '@/lib/ai'
 import { sanitizeForPrompt } from '@/lib/sanitize'
 import { patchLocation } from './client'
 import { attributesToGbpFormat } from './attributes'
@@ -322,25 +322,28 @@ async function generateDescription(
     ? `Sobre o profissional: ${sanitizeForPrompt(bio, 500)}`
     : ''
 
+  const profileContext = [
+    `Nome do estabelecimento: ${sanitizeForPrompt(profile.locationName)}`,
+    specialtyLine,
+    servicesLine,
+    bioLine,
+  ].filter(Boolean).join('\n')
+
   const message = await getAnthropic().messages.create({
     model: AI_MODEL_FAST,
     max_tokens: 300,
+    system: cachedSystemPrompt(profileContext),
     messages: [
       {
         role: 'user',
-        content: `Escreva uma descrição para o Google Meu Negócio com base nas informações reais abaixo.
-
-Nome do estabelecimento: ${sanitizeForPrompt(profile.locationName)}
-${specialtyLine}
-${servicesLine}
-${bioLine}
+        content: `Escreva uma descrição para o Google Meu Negócio com base nas informações do perfil.
 
 Requisitos:
 - Máximo 750 caracteres
-- Use apenas as informações fornecidas acima. Não invente nada.
-- Destaque a especialidade, os serviços reais e os diferenciais informados pelo profissional
+- Use apenas as informações fornecidas. Não invente nada.
+- Destaque a especialidade, os serviços reais e os diferenciais
 - Tom profissional e acolhedor
-- Inclua convite para agendar consulta
+- Inclua convite para agendar
 - Sem travessão (use vírgula ou dois-pontos)
 - Sem emojis
 - Apenas o texto da descrição, sem título`,
@@ -358,20 +361,17 @@ async function formatServices(
 ): Promise<Array<{ name: string; description: string }>> {
   const safeServices = servicesInput.map(s => sanitizeForPrompt(s)).join('\n')
 
+  const serviceContext = `Serviços informados:\n${safeServices}\n\nEspecialidade: ${sanitizeForPrompt(specialty)}`
+
   const message = await getAnthropic().messages.create({
     model: AI_MODEL_FAST,
     max_tokens: 500,
+    system: cachedSystemPrompt(serviceContext),
     messages: [
       {
         role: 'user',
-        content: `O profissional informou os seguintes serviços que ele realmente oferece:
-
-${safeServices}
-
-Especialidade: ${sanitizeForPrompt(specialty)}
-
-Para cada serviço, gere um nome curto e uma descrição clara para pacientes leigos.
-Use APENAS os serviços listados acima. Não adicione serviços que não foram informados.
+        content: `Para cada serviço informado, gere um nome curto e uma descrição clara para clientes leigos.
+Use APENAS os serviços listados. Não adicione serviços que não foram informados.
 
 Formato JSON (apenas o array, sem markdown):
 [

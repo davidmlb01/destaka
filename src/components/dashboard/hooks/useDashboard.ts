@@ -31,8 +31,14 @@ const CATEGORY_META = [
   { key: 'attributes', label: 'Atributos', max: 5, scoreField: 'score_atributos' },
 ]
 
-export function useDashboard() {
-  const { data, error, isLoading, mutate } = useSWR<DashboardData>('/api/dashboard', fetcher)
+export type { DashboardData }
+
+export function useDashboard(fallbackData?: DashboardData) {
+  const { data, error, isLoading, mutate } = useSWR<DashboardData>('/api/dashboard', fetcher, {
+    fallbackData,
+    revalidateOnFocus: false,
+    revalidateOnMount: !fallbackData,
+  })
   const [syncing, setSyncing] = useState(false)
   const [syncError, setSyncError] = useState<string | null>(null)
 

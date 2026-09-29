@@ -17,3 +17,17 @@ export const anthropic = new Proxy({} as Anthropic, {
 export const AI_MODEL = 'claude-opus-4-6'
 /** Tarefas de alta frequência (ex: posts, reviews, optimizer) */
 export const AI_MODEL_FAST = 'claude-haiku-4-5-20251001'
+
+/**
+ * Cria system prompt com cache_control para reutilizar contexto do perfil.
+ * Economiza ~90% dos tokens de input em chamadas repetidas para o mesmo perfil.
+ */
+export function cachedSystemPrompt(profileContext: string): Anthropic.MessageCreateParams['system'] {
+  return [
+    {
+      type: 'text' as const,
+      text: profileContext,
+      cache_control: { type: 'ephemeral' as const },
+    },
+  ]
+}
