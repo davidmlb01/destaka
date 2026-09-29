@@ -27,6 +27,8 @@ export function FreeDashboard({ score, profileName, specialty }: FreeDashboardPr
   const [, lostMax] = getLostPatientsRange(score)
   const patientWord = specialty === 'veterinario' ? 'clientes' : 'pacientes'
 
+  const impactText = `Seu perfil aparece em apenas ${visibility}% das buscas na sua região. Isso pode representar até ${lostMax} ${patientWord} perdidos por semana.`
+
   async function handleCheckout() {
     try {
       const res = await fetch('/api/stripe/checkout', {
@@ -47,28 +49,11 @@ export function FreeDashboard({ score, profileName, specialty }: FreeDashboardPr
     <div className="relative pb-20">
       {/* Dashboard real com tratamento por bloco */}
       <div className="max-w-5xl mx-auto px-6 py-8 space-y-6">
-        <DashboardContent isSubscriber={false} />
-      </div>
-
-      {/* Banner de impacto entre score e conteudo bloqueado */}
-      <div
-        className="max-w-5xl mx-auto px-6 -mt-2 mb-6"
-        style={{ position: 'relative', zIndex: 5 }}
-      >
-        <div
-          className="rounded-xl p-5"
-          style={{
-            background: 'rgba(239,68,68,0.08)',
-            border: '1px solid rgba(239,68,68,0.2)',
-          }}
-        >
-          <p className="text-sm text-white">
-            <strong>{profileName}</strong> aparece em apenas{' '}
-            <strong style={{ color: 'var(--warning)' }}>{visibility}%</strong> das buscas na sua regiao.
-            Isso pode representar ate{' '}
-            <strong style={{ color: 'var(--error)' }}>{lostMax} {patientWord} perdidos por semana</strong>.
-          </p>
-        </div>
+        <DashboardContent
+          isSubscriber={false}
+          onCheckout={handleCheckout}
+          impactText={impactText}
+        />
       </div>
 
       {/* Sticky CTA bar */}
@@ -82,7 +67,8 @@ export function FreeDashboard({ score, profileName, specialty }: FreeDashboardPr
       >
         <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between gap-4">
           <p className="text-sm text-white hidden sm:block">
-            Ate <strong>{lostMax} {patientWord} novos</strong> por semana. <span style={{ color: 'rgba(255,255,255,0.5)' }}>R$197/mes.</span>
+            Até <strong>{lostMax} {patientWord} novos</strong> por semana.{' '}
+            <span style={{ color: 'rgba(255,255,255,0.7)' }}>R$197/mês.</span>
           </p>
           <button
             onClick={handleCheckout}

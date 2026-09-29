@@ -42,11 +42,11 @@ function LockedOverlay({ children, label }: { children: React.ReactNode; label: 
         style={{ background: 'rgba(7,26,25,0.6)', backdropFilter: 'blur(2px)' }}
       >
         <div className="text-center px-4">
-          <svg className="mx-auto mb-2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg className="mx-auto mb-2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
             <path d="M7 11V7a5 5 0 0 1 10 0v4" />
           </svg>
-          <p className="text-xs font-medium" style={{ color: 'rgba(255,255,255,0.6)' }}>{label}</p>
+          <p className="text-sm font-medium text-white">{label}</p>
         </div>
       </div>
     </div>
@@ -55,9 +55,11 @@ function LockedOverlay({ children, label }: { children: React.ReactNode; label: 
 
 interface DashboardContentProps {
   isSubscriber?: boolean
+  onCheckout?: () => void
+  impactText?: string
 }
 
-export function DashboardContent({ isSubscriber = true }: DashboardContentProps) {
+export function DashboardContent({ isSubscriber = true, onCheckout, impactText }: DashboardContentProps) {
   const {
     data,
     error,
@@ -77,10 +79,10 @@ export function DashboardContent({ isSubscriber = true }: DashboardContentProps)
     <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
       <div className="mb-4" style={{ opacity: 0.3 }}><PinIcon size={48} /></div>
       <h2 className="font-display font-bold text-white text-[20px] mb-2">
-        Nao foi possivel carregar o painel
+        Não foi possível carregar o painel
       </h2>
-      <p className="text-[14px] mb-6" style={{ color: 'rgba(255,255,255,0.5)', maxWidth: 400 }}>
-        Houve um problema ao conectar com o servidor. Verifique sua conexao e tente novamente.
+      <p className="text-[14px] mb-6" style={{ color: 'rgba(255,255,255,0.7)', maxWidth: 400 }}>
+        Houve um problema ao conectar com o servidor. Verifique sua conexão e tente novamente.
       </p>
       <button
         onClick={() => mutate()}
@@ -98,18 +100,15 @@ export function DashboardContent({ isSubscriber = true }: DashboardContentProps)
     <ErrorBoundary>
     <div className="flex flex-col gap-8">
 
-      {/* Resumo semanal - visivel para todos */}
       {isSubscriber && <WeeklyHighlights data={weeklySummary} />}
-
-      {/* Banners - apenas para assinantes */}
       {isSubscriber && <TokenInvalidBanner />}
       {isSubscriber && <ProfileAlerts />}
       {isSubscriber && <PendingDescriptionBanner />}
 
-      {/* Linha 1: Score gauge + metricas - SCORE SEMPRE VISIVEL */}
+      {/* Score + métricas */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch animate-fade-in-up">
 
-        {/* Gauge - sempre visivel */}
+        {/* Score gauge */}
         <div
           className="rounded-2xl p-6 flex flex-col items-center gap-4"
           style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
@@ -147,35 +146,51 @@ export function DashboardContent({ isSubscriber = true }: DashboardContentProps)
               </div>
             </>
           ) : (
-            <p className="text-xs text-center" style={{ color: 'rgba(255,255,255,0.4)' }}>
-              Assine para otimizar seu perfil
-            </p>
+            <>
+              {/* Impacto direto no card do score */}
+              {impactText && (
+                <p className="text-sm text-center text-white leading-relaxed">
+                  {impactText}
+                </p>
+              )}
+              <button
+                onClick={onCheckout}
+                className="w-full px-5 py-3 rounded-xl text-sm font-semibold transition-all cursor-pointer hover:scale-[1.02]"
+                style={{
+                  background: 'var(--accent)',
+                  color: '#fff',
+                  boxShadow: '0 4px 16px rgba(20,184,166,0.3)',
+                }}
+              >
+                Ativar Destaka
+              </button>
+            </>
           )}
         </div>
 
-        {/* Metricas - parcialmente visiveis */}
+        {/* Métricas */}
         {isSubscriber ? (
           <div className="lg:col-span-2 grid grid-cols-2 gap-3 content-start">
             <MetricCard label="Buscas no Google" value={metrics.viewsSearch} icon={<PinIcon size={16} />} hint={metrics.period} />
-            <MetricCard label="Visualizacoes no Maps" value={metrics.viewsMaps} icon={<PinIcon size={16} />} hint={metrics.period} />
+            <MetricCard label="Visualizações no Maps" value={metrics.viewsMaps} icon={<PinIcon size={16} />} hint={metrics.period} />
             <MetricCard label="Cliques no site" value={metrics.clicksWebsite} icon={<PinIcon size={16} />} hint={metrics.period} />
-            <MetricCard label="Ligacoes geradas" value={metrics.clicksCall} icon={<PinIcon size={16} />} hint={metrics.period} />
+            <MetricCard label="Ligações geradas" value={metrics.clicksCall} icon={<PinIcon size={16} />} hint={metrics.period} />
           </div>
         ) : (
           <div className="lg:col-span-2">
-            <LockedOverlay label="Seus numeros reais. Assine para acompanhar.">
+            <LockedOverlay label="Seus números reais. Assine para acompanhar.">
               <div className="grid grid-cols-2 gap-3 content-start">
                 <MetricCard label="Buscas no Google" value={metrics.viewsSearch} icon={<PinIcon size={16} />} hint={metrics.period} />
-                <MetricCard label="Visualizacoes no Maps" value={metrics.viewsMaps} icon={<PinIcon size={16} />} hint={metrics.period} />
+                <MetricCard label="Visualizações no Maps" value={metrics.viewsMaps} icon={<PinIcon size={16} />} hint={metrics.period} />
                 <MetricCard label="Cliques no site" value={metrics.clicksWebsite} icon={<PinIcon size={16} />} hint={metrics.period} />
-                <MetricCard label="Ligacoes geradas" value={metrics.clicksCall} icon={<PinIcon size={16} />} hint={metrics.period} />
+                <MetricCard label="Ligações geradas" value={metrics.clicksCall} icon={<PinIcon size={16} />} hint={metrics.period} />
               </div>
             </LockedOverlay>
           </div>
         )}
       </div>
 
-      {/* Linha 2: Cards de categoria - bloqueados para gratuito */}
+      {/* Score por categoria */}
       {isSubscriber ? (
         <div className="animate-fade-in-up stagger-2">
           <SectionTitle>Score por categoria</SectionTitle>
@@ -186,7 +201,7 @@ export function DashboardContent({ isSubscriber = true }: DashboardContentProps)
       ) : (
         <div>
           <SectionTitle>Score por categoria</SectionTitle>
-          <LockedOverlay label={`${categories.length} categorias analisadas. Assine para ver o detalhe.`}>
+          <LockedOverlay label={`${categories.length} categorias analisadas. Assine para ver os detalhes.`}>
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
               {categories.map(cat => <ScoreCard key={cat.name} category={cat} />)}
             </div>
@@ -194,29 +209,29 @@ export function DashboardContent({ isSubscriber = true }: DashboardContentProps)
         </div>
       )}
 
-      {/* Linha 3: Proximas acoes + Grafico - bloqueados para gratuito */}
+      {/* Próximas ações + Gráfico */}
       {isSubscriber ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fade-in-up stagger-4">
           <div>
-            <SectionTitle>Proximas acoes</SectionTitle>
+            <SectionTitle>Próximas ações</SectionTitle>
             <NextActionsPanel actions={nextActions} />
           </div>
           <Card variant="dark" padding="sm">
-            <SectionTitle>Evolucao do score</SectionTitle>
+            <SectionTitle>Evolução do score</SectionTitle>
             <ScoreChart data={scoreHistory} />
           </Card>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>
-            <SectionTitle>Proximas acoes</SectionTitle>
-            <LockedOverlay label={`${nextActions.length} melhorias prontas para aplicar no seu perfil.`}>
+            <SectionTitle>Próximas ações</SectionTitle>
+            <LockedOverlay label={`${nextActions.length} melhorias prontas para o seu perfil.`}>
               <NextActionsPanel actions={nextActions} />
             </LockedOverlay>
           </div>
           <div>
-            <SectionTitle>Evolucao do score</SectionTitle>
-            <LockedOverlay label="Acompanhe sua evolucao semana a semana.">
+            <SectionTitle>Evolução do score</SectionTitle>
+            <LockedOverlay label="Acompanhe sua evolução semana a semana.">
               <Card variant="dark" padding="sm">
                 <ScoreChart data={scoreHistory} />
               </Card>

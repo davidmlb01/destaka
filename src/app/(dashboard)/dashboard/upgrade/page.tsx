@@ -6,29 +6,29 @@ import { Suspense } from 'react'
 
 const FEATURE_INFO: Record<string, { title: string; description: string; benefit: string }> = {
   reviews: {
-    title: 'Avaliacoes',
-    description: 'O Destaka responde avaliacoes automaticamente com o tom da sua clinica e monitora sua reputacao.',
-    benefit: 'Clinicas que respondem avaliacoes recebem 35% mais contatos.',
+    title: 'Avaliações',
+    description: 'O Destaka responde avaliações automaticamente com o tom da sua clínica e monitora sua reputação.',
+    benefit: 'Clínicas que respondem avaliações recebem 35% mais contatos.',
   },
   posts: {
     title: 'Posts',
-    description: 'Publicacao automatica de posts semanais no Google com conteudo relevante para sua especialidade.',
+    description: 'Publicação automática de posts semanais no Google com conteúdo relevante para sua especialidade.',
     benefit: 'Perfis com posts recentes aparecem 70% mais em buscas locais.',
   },
   optimizations: {
-    title: 'Otimizacoes',
-    description: 'Analise automatica do seu perfil com correcoes aplicadas diretamente na sua conta Google.',
-    benefit: 'Perfis otimizados recebem ate 3x mais visualizacoes no Google Maps.',
+    title: 'Otimizações',
+    description: 'Análise automática do seu perfil com correções aplicadas diretamente na sua conta Google.',
+    benefit: 'Perfis otimizados recebem até 3x mais visualizações no Google Maps.',
   },
   competitors: {
     title: 'Concorrentes',
-    description: 'Mapeamento dos seus concorrentes na regiao com analise comparativa de pontos fortes e oportunidades.',
-    benefit: 'Identifique o que seus concorrentes fazem que voce ainda nao faz.',
+    description: 'Mapeamento dos seus concorrentes na região com análise comparativa de pontos fortes e oportunidades.',
+    benefit: 'Identifique o que seus concorrentes fazem que você ainda não faz.',
   },
   plan: {
     title: 'Plano de Melhoria',
-    description: 'Plano semanal de 8 semanas com acoes automaticas e manuais para elevar seu score.',
-    benefit: 'Profissionais que seguem o plano aumentam o score em media 40 pontos em 60 dias.',
+    description: 'Plano semanal de 8 semanas com ações automáticas e manuais para elevar seu score.',
+    benefit: 'Profissionais que seguem o plano aumentam o score em média 40 pontos em 60 dias.',
   },
 }
 
@@ -77,7 +77,7 @@ function UpgradeContent() {
           {info.title}
         </h1>
 
-        <p className="text-sm mb-4" style={{ color: 'rgba(255,255,255,0.6)' }}>
+        <p className="text-sm mb-4" style={{ color: 'rgba(255,255,255,0.8)' }}>
           {info.description}
         </p>
 
@@ -97,10 +97,10 @@ function UpgradeContent() {
           className="w-full px-6 py-3.5 rounded-xl text-sm font-semibold transition-colors cursor-pointer hover:opacity-90 mb-3"
           style={{ background: 'var(--accent)', color: '#fff' }}
         >
-          Ativar Destaka por R$197/mes
+          Ativar Destaka por R$197/mês
         </button>
 
-        <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
+        <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
           Cancele quando quiser. Sem multa, sem burocracia.
         </p>
       </div>
