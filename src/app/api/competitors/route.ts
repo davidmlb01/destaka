@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getAuthOrg } from '@/lib/api/with-auth'
+import { getAuthOrg, privateJson } from '@/lib/api/with-auth'
 
 export async function POST() {
   const auth = await getAuthOrg()
@@ -101,7 +101,7 @@ export async function GET() {
     last_tracked_at: c.last_tracked_at,
   }))
 
-  return NextResponse.json({
+  return privateJson({
     profile: {
       id: gbp?.id ?? orgId,
       name: org?.name ?? 'Meu Perfil',

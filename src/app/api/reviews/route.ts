@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getAuthOrg } from '@/lib/api/with-auth'
+import { getAuthOrg, privateJson } from '@/lib/api/with-auth'
 import { createClient } from '@/lib/supabase/server'
 
 const PAGE_SIZE = 10
@@ -117,7 +117,7 @@ export async function GET(request: NextRequest) {
     }
   })
 
-  return NextResponse.json({
+  return privateJson({
     reviews: mappedReviews,
     total: count ?? 0,
     pendingCount: pendingCount ?? 0,

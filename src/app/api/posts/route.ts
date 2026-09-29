@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getAuthOrg } from '@/lib/api/with-auth'
+import { getAuthOrg, privateJson } from '@/lib/api/with-auth'
 
 const PAGE_SIZE = 20
 
@@ -74,7 +74,7 @@ export async function GET() {
     created_at: scheduledPost.created_at,
   } : null
 
-  return NextResponse.json({
+  return privateJson({
     posts: mappedPosts,
     total: count ?? 0,
     page: 1,

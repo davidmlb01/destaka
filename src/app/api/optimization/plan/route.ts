@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getAuthOrg } from '@/lib/api/with-auth'
+import { getAuthOrg, privateJson } from '@/lib/api/with-auth'
 import { buildOptimizationPlan, type OptimizationAction } from '@/lib/gmb/optimizer'
 import { calculateScore, type GmbProfileData } from '@/lib/gmb/scorer'
 import { getLatestAnalysis, type CompetitiveGap } from '@/lib/gmb/competitive-analyzer'
@@ -85,7 +85,7 @@ export async function GET() {
 
   const totalGain = allActions.reduce((sum, a) => sum + a.impact, 0)
 
-  return NextResponse.json({
+  return privateJson({
     actions: allActions,
     currentScore: plan.currentScore,
     projectedScore: Math.min(100, plan.currentScore + totalGain),

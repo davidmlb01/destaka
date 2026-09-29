@@ -1,6 +1,6 @@
 // API de dados do dashboard, retorna o shape esperado por useDashboard
 import { NextResponse } from 'next/server'
-import { getAuthOrg } from '@/lib/api/with-auth'
+import { getAuthOrg, privateJson } from '@/lib/api/with-auth'
 import { GBPClient } from '@/lib/google/gbp-client'
 import { getValidGmbToken } from '@/lib/gmb/auth'
 
@@ -195,7 +195,7 @@ export async function GET() {
     ? { posts_published: postsPublished, reviews_replied: reviewsReplied, score_delta: scoreDelta }
     : null
 
-  return NextResponse.json({
+  return privateJson({
     profile: profileData,
     diagnostic,
     scoreHistory: mappedScoreHistory,

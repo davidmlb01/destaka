@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { privateJson } from '@/lib/api/with-auth'
 import { createClient } from '@/lib/supabase/server'
 import { getLatestAnalysis } from '@/lib/gmb/competitive-analyzer'
 
@@ -28,5 +29,5 @@ export async function GET() {
     })
   }
 
-  return NextResponse.json(analysis)
+  return privateJson(analysis)
 }

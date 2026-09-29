@@ -1,6 +1,6 @@
 // Verifica se o usuario tem assinatura ativa no Stripe
 import { NextResponse } from 'next/server'
-import { getAuthOrg } from '@/lib/api/with-auth'
+import { getAuthOrg, privateJson } from '@/lib/api/with-auth'
 import { getStripe } from '@/lib/stripe'
 
 export async function GET() {
@@ -18,7 +18,7 @@ export async function GET() {
   const customerId = (org as Record<string, unknown>)?.stripe_customer_id as string | null
 
   if (!customerId) {
-    return NextResponse.json({ active: false, plan: null })
+    return privateJson({ active: false, plan: null })
   }
 
   try {
@@ -31,7 +31,7 @@ export async function GET() {
 
     if (subscriptions.data.length > 0) {
       const sub = subscriptions.data[0]
-      return NextResponse.json({
+      return privateJson({
         active: true,
         plan: sub.items.data[0]?.price?.id ?? null,
       })
@@ -40,5 +40,5 @@ export async function GET() {
     console.error('[stripe/status] Error:', err instanceof Error ? err.message : err)
   }
 
-  return NextResponse.json({ active: false, plan: null })
+  return privateJson({ active: false, plan: null })
 }

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getAuthOrg } from '@/lib/api/with-auth'
+import { getAuthOrg, privateJson } from '@/lib/api/with-auth'
 import { CHECKLIST_ITEMS } from '@/lib/gmb/checklist'
 
 export async function GET() {
@@ -28,7 +28,7 @@ export async function GET() {
   const currentScore = items.filter((i) => i.done).reduce((sum, i) => sum + i.impact, 0)
   const projectedScore = items.reduce((sum, i) => sum + i.impact, 0)
 
-  return NextResponse.json({
+  return privateJson({
     items,
     currentScore,
     projectedScore,

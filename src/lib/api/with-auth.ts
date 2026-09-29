@@ -42,3 +42,14 @@ export async function getAuthOrg(): Promise<AuthOrgResult> {
 
   return { user, orgId: professional.organization_id, supabase }
 }
+
+/**
+ * Cria resposta JSON com headers anti-cache.
+ * Dados por usuário NUNCA devem ser cacheados pelo browser.
+ */
+export function privateJson(data: unknown, init?: { status?: number }) {
+  const response = NextResponse.json(data, init)
+  response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate')
+  response.headers.set('Vary', 'Cookie')
+  return response
+}
