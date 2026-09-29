@@ -22,7 +22,7 @@ export async function getValidGmbToken(userId: string): Promise<string> {
     .maybeSingle()
 
   if (!professional?.organization_id) {
-    throw new Error('Organizacao nao encontrada. Complete o onboarding.')
+    throw new Error('Organização não encontrada. Faça login novamente.')
   }
 
   const token = await getValidTokenForOrg(serviceClient, professional.organization_id)

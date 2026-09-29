@@ -122,14 +122,25 @@ export async function GET(request: NextRequest) {
         }
       }
 
-      // Salva tokens do Google
+      // Salva tokens do Google e limpa do user_metadata
       if (session.provider_token) {
-        await admin.from('google_tokens').insert({
+        await admin.from('google_tokens').upsert({
           organization_id: org.id,
           access_token: encrypt(session.provider_token),
           refresh_token: session.provider_refresh_token
             ? encrypt(session.provider_refresh_token)
             : null,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'organization_id' })
+
+        // Limpa tokens do user_metadata (não devem ficar client-side)
+        await admin.auth.admin.updateUserById(user.id, {
+          user_metadata: {
+            ...user.user_metadata,
+            gbp_access_token: undefined,
+            gbp_refresh_token: undefined,
+            gbp_token_expires_at: undefined,
+          },
         })
       }
 

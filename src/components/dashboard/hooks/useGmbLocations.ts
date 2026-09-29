@@ -15,21 +15,12 @@ export function useGmbLocations() {
     fetch('/api/gmb/locations')
       .then(async (res) => {
         if (res.status === 403) {
-          const retries =
-            Number(sessionStorage.getItem('onboarding_403_count') ?? '0') + 1
-          sessionStorage.setItem('onboarding_403_count', String(retries))
-          if (retries >= 3) {
-            sessionStorage.removeItem('onboarding_403_count')
-            setErrorMsg(
-              'Não foi possível acessar seu Google Meu Negócio. Verifique se você autorizou o acesso completo e tente novamente.',
-            )
-            setStep('error')
-            return
-          }
-          window.location.href = '/login'
+          setErrorMsg(
+            'Não foi possível acessar seu Google Meu Negócio. Verifique se você autorizou o acesso completo e tente novamente.',
+          )
+          setStep('error')
           return
         }
-        sessionStorage.removeItem('onboarding_403_count')
         const data = (await res.json()) as {
           error?: string
           locations?: GmbLocation[]
@@ -78,7 +69,7 @@ export function useGmbLocations() {
     })
 
     if (res.ok) {
-      router.push('/onboarding/setup')
+      router.push('/dashboard')
       return
     }
 
