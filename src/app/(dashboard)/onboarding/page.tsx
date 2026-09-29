@@ -113,6 +113,10 @@ export default function OnboardingPage() {
         const res = await fetch('/api/onboarding/prefill')
         if (res.ok) {
           const data = await res.json()
+          if (data.completed) {
+            router.replace('/dashboard')
+            return
+          }
           if (data.location) {
             const loc = data.location
             setPrefill(loc)
