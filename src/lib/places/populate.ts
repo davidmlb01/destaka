@@ -29,20 +29,21 @@ export interface PopulateResult {
  */
 export async function populateFromPlaces(orgId: string): Promise<PopulateResult> {
   if (!isPlacesAvailable()) {
-    return { status: 'skipped', error: 'Places API nao configurada' }
+    return { status: 'skipped', error: 'Places API não configurada' }
   }
 
   const db = admin()
 
-  // Verifica se ja tem score (evita chamadas desnecessarias ao Google)
-  const { data: existingScore } = await db
-    .from('scores')
-    .select('id')
+  // Verifica se já tem dados do Places (evita re-importar se já populou)
+  const { data: existingProfile } = await db
+    .from('gbp_profiles')
+    .select('photo_count')
     .eq('organization_id', orgId)
     .limit(1)
     .single()
 
-  if (existingScore) {
+  // Só pula se já tem fotos importadas (indica que Places já rodou)
+  if (existingProfile && (existingProfile.photo_count ?? 0) > 0) {
     return { status: 'skipped' }
   }
 
@@ -54,7 +55,7 @@ export async function populateFromPlaces(orgId: string): Promise<PopulateResult>
     .single()
 
   if (!org?.name) {
-    return { status: 'error', error: 'Organizacao sem nome' }
+    return { status: 'error', error: 'Organização sem nome' }
   }
 
   // Se tem Maps URL salvo, usa ele para buscar. Senao, busca por nome.
@@ -73,7 +74,7 @@ export async function populateFromPlaces(orgId: string): Promise<PopulateResult>
   }
 
   if (!placeId) {
-    return { status: 'error', error: `"${org.name}" nao encontrado no Google Maps` }
+    return { status: 'error', error: `"${org.name}" não encontrado no Google Maps` }
   }
 
   const placeDetails = await getPlaceDetails(placeId)
@@ -187,13 +188,13 @@ function buildAuditReport(place: PlaceDetails) {
   const gaps: Gap[] = []
 
   if (!place.formatted_phone_number) {
-    gaps.push({ field: 'phone', severity: 'critical', message: 'Telefone nao cadastrado no perfil' })
+    gaps.push({ field: 'phone', severity: 'critical', message: 'Telefone não cadastrado no perfil' })
   }
   if (!place.website) {
-    gaps.push({ field: 'website', severity: 'warning', message: 'Website nao vinculado ao perfil' })
+    gaps.push({ field: 'website', severity: 'warning', message: 'Website não vinculado ao perfil' })
   }
   if (!place.opening_hours) {
-    gaps.push({ field: 'hours', severity: 'warning', message: 'Horario de funcionamento nao definido' })
+    gaps.push({ field: 'hours', severity: 'warning', message: 'Horário de funcionamento não definido' })
   }
   if ((place.photos?.length ?? 0) < 5) {
     gaps.push({
@@ -206,14 +207,14 @@ function buildAuditReport(place: PlaceDetails) {
     gaps.push({
       field: 'reviews',
       severity: 'critical',
-      message: `Apenas ${place.user_ratings_total ?? 0} avaliacoes. Ideal: 10 ou mais`,
+      message: `Apenas ${place.user_ratings_total ?? 0} avaliações. Ideal: 10 ou mais`,
     })
   }
   if ((place.rating ?? 0) < 4.0) {
     gaps.push({
       field: 'rating',
       severity: 'critical',
-      message: `Nota media ${place.rating?.toFixed(1) ?? '0'}. Meta: 4.0 ou mais`,
+      message: `Nota média ${place.rating?.toFixed(1) ?? '0'}. Meta: 4.0 ou mais`,
     })
   }
 
