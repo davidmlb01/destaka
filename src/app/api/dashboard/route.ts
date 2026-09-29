@@ -159,8 +159,31 @@ export async function GET() {
     }
   }
 
-  // Next actions: derivadas das issues do audit_report
-  const nextActions = issues
+  // Next actions: issues do audit_report + fallback de gaps reais do perfil
+  const coveredFields = new Set(issues.map(i => i.field))
+
+  const fallbackActions: Array<{ field: string; severity: string; message: string; impact: number }> = []
+
+  if (!coveredFields.has('description') && (!gbpProfile?.description || (gbpProfile.description as string).length < 10)) {
+    fallbackActions.push({ field: 'description', severity: 'critical', message: 'Seu perfil não tem descrição. Isso reduz sua visibilidade nas buscas.', impact: 8 })
+  }
+  if (!coveredFields.has('services') && ((s?.retencao as number) ?? 0) < 5) {
+    fallbackActions.push({ field: 'services', severity: 'warning', message: 'Cadastre seus serviços com descrição para facilitar o agendamento.', impact: 7 })
+  }
+  if (!coveredFields.has('photos') && (gbpProfile?.photo_count ?? 0) < 5) {
+    fallbackActions.push({ field: 'photos', severity: 'warning', message: 'Adicione pelo menos 5 fotos reais do seu espaço para aumentar a confiança.', impact: 6 })
+  }
+  if (!coveredFields.has('reviews') && ((s?.reputacao as number) ?? 0) < 10) {
+    fallbackActions.push({ field: 'reviews', severity: 'warning', message: 'Responda todas as avaliações para melhorar sua reputação.', impact: 5 })
+  }
+  if (!coveredFields.has('posts') && ((s?.visibilidade as number) ?? 0) < 5) {
+    fallbackActions.push({ field: 'posts', severity: 'warning', message: 'Publique conteúdo regularmente para manter seu perfil ativo.', impact: 4 })
+  }
+  if (!coveredFields.has('attributes') && ((s?.conversao as number) ?? 0) < 5) {
+    fallbackActions.push({ field: 'attributes', severity: 'warning', message: 'Configure atributos como Wi-Fi, estacionamento e acessibilidade.', impact: 3 })
+  }
+
+  const nextActions = [...issues, ...fallbackActions]
     .sort((a, b) => b.impact - a.impact)
     .slice(0, 5)
     .map(i => ({

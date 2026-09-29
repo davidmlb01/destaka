@@ -405,8 +405,19 @@ function categoriesForSegment(category: string): string[] {
     dentista: ['Clínica odontológica', 'Ortodontista', 'Implantodontista'],
     médico: ['Clínica médica', 'Consultório médico', 'Centro de saúde'],
     psicólogo: ['Psicólogo', 'Serviços de saúde mental', 'Terapeuta'],
+    psiquiatra: ['Psiquiatra', 'Serviços de saúde mental', 'Clínica médica'],
     fisioterapeuta: ['Fisioterapia', 'Clínica de reabilitação', 'Ortopedia'],
-    advogado: ['Escritório de advocacia', 'Consultório jurídico'],
+    advogado: ['Escritório de advocacia', 'Consultoria jurídica'],
+    veterinário: ['Clínica veterinária', 'Pet shop', 'Hospital veterinário'],
+    contador: ['Escritório de contabilidade', 'Consultoria financeira'],
+    imobiliária: ['Imobiliária', 'Corretor de imóveis'],
+    beleza: ['Salão de beleza', 'Barbearia', 'Estética'],
+    fitness: ['Academia', 'Centro de fitness', 'Estúdio de pilates'],
+    restaurante: ['Restaurante', 'Lanchonete', 'Cafeteria'],
+    automotivo: ['Oficina mecânica', 'Auto center', 'Serviços automotivos'],
+    educação: ['Escola', 'Centro educacional', 'Curso profissionalizante'],
+    tecnologia: ['Empresa de software', 'Consultoria de TI', 'Agência digital'],
+    'profissional de saúde': ['Consultório de saúde', 'Clínica', 'Centro de saúde'],
   }
-  return map[segment] ?? ['Consultório profissional']
+  return map[segment] ?? ['Empresa', 'Prestador de serviços']
 }

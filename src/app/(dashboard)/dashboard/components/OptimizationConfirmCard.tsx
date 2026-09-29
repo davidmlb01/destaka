@@ -124,7 +124,7 @@ export function OptimizationConfirmCard({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ type: 'description', value: variant.text }),
         })
-        results.push({ label: `Descricao: ${variant.label}`, ok: res.ok })
+        results.push({ label: `Descrição: ${variant.label}`, ok: res.ok })
       }
 
       if (selectedCategories.size > 0) {
@@ -171,7 +171,7 @@ export function OptimizationConfirmCard({
           body: JSON.stringify({ type: 'services', value: services }),
         })
         for (const idx of selectedServices) {
-          results.push({ label: `Servico: ${service_optimizations[idx].optimized}`, ok: res.ok })
+          results.push({ label: `Serviço: ${service_optimizations[idx].optimized}`, ok: res.ok })
         }
       }
 
@@ -183,7 +183,7 @@ export function OptimizationConfirmCard({
     }
   }
 
-  // IDLE: overview
+  // IDLE
   if (status === 'idle') {
     const totalSuggestions =
       description_variants.length +
@@ -259,7 +259,9 @@ export function OptimizationConfirmCard({
         <div className="px-5 py-4 space-y-2">
           {applyResults.map((r, i) => (
             <div key={i} className="flex items-center gap-2">
-              <span className="text-sm">{r.ok ? '✅' : '❌'}</span>
+              <span className="text-sm" style={{ color: r.ok ? '#4ADE80' : '#F87171' }}>
+                {r.ok ? '\u2713' : '\u2717'}
+              </span>
               <span className="text-[13px]" style={{ color: r.ok ? 'var(--text-secondary)' : '#F87171' }}>{r.label}</span>
             </div>
           ))}
@@ -432,7 +434,7 @@ export function OptimizationConfirmCard({
             className="rounded-xl px-3 py-2 mb-3 text-[11px]"
             style={{ background: 'rgba(251,191,36,0.08)', color: '#FBBF24', border: '1px solid rgba(251,191,36,0.15)' }}
           >
-            Confirme apenas atributos verdadeiros para o seu consultório.
+            Confirme apenas atributos verdadeiros para o seu estabelecimento.
           </div>
           <div className="flex flex-col gap-2">
             {attribute_suggestions.map((attr, i) => (
@@ -487,7 +489,7 @@ export function OptimizationConfirmCard({
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 text-[13px]">
                     <span style={{ color: 'var(--text-muted)', textDecoration: 'line-through' }}>{svc.original}</span>
-                    <span style={{ color: 'var(--text-muted)' }}>→</span>
+                    <span style={{ color: 'var(--text-muted)' }}>{'\u2192'}</span>
                     <span className="font-medium text-white">{svc.optimized}</span>
                   </div>
                   {svc.keywords_added.length > 0 && (

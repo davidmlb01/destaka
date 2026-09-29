@@ -8,9 +8,7 @@ import { MetricCard } from './MetricCard'
 import { NextActionsPanel } from './NextActionsPanel'
 import dynamic from 'next/dynamic'
 const ScoreChart = dynamic(() => import('./ScoreChart').then(m => m.ScoreChart), { ssr: false, loading: () => <div className="h-[200px]" /> })
-import { OptimizationHistory } from './OptimizationHistory'
 import { OptimizationWizard } from './OptimizationWizard'
-import { SurpassPlanCard } from './SurpassPlanCard'
 import { ProfileAlerts } from './ProfileAlerts'
 import { PendingDescriptionBanner } from './PendingDescriptionBanner'
 import { TokenInvalidBanner } from './TokenInvalidBanner'
@@ -135,9 +133,6 @@ export function DashboardContent() {
         </div>
       </div>
 
-      {/* Plano de Superacao */}
-      <SurpassPlanCard />
-
       {/* Linha 2: Cards de categoria */}
       <div className="animate-fade-in-up stagger-2">
         <SectionTitle>Score por categoria</SectionTitle>
@@ -162,11 +157,6 @@ export function DashboardContent() {
         </Card>
       </div>
 
-      {/* Linha 4: Histórico de otimizações */}
-      <div>
-        <SectionTitle>Histórico de otimizações</SectionTitle>
-        <OptimizationHistory actions={data.recentActions} />
-      </div>
 
     </div>
     </ErrorBoundary>
