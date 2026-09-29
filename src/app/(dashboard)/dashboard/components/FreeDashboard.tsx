@@ -1,27 +1,18 @@
 'use client'
 
+import { DashboardContent } from '@/components/dashboard/DashboardContent'
+
 interface FreeDashboardProps {
   score: number
   profileName: string
   specialty: string
 }
 
-function getScoreLabel(score: number): string {
-  if (score >= 80) return 'Forte'
-  if (score >= 60) return 'Bom'
-  if (score >= 40) return 'Funcional'
-  if (score >= 20) return 'Fraco'
-  return 'Critico'
-}
-
 function getVisibilityPercent(score: number): number {
-  // Estimativa conservadora: score 100 = 90% das buscas, score 0 = 10%
   return Math.round(10 + (score / 100) * 80)
 }
 
 function getLostPatientsRange(score: number): [number, number] {
-  // Baseado em: 20 buscas/semana na regiao, conversao 15%
-  // Pacientes perdidos = buscas nao alcancadas * conversao
   const visibility = getVisibilityPercent(score) / 100
   const weeklySearches = 20
   const conversionRate = 0.15
@@ -32,10 +23,8 @@ function getLostPatientsRange(score: number): [number, number] {
 }
 
 export function FreeDashboard({ score, profileName, specialty }: FreeDashboardProps) {
-  const label = getScoreLabel(score)
   const visibility = getVisibilityPercent(score)
-  const [lostMin, lostMax] = getLostPatientsRange(score)
-
+  const [, lostMax] = getLostPatientsRange(score)
   const patientWord = specialty === 'veterinario' ? 'clientes' : 'pacientes'
 
   async function handleCheckout() {
@@ -55,98 +44,94 @@ export function FreeDashboard({ score, profileName, specialty }: FreeDashboardPr
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-12">
-      {/* Score principal */}
+    <div className="relative">
+      {/* Dashboard real com blur */}
       <div
-        className="rounded-2xl p-8 text-center mb-8"
+        className="max-w-5xl mx-auto px-6 py-8 space-y-6"
         style={{
-          background: 'rgba(255,255,255,0.04)',
-          border: '1px solid rgba(255,255,255,0.08)',
+          filter: 'blur(6px)',
+          pointerEvents: 'none',
+          userSelect: 'none',
+          opacity: 0.6,
         }}
       >
-        <p className="text-sm font-medium mb-4" style={{ color: 'rgba(255,255,255,0.5)' }}>
-          Score Destaka
-        </p>
+        <DashboardContent />
+      </div>
 
-        <div className="flex items-center justify-center gap-4 mb-2">
-          <span className="text-6xl font-bold text-white">{score}</span>
-          <span className="text-2xl font-medium" style={{ color: 'rgba(255,255,255,0.3)' }}>/100</span>
-        </div>
+      {/* Overlay escuro gradiente */}
+      <div
+        className="absolute inset-0 z-10"
+        style={{
+          background: 'linear-gradient(180deg, rgba(7,26,25,0.3) 0%, rgba(7,26,25,0.85) 50%, rgba(7,26,25,0.95) 100%)',
+          pointerEvents: 'none',
+        }}
+      />
 
-        <p
-          className="text-sm font-semibold mb-8"
-          style={{
-            color: score >= 60 ? 'var(--success)' : score >= 40 ? 'var(--warning)' : 'var(--error)',
-          }}
-        >
-          {label}
-        </p>
-
+      {/* CTA flutuante */}
+      <div className="absolute inset-0 z-20 flex items-center justify-center px-6">
         <div
-          className="rounded-xl p-6 text-left"
+          className="w-full max-w-md rounded-2xl p-8 text-center"
           style={{
-            background: 'rgba(255,255,255,0.03)',
-            border: '1px solid rgba(255,255,255,0.06)',
+            background: 'rgba(7,26,25,0.95)',
+            border: '1px solid rgba(20,184,166,0.25)',
+            backdropFilter: 'blur(20px)',
+            boxShadow: '0 25px 50px rgba(0,0,0,0.5)',
           }}
         >
-          <p className="text-sm text-white mb-3">
-            Com esse score, <strong>{profileName}</strong> aparece em apenas{' '}
-            <strong style={{ color: 'var(--warning)' }}>{visibility}%</strong> das buscas na sua regiao.
+          {/* Score resumido */}
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <span className="text-4xl font-bold text-white">{score}</span>
+            <span className="text-lg" style={{ color: 'rgba(255,255,255,0.3)' }}>/100</span>
+          </div>
+
+          <p className="text-xs font-semibold uppercase tracking-wider mb-6" style={{ color: 'var(--error)' }}>
+            Score Destaka
           </p>
-          <p className="text-sm" style={{ color: 'rgba(255,255,255,0.6)' }}>
-            Isso representa aproximadamente{' '}
-            <strong className="text-white">{lostMin} a {lostMax} {patientWord}</strong>{' '}
-            que procuram um profissional como voce toda semana e nao encontram sua clinica.
+
+          {/* Dados de impacto */}
+          <div
+            className="rounded-xl p-5 mb-6 text-left"
+            style={{
+              background: 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(255,255,255,0.08)',
+            }}
+          >
+            <p className="text-sm text-white mb-2">
+              <strong>{profileName}</strong> aparece em apenas{' '}
+              <strong style={{ color: 'var(--warning)' }}>{visibility}%</strong> das buscas na sua regiao.
+            </p>
+            <p className="text-sm" style={{ color: 'rgba(255,255,255,0.6)' }}>
+              Isso pode representar ate{' '}
+              <strong className="text-white">{lostMax} {patientWord} perdidos por semana</strong>{' '}
+              que nao encontram voce no Google.
+            </p>
+          </div>
+
+          {/* CTA principal */}
+          <p className="text-base font-semibold text-white mb-2">
+            O Destaka encontrou melhorias no seu perfil que podem levar ate {lostMax} {patientWord} novos por semana para o seu consultorio.
+          </p>
+
+          <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.5)' }}>
+            Tudo no piloto automatico. Sem voce precisar parar de atender.
+          </p>
+
+          <button
+            onClick={handleCheckout}
+            className="w-full px-6 py-4 rounded-xl text-sm font-bold transition-all cursor-pointer hover:scale-[1.02]"
+            style={{
+              background: 'var(--accent)',
+              color: '#fff',
+              boxShadow: '0 4px 20px rgba(20,184,166,0.3)',
+            }}
+          >
+            Ativar Destaka por R$197/mes
+          </button>
+
+          <p className="text-xs mt-4" style={{ color: 'rgba(255,255,255,0.3)' }}>
+            Cancele quando quiser. Sem multa, sem burocracia.
           </p>
         </div>
-      </div>
-
-      {/* Teaser de acoes */}
-      <div
-        className="rounded-2xl p-6 mb-8"
-        style={{
-          background: 'rgba(255,255,255,0.04)',
-          border: '1px solid rgba(255,255,255,0.08)',
-        }}
-      >
-        <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'rgba(255,255,255,0.4)' }}>
-          Proximas acoes
-        </p>
-        <p className="text-sm text-white mb-1">
-          O Destaka encontrou melhorias para o seu perfil.
-        </p>
-        <p className="text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>
-          Ative sua assinatura para aplicar automaticamente.
-        </p>
-      </div>
-
-      {/* CTA */}
-      <div
-        className="rounded-2xl p-8 text-center"
-        style={{
-          background: 'rgba(20,184,166,0.08)',
-          border: '1px solid rgba(20,184,166,0.2)',
-        }}
-      >
-        <p className="text-lg font-semibold text-white mb-2">
-          Pare de perder {patientWord}
-        </p>
-        <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.6)' }}>
-          O Destaka otimiza seu perfil automaticamente, responde avaliacoes,
-          publica posts e monitora concorrentes. Tudo no piloto automatico.
-        </p>
-
-        <button
-          onClick={handleCheckout}
-          className="px-8 py-3.5 rounded-xl text-sm font-semibold transition-colors cursor-pointer hover:opacity-90"
-          style={{ background: 'var(--accent)', color: '#fff' }}
-        >
-          Ativar Destaka por R$197/mes
-        </button>
-
-        <p className="text-xs mt-4" style={{ color: 'rgba(255,255,255,0.35)' }}>
-          Cancele quando quiser. Sem multa, sem burocracia.
-        </p>
       </div>
     </div>
   )
