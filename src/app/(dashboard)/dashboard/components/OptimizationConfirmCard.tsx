@@ -124,24 +124,54 @@ export function OptimizationConfirmCard({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ type: 'description', value: variant.text }),
         })
-        results.push({ label: `Descrição: ${variant.label}`, ok: res.ok })
+        results.push({ label: `Descricao: ${variant.label}`, ok: res.ok })
       }
 
       if (selectedCategories.size > 0) {
+        const additionalCategories = Array.from(selectedCategories).map(idx => ({
+          displayName: category_suggestions[idx].category,
+          name: category_suggestions[idx].category,
+        }))
+        const res = await fetch('/api/gbp/optimize/apply', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'categories', value: { additionalCategories } }),
+        })
         for (const idx of selectedCategories) {
-          results.push({ label: `Categoria: ${category_suggestions[idx].category}`, ok: true })
+          results.push({ label: `Categoria: ${category_suggestions[idx].category}`, ok: res.ok })
         }
       }
 
       if (selectedAttributes.size > 0) {
+        const attributes = Array.from(selectedAttributes).map(idx => ({
+          name: attribute_suggestions[idx].attribute,
+          valueType: 'BOOL',
+          values: ['true'],
+        }))
+        const res = await fetch('/api/gbp/optimize/apply', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'attributes', value: attributes }),
+        })
         for (const idx of selectedAttributes) {
-          results.push({ label: `Atributo: ${attribute_suggestions[idx].attribute}`, ok: true })
+          results.push({ label: `Atributo: ${attribute_suggestions[idx].attribute}`, ok: res.ok })
         }
       }
 
       if (selectedServices.size > 0) {
+        const services = Array.from(selectedServices).map(idx => ({
+          freeFormServiceItem: {
+            category: 'service',
+            label: { displayName: service_optimizations[idx].optimized, description: '' },
+          },
+        }))
+        const res = await fetch('/api/gbp/optimize/apply', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'services', value: services }),
+        })
         for (const idx of selectedServices) {
-          results.push({ label: `Serviço: ${service_optimizations[idx].optimized}`, ok: true })
+          results.push({ label: `Servico: ${service_optimizations[idx].optimized}`, ok: res.ok })
         }
       }
 

@@ -104,10 +104,29 @@ Inclua keywords de SEO local. Sem travessao. Retorne APENAS o texto da descricao
         } else {
           results.push({ action, status: 'failed', error: 'IA nao gerou descricao valida' })
         }
+      } else if (action.type === 'update_categories' || action.type === 'update_attributes' || action.type === 'add_services') {
+        // Delega para a rota /api/gbp/optimize/apply que faz PATCH real na GBP API
+        const typeMap: Record<string, string> = {
+          update_categories: 'categories',
+          update_attributes: 'attributes',
+          add_services: 'services',
+        }
+        const applyRes = await fetch(new URL('/api/gbp/optimize/apply', request.url), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Cookie: request.headers.get('cookie') ?? '',
+          },
+          body: JSON.stringify({ type: typeMap[action.type], value: action.payload }),
+        })
+        if (applyRes.ok) {
+          results.push({ action, status: 'done' })
+        } else {
+          const errData = await applyRes.json().catch(() => ({ error: 'Falha na API' }))
+          results.push({ action, status: 'failed', error: (errData as { error?: string }).error ?? 'Falha ao aplicar no Google' })
+        }
       } else {
-        // Demais acoes (atributos, servicos): marcadas como pendentes
-        // Requerem APIs especificas ou input do profissional
-        results.push({ action, status: 'done' })
+        results.push({ action, status: 'failed', error: `Tipo '${action.type}' ainda nao suportado` })
       }
     } catch (err) {
       console.error(`[optimization/execute] Action ${action.type} error:`, err)

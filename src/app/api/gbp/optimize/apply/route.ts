@@ -165,9 +165,38 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ status: 'done', type })
   }
 
-  // --- Tipos sem implementação: nunca marcar como "done" ---
+  // --- PATCH: services ---
+  if (type === 'services') {
+    if (!Array.isArray(value)) {
+      return NextResponse.json({ error: 'value deve ser array de serviceItems' }, { status: 400 })
+    }
+
+    const serviceItems = value as Array<{
+      structuredServiceItem?: { serviceTypeId: string; description: string }
+      freeFormServiceItem?: { category: string; label: { displayName: string; description: string } }
+    }>
+
+    const url = `${GBP_INFO_BASE}/${locationName}?updateMask=serviceItems`
+    const res = await fetch(url, {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ serviceItems }),
+    })
+
+    if (!res.ok) {
+      const errBody = await res.text()
+      console.error('[gbp/optimize] GBP API services error:', errBody)
+      return NextResponse.json({ status: 'failed', type, error: 'Falha ao atualizar servicos no Google' }, { status: 502 })
+    }
+
+    return NextResponse.json({ status: 'done', type })
+  }
+
   return NextResponse.json(
-    { status: 'not_implemented', type, error: `Tipo '${type}' ainda não possui implementação de PATCH na GBP API` },
+    { status: 'not_implemented', type, error: `Tipo '${type}' ainda nao possui implementacao` },
     { status: 422 }
   )
 }
