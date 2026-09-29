@@ -1,20 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { NextResponse } from 'next/server'
+import { getAuthOrg } from '@/lib/api/with-auth'
 
-export async function POST(request: NextRequest) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
-  const { data: professional } = await supabase
-    .from('professionals')
-    .select('organization_id')
-    .eq('user_id', user.id)
-    .maybeSingle()
-
-  if (!professional?.organization_id) {
-    return NextResponse.json({ error: 'Organizacao nao encontrada' }, { status: 404 })
-  }
+export async function POST() {
+  const auth = await getAuthOrg()
+  if (auth.error) return auth.error
+  const { user, supabase } = auth
 
   const { data: gmbProfile } = await supabase
     .from('gmb_profiles')
@@ -40,21 +30,9 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
-  const { data: professional } = await supabase
-    .from('professionals')
-    .select('organization_id')
-    .eq('user_id', user.id)
-    .maybeSingle()
-
-  if (!professional?.organization_id) {
-    return NextResponse.json({ error: 'Organizacao nao encontrada' }, { status: 404 })
-  }
-
-  const orgId = professional.organization_id
+  const auth = await getAuthOrg()
+  if (auth.error) return auth.error
+  const { user, orgId, supabase } = auth
 
   // Buscar gmb_profile do usuario para FK de competitors
   const { data: gmbProfile } = await supabase

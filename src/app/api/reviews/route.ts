@@ -1,24 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getAuthOrg } from '@/lib/api/with-auth'
 import { createClient } from '@/lib/supabase/server'
 
 const PAGE_SIZE = 10
 
 export async function GET(request: NextRequest) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
-  const { data: professional } = await supabase
-    .from('professionals')
-    .select('organization_id')
-    .eq('user_id', user.id)
-    .maybeSingle()
-
-  if (!professional?.organization_id) {
-    return NextResponse.json({ error: 'Organizacao nao encontrada' }, { status: 404 })
-  }
-
-  const orgId = professional.organization_id
+  const auth = await getAuthOrg()
+  if (auth.error) return auth.error
+  const { orgId, supabase } = auth
   const { searchParams } = new URL(request.url)
   const filter = searchParams.get('filter') ?? 'all'
   const page = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10))

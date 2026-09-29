@@ -1,6 +1,6 @@
 // Executa otimizacoes reais no perfil GBP via API
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthOrg } from '@/lib/api/with-auth'
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { getValidGmbToken } from '@/lib/gmb/auth'
 import { generateContent } from '@/lib/ai/client'
@@ -16,9 +16,9 @@ function createServiceClient() {
 }
 
 export async function POST(request: NextRequest) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const auth = await getAuthOrg()
+  if (auth.error) return auth.error
+  const { user, orgId, supabase } = auth
 
   const body = await request.json() as {
     profileId: string
@@ -29,18 +29,6 @@ export async function POST(request: NextRequest) {
   if (!body.actions?.length) {
     return NextResponse.json({ error: 'Nenhuma acao para executar' }, { status: 400 })
   }
-
-  const { data: professional } = await supabase
-    .from('professionals')
-    .select('organization_id')
-    .eq('user_id', user.id)
-    .maybeSingle()
-
-  if (!professional?.organization_id) {
-    return NextResponse.json({ error: 'Organizacao nao encontrada' }, { status: 404 })
-  }
-
-  const orgId = professional.organization_id
   const admin = createServiceClient()
 
   // Buscar org + location

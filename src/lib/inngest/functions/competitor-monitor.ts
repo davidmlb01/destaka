@@ -17,7 +17,7 @@ export const competitorMonitor = inngest.createFunction(
   {
     id: 'competitor-monitor',
     triggers: [
-      { cron: '0 8 * * 1' },
+      { cron: '0 6 * * 0' },
       { event: 'destaka/competitors.discover.requested' },
     ],
   },

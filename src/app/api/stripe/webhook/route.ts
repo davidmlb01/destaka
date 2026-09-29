@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
 
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
   if (!webhookSecret) {
-    console.error('[stripe/webhook] STRIPE_WEBHOOK_SECRET nao configurado')
+    console.error('[stripe/webhook] STRIPE_WEBHOOK_SECRET não configurado')
     return NextResponse.json({ error: 'Webhook secret not configured' }, { status: 500 })
   }
 
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
-    console.error('[stripe/webhook] Falha na verificacao da assinatura:', message)
+    console.error('[stripe/webhook] Falha na verificação da assinatura:', message)
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
   }
 
@@ -46,8 +46,9 @@ export async function POST(request: NextRequest) {
         break
       }
 
-      // Dispara sequencia de email de onboarding
+      // Dispara sequência de email pós-contratação (idempotente via event.id)
       await inngest.send({
+        id: `sub-activated-${event.id}`,
         name: 'destaka/subscription.activated',
         data: {
           organization_id: organizationId,
@@ -66,6 +67,7 @@ export async function POST(request: NextRequest) {
       if (orgId) {
         // Cancela a sequencia de onboarding em andamento (se houver)
         await inngest.send({
+          id: `sub-cancelled-${event.id}`,
           name: 'destaka/subscription.cancelled',
           data: { organization_id: orgId },
         })
@@ -74,7 +76,7 @@ export async function POST(request: NextRequest) {
     }
 
     default:
-      // Evento nao tratado, apenas acknowledge
+      // Evento não tratado, apenas acknowledge
       break
   }
 

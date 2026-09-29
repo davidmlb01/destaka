@@ -1,25 +1,13 @@
 // API de dados do dashboard, retorna o shape esperado por useDashboard
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthOrg } from '@/lib/api/with-auth'
 import { GBPClient } from '@/lib/google/gbp-client'
 import { getValidGmbToken } from '@/lib/gmb/auth'
 
 export async function GET() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
-  const { data: professional } = await supabase
-    .from('professionals')
-    .select('id, name, organization_id, role')
-    .eq('user_id', user.id)
-    .maybeSingle()
-
-  if (!professional?.organization_id) {
-    return NextResponse.json({ error: 'Organização não encontrada' }, { status: 404 })
-  }
-
-  const orgId = professional.organization_id
+  const auth = await getAuthOrg()
+  if (auth.error) return auth.error
+  const { user, orgId, supabase } = auth
   const sevenDaysAgo = new Date()
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
 

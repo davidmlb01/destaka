@@ -20,7 +20,7 @@ export const instagramSync = inngest.createFunction(
   {
     id: 'instagram-sync',
     concurrency: [{ limit: 1 }],
-    triggers: [{ cron: '0 8 * * 1' }], // toda segunda, 8h
+    triggers: [{ cron: '0 7 * * 1' }],
   },
   async ({ step }: { step: any }) => {
     const db = admin()
