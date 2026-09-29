@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 // Executa otimizacoes reais no perfil GBP via API
 import { NextRequest, NextResponse } from 'next/server'
 import { getAuthOrg } from '@/lib/api/with-auth'

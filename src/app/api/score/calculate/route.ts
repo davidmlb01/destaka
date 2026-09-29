@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 // Calcula e retorna o Score Destaka atual da organização
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'

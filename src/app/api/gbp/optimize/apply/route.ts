@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 // Aplica uma otimização específica ao perfil GBP via API
 // Tipos suportados: description, categories, attributes
 import { NextRequest, NextResponse } from 'next/server'

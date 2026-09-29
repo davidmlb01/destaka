@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { getAuthOrg, privateJson } from '@/lib/api/with-auth'
 import { createClient } from '@/lib/supabase/server'

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 // Aprova e publica uma resposta de review pendente (modo manual)
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'

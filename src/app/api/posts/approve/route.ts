@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 // Aprova e publica um post pendente (modo manual) ou rejeita
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'

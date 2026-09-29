@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 // Cria sessao de checkout no Stripe
 import { NextRequest, NextResponse } from 'next/server'
 import { getAuthOrg } from '@/lib/api/with-auth'

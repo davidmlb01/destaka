@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 // Verifica se o usuario tem assinatura ativa no Stripe
 import { NextResponse } from 'next/server'
 import { getAuthOrg, privateJson } from '@/lib/api/with-auth'

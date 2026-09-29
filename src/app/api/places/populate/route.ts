@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 // POST /api/dashboard/populate
 // Popula o dashboard com dados reais do Google Places API
 // Requer autenticacao. Chamado pelo PopulateTrigger no dashboard.
