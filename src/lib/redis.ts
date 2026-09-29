@@ -41,6 +41,35 @@ export async function rateLimit(key: string, ttlSeconds: number): Promise<number
 }
 
 /**
+ * Cache genérico com TTL. Retorna dado cacheado ou null (miss).
+ * Fail-open: se Redis indisponível, retorna null (sem cache).
+ */
+export async function cacheGet<T>(key: string): Promise<T | null> {
+  const redis = getRedis()
+  if (!redis) return null
+
+  try {
+    return await redis.get<T>(key)
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Salva valor no cache com TTL em segundos.
+ */
+export async function cacheSet<T>(key: string, value: T, ttlSeconds: number): Promise<void> {
+  const redis = getRedis()
+  if (!redis) return
+
+  try {
+    await redis.set(key, value, { ex: ttlSeconds })
+  } catch {
+    // Fail-open: cache miss é aceitável
+  }
+}
+
+/**
  * Incrementa um contador de rate limit com comportamento fail-closed.
  * Lanca erro se Redis estiver indisponivel. Use em rotas de custo direto (LLM, billing).
  * O chamador deve tratar o erro retornando 503.
