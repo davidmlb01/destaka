@@ -20,21 +20,11 @@ interface PrefillData {
   address: string
 }
 
-const SPECIALTIES = [
-  { value: 'dentista', label: 'Dentista' },
-  { value: 'medico', label: 'Medico' },
-  { value: 'fisioterapeuta', label: 'Fisioterapeuta' },
-  { value: 'psicologo', label: 'Psicologo' },
-  { value: 'nutricionista', label: 'Nutricionista' },
-  { value: 'veterinario', label: 'Veterinario' },
-  { value: 'outro', label: 'Outro' },
-]
-
 const CHALLENGES = [
-  { value: 'more_patients', label: 'Atrair mais pacientes novos' },
-  { value: 'more_reviews', label: 'Aumentar avaliacoes positivas' },
+  { value: 'more_patients', label: 'Atrair mais clientes novos' },
+  { value: 'more_reviews', label: 'Aumentar avaliações positivas' },
   { value: 'more_visibility', label: 'Aparecer melhor no Google' },
-  { value: 'all', label: 'Melhorar tudo, nao sei por onde comecar' },
+  { value: 'all', label: 'Melhorar tudo, não sei por onde começar' },
 ]
 
 const VOLUMES = [
@@ -47,22 +37,22 @@ const VOLUMES = [
 const AUTOMATION_OPTIONS = [
   {
     value: 'automatico',
-    label: 'Automatico',
+    label: 'Automático',
     description:
-      'Publicamos posts e respondemos avaliacoes automaticamente. Voce recebe um resumo semanal.',
+      'Publicamos posts e respondemos avaliações automaticamente. Você recebe um resumo semanal.',
   },
   {
     value: 'manual',
-    label: 'Com aprovacao',
+    label: 'Com aprovação',
     description:
-      'Enviamos tudo para sua aprovacao no WhatsApp antes de publicar.',
+      'Enviamos tudo para sua aprovação no WhatsApp antes de publicar.',
   },
 ]
 
 const ACTIVATION_STEPS = [
   'Perfil conectado',
   'Fotos analisadas',
-  'Avaliacoes lidas',
+  'Avaliações lidas',
   'Concorrentes mapeados',
   'Plano de melhoria criado',
 ]
@@ -77,7 +67,6 @@ export default function OnboardingPage() {
 
   // Block 1: Confirm
   const [clinicName, setClinicName] = useState('')
-  const [specialty, setSpecialty] = useState('')
   const [businessPhone, setBusinessPhone] = useState('')
   const [address, setAddress] = useState('')
 
@@ -123,10 +112,6 @@ export default function OnboardingPage() {
             setClinicName(loc.name || '')
             setBusinessPhone(loc.phone || '')
             setAddress(loc.address || '')
-            // Try to match specialty from category
-            const cat = (loc.category || '').toLowerCase()
-            const match = SPECIALTIES.find(s => cat.includes(s.value))
-            if (match) setSpecialty(match.value)
           }
         }
       } catch {
@@ -145,7 +130,6 @@ export default function OnboardingPage() {
       setActivationStep(i + 1)
     }
     await new Promise(r => setTimeout(r, 500))
-    // These would come from the API response in production
     setImprovementCount(8)
     setAutoCount(3)
     setActivationDone(true)
@@ -165,7 +149,7 @@ export default function OnboardingPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: clinicName,
-          specialty,
+          specialty: prefill?.category || 'geral',
           tone: 'proximo',
           automation_preference: automation,
           phone,
@@ -278,12 +262,12 @@ export default function OnboardingPage() {
                 Vamos configurar seu perfil em 2 minutos.
               </p>
               <button
-                onClick={() => setStep(prefill ? 'confirm' : 'confirm')}
+                onClick={() => setStep('confirm')}
                 disabled={prefillLoading}
                 className="w-full rounded-xl px-6 py-3.5 font-medium transition-colors disabled:opacity-40"
                 style={{ background: 'var(--accent)', color: '#fff' }}
               >
-                {prefillLoading ? 'Carregando...' : 'Comecar'}
+                {prefillLoading ? 'Carregando...' : 'Começar'}
               </button>
             </div>
           )}
@@ -292,43 +276,24 @@ export default function OnboardingPage() {
           {step === 'confirm' && (
             <div>
               <h1 className="text-lg font-semibold text-white mb-1">
-                {prefill ? 'Encontramos seu perfil no Google' : 'Dados do seu consultorio'}
+                {prefill ? 'Encontramos seu perfil no Google' : 'Dados do seu negócio'}
               </h1>
               <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.5)' }}>
                 {prefill
-                  ? 'Confirme se os dados estao corretos.'
-                  : 'Preencha as informacoes do seu consultorio.'}
+                  ? 'Confirme se os dados estão corretos.'
+                  : 'Preencha as informações do seu negócio.'}
               </p>
 
               <div className="space-y-4 mb-6">
-                <FieldGroup label="Nome do consultorio">
+                <FieldGroup label="Nome do estabelecimento">
                   <input
                     type="text"
                     value={clinicName}
                     onChange={e => setClinicName(e.target.value)}
-                    placeholder="Ex: Clinica Dr. Joao Silva"
+                    placeholder="Ex: Clínica Dr. João Silva"
                     className="onboarding-input"
                     autoFocus
                   />
-                </FieldGroup>
-
-                <FieldGroup label="Especialidade">
-                  <div className="grid grid-cols-2 gap-2">
-                    {SPECIALTIES.map(s => (
-                      <button
-                        key={s.value}
-                        onClick={() => setSpecialty(s.value)}
-                        className="px-3 py-2.5 rounded-lg text-sm text-left transition-colors"
-                        style={{
-                          background: specialty === s.value ? 'var(--accent)' : 'rgba(255,255,255,0.06)',
-                          color: specialty === s.value ? '#fff' : 'rgba(255,255,255,0.7)',
-                          border: `1px solid ${specialty === s.value ? 'var(--accent)' : 'rgba(255,255,255,0.08)'}`,
-                        }}
-                      >
-                        {s.label}
-                      </button>
-                    ))}
-                  </div>
                 </FieldGroup>
 
                 {prefill && (
@@ -344,7 +309,7 @@ export default function OnboardingPage() {
                       />
                     </FieldGroup>
 
-                    <FieldGroup label="Endereco">
+                    <FieldGroup label="Endereço">
                       <input
                         type="text"
                         value={address}
@@ -360,7 +325,7 @@ export default function OnboardingPage() {
 
               <button
                 onClick={() => setStep('contact')}
-                disabled={!clinicName.trim() || !specialty}
+                disabled={!clinicName.trim()}
                 className="w-full rounded-xl px-6 py-3.5 font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 style={{ background: 'var(--accent)', color: '#fff' }}
               >
@@ -373,10 +338,10 @@ export default function OnboardingPage() {
           {step === 'contact' && (
             <div>
               <h1 className="text-lg font-semibold text-white mb-1">
-                Como entrar em contato com voce?
+                Como entrar em contato com você?
               </h1>
               <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                Enviamos relatorios e alertas por WhatsApp. Sem spam, apenas o que importa.
+                Enviamos relatórios e alertas por WhatsApp. Sem spam, apenas o que importa.
               </p>
 
               <div className="space-y-4 mb-6">
@@ -391,7 +356,7 @@ export default function OnboardingPage() {
                   />
                 </FieldGroup>
 
-                <FieldGroup label="Instagram do consultorio (opcional)">
+                <FieldGroup label="Instagram do negócio (opcional)">
                   <input
                     type="text"
                     value={instagramHandle}
@@ -400,7 +365,7 @@ export default function OnboardingPage() {
                       if (val && !val.startsWith('@')) val = `@${val}`
                       setInstagramHandle(val)
                     }}
-                    placeholder="@seuconsultorio"
+                    placeholder="@seunegocio"
                     className="onboarding-input"
                   />
                   <p className="text-xs mt-1.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
@@ -433,10 +398,10 @@ export default function OnboardingPage() {
           {step === 'routine' && (
             <div>
               <h1 className="text-lg font-semibold text-white mb-1">
-                O que mais importa para voce hoje?
+                O que mais importa para você hoje?
               </h1>
               <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                Usamos essa informacao para priorizar as acoes no seu perfil.
+                Usamos essa informação para priorizar as ações no seu perfil.
               </p>
 
               <div className="space-y-2 mb-6">
@@ -456,7 +421,7 @@ export default function OnboardingPage() {
                 ))}
               </div>
 
-              <FieldGroup label="Quantos pacientes voce atende por semana?">
+              <FieldGroup label="Quantos clientes você atende por semana?">
                 <div className="grid grid-cols-2 gap-2">
                   {VOLUMES.map(v => (
                     <button
@@ -499,10 +464,10 @@ export default function OnboardingPage() {
           {step === 'services' && (
             <div>
               <h1 className="text-lg font-semibold text-white mb-1">
-                Quais sao seus principais servicos?
+                Quais são seus principais serviços?
               </h1>
               <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                Usamos essa informacao para criar conteudo relevante no seu perfil do Google.
+                Usamos essa informação para criar conteúdo relevante no seu perfil do Google.
               </p>
 
               <div className="space-y-2 mb-4">
@@ -513,10 +478,10 @@ export default function OnboardingPage() {
                       value={s}
                       onChange={e => updateService(i, e.target.value)}
                       placeholder={
-                        i === 0 ? 'Ex: Consulta e avaliacao' :
+                        i === 0 ? 'Ex: Consulta e avaliação' :
                         i === 1 ? 'Ex: Limpeza e profilaxia' :
                         i === 2 ? 'Ex: Clareamento dental' :
-                        'Adicionar servico'
+                        'Adicionar serviço'
                       }
                       className="onboarding-input flex-1"
                       autoFocus={i === services.length - 1 && services.length > 1}
@@ -526,7 +491,7 @@ export default function OnboardingPage() {
                         onClick={() => removeService(i)}
                         className="shrink-0 w-10 h-10 rounded-lg flex items-center justify-center transition-colors"
                         style={{ background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.4)' }}
-                        aria-label="Remover servico"
+                        aria-label="Remover serviço"
                       >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -543,15 +508,15 @@ export default function OnboardingPage() {
                   className="text-sm mb-6 transition-colors"
                   style={{ color: 'var(--accent)' }}
                 >
-                  + Adicionar servico
+                  + Adicionar serviço
                 </button>
               )}
 
-              <FieldGroup label="Algo que diferencia seu consultorio? (opcional)">
+              <FieldGroup label="Algo que diferencia seu negócio? (opcional)">
                 <textarea
                   value={differentials}
                   onChange={e => setDifferentials(e.target.value)}
-                  placeholder="Ex: 15 anos de experiencia, especialista em pacientes com medo de dentista"
+                  placeholder="Ex: 15 anos de experiência, atendimento personalizado"
                   className="onboarding-input min-h-[80px] resize-none"
                   maxLength={300}
                 />
@@ -584,7 +549,7 @@ export default function OnboardingPage() {
                 Como prefere que o Destaka atue?
               </h1>
               <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                Voce pode mudar isso a qualquer momento nas configuracoes.
+                Você pode mudar isso a qualquer momento nas configurações.
               </p>
 
               {error && (
@@ -692,7 +657,7 @@ export default function OnboardingPage() {
                     Perfil configurado
                   </h1>
                   <p className="text-sm mb-8" style={{ color: 'rgba(255,255,255,0.6)' }}>
-                    Encontramos {improvementCount} melhorias para aplicar no seu perfil. {autoCount} delas sao automaticas.
+                    Encontramos {improvementCount} melhorias para aplicar no seu perfil. {autoCount} delas são automáticas.
                   </p>
                   <button
                     onClick={() => router.push('/dashboard')}

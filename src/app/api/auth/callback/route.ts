@@ -4,6 +4,8 @@ import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { inngest } from '@/lib/inngest/client'
 import { populateFromPlaces } from '@/lib/places/populate'
 import { encrypt } from '@/lib/crypto'
+import { listGmbLocations } from '@/lib/gmb/client'
+import { detectSegment } from '@/lib/gmb/segment'
 
 function createServiceClient() {
   return createAdminSupa(
@@ -24,30 +26,18 @@ export async function GET(request: NextRequest) {
       const user = session.user
       const admin = createServiceClient()
 
-      // Persiste provider_token temporariamente nos metadados (limpo apos onboarding)
-      // Necessario porque o onboarding cria a org e precisa do token para google_tokens
-      if (session.provider_token) {
-        await admin.auth.admin.updateUserById(user.id, {
-          user_metadata: {
-            ...user.user_metadata,
-            gbp_access_token: session.provider_token,
-            gbp_refresh_token: session.provider_refresh_token ?? null,
-          },
-        })
-      }
-
-      // Verifica se usuário já completou onboarding
-      const { data: professional } = await supabase
+      // Verifica se usuario ja existe
+      const { data: existingProfessional } = await supabase
         .from('professionals')
-        .select('organization_id')
+        .select('id, organization_id')
         .eq('user_id', user.id)
-        .single()
+        .maybeSingle()
 
-      if (professional?.organization_id) {
-        // Usuário existente: atualiza google_tokens e dispara auditoria
+      if (existingProfessional?.organization_id) {
+        // Professional com org: atualiza tokens e segue pro dashboard
         if (session.provider_token) {
           await admin.from('google_tokens').upsert({
-            organization_id: professional.organization_id,
+            organization_id: existingProfessional.organization_id,
             access_token: encrypt(session.provider_token),
             refresh_token: session.provider_refresh_token
               ? encrypt(session.provider_refresh_token)
@@ -55,29 +45,104 @@ export async function GET(request: NextRequest) {
             updated_at: new Date().toISOString(),
           }, { onConflict: 'organization_id' })
 
-          // Limpar tokens do user_metadata (nao devem ficar client-side)
-          await admin.auth.admin.updateUserById(user.id, {
-            user_metadata: {
-              ...user.user_metadata,
-              gbp_access_token: undefined,
-              gbp_refresh_token: undefined,
-            },
-          })
-
           inngest.send({
             name: 'destaka/gbp.audit.requested',
-            data: { organization_id: professional.organization_id },
+            data: { organization_id: existingProfessional.organization_id },
           }).catch(() => {})
         }
 
-        // Fire-and-forget: popula dashboard com dados do Places API
-        // Garante que o usuario veja dados reais mesmo sem Business Profile API
-        populateFromPlaces(professional.organization_id).catch(() => {})
-
+        populateFromPlaces(existingProfessional.organization_id).catch(() => {})
         return NextResponse.redirect(`${origin}/dashboard`)
       }
 
-      return NextResponse.redirect(`${origin}/onboarding`)
+      // Busca dados do GBP para criar org
+      let locationName = ''
+      let locationPhone = ''
+      let locationCategory = ''
+
+      if (session.provider_token) {
+        try {
+          const locations = await listGmbLocations(session.provider_token)
+          if (locations.length > 0) {
+            locationName = locations[0].title || ''
+            locationPhone = locations[0].phone || ''
+            locationCategory = locations[0].category || ''
+          }
+        } catch {
+          // GBP API indisponivel, segue com dados do Google profile
+        }
+      }
+
+      const orgName = locationName || user.user_metadata?.full_name || user.email || 'Meu Negocio'
+      const specialty = locationCategory ? detectSegment(locationCategory) : 'negócio local'
+
+      const { data: org, error: orgError } = await admin
+        .from('organizations')
+        .insert({
+          name: orgName,
+          specialty,
+          phone: locationPhone || '',
+          tone: 'proximo',
+          automation_preference: 'automatico',
+        })
+        .select()
+        .single()
+
+      if (orgError) {
+        console.error('[callback] Falha ao criar organizacao:', orgError.message)
+        return NextResponse.redirect(`${origin}/login?error=org_creation_failed`)
+      }
+
+      if (existingProfessional) {
+        // Professional existe mas sem org: vincular
+        const { error: updateError } = await admin
+          .from('professionals')
+          .update({ organization_id: org.id })
+          .eq('id', existingProfessional.id)
+
+        if (updateError) {
+          console.error('[callback] Falha ao vincular professional:', updateError.message)
+          return NextResponse.redirect(`${origin}/login?error=profile_link_failed`)
+        }
+      } else {
+        // Nenhum professional: criar do zero
+        const { error: profError } = await admin
+          .from('professionals')
+          .insert({
+            user_id: user.id,
+            organization_id: org.id,
+            email: user.email!,
+            name: user.user_metadata?.full_name ?? user.email!,
+            role: 'owner',
+          })
+
+        if (profError) {
+          console.error('[callback] Falha ao criar professional:', profError.message)
+          return NextResponse.redirect(`${origin}/login?error=profile_creation_failed`)
+        }
+      }
+
+      // Salva tokens do Google
+      if (session.provider_token) {
+        await admin.from('google_tokens').insert({
+          organization_id: org.id,
+          access_token: encrypt(session.provider_token),
+          refresh_token: session.provider_refresh_token
+            ? encrypt(session.provider_refresh_token)
+            : null,
+        })
+      }
+
+      // Dispara auditoria + populacao em background
+      inngest.send({
+        name: 'destaka/gbp.audit.requested',
+        data: { organization_id: org.id },
+      }).catch(() => {})
+
+      populateFromPlaces(org.id).catch(() => {})
+
+      // Direto pro dashboard (gratuito, sem onboarding)
+      return NextResponse.redirect(`${origin}/dashboard`)
     }
   }
 
