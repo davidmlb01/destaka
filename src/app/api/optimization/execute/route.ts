@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     .from('organizations')
     .select('gbp_location_id, name, specialty')
     .eq('id', orgId)
-    .single()
+    .maybeSingle()
 
   if (!org?.gbp_location_id) {
     return NextResponse.json({ error: 'Location GBP não configurado' }, { status: 500 })
@@ -114,7 +114,8 @@ Inclua keywords de SEO local. Sem travessao. Retorne APENAS o texto da descricao
           update_attributes: 'attributes',
           add_services: 'services',
         }
-        const applyRes = await fetch(new URL('/api/gbp/optimize/apply', request.url), {
+        const applyBase = process.env.NEXT_PUBLIC_APP_URL ?? 'https://destaka.com.br'
+        const applyRes = await fetch(new URL('/api/gbp/optimize/apply', applyBase), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

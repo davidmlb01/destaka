@@ -6,6 +6,9 @@ import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { GBPClient } from '@/lib/google/gbp-client'
 import { getValidGmbToken } from '@/lib/gmb/auth'
+import { z } from 'zod'
+
+const PostIdSchema = z.object({ post_id: z.string().uuid() })
 
 function createServiceClient() {
   return createAdminSupa(
@@ -40,7 +43,7 @@ export async function POST(request: NextRequest) {
     .eq('id', post_id)
     .eq('organization_id', professional.organization_id)
     .eq('status', 'pending')
-    .single()
+    .maybeSingle()
 
   if (!post) return NextResponse.json({ error: 'Post não encontrado ou já processado' }, { status: 404 })
 
@@ -49,7 +52,7 @@ export async function POST(request: NextRequest) {
     .from('organizations')
     .select('gbp_location_id')
     .eq('id', professional.organization_id)
-    .single()
+    .maybeSingle()
 
   if (!org?.gbp_location_id) {
     return NextResponse.json({ error: 'Location GBP não configurado' }, { status: 500 })
@@ -69,7 +72,8 @@ export async function POST(request: NextRequest) {
     const gbpClient = new GBPClient(accessToken)
     gbpData = await gbpClient.createPost(org.gbp_location_id, { summary: post.content })
   } catch (err) {
-    return NextResponse.json({ error: `GBP API error: ${err instanceof Error ? err.message : 'unknown'}` }, { status: 502 })
+    console.error('[posts/approve] GBP API error:', err instanceof Error ? err.message : err)
+    return NextResponse.json({ error: 'Falha ao publicar post no Google. Tente novamente.' }, { status: 502 })
   }
 
   await admin
@@ -89,8 +93,9 @@ export async function DELETE(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { post_id } = await request.json()
-  if (!post_id) return NextResponse.json({ error: 'post_id obrigatório' }, { status: 400 })
+  const parsed = PostIdSchema.safeParse(await request.json().catch(() => null))
+  if (!parsed.success) return NextResponse.json({ error: 'post_id invalido' }, { status: 400 })
+  const { post_id } = parsed.data
 
   const admin = createServiceClient()
 
@@ -98,7 +103,7 @@ export async function DELETE(request: NextRequest) {
     .from('professionals')
     .select('organization_id')
     .eq('user_id', user.id)
-    .single()
+    .maybeSingle()
 
   if (!professional?.organization_id) {
     return NextResponse.json({ error: 'Organização não encontrada' }, { status: 404 })

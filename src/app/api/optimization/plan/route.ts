@@ -15,7 +15,7 @@ export async function GET() {
   const [{ data: gbpProfile }, { data: reviews }, { data: org }] = await Promise.all([
     supabase.from('gbp_profiles').select('*').eq('organization_id', orgId).maybeSingle(),
     supabase.from('reviews').select('id, rating, response_text').eq('organization_id', orgId),
-    supabase.from('organizations').select('specialty').eq('id', orgId).single(),
+    supabase.from('organizations').select('specialty').eq('id', orgId).maybeSingle(),
   ])
 
   if (!gbpProfile) {

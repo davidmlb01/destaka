@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     .from('professionals')
     .select('organization_id')
     .eq('user_id', user.id)
-    .single()
+    .maybeSingle()
 
   if (!professional?.organization_id) {
     return NextResponse.json({ error: 'Organização não encontrada' }, { status: 404 })
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
     .from('professionals')
     .select('organization_id')
     .eq('user_id', user.id)
-    .single()
+    .maybeSingle()
 
   if (!professional?.organization_id) {
     return NextResponse.json({ error: 'Organização não encontrada' }, { status: 404 })
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
       .eq('organization_id', professional.organization_id)
       .order('snapshot_date', { ascending: false })
       .limit(1)
-      .single(),
+      .maybeSingle(),
     supabase
       .from('scores')
       .select('total, gmb_completude, reputacao, visibilidade, retencao, conversao, faixa, tendencia, snapshot_date')

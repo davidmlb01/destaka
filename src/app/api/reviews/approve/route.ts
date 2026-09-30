@@ -6,6 +6,9 @@ import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { GBPClient } from '@/lib/google/gbp-client'
 import { getValidGmbToken } from '@/lib/gmb/auth'
+import { z } from 'zod'
+
+const ResponseIdSchema = z.object({ response_id: z.string().uuid() })
 
 function createServiceClient() {
   return createAdminSupa(
@@ -20,8 +23,9 @@ export async function POST(request: NextRequest) {
 
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { response_id } = await request.json()
-  if (!response_id) return NextResponse.json({ error: 'response_id obrigatório' }, { status: 400 })
+  const parsed = ResponseIdSchema.safeParse(await request.json().catch(() => null))
+  if (!parsed.success) return NextResponse.json({ error: 'response_id invalido' }, { status: 400 })
+  const { response_id } = parsed.data
 
   const admin = createServiceClient()
 
@@ -30,7 +34,7 @@ export async function POST(request: NextRequest) {
     .from('professionals')
     .select('organization_id')
     .eq('user_id', user.id)
-    .single()
+    .maybeSingle()
 
   if (!professional?.organization_id) {
     return NextResponse.json({ error: 'Organização não encontrada' }, { status: 404 })
@@ -42,7 +46,7 @@ export async function POST(request: NextRequest) {
     .eq('id', response_id)
     .eq('organization_id', professional.organization_id)
     .eq('status', 'pending')
-    .single()
+    .maybeSingle()
 
   if (!reviewResponse) {
     return NextResponse.json({ error: 'Resposta não encontrada ou já processada' }, { status: 404 })
@@ -53,7 +57,7 @@ export async function POST(request: NextRequest) {
     .from('reviews')
     .select('review_id')
     .eq('id', reviewResponse.review_id)
-    .single()
+    .maybeSingle()
 
   if (!review?.review_id) {
     return NextResponse.json({ error: 'Review não encontrado' }, { status: 500 })
@@ -71,7 +75,8 @@ export async function POST(request: NextRequest) {
     const gbpClient = new GBPClient(accessToken)
     await gbpClient.replyToReview(review.review_id, reviewResponse.generated_text)
   } catch (err) {
-    return NextResponse.json({ error: `GBP API error: ${err instanceof Error ? err.message : 'unknown'}` }, { status: 502 })
+    console.error('[reviews/approve] GBP API error:', err instanceof Error ? err.message : err)
+    return NextResponse.json({ error: 'Falha ao publicar resposta no Google. Tente novamente.' }, { status: 502 })
   }
 
   // Atualiza status para published
@@ -90,8 +95,9 @@ export async function DELETE(request: NextRequest) {
 
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { response_id } = await request.json()
-  if (!response_id) return NextResponse.json({ error: 'response_id obrigatório' }, { status: 400 })
+  const parsed = ResponseIdSchema.safeParse(await request.json().catch(() => null))
+  if (!parsed.success) return NextResponse.json({ error: 'response_id invalido' }, { status: 400 })
+  const { response_id } = parsed.data
 
   const admin = createServiceClient()
 
@@ -99,7 +105,7 @@ export async function DELETE(request: NextRequest) {
     .from('professionals')
     .select('organization_id')
     .eq('user_id', user.id)
-    .single()
+    .maybeSingle()
 
   if (!professional?.organization_id) {
     return NextResponse.json({ error: 'Organização não encontrada' }, { status: 404 })

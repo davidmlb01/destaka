@@ -24,6 +24,16 @@ export async function PATCH(
 
   const orgId = professional.organization_id
   const { key } = await params
+
+  const VALID_KEYS = new Set([
+    'logo_photo', 'cover_photo', 'space_photos', 'business_hours',
+    'phone_number', 'website_url', 'business_description', 'services_list',
+    'attributes', 'respond_reviews', 'first_post', 'weekly_posts',
+  ])
+  if (!VALID_KEYS.has(key)) {
+    return NextResponse.json({ error: 'Chave invalida' }, { status: 400 })
+  }
+
   const body = await request.json()
   const done = Boolean(body.done)
 

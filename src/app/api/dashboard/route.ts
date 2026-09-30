@@ -22,7 +22,7 @@ export async function GET() {
     { data: recentPosts },
     { data: recentResponses },
   ] = await Promise.all([
-    supabase.from('organizations').select('name, specialty').eq('id', orgId).single(),
+    supabase.from('organizations').select('name, specialty').eq('id', orgId).maybeSingle(),
     supabase.from('scores').select('*').eq('organization_id', orgId).order('snapshot_date', { ascending: false }).limit(1).maybeSingle(),
     supabase.from('scores').select('total, snapshot_date, faixa').eq('organization_id', orgId).order('snapshot_date', { ascending: false }).limit(30),
     supabase.from('gbp_profiles').select('id, description, categories, photo_count, audit_report, benchmark_report, optimization_report, last_synced_at').eq('organization_id', orgId).maybeSingle(),

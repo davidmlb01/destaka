@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     .from('organizations')
     .select('stripe_customer_id, name')
     .eq('id', orgId)
-    .single()
+    .maybeSingle()
 
   let customerId = (org as Record<string, unknown>)?.stripe_customer_id as string | null
 
@@ -53,7 +53,9 @@ export async function POST(request: NextRequest) {
   }
 
   // Criar checkout session
-  const origin = request.headers.get('origin') ?? 'https://destaka.com.br'
+  const ALLOWED_ORIGINS = ['https://destaka.com.br', 'https://www.destaka.com.br']
+  const rawOrigin = request.headers.get('origin') ?? ''
+  const origin = ALLOWED_ORIGINS.includes(rawOrigin) ? rawOrigin : 'https://destaka.com.br'
 
   const session = await stripe.checkout.sessions.create({
     customer: customerId,

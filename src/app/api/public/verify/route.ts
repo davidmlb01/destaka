@@ -38,7 +38,9 @@ export async function POST(req: NextRequest) {
     const input = parsed.data.input.trim()
     const resolved = await resolveInput(input)
 
-    console.log('[verify] resolved:', { query: resolved.query, lat: resolved.lat, lng: resolved.lng, resolvedUrl: resolved.resolvedUrl.slice(0, 100) })
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('[verify] resolved:', { query: resolved.query, lat: resolved.lat, lng: resolved.lng })
+    }
 
     let placeDetails = null
     const usingMock = !isPlacesAvailable()

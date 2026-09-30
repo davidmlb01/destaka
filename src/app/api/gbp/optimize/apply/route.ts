@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     .from('organizations')
     .select('gbp_location_id')
     .eq('id', orgId)
-    .single()
+    .maybeSingle()
 
   if (!org?.gbp_location_id) {
     return NextResponse.json({ error: 'Location GBP não configurado' }, { status: 500 })
@@ -108,7 +108,8 @@ export async function POST(request: NextRequest) {
 
     if (!res.ok) {
       const errBody = await res.text()
-      return NextResponse.json({ status: 'failed', type, error: `GBP API error: ${errBody}` }, { status: 502 })
+      console.error('[gbp/optimize] GBP API categories error:', errBody)
+      return NextResponse.json({ status: 'failed', type, error: 'Falha ao atualizar categorias no Google. Tente novamente.' }, { status: 502 })
     }
 
     const allCatNames = [
@@ -149,7 +150,8 @@ export async function POST(request: NextRequest) {
 
     if (!res.ok) {
       const errBody = await res.text()
-      return NextResponse.json({ status: 'failed', type, error: `GBP API error: ${errBody}` }, { status: 502 })
+      console.error('[gbp/optimize] GBP API attributes error:', errBody)
+      return NextResponse.json({ status: 'failed', type, error: 'Falha ao atualizar atributos no Google. Tente novamente.' }, { status: 502 })
     }
 
     return NextResponse.json({ status: 'done', type })
