@@ -15,7 +15,7 @@ export async function GET() {
     .from('organizations')
     .select('stripe_customer_id')
     .eq('id', orgId)
-    .single()
+    .maybeSingle()
 
   const customerId = (org as Record<string, unknown>)?.stripe_customer_id as string | null
 

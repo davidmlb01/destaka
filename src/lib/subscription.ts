@@ -16,7 +16,7 @@ export async function isActiveSubscriber(orgId: string): Promise<boolean> {
     .from('organizations')
     .select('subscription_status, stripe_customer_id')
     .eq('id', orgId)
-    .single()
+    .maybeSingle()
 
   const dbStatus = (org as Record<string, unknown>)?.subscription_status as string | null
 

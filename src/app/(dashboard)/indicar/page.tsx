@@ -22,7 +22,7 @@ export default async function IndicarPage() {
     .from('organizations')
     .select('name')
     .eq('id', professional.organization_id)
-    .single()
+    .maybeSingle()
 
   const profileName = org?.name ?? 'Meu Perfil'
 

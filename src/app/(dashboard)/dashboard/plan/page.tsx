@@ -37,7 +37,7 @@ export default async function PlanPage() {
   if (!professional?.organization_id) redirect('/login')
 
   const { data: org } = await supabase
-    .from('organizations').select('name').eq('id', professional.organization_id).single()
+    .from('organizations').select('name').eq('id', professional.organization_id).maybeSingle()
 
   const profileName = org?.name ?? 'Meu Perfil'
 

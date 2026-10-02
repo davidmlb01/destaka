@@ -19,7 +19,7 @@ export default async function OptimizationsPage() {
   if (!await isActiveSubscriber(professional.organization_id)) redirect('/dashboard/upgrade?feature=optimizations')
 
   const { data: org } = await supabase
-    .from('organizations').select('name').eq('id', professional.organization_id).single()
+    .from('organizations').select('name').eq('id', professional.organization_id).maybeSingle()
 
   const profileName = org?.name ?? 'Meu Perfil'
 

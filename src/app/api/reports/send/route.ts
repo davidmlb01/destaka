@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     .from('professionals')
     .select('organization_id')
     .eq('user_id', user.id)
-    .single()
+    .maybeSingle()
 
   if (!professional?.organization_id) {
     return NextResponse.json({ error: 'Organização não encontrada' }, { status: 404 })
