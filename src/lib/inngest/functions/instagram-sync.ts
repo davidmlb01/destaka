@@ -20,7 +20,7 @@ export const instagramSync = inngest.createFunction(
   {
     id: 'instagram-sync',
     concurrency: [{ limit: 1 }],
-    triggers: [{ cron: '0 7 * * 1' }],
+    triggers: [{ event: 'destaka/instagram.sync.requested' }, { cron: '0 7 * * 1' }],
   },
   async ({ step }: { step: any }) => {
     const db = admin()
