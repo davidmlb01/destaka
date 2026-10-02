@@ -32,7 +32,7 @@ export default async function DashboardPage({
   const checkoutStatus = params.checkout ?? null
 
   const [{ data: org }, isSubscriber] = await Promise.all([
-    supabase.from('organizations').select('name, specialty').eq('id', orgId).single(),
+    supabase.from('organizations').select('name, specialty').eq('id', orgId).maybeSingle(),
     isActiveSubscriber(orgId),
   ])
 

@@ -15,8 +15,11 @@ function createServiceClient() {
 }
 
 export async function GET(request: NextRequest) {
-  const { searchParams, origin } = new URL(request.url)
+  const { searchParams } = new URL(request.url)
   const code = searchParams.get('code')
+  const ALLOWED_ORIGINS = ['https://destaka.com.br', 'https://www.destaka.com.br']
+  const rawOrigin = new URL(request.url).origin
+  const origin = ALLOWED_ORIGINS.includes(rawOrigin) ? rawOrigin : 'https://destaka.com.br'
 
   if (code) {
     const supabase = await createClient()
