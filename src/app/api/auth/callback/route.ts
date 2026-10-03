@@ -51,10 +51,12 @@ export async function GET(request: NextRequest) {
           }
           await admin.from('google_tokens').upsert(tokenUpdate, { onConflict: 'organization_id' })
 
-          inngest.send({
-            name: 'destaka/gbp.audit.requested',
-            data: { organization_id: existingProfessional.organization_id },
-          }).catch(() => {})
+          inngest.send([
+            { name: 'destaka/gbp.audit.requested', data: { organization_id: existingProfessional.organization_id } },
+            { name: 'destaka/score.calculate.requested', data: { organization_id: existingProfessional.organization_id } },
+            { name: 'destaka/geo.collect.requested', data: { organization_id: existingProfessional.organization_id } },
+            { name: 'destaka/keywords.snapshot.requested', data: { organization_id: existingProfessional.organization_id } },
+          ]).catch(() => {})
         } else {
           console.log(`[callback] provider_token ausente para org ${existingProfessional.organization_id}. Token nao atualizado.`)
         }

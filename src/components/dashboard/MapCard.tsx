@@ -59,9 +59,27 @@ export default function MapCard({ isSubscriber }: { isSubscriber: boolean }) {
         </div>
       )}
 
-      {!loading && (!data || data.empty) && (
+      {!loading && !isSubscriber && !data && (
+        <div className="relative">
+          <div className="h-[300px] sm:h-[400px] rounded-lg bg-zinc-800/50 blur-sm" />
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900/60 rounded-lg">
+            <svg className="w-8 h-8 text-zinc-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+            </svg>
+            <p className="text-zinc-300 text-sm font-medium mb-2">Assine para ver seu alcance completo</p>
+            <Link
+              href="/dashboard/upgrade"
+              className="bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+            >
+              Ver meu alcance
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {!loading && isSubscriber && (!data || data.empty) && (
         <div className="h-[300px] sm:h-[400px] flex items-center justify-center text-zinc-500 text-center px-4">
-          <p>{data?.message ?? 'Coletando dados de alcance. Volte na proxima semana.'}</p>
+          <p>Estamos mapeando seu alcance. Recarregue em alguns minutos.</p>
         </div>
       )}
 
