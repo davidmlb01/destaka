@@ -56,7 +56,7 @@ export default async function DashboardPage({
       >
         {checkoutStatus && <CheckoutBanner status={checkoutStatus} />}
         <FreeDashboard
-          score={(scoreData as Record<string, unknown>)?.total as number ?? 0}
+          score={Number((scoreData as Record<string, unknown>)?.total) || 0}
           profileName={profileName}
           specialty={org?.specialty ?? ''}
           isNewUser={!scoreData}
