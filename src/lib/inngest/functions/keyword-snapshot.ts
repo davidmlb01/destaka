@@ -55,10 +55,21 @@ export const keywordSnapshot = inngest.createFunction(
             return { org_id: orgId, status: 'skip', error: 'sem gbp_location_id' }
           }
 
-          const { data: profile } = await db
-            .from('gbp_profiles')
-            .select('id')
+          // gmb_profiles usa user_id, nao organization_id
+          const { data: prof } = await db
+            .from('professionals')
+            .select('user_id')
             .eq('organization_id', orgId)
+            .maybeSingle()
+
+          if (!prof?.user_id) {
+            return { org_id: orgId, status: 'skip', error: 'sem professional' }
+          }
+
+          const { data: profile } = await db
+            .from('gmb_profiles')
+            .select('id')
+            .eq('user_id', prof.user_id)
             .maybeSingle()
 
           if (!profile) {
