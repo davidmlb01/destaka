@@ -107,7 +107,7 @@ export const geoCollector = inngest.createFunction(
 
           // Chamar GBP API v4 reportInsights para driving directions
           const locationName = org.gbp_location_id
-          const GBP_LOCATION_PATTERN = /^accounts\/\d+\/locations\/\d+$/
+          const GBP_LOCATION_PATTERN = /^(accounts\/\d+\/)?locations\/\d+$/
           if (!GBP_LOCATION_PATTERN.test(locationName)) {
             return { org_id: orgId, status: 'skip', error: 'gbp_location_id formato invalido' }
           }

@@ -64,7 +64,7 @@ export const keywordSnapshot = inngest.createFunction(
             return { org_id: orgId, status: 'skip', error: 'sem perfil GBP' }
           }
 
-          const GBP_LOCATION_PATTERN = /^accounts\/\d+\/locations\/\d+$/
+          const GBP_LOCATION_PATTERN = /^(accounts\/\d+\/)?locations\/\d+$/
           if (!GBP_LOCATION_PATTERN.test(org.gbp_location_id)) {
             return { org_id: orgId, status: 'skip', error: 'gbp_location_id formato invalido' }
           }
