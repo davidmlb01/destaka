@@ -41,9 +41,9 @@ export default async function DashboardPage({
   if (!isSubscriber) {
     const { data: scoreData } = await supabase
       .from('scores')
-      .select('score_total')
+      .select('total, snapshot_date')
       .eq('organization_id', orgId)
-      .order('created_at', { ascending: false })
+      .order('snapshot_date', { ascending: false })
       .limit(1)
       .maybeSingle()
 
@@ -56,7 +56,7 @@ export default async function DashboardPage({
       >
         {checkoutStatus && <CheckoutBanner status={checkoutStatus} />}
         <FreeDashboard
-          score={scoreData?.score_total ?? 0}
+          score={(scoreData as Record<string, unknown>)?.total as number ?? 0}
           profileName={profileName}
           specialty={org?.specialty ?? ''}
           isNewUser={!scoreData}
