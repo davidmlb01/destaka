@@ -39,19 +39,24 @@ export async function GET(request: NextRequest) {
       if (existingProfessional?.organization_id) {
         // Professional com org: atualiza tokens e segue pro dashboard
         if (session.provider_token) {
-          await admin.from('google_tokens').upsert({
+          const tokenUpdate: Record<string, unknown> = {
             organization_id: existingProfessional.organization_id,
             access_token: encrypt(session.provider_token),
-            refresh_token: session.provider_refresh_token
-              ? encrypt(session.provider_refresh_token)
-              : null,
             updated_at: new Date().toISOString(),
-          }, { onConflict: 'organization_id' })
+          }
+          // Google so retorna refresh_token na primeira autorizacao (ou com prompt=consent)
+          // Nunca sobrescrever refresh_token existente com null
+          if (session.provider_refresh_token) {
+            tokenUpdate.refresh_token = encrypt(session.provider_refresh_token)
+          }
+          await admin.from('google_tokens').upsert(tokenUpdate, { onConflict: 'organization_id' })
 
           inngest.send({
             name: 'destaka/gbp.audit.requested',
             data: { organization_id: existingProfessional.organization_id },
           }).catch(() => {})
+        } else {
+          console.log(`[callback] provider_token ausente para org ${existingProfessional.organization_id}. Token nao atualizado.`)
         }
 
         populateFromPlaces(existingProfessional.organization_id).catch(() => {})
@@ -127,14 +132,15 @@ export async function GET(request: NextRequest) {
 
       // Salva tokens do Google e limpa do user_metadata
       if (session.provider_token) {
-        await admin.from('google_tokens').upsert({
+        const newOrgToken: Record<string, unknown> = {
           organization_id: org.id,
           access_token: encrypt(session.provider_token),
-          refresh_token: session.provider_refresh_token
-            ? encrypt(session.provider_refresh_token)
-            : null,
           updated_at: new Date().toISOString(),
-        }, { onConflict: 'organization_id' })
+        }
+        if (session.provider_refresh_token) {
+          newOrgToken.refresh_token = encrypt(session.provider_refresh_token)
+        }
+        await admin.from('google_tokens').upsert(newOrgToken, { onConflict: 'organization_id' })
 
         // Limpa tokens do user_metadata (não devem ficar client-side)
         await admin.auth.admin.updateUserById(user.id, {
