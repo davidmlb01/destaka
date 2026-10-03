@@ -29,15 +29,21 @@ export default function MapCard({ isSubscriber }: { isSubscriber: boolean }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (!isSubscriber) {
+      setLoading(false)
+      return
+    }
     fetch('/api/dashboard/map')
       .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         return res.json()
       })
-      .then((d: MapData) => setData(d))
+      .then((d: MapData) => {
+        if (d && !('paywall' in d)) setData(d)
+      })
       .catch(() => setData(null))
       .finally(() => setLoading(false))
-  }, [])
+  }, [isSubscriber])
 
   const strongCount = data?.zones?.filter(z => z.status === 'strong').length ?? 0
   const weakCount = data?.zones?.filter(z => z.status === 'weak').length ?? 0

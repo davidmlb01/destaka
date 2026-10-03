@@ -24,15 +24,21 @@ export default function KeywordInsightCard({ isSubscriber }: { isSubscriber: boo
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (!isSubscriber) {
+      setLoading(false)
+      return
+    }
     fetch('/api/dashboard/keywords')
       .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         return res.json()
       })
-      .then((d: KeywordData) => setData(d))
+      .then((d: KeywordData) => {
+        if (d && !('paywall' in d)) setData(d)
+      })
       .catch(() => setData(null))
       .finally(() => setLoading(false))
-  }, [])
+  }, [isSubscriber])
 
   if (loading) {
     return (
