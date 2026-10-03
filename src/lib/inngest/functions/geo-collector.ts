@@ -118,9 +118,9 @@ export const geoCollector = inngest.createFunction(
           }
 
           // Chamar GBP API v4 reportInsights para driving directions
-          const locationName = org.gbp_location_id
+          const locationName = (org.gbp_location_id ?? '').trim()
           const GBP_LOCATION_PATTERN = /^(accounts\/\d+\/)?locations\/\d+$/
-          if (!GBP_LOCATION_PATTERN.test(locationName)) {
+          if (!locationName || !GBP_LOCATION_PATTERN.test(locationName)) {
             return { org_id: orgId, status: 'skip', error: 'gbp_location_id formato invalido' }
           }
           const insightsUrl = `https://mybusiness.googleapis.com/v4/${locationName}:reportInsights`

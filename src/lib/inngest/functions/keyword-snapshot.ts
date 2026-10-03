@@ -76,13 +76,14 @@ export const keywordSnapshot = inngest.createFunction(
             return { org_id: orgId, status: 'skip', error: 'sem perfil GBP' }
           }
 
+          const locationId = (org.gbp_location_id ?? '').trim()
           const GBP_LOCATION_PATTERN = /^(accounts\/\d+\/)?locations\/\d+$/
-          if (!GBP_LOCATION_PATTERN.test(org.gbp_location_id)) {
+          if (!locationId || !GBP_LOCATION_PATTERN.test(locationId)) {
             return { org_id: orgId, status: 'skip', error: 'gbp_location_id formato invalido' }
           }
 
           const gbpClient = new GBPClient(validToken)
-          const keywords = await gbpClient.getSearchKeywords(org.gbp_location_id)
+          const keywords = await gbpClient.getSearchKeywords(locationId)
 
           if (!keywords?.length) {
             console.log(`[keyword-snapshot] Sem keywords para org ${orgId}`)
