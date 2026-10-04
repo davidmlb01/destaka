@@ -21,22 +21,22 @@ import MapCard from './MapCard'
 import KeywordInsightCard from './KeywordInsightCard'
 
 const CATEGORY_LABELS: Record<string, string> = {
-  'Informações Básicas': 'Seu perfil esta completo?',
-  'Fotos': 'Fotos do seu negocio',
+  'Informações Básicas': 'Seu perfil está completo?',
+  'Fotos': 'Fotos do seu negócio',
   'Avaliações': 'O que seus clientes dizem',
   'Posts': 'Suas novidades no Google',
-  'Serviços': 'Servicos que voce oferece',
-  'Atributos': 'Recursos do seu negocio',
+  'Serviços': 'Serviços que você oferece',
+  'Atributos': 'Recursos do seu negócio',
 }
 
 function getScoreMessage(score: number, isSubscriber: boolean): string {
   if (!isSubscriber) {
-    if (score <= 30) return 'Seus concorrentes estao muito na frente'
-    if (score <= 60) return 'Voce esta perdendo clientes agora'
-    if (score <= 80) return 'Perto, mas ainda atras dos concorrentes'
+    if (score <= 30) return 'Seus concorrentes estão muito na frente'
+    if (score <= 60) return 'Você está perdendo clientes agora'
+    if (score <= 80) return 'Perto, mas ainda atrás dos concorrentes'
     return 'Bem posicionado'
   }
-  if (score <= 30) return 'Precisa de atencao urgente'
+  if (score <= 30) return 'Precisa de atenção urgente'
   if (score <= 60) return 'Em progresso'
   if (score <= 80) return 'Bom, pode melhorar'
   return 'Excelente'
@@ -106,10 +106,10 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
     <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
       <div className="mb-4" style={{ opacity: 0.3 }}><PinIcon size={48} /></div>
       <h2 className="font-display font-bold text-white text-[20px] mb-2">
-        Nao foi possivel carregar o painel
+        Não foi possível carregar o painel
       </h2>
       <p className="text-[14px] mb-6" style={{ color: 'rgba(255,255,255,0.7)', maxWidth: 400 }}>
-        Houve um problema ao conectar com o servidor. Verifique sua conexao e tente novamente.
+        Houve um problema ao conectar com o servidor. Verifique sua conexão e tente novamente.
       </p>
       <button
         onClick={() => mutate()}
@@ -187,7 +187,7 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
                   boxShadow: '0 4px 16px rgba(20,184,166,0.3)',
                 }}
               >
-                Comecar a aparecer agora
+                Começar a aparecer agora
               </button>
             </>
           )}
@@ -203,20 +203,20 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
           <SectionTitle>Performance</SectionTitle>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             <MetricCard label="Buscas no Google" value={metrics.viewsSearch} icon={<PinIcon size={16} />} hint={metrics.period} />
-            <MetricCard label="Visualizacoes no Maps" value={metrics.viewsMaps} icon={<PinIcon size={16} />} hint={metrics.period} />
+            <MetricCard label="Visualizações no Maps" value={metrics.viewsMaps} icon={<PinIcon size={16} />} hint={metrics.period} />
             <MetricCard label="Cliques no site" value={metrics.clicksWebsite} icon={<PinIcon size={16} />} hint={metrics.period} />
-            <MetricCard label="Ligacoes geradas" value={metrics.clicksCall} icon={<PinIcon size={16} />} hint={metrics.period} />
+            <MetricCard label="Ligações geradas" value={metrics.clicksCall} icon={<PinIcon size={16} />} hint={metrics.period} />
           </div>
         </div>
       ) : (
         <div>
           <SectionTitle>Performance</SectionTitle>
-          <LockedOverlay label="Pessoas te procuraram e nao te encontraram. Veja quantas.">
+          <LockedOverlay label="Pessoas te procuraram e não te encontraram. Veja quantas.">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               <MetricCard label="Buscas no Google" value={metrics.viewsSearch} icon={<PinIcon size={16} />} hint={metrics.period} />
-              <MetricCard label="Visualizacoes no Maps" value={metrics.viewsMaps} icon={<PinIcon size={16} />} hint={metrics.period} />
+              <MetricCard label="Visualizações no Maps" value={metrics.viewsMaps} icon={<PinIcon size={16} />} hint={metrics.period} />
               <MetricCard label="Cliques no site" value={metrics.clicksWebsite} icon={<PinIcon size={16} />} hint={metrics.period} />
-              <MetricCard label="Ligacoes geradas" value={metrics.clicksCall} icon={<PinIcon size={16} />} hint={metrics.period} />
+              <MetricCard label="Ligações geradas" value={metrics.clicksCall} icon={<PinIcon size={16} />} hint={metrics.period} />
             </div>
           </LockedOverlay>
         </div>
@@ -227,7 +227,7 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fade-in-up stagger-2">
           <KeywordInsightCard isSubscriber={true} />
           <div>
-            <SectionTitle>Proximas acoes</SectionTitle>
+            <SectionTitle>Próximas ações</SectionTitle>
             <NextActionsPanel actions={nextActions} />
           </div>
         </div>
@@ -235,8 +235,8 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <KeywordInsightCard isSubscriber={false} />
           <div>
-            <SectionTitle>Proximas acoes</SectionTitle>
-            <LockedOverlay label={`${nextActions.length} ajustes que fariam voce aparecer para mais clientes.`}>
+            <SectionTitle>Próximas ações</SectionTitle>
+            <LockedOverlay label={`${nextActions.length} ajustes que fariam você aparecer para mais clientes.`}>
               <NextActionsPanel actions={nextActions} />
             </LockedOverlay>
           </div>
@@ -295,7 +295,7 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
 
             {isSubscriber && (
               <Card variant="dark" padding="sm">
-                <SectionTitle>Evolucao do score</SectionTitle>
+                <SectionTitle>Evolução do score</SectionTitle>
                 <ScoreChart data={scoreHistory} />
               </Card>
             )}

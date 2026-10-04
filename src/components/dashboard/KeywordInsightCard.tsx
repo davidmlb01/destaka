@@ -67,7 +67,7 @@ export default function KeywordInsightCard({ isSubscriber }: { isSubscriber: boo
       {/* Numero destaque */}
       <div className="flex items-baseline gap-2 mb-4">
         <span className="text-2xl font-bold text-zinc-100">{data.total_searches}</span>
-        <span className="text-sm text-zinc-400">pessoas buscaram e encontraram voce</span>
+        <span className="text-sm text-zinc-400">pessoas buscaram e encontraram você</span>
         {data.trend_pct !== null && (
           <span className={`text-xs font-medium px-1.5 py-0.5 rounded ${
             data.trend_pct > 0
@@ -107,7 +107,7 @@ export default function KeywordInsightCard({ isSubscriber }: { isSubscriber: boo
             <svg className="w-6 h-6 text-zinc-400 mb-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
             </svg>
-            <p className="text-zinc-300 text-xs font-medium mb-1.5">Seus clientes estao buscando por voce. Veja o que digitam.</p>
+            <p className="text-zinc-300 text-xs font-medium mb-1.5">Seus clientes estão buscando por você. Veja o que digitam.</p>
             <Link
               href="/dashboard/upgrade"
               className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors"
@@ -122,7 +122,7 @@ export default function KeywordInsightCard({ isSubscriber }: { isSubscriber: boo
       {isSubscriber && data.opportunity && (
         <div className="mt-4 p-3 bg-amber-400/5 border border-amber-400/20 rounded-lg">
           <p className="text-sm text-amber-300">
-            Seus concorrentes aparecem para <span className="font-semibold">&quot;{data.opportunity.keyword}&quot;</span> e voce ainda nao. Destaka esta otimizando seu perfil para essa busca.
+            Seus concorrentes aparecem para <span className="font-semibold">&quot;{data.opportunity.keyword}&quot;</span> e você ainda não. Destaka está otimizando seu perfil para essa busca.
           </p>
         </div>
       )}

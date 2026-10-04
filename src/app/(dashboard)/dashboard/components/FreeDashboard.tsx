@@ -66,7 +66,7 @@ export function FreeDashboard({ score, profileName, specialty, isNewUser }: Free
             Estamos coletando dados do seu perfil no Google. Isso leva alguns minutos.
           </p>
           <p className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
-            Recarregue a página em instantes para ver seu diagnóstico.
+            Recarregue a página em instantes para ver seu diagnóstico
           </p>
         </div>
       </div>
@@ -77,7 +77,7 @@ export function FreeDashboard({ score, profileName, specialty, isNewUser }: Free
   const [, lostMax] = getLostPatientsRange(score)
   const invisible = 100 - visibility
 
-  const impactText = `Voce esta invisivel para ${invisible}% das pessoas que procuram o que voce faz. Sao no minimo ${lostMax} clientes por semana indo direto para o concorrente.`
+  const impactText = `Você está invisível para ${invisible}% das pessoas que procuram o que você faz. São no mínimo ${lostMax} clientes por semana indo direto para o concorrente.`
 
   return (
     <div className="relative pb-20">
@@ -100,7 +100,7 @@ export function FreeDashboard({ score, profileName, specialty, isNewUser }: Free
       >
         <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between gap-4">
           <p className="text-sm text-white hidden sm:block">
-            No minimo <strong>{lostMax} clientes novos</strong> por semana.{' '}
+            No mínimo <strong>{lostMax} clientes novos</strong> por semana.{' '}
             <span style={{ color: 'rgba(255,255,255,0.7)' }}>Menos de R$7 por dia.</span>
           </p>
           <button

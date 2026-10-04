@@ -50,7 +50,7 @@ export default function MapCard({ isSubscriber }: { isSubscriber: boolean }) {
 
   return (
     <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-4 sm:p-5">
-      <h3 className="text-base font-semibold text-zinc-100 mb-1">Onde voce aparece</h3>
+      <h3 className="text-base font-semibold text-zinc-100 mb-1">Onde você aparece</h3>
       <p className="text-sm text-zinc-400 mb-3">Seu alcance no Google Maps</p>
 
       {loading && (
@@ -66,12 +66,12 @@ export default function MapCard({ isSubscriber }: { isSubscriber: boolean }) {
             <svg className="w-8 h-8 text-zinc-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
             </svg>
-            <p className="text-zinc-300 text-sm font-medium mb-2">Descubra em quais bairros voce esta invisivel</p>
+            <p className="text-zinc-300 text-sm font-medium mb-2">Descubra em quais bairros você está invisível</p>
             <Link
               href="/dashboard/upgrade"
               className="bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
             >
-              Descobrir onde estou invisivel
+              Descobrir onde estou invisível
             </Link>
           </div>
         </div>
@@ -79,7 +79,7 @@ export default function MapCard({ isSubscriber }: { isSubscriber: boolean }) {
 
       {!loading && isSubscriber && (!data || data.empty) && (
         <div className="h-[300px] sm:h-[400px] flex items-center justify-center text-zinc-500 text-center px-4">
-          <p>Estamos mapeando seu alcance. Recarregue em alguns minutos.</p>
+          <p>Estamos mapeando seu alcance. Recarregue em alguns minutos</p>
         </div>
       )}
 
@@ -96,12 +96,12 @@ export default function MapCard({ isSubscriber }: { isSubscriber: boolean }) {
               <svg className="w-8 h-8 text-zinc-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
               </svg>
-              <p className="text-zinc-300 text-sm font-medium mb-2">Descubra em quais bairros voce esta invisivel</p>
+              <p className="text-zinc-300 text-sm font-medium mb-2">Descubra em quais bairros você está invisível</p>
               <Link
                 href="/dashboard/upgrade"
                 className="bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
               >
-                Descobrir onde estou invisivel
+                Descobrir onde estou invisível
               </Link>
             </div>
           )}
@@ -109,19 +109,19 @@ export default function MapCard({ isSubscriber }: { isSubscriber: boolean }) {
           {isSubscriber && (
             <div className="mt-3 space-y-1">
               <p className="text-sm text-zinc-300">
-                Seu negocio aparece em <span className="font-semibold text-zinc-100">{data.total_neighborhoods} bairros</span>
+                Seu negócio aparece em <span className="font-semibold text-zinc-100">{data.total_neighborhoods} bairros</span>
                 {data.radius_km > 0 && (
                   <span className="text-zinc-400"> (raio de {data.radius_km} km)</span>
                 )}
               </p>
               {weakCount > 0 && (
                 <p className="text-sm text-amber-400">
-                  Destaka esta otimizando seu perfil para expandir seu alcance
+                  Destaka está otimizando seu perfil para expandir seu alcance
                 </p>
               )}
               {weakCount === 0 && strongCount > 0 && (
                 <p className="text-sm text-emerald-400">
-                  Voce esta bem posicionado na sua regiao
+                  Você está bem posicionado na sua região
                 </p>
               )}
             </div>
