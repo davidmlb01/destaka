@@ -110,7 +110,8 @@ export default function KeywordInsightCard({ isSubscriber }: { isSubscriber: boo
             <p className="text-zinc-300 text-xs font-medium mb-1.5">Seus clientes estão buscando por você. Veja o que digitam.</p>
             <Link
               href="/dashboard/upgrade"
-              className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors"
+              className="text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-all hover:brightness-110"
+              style={{ background: 'var(--accent)' }}
             >
               Ver o que meus clientes buscam
             </Link>

@@ -31,9 +31,9 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 function getScoreMessage(score: number, isSubscriber: boolean): string {
   if (!isSubscriber) {
-    if (score <= 30) return 'Seus concorrentes estão muito na frente'
-    if (score <= 60) return 'Você está perdendo clientes agora'
-    if (score <= 80) return 'Perto, mas ainda atrás dos concorrentes'
+    if (score <= 30) return 'Seu perfil precisa de atenção para aparecer'
+    if (score <= 60) return 'Clientes procuram, mas não te encontram'
+    if (score <= 80) return 'Quase lá. Alguns ajustes fazem diferença'
     return 'Bem posicionado'
   }
   if (score <= 30) return 'Precisa de atenção urgente'
@@ -59,12 +59,12 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 function LockedOverlay({ children, label }: { children: React.ReactNode; label: string }) {
   return (
     <div className="relative">
-      <div style={{ filter: 'blur(5px)', pointerEvents: 'none', userSelect: 'none', opacity: 0.5 }}>
+      <div style={{ filter: 'blur(4px)', pointerEvents: 'none', userSelect: 'none', opacity: 0.7 }}>
         {children}
       </div>
       <div
         className="absolute inset-0 flex items-center justify-center rounded-2xl"
-        style={{ background: 'rgba(7,26,25,0.6)', backdropFilter: 'blur(2px)' }}
+        style={{ background: 'rgba(7,26,25,0.4)', backdropFilter: 'blur(1px)' }}
       >
         <div className="text-center px-4">
           <svg className="mx-auto mb-2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -176,7 +176,12 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
           ) : (
             <>
               {impactText && (
-                <p className="text-sm text-center text-white leading-relaxed">{impactText}</p>
+                <div className="text-center space-y-1">
+                  <p className="text-sm font-semibold text-white">{impactText.split('|')[0]}</p>
+                  {impactText.split('|')[1] && (
+                    <p className="text-xs" style={{ color: 'rgba(255,255,255,0.6)' }}>{impactText.split('|')[1]}</p>
+                  )}
+                </div>
               )}
               <button
                 onClick={onCheckout}
@@ -187,7 +192,7 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
                   boxShadow: '0 4px 16px rgba(20,184,166,0.3)',
                 }}
               >
-                Começar a aparecer agora
+                Aparecer no Google
               </button>
             </>
           )}

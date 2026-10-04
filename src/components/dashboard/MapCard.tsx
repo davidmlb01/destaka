@@ -59,17 +59,27 @@ export default function MapCard({ isSubscriber }: { isSubscriber: boolean }) {
         </div>
       )}
 
-      {!loading && !isSubscriber && !data && (
+      {!loading && !isSubscriber && (
         <div className="relative">
-          <div className="h-[300px] sm:h-[400px] rounded-lg bg-zinc-800/50 blur-sm" />
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900/60 rounded-lg">
+          <div className="h-[300px] sm:h-[400px] rounded-lg overflow-hidden" style={{ filter: 'blur(4px)', opacity: 0.7 }}>
+            <MapContent
+              center={{ lat: -23.5505, lng: -46.6333 }}
+              zones={[
+                { lat: -23.5505, lng: -46.6333, label: 'Seu negócio', count: 80, status: 'strong' },
+                { lat: -23.5600, lng: -46.6450, label: 'Zona próxima', count: 40, status: 'medium' },
+                { lat: -23.5400, lng: -46.6200, label: 'Área descoberta', count: 10, status: 'weak' },
+              ]}
+            />
+          </div>
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900/40 rounded-lg">
             <svg className="w-8 h-8 text-zinc-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
             </svg>
             <p className="text-zinc-300 text-sm font-medium mb-2">Descubra em quais bairros você está invisível</p>
             <Link
               href="/dashboard/upgrade"
-              className="bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+              className="text-white text-sm font-medium px-4 py-2 rounded-lg transition-all hover:brightness-110"
+              style={{ background: 'var(--accent)' }}
             >
               Descobrir onde estou invisível
             </Link>
@@ -83,30 +93,13 @@ export default function MapCard({ isSubscriber }: { isSubscriber: boolean }) {
         </div>
       )}
 
-      {!loading && data && !data.empty && (
+      {!loading && isSubscriber && data && !data.empty && (
         <div className="relative">
-          <div
-            className={`h-[300px] sm:h-[400px] rounded-lg overflow-hidden ${!isSubscriber ? 'blur-sm pointer-events-none' : ''}`}
-          >
+          <div className="h-[300px] sm:h-[400px] rounded-lg overflow-hidden">
             <MapContent center={data.center} zones={data.zones} />
           </div>
 
-          {!isSubscriber && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900/60 rounded-lg">
-              <svg className="w-8 h-8 text-zinc-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-              </svg>
-              <p className="text-zinc-300 text-sm font-medium mb-2">Descubra em quais bairros você está invisível</p>
-              <Link
-                href="/dashboard/upgrade"
-                className="bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-              >
-                Descobrir onde estou invisível
-              </Link>
-            </div>
-          )}
-
-          {isSubscriber && (
+          {(
             <div className="mt-3 space-y-1">
               <p className="text-sm text-zinc-300">
                 Seu negócio aparece em <span className="font-semibold text-zinc-100">{data.total_neighborhoods} bairros</span>

@@ -77,7 +77,7 @@ export function FreeDashboard({ score, profileName, specialty, isNewUser }: Free
   const [, lostMax] = getLostPatientsRange(score)
   const invisible = 100 - visibility
 
-  const impactText = `Você está invisível para ${invisible}% das pessoas que procuram o que você faz. São no mínimo ${lostMax} clientes por semana indo direto para o concorrente.`
+  const impactText = `${invisible}% dos clientes não te encontram no Google|No mínimo ${lostMax} por semana vão para o concorrente`
 
   return (
     <div className="relative pb-20">
