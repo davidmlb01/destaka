@@ -29,8 +29,14 @@ const CATEGORY_LABELS: Record<string, string> = {
   'Atributos': 'Recursos do seu negocio',
 }
 
-function getScoreMessage(score: number): string {
-  if (score <= 30) return 'Precisa de atencao'
+function getScoreMessage(score: number, isSubscriber: boolean): string {
+  if (!isSubscriber) {
+    if (score <= 30) return 'Seus concorrentes estao muito na frente'
+    if (score <= 60) return 'Voce esta perdendo clientes agora'
+    if (score <= 80) return 'Perto, mas ainda atras dos concorrentes'
+    return 'Bem posicionado'
+  }
+  if (score <= 30) return 'Precisa de atencao urgente'
   if (score <= 60) return 'Em progresso'
   if (score <= 80) return 'Bom, pode melhorar'
   return 'Excelente'
@@ -135,7 +141,7 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
           style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
         >
           <ScoreGauge score={diagnostic?.score_total ?? 0} />
-          <p className="text-sm text-zinc-400">{getScoreMessage(diagnostic?.score_total ?? 0)}</p>
+          <p className={`text-sm ${isSubscriber ? 'text-zinc-400' : 'text-amber-400 font-medium'}`}>{getScoreMessage(diagnostic?.score_total ?? 0, isSubscriber)}</p>
 
           {isSubscriber ? (
             <>
@@ -181,7 +187,7 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
                   boxShadow: '0 4px 16px rgba(20,184,166,0.3)',
                 }}
               >
-                Ativar Destaka
+                Comecar a aparecer agora
               </button>
             </>
           )}
@@ -205,7 +211,7 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
       ) : (
         <div>
           <SectionTitle>Performance</SectionTitle>
-          <LockedOverlay label="Seus numeros reais. Assine para acompanhar.">
+          <LockedOverlay label="Pessoas te procuraram e nao te encontraram. Veja quantas.">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               <MetricCard label="Buscas no Google" value={metrics.viewsSearch} icon={<PinIcon size={16} />} hint={metrics.period} />
               <MetricCard label="Visualizacoes no Maps" value={metrics.viewsMaps} icon={<PinIcon size={16} />} hint={metrics.period} />
@@ -230,7 +236,7 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
           <KeywordInsightCard isSubscriber={false} />
           <div>
             <SectionTitle>Proximas acoes</SectionTitle>
-            <LockedOverlay label={`${nextActions.length} melhorias prontas para o seu perfil.`}>
+            <LockedOverlay label={`${nextActions.length} ajustes que fariam voce aparecer para mais clientes.`}>
               <NextActionsPanel actions={nextActions} />
             </LockedOverlay>
           </div>
@@ -272,7 +278,7 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
                 ))}
               </div>
             ) : (
-              <LockedOverlay label={`${categories.length} categorias analisadas. Assine para ver os detalhes.`}>
+              <LockedOverlay label={`${categories.length} pontos fracos identificados. Veja o que corrigir.`}>
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
                   {categories.map(cat => (
                     <ScoreCard

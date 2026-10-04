@@ -66,12 +66,12 @@ export default function MapCard({ isSubscriber }: { isSubscriber: boolean }) {
             <svg className="w-8 h-8 text-zinc-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
             </svg>
-            <p className="text-zinc-300 text-sm font-medium mb-2">Assine para ver seu alcance completo</p>
+            <p className="text-zinc-300 text-sm font-medium mb-2">Descubra em quais bairros voce esta invisivel</p>
             <Link
               href="/dashboard/upgrade"
               className="bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
             >
-              Ver meu alcance
+              Descobrir onde estou invisivel
             </Link>
           </div>
         </div>
@@ -96,12 +96,12 @@ export default function MapCard({ isSubscriber }: { isSubscriber: boolean }) {
               <svg className="w-8 h-8 text-zinc-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
               </svg>
-              <p className="text-zinc-300 text-sm font-medium mb-2">Assine para ver seu alcance completo</p>
+              <p className="text-zinc-300 text-sm font-medium mb-2">Descubra em quais bairros voce esta invisivel</p>
               <Link
                 href="/dashboard/upgrade"
                 className="bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
               >
-                Ver meu alcance
+                Descobrir onde estou invisivel
               </Link>
             </div>
           )}

@@ -75,9 +75,9 @@ export function FreeDashboard({ score, profileName, specialty, isNewUser }: Free
 
   const visibility = getVisibilityPercent(score)
   const [, lostMax] = getLostPatientsRange(score)
-  const patientWord = specialty === 'veterinario' ? 'clientes' : 'pacientes'
+  const invisible = 100 - visibility
 
-  const impactText = `Seu perfil aparece em apenas ${visibility}% das buscas na sua região. Isso pode representar até ${lostMax} ${patientWord} perdidos por semana.`
+  const impactText = `Voce esta invisivel para ${invisible}% das pessoas que procuram o que voce faz. Sao no minimo ${lostMax} clientes por semana indo direto para o concorrente.`
 
   return (
     <div className="relative pb-20">
@@ -100,8 +100,8 @@ export function FreeDashboard({ score, profileName, specialty, isNewUser }: Free
       >
         <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between gap-4">
           <p className="text-sm text-white hidden sm:block">
-            Até <strong>{lostMax} {patientWord} novos</strong> por semana.{' '}
-            <span style={{ color: 'rgba(255,255,255,0.7)' }}>R$197/mês.</span>
+            No minimo <strong>{lostMax} clientes novos</strong> por semana.{' '}
+            <span style={{ color: 'rgba(255,255,255,0.7)' }}>Menos de R$7 por dia.</span>
           </p>
           <button
             onClick={handleCheckout}
@@ -112,7 +112,7 @@ export function FreeDashboard({ score, profileName, specialty, isNewUser }: Free
               boxShadow: '0 4px 20px rgba(20,184,166,0.3)',
             }}
           >
-            Ativar Destaka
+            Quero mais clientes
           </button>
         </div>
       </div>
