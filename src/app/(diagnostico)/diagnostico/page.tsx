@@ -1,139 +1,143 @@
 'use client'
 
 import { useDiagnostico } from '@/components/diagnostico/useDiagnostico'
-import AnalyzingState from '@/components/diagnostico/AnalyzingState'
-import ScoreBlock from '@/components/diagnostico/ScoreBlock'
-import MapBlock from '@/components/diagnostico/MapBlock'
-import CompetitorsBlock from '@/components/diagnostico/CompetitorsBlock'
-import ReviewsBlock from '@/components/diagnostico/ReviewsBlock'
-import OfferBlock from '@/components/diagnostico/OfferBlock'
+import HeroScore from '@/components/diagnostico/HeroScore'
+import MapSection from '@/components/diagnostico/MapSection'
+import QuickWins from '@/components/diagnostico/QuickWins'
+import CompetitorsSection from '@/components/diagnostico/CompetitorsSection'
+import ReviewsSection from '@/components/diagnostico/ReviewsSection'
+import OfferSection from '@/components/diagnostico/OfferSection'
 import StickyCTA from '@/components/diagnostico/StickyCTA'
-import AnimatedBlock from '@/components/diagnostico/AnimatedBlock'
 import { Logo } from '@/components/ui/Logo'
 
 export default function DiagnosticoPage() {
   const { data, isLoading, error } = useDiagnostico()
 
-  // Estado de loading / erro
-  if (isLoading) {
-    return <AnalyzingState profileName="seu perfil" />
+  // Loading
+  if (isLoading || error || !data) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg-base)' }}>
+        <div className="text-center">
+          <div
+            style={{
+              width: 48, height: 48, borderRadius: '50%',
+              border: '3px solid var(--accent)',
+              borderTopColor: 'transparent',
+              animation: 'spin 1s linear infinite',
+              margin: '0 auto 20px',
+            }}
+          />
+          <p className="font-display font-bold" style={{ fontSize: 18, color: 'var(--text-primary)', marginBottom: 8 }}>
+            Analisando seu perfil
+          </p>
+          <p style={{ fontSize: 14, color: 'var(--text-tertiary)' }}>
+            Isso leva alguns segundos.
+          </p>
+          <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+        </div>
+      </div>
+    )
   }
 
-  if (error || !data) {
-    return <AnalyzingState profileName="seu perfil" />
-  }
-
-  // Se score é 0 e não tem gaps, dados ainda não foram processados
+  // Dados ainda não processados
   if (data.score.atual === 0 && data.gaps.length === 0) {
-    return <AnalyzingState profileName={data.perfil.nome || 'seu perfil'} />
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg-base)' }}>
+        <div className="text-center max-w-md px-6">
+          <p className="font-display font-bold" style={{ fontSize: 20, color: 'var(--text-primary)', marginBottom: 12 }}>
+            Estamos coletando dados de {data.perfil.nome || 'seu perfil'}
+          </p>
+          <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+            A análise do seu perfil no Google está em andamento. Você receberá um email quando o diagnóstico estiver pronto.
+          </p>
+        </div>
+      </div>
+    )
   }
 
-  const nome = data.perfil.nome || ''
-  const especialidade = data.perfil.categoria || 'sua especialidade'
-  const subtitulo = nome
-    ? `${nome}, veja como seus pacientes encontram (ou não encontram) você hoje.`
-    : 'Veja como seus pacientes encontram (ou não encontram) você hoje.'
-
-  // Rating do usuário (da review ou concorrentes)
+  const nome = data.perfil.nome || 'Seu negócio'
+  const endereco = data.perfil.endereco || ''
   const userRating = data.reviews.ultima?.nota ?? 0
   const userReviewCount = data.reviews.sem_resposta_count + (data.reviews.ultima ? 1 : 0)
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg-base)' }}>
-      {/* Header mínimo */}
+      {/* Header */}
       <header
         className="sticky top-0"
-        style={{
-          zIndex: 40,
-          background: 'var(--bg-base)',
-          height: 64,
-        }}
+        style={{ zIndex: 40, background: 'rgba(7,26,25,0.95)', backdropFilter: 'blur(12px)', height: 56 }}
       >
-        <div className="max-w-[1024px] mx-auto px-6 md:px-12 h-full flex items-center gap-3">
-          <Logo size="sm" href="https://destaka.com.br" vertical="Saúde" />
+        <div className="max-w-[900px] mx-auto px-6 h-full flex items-center">
+          <Logo size="xs" href="https://destaka.com.br" vertical="Saúde" />
         </div>
       </header>
 
-      {/* Conteúdo principal */}
-      <main className="max-w-[1024px] mx-auto px-6 md:px-12 pb-24">
-        {/* Título da página */}
-        <div className="pt-8 mb-12">
-          <h1
-            className="font-display font-bold"
-            style={{ fontSize: 24, color: 'var(--text-primary)', lineHeight: 1.2, letterSpacing: '-0.5px' }}
-          >
-            Diagnóstico do seu Perfil no Google
-          </h1>
-          <p className="mt-3" style={{ fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-            {subtitulo}
-          </p>
-        </div>
-
-        {/* Blocos */}
-        <div className="flex flex-col" style={{ gap: 48 }}>
-          {/* Bloco Score */}
-          <AnimatedBlock>
-            <ScoreBlock
-              score={data.score.atual}
-              projectedScore={data.score.projetado}
-              gaps={data.gaps}
-              especialidade={especialidade}
-            />
-          </AnimatedBlock>
-
-          {/* Bloco Mapa */}
-          {data.mapa && (
-            <AnimatedBlock delay={100}>
-              <MapBlock
-                center={data.mapa.center}
-                zones={data.mapa.zonas}
-                radiusKm={data.mapa.radius_km}
-                especialidade={especialidade}
-              />
-            </AnimatedBlock>
-          )}
-
-          {/* Bloco Concorrentes */}
-          {data.concorrentes.length > 0 && (
-            <AnimatedBlock delay={200}>
-              <CompetitorsBlock
-                concorrentes={data.concorrentes}
-                userRating={userRating}
-                userReviewCount={userReviewCount}
-                userName={nome}
-                especialidade={especialidade}
-              />
-            </AnimatedBlock>
-          )}
-
-          {/* Bloco Avaliações */}
-          <AnimatedBlock delay={300}>
-            <ReviewsBlock
-              unansweredCount={data.reviews.sem_resposta_count}
-              lastReviewDate={data.reviews.ultima?.data ?? null}
-            />
-          </AnimatedBlock>
-
-          {/* Separador visual dados > proposta */}
-          <div
-            className="mx-auto"
-            style={{
-              width: '80%',
-              height: 1,
-              background: 'linear-gradient(90deg, transparent, var(--border-accent), transparent)',
-              marginTop: 16,
-              marginBottom: 16,
-            }}
+      <main className="max-w-[900px] mx-auto px-6 pb-28">
+        {/* BLOCO 1: Score (protagonista) */}
+        <div style={{ paddingTop: 40, paddingBottom: 48 }}>
+          <HeroScore
+            score={data.score.atual}
+            projetado={data.score.projetado}
+            nome={nome}
+            endereco={endereco}
           />
-
-          {/* Bloco Oferta */}
-          <AnimatedBlock delay={400}>
-            <OfferBlock score={data.score.atual} />
-          </AnimatedBlock>
         </div>
+
+        {/* BLOCO 2: Mapa (segundo protagonista) */}
+        {data.mapa && (
+          <div style={{ paddingBottom: 48 }}>
+            <MapSection
+              center={data.mapa.center}
+              zones={data.mapa.zonas}
+              radiusKm={data.mapa.radius_km}
+              endereco={endereco}
+            />
+          </div>
+        )}
+
+        {/* BLOCO 3: Quick Wins (instantâneo / médio / longo prazo) */}
+        {data.gaps.length > 0 && (
+          <div style={{ paddingBottom: 48 }}>
+            <QuickWins gaps={data.gaps} />
+          </div>
+        )}
+
+        {/* BLOCO 4: Concorrentes */}
+        {data.concorrentes.length > 0 && (
+          <div style={{ paddingBottom: 48 }}>
+            <CompetitorsSection
+              concorrentes={data.concorrentes}
+              userRating={userRating}
+              userReviewCount={userReviewCount}
+              userName={nome}
+            />
+          </div>
+        )}
+
+        {/* BLOCO 5: Avaliações */}
+        <div style={{ paddingBottom: 48 }}>
+          <ReviewsSection
+            unansweredCount={data.reviews.sem_resposta_count}
+            lastReviewDate={data.reviews.ultima?.data ?? null}
+          />
+        </div>
+
+        {/* Separador */}
+        <div
+          className="mx-auto"
+          style={{
+            width: '60%',
+            height: 1,
+            background: 'linear-gradient(90deg, transparent, var(--accent-border), transparent)',
+            marginBottom: 48,
+          }}
+        />
+
+        {/* BLOCO 6: Oferta */}
+        <OfferSection score={data.score.atual} />
       </main>
 
-      {/* CTA Fixo Mobile */}
+      {/* CTA fixo mobile */}
       <StickyCTA score={data.score.atual} />
     </div>
   )

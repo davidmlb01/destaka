@@ -1,7 +1,8 @@
 'use client'
 
 import useSWR from 'swr'
-import { fetcher } from '@/lib/swr/fetcher'
+
+const fetcher = (url: string) => fetch(url).then(r => r.json())
 
 export interface DiagGap {
   field: string
@@ -53,12 +54,7 @@ export interface DiagnosticoData {
     source: 'api' | 'database' | 'none'
   }
   reviews: {
-    ultima: {
-      autor: string
-      nota: number
-      comentario: string | null
-      data: string
-    } | null
+    ultima: { autor: string; nota: number; comentario: string | null; data: string } | null
     sem_resposta_count: number
   }
   perfil: {
@@ -77,10 +73,7 @@ export function useDiagnostico() {
   const { data, error, isLoading } = useSWR<DiagnosticoData>(
     '/api/diagnostico',
     fetcher,
-    {
-      revalidateOnFocus: false,
-    }
+    { revalidateOnFocus: false, dedupingInterval: 60000 }
   )
-
-  return { data, isLoading, error }
+  return { data, error, isLoading }
 }
