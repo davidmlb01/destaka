@@ -46,15 +46,15 @@ export default function MapBlock({ center, zones, radiusKm, especialidade }: Map
           </p>
 
           <p className="mb-3" style={{ fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-            Hoje, seu perfil alcanca pacientes em um raio de aproximadamente {radiusKm} km. Fora dessa area, quem procura por {especialidade} encontra outros profissionais.
+            Hoje, seu perfil alcança pacientes em um raio de aproximadamente {radiusKm} km. Fora dessa área, quem procura por {especialidade} encontra outros profissionais.
           </p>
 
           <p style={{ fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-            Profissionais que otimizam seu perfil no Google alcancam ate 3x mais bairros. Com o Destaka, seu consultorio aparece para pacientes que antes nem sabiam que voce existia.
+            Profissionais que otimizam seu perfil no Google alcançam até 3x mais bairros. Com o Destaka, seu consultório aparece para pacientes que antes nem sabiam que você existia.
           </p>
 
           <p className="mt-4" style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.4 }}>
-            Verde: areas onde voce aparece. Cinza: areas onde seus concorrentes aparecem e voce nao.
+            Verde: áreas onde você aparece. Cinza: áreas onde seus concorrentes aparecem e você não.
           </p>
         </div>
       </div>

@@ -6,37 +6,37 @@ interface OfferBlockProps {
 
 const BENEFITS = [
   {
-    titulo: 'Otimizacao completa do perfil',
-    descricao: 'Titulo, descricao, fotos, categorias, atributos, horarios. Tudo otimizado para o Google.',
+    titulo: 'Otimização completa do perfil',
+    descricao: 'Título, descrição, fotos, categorias, atributos, horários. Tudo otimizado para o Google.',
     valor: 'R$800',
   },
   {
-    titulo: 'Posts semanais automaticos',
-    descricao: 'Conteudo relevante publicado toda semana no seu perfil, sem voce fazer nada.',
-    valor: 'R$400/mes',
+    titulo: 'Posts semanais automáticos',
+    descricao: 'Conteúdo relevante publicado toda semana no seu perfil, sem você fazer nada.',
+    valor: 'R$400/mês',
   },
   {
-    titulo: 'Resposta de avaliacoes com IA',
+    titulo: 'Resposta de avaliações com IA',
     descricao: 'Respostas personalizadas em menos de 1 hora. Profissionais e no tom certo.',
-    valor: 'R$300/mes',
+    valor: 'R$300/mês',
   },
   {
     titulo: 'Monitoramento de concorrentes',
-    descricao: 'Saiba exatamente o que seus concorrentes estao fazendo e como supera-los.',
-    valor: 'R$200/mes',
+    descricao: 'Saiba exatamente o que seus concorrentes estão fazendo e como superá-los.',
+    valor: 'R$200/mês',
   },
   {
-    titulo: 'Relatorio mensal de performance',
-    descricao: 'Numero de visualizacoes, ligacoes, rotas e evolucao do score. Tudo em um relatorio claro.',
-    valor: 'R$150/mes',
+    titulo: 'Relatório mensal de performance',
+    descricao: 'Número de visualizações, ligações, rotas e evolução do score. Tudo em um relatório claro.',
+    valor: 'R$150/mês',
   },
 ]
 
 function getCtaText(score: number): string {
   if (score < 30) return 'Quero corrigir meu perfil'
   if (score <= 50) return 'Quero mais pacientes'
-  if (score <= 70) return 'Quero liderar minha regiao'
-  return 'Quero manter minha lideranca'
+  if (score <= 70) return 'Quero liderar minha região'
+  return 'Quero manter minha liderança'
 }
 
 export default function OfferBlock({ score }: OfferBlockProps) {
@@ -59,7 +59,7 @@ export default function OfferBlock({ score }: OfferBlockProps) {
           Tudo que o Destaka faz pelo seu perfil
         </h2>
 
-        {/* Stack de beneficios */}
+        {/* Stack de benefícios */}
         <div className="max-w-[560px] mx-auto">
           {BENEFITS.map((benefit, i) => (
             <div
@@ -102,14 +102,14 @@ export default function OfferBlock({ score }: OfferBlockProps) {
         {/* Ancoragem */}
         <div className="max-w-[560px] mx-auto text-center mt-8">
           <p style={{ fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-            Uma agencia cobra R$2.000 por mes para fazer metade disso. E ainda pede contrato de 12 meses.
+            Uma agência cobra R$2.000 por mês para fazer metade disso. E ainda pede contrato de 12 meses.
           </p>
 
           <p
             className="font-mono font-bold mt-4 line-through"
             style={{ fontSize: 28, color: 'var(--text-muted)', lineHeight: 1 }}
           >
-            R$1.850/mes
+            R$1.850/mês
           </p>
 
           <p
@@ -119,17 +119,17 @@ export default function OfferBlock({ score }: OfferBlockProps) {
             Menos de R$7 por dia
           </p>
 
-          {/* Copy emocional pre-CTA */}
+          {/* Copy emocional pré-CTA */}
           <p className="mt-6" style={{ fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-            Voce investiu anos estudando. Nao deixe seu Google te fazer parecer amador.
+            Você investiu anos estudando. Não deixe seu Google te fazer parecer amador.
           </p>
 
           <p className="mt-2" style={{ fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-            Deixe seu Google Meu Negocio com o Destaka enquanto voce cuida dos seus pacientes.
+            Deixe seu Google Meu Negócio com o Destaka enquanto você cuida dos seus pacientes.
           </p>
 
           <p className="mt-2" style={{ fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-            Mais clientes. Mais visibilidade. Mais dinheiro no seu bolso. Tudo isso pela fracao do que uma agencia cobraria.
+            Mais clientes. Mais visibilidade. Mais dinheiro no seu bolso. Tudo isso pela fração do que uma agência cobraria.
           </p>
 
           {/* CTA principal */}

@@ -23,7 +23,7 @@ export default function ReviewsBlock({ unansweredCount, lastReviewDate }: Review
         className="font-display font-bold mb-6"
         style={{ fontSize: 20, color: 'var(--text-primary)', lineHeight: 1.3, letterSpacing: '-0.3px' }}
       >
-        Suas avaliacoes no Google
+        Suas avaliações no Google
       </h2>
 
       <div
@@ -68,7 +68,7 @@ export default function ReviewsBlock({ unansweredCount, lastReviewDate }: Review
               {diasUltimaAvaliacao !== null ? diasUltimaAvaliacao : '-'}
             </p>
             <p className="mt-2" style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.4 }}>
-              {diasUltimaAvaliacao !== null ? 'dias desde a ultima avaliacao' : 'sem avaliacoes'}
+              {diasUltimaAvaliacao !== null ? 'dias desde a última avaliação' : 'sem avaliações'}
             </p>
           </div>
         </div>
@@ -77,15 +77,15 @@ export default function ReviewsBlock({ unansweredCount, lastReviewDate }: Review
         {hasPending ? (
           <>
             <p style={{ fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-              Cada avaliacao sem resposta e um paciente que se sentiu ignorado. O Google tambem percebe: perfis que respondem avaliacoes recebem ate 35% mais visibilidade nos resultados de busca.
+              Cada avaliação sem resposta é um paciente que se sentiu ignorado. O Google também percebe: perfis que respondem avaliações recebem até 35% mais visibilidade nos resultados de busca.
             </p>
             <p className="mt-3" style={{ fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-              O Destaka responde avaliacoes com inteligencia artificial em menos de 1 hora. Respostas personalizadas, no tom certo, sem voce precisar digitar uma palavra.
+              O Destaka responde avaliações com inteligência artificial em menos de 1 hora. Respostas personalizadas, no tom certo, sem você precisar digitar uma palavra.
             </p>
           </>
         ) : (
           <p style={{ fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-            Parabens, todas as suas avaliacoes estao respondidas. O Destaka mant&eacute;m esse ritmo automaticamente para voce.
+            Parabéns, todas as suas avaliações estão respondidas. O Destaka mantém esse ritmo automaticamente para você.
           </p>
         )}
       </div>

@@ -8,9 +8,9 @@ interface StickyCTAProps {
 
 function getCtaButtonText(score: number): string {
   if (score < 30) return 'Corrigir perfil'
-  if (score <= 50) return 'Comecar agora'
-  if (score <= 70) return 'Liderar regiao'
-  return 'Manter lideranca'
+  if (score <= 50) return 'Começar agora'
+  if (score <= 70) return 'Liderar região'
+  return 'Manter liderança'
 }
 
 export default function StickyCTA({ score }: StickyCTAProps) {
@@ -39,7 +39,7 @@ export default function StickyCTA({ score }: StickyCTAProps) {
 
   return (
     <>
-      {/* Spacer para nao cobrir conteudo */}
+      {/* Spacer para não cobrir conteúdo */}
       {visible && <div className="h-[72px] md:hidden" />}
 
       <div

@@ -23,7 +23,7 @@ export default function DiagnosticoPage() {
     return <AnalyzingState profileName="seu perfil" />
   }
 
-  // Se score e 0 e nao tem gaps, dados ainda nao foram processados
+  // Se score é 0 e não tem gaps, dados ainda não foram processados
   if (data.score.atual === 0 && data.gaps.length === 0) {
     return <AnalyzingState profileName={data.perfil.nome || 'seu perfil'} />
   }
@@ -31,16 +31,16 @@ export default function DiagnosticoPage() {
   const nome = data.perfil.nome || ''
   const especialidade = data.perfil.categoria || 'sua especialidade'
   const subtitulo = nome
-    ? `${nome}, veja como seus pacientes encontram (ou nao encontram) voce hoje.`
-    : 'Veja como seus pacientes encontram (ou nao encontram) voce hoje.'
+    ? `${nome}, veja como seus pacientes encontram (ou não encontram) você hoje.`
+    : 'Veja como seus pacientes encontram (ou não encontram) você hoje.'
 
-  // Rating do usuario (da review ou concorrentes)
+  // Rating do usuário (da review ou concorrentes)
   const userRating = data.reviews.ultima?.nota ?? 0
   const userReviewCount = data.reviews.sem_resposta_count + (data.reviews.ultima ? 1 : 0)
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg-base)' }}>
-      {/* Header minimo */}
+      {/* Header mínimo */}
       <header
         className="sticky top-0"
         style={{
@@ -54,15 +54,15 @@ export default function DiagnosticoPage() {
         </div>
       </header>
 
-      {/* Conteudo principal */}
+      {/* Conteúdo principal */}
       <main className="max-w-[1024px] mx-auto px-6 md:px-12 pb-24">
-        {/* Titulo da pagina */}
+        {/* Título da página */}
         <div className="pt-8 mb-12">
           <h1
             className="font-display font-bold"
             style={{ fontSize: 24, color: 'var(--text-primary)', lineHeight: 1.2, letterSpacing: '-0.5px' }}
           >
-            Diagnostico do seu Perfil no Google
+            Diagnóstico do seu Perfil no Google
           </h1>
           <p className="mt-3" style={{ fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
             {subtitulo}
@@ -106,7 +106,7 @@ export default function DiagnosticoPage() {
             </AnimatedBlock>
           )}
 
-          {/* Bloco Avaliacoes */}
+          {/* Bloco Avaliações */}
           <AnimatedBlock delay={300}>
             <ReviewsBlock
               unansweredCount={data.reviews.sem_resposta_count}

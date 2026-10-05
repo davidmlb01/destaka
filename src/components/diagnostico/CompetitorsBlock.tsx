@@ -32,7 +32,7 @@ export default function CompetitorsBlock({
   userName,
   especialidade,
 }: CompetitorsBlockProps) {
-  // Construir lista com usuario incluido para ranking
+  // Construir lista com usuário incluído para ranking
   const allEntries = [
     ...concorrentes.map((c) => ({
       name: c.name,
@@ -41,7 +41,7 @@ export default function CompetitorsBlock({
       isUser: false,
     })),
     {
-      name: userName || 'Voce',
+      name: userName || 'Você',
       rating: userRating,
       reviewCount: userReviewCount,
       isUser: true,
@@ -51,7 +51,7 @@ export default function CompetitorsBlock({
   const userPosition = allEntries.findIndex((e) => e.isUser) + 1
   const userIsBehind = userPosition > 1
 
-  // Mostrar top 3 + usuario se nao estiver no top 3
+  // Mostrar top 3 + usuário se não estiver no top 3
   const displayEntries = allEntries.slice(0, 3)
   const userInTop3 = displayEntries.some((e) => e.isUser)
   if (!userInTop3) {
@@ -69,7 +69,7 @@ export default function CompetitorsBlock({
       </h2>
 
       <p className="mb-6" style={{ fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-        Quando alguem procura por &ldquo;{especialidade} perto de mim&rdquo;, estes sao os profissionais que aparecem primeiro. Nao porque sao melhores que voce. Porque estao mais visiveis.
+        Quando alguém procura por &ldquo;{especialidade} perto de mim&rdquo;, estes são os profissionais que aparecem primeiro. Não porque são melhores que você. Porque estão mais visíveis.
       </p>
 
       <div
@@ -95,7 +95,7 @@ export default function CompetitorsBlock({
                 }}
               >
                 <div className="flex items-center gap-3 mb-2">
-                  {/* Badge posicao */}
+                  {/* Badge posição */}
                   <span
                     className="flex items-center justify-center rounded-full text-xs font-bold flex-shrink-0"
                     style={{
@@ -111,7 +111,7 @@ export default function CompetitorsBlock({
                     className="font-display font-medium truncate"
                     style={{ fontSize: 16, color: 'var(--text-primary)', lineHeight: 1.4 }}
                   >
-                    {entry.isUser ? `Voce: ${entry.name}` : entry.name}
+                    {entry.isUser ? `Você: ${entry.name}` : entry.name}
                   </span>
                 </div>
 
@@ -121,7 +121,7 @@ export default function CompetitorsBlock({
                     {entry.rating.toFixed(1)}
                   </span>
                   <span style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>
-                    ({entry.reviewCount} avaliacoes)
+                    ({entry.reviewCount} avaliações)
                   </span>
                 </div>
               </div>
@@ -133,8 +133,8 @@ export default function CompetitorsBlock({
       {/* Copy emocional */}
       <p className="mt-6" style={{ fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
         {userIsBehind
-          ? 'Nunca mais sinta a sensacao de ver profissionais menos competentes que voce conquistando muito mais clientes. A diferenca entre voce e quem aparece primeiro nao e competencia. E visibilidade.'
-          : 'Voce esta bem posicionado, mas seus concorrentes estao investindo para ultrapassar. Manter a lideranca exige consistencia.'
+          ? 'Nunca mais sinta a sensação de ver profissionais menos competentes que você conquistando muito mais clientes. A diferença entre você e quem aparece primeiro não é competência. É visibilidade.'
+          : 'Você está bem posicionado, mas seus concorrentes estão investindo para ultrapassar. Manter a liderança exige consistência.'
         }
       </p>
 

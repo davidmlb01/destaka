@@ -8,7 +8,7 @@ export default function AnalyzingState({ profileName }: AnalyzingStateProps) {
   return (
     <div className="min-h-screen flex items-center justify-center px-6" style={{ background: 'var(--bg-base)' }}>
       <div className="text-center max-w-md">
-        {/* Icone pulsante */}
+        {/* Ícone pulsante */}
         <div className="flex justify-center mb-6">
           <div
             className="flex items-center justify-center"
@@ -54,7 +54,7 @@ export default function AnalyzingState({ profileName }: AnalyzingStateProps) {
         </p>
 
         <p className="mt-4" style={{ fontSize: 14, color: 'var(--text-tertiary)', lineHeight: 1.5 }}>
-          Voce recebera um email quando o diagnostico estiver pronto. Pode fechar esta pagina.
+          Você receberá um email quando o diagnóstico estiver pronto. Pode fechar esta página.
         </p>
 
         <style>{`

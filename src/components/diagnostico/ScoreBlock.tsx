@@ -113,16 +113,16 @@ export default function ScoreBlock({ score, projectedScore, gaps, especialidade 
 
         {/* Body copy */}
         <p className="mt-6" style={{ fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-          Hoje, apenas {score}% do seu potencial esta sendo aproveitado. Isso significa que a maioria dos pacientes que procuram por {especialidade} na sua regiao encontra seus concorrentes primeiro.
+          Hoje, apenas {score}% do seu potencial está sendo aproveitado. Isso significa que a maioria dos pacientes que procuram por {especialidade} na sua região encontra seus concorrentes primeiro.
         </p>
 
         {gapValue > 0 && (
           <p className="mt-3" style={{ fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-            Voce esta {gapValue} pontos abaixo do que seu perfil pode alcancar. Esses pontos sao pacientes que procuram por voce e nao te encontram.
+            Você está {gapValue} pontos abaixo do que seu perfil pode alcançar. Esses pontos são pacientes que procuram por você e não te encontram.
           </p>
         )}
 
-        {/* 5 ajustes rapidos */}
+        {/* 5 ajustes rápidos */}
         {top5.length > 0 && (
           <div className="mt-8">
             <h3
@@ -133,7 +133,7 @@ export default function ScoreBlock({ score, projectedScore, gaps, especialidade 
             </h3>
 
             <p className="mb-4" style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-              Identificamos {gaps.length} oportunidades no seu perfil. Estas sao as 5 com maior impacto imediato:
+              Identificamos {gaps.length} oportunidades no seu perfil. Estas são as 5 com maior impacto imediato:
             </p>
 
             <ol className="space-y-3">
@@ -162,7 +162,7 @@ export default function ScoreBlock({ score, projectedScore, gaps, especialidade 
 
             {somaImpact > 0 && (
               <p className="mt-4" style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-                Juntos, esses ajustes podem aumentar seu score em ate {somaImpact} pontos. O Destaka aplica todos automaticamente.
+                Juntos, esses ajustes podem aumentar seu score em até {somaImpact} pontos. O Destaka aplica todos automaticamente.
               </p>
             )}
           </div>
