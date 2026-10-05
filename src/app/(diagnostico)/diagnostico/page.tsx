@@ -68,7 +68,7 @@ export default function DiagnosticoPage() {
         style={{ zIndex: 40, background: 'rgba(7,26,25,0.95)', backdropFilter: 'blur(12px)', height: 56 }}
       >
         <div className="max-w-[900px] mx-auto px-6 h-full flex items-center">
-          <Logo size="xs" href="https://destaka.com.br" vertical="Saúde" />
+          <Logo size="sm" href="https://destaka.com.br" vertical="Saúde" />
         </div>
       </header>
 
