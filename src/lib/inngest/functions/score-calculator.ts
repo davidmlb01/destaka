@@ -25,8 +25,9 @@ export const scoreCalculator = inngest.createFunction(
     const db = admin()
 
     const orgIds: string[] = await step.run('resolve-orgs', async () => {
-      if (event.name === 'destaka/score.calculate.requested') {
-        return [(event as unknown as { data: { organization_id: string } }).data.organization_id]
+      const eventData = (event as unknown as { data?: { organization_id?: string } }).data
+      if (event.name === 'destaka/score.calculate.requested' && eventData?.organization_id) {
+        return [eventData.organization_id]
       }
       const { data } = await db.from('organizations').select('id')
       return (data ?? []).map((r: { id: string }) => r.id)
