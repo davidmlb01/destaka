@@ -26,7 +26,7 @@ export default function VerificarPage() {
 
       {/* Header */}
       <header className="relative z-10 px-6 py-5 flex items-center justify-between max-w-4xl mx-auto">
-        <Logo size="lg" href="/" vertical="Saude" />
+        <Logo size="lg" href="/" vertical="Saúde" />
         <Button variant="ghost" size="sm" href="/login">
           Entrar na plataforma
         </Button>

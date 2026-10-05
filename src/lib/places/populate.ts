@@ -5,7 +5,7 @@
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { isPlacesAvailable, searchPlace, getPlaceDetails, extractQueryFromUrl } from './client'
 import { placeDetailsToProfileData } from './scorer'
-import { buildScoreInput, calculateScore } from '@/lib/score/score-calculator'
+import { buildScoreInput, calculateScore, toLegacyBreakdown } from '@/lib/score/score-calculator'
 import type { PlaceDetails } from './client'
 
 function admin() {
@@ -156,6 +156,7 @@ async function persistScoreData(
       attributes: [],
       photo_count: photoCount,
       hours: place.opening_hours ?? null,
+      website: place.website ?? null,
     },
     reviewCount: place.user_ratings_total ?? 0,
     avgRating: place.rating ?? 0,
@@ -165,22 +166,24 @@ async function persistScoreData(
   })
 
   const breakdown = calculateScore(scoreInput, [])
+  const legacy = toLegacyBreakdown(breakdown)
   const snapshotDate = new Date().toISOString().split('T')[0]
 
   await db.from('scores').upsert({
     organization_id: orgId,
-    total: breakdown.total,
-    gmb_completude: breakdown.gmb_completude,
-    reputacao: breakdown.reputacao,
-    visibilidade: breakdown.visibilidade,
-    retencao: breakdown.retencao,
-    conversao: breakdown.conversao,
-    faixa: breakdown.faixa,
-    tendencia: breakdown.tendencia,
+    total: legacy.total,
+    projected_score: legacy.projected_score,
+    gmb_completude: legacy.gmb_completude,
+    reputacao: legacy.reputacao,
+    visibilidade: legacy.visibilidade,
+    retencao: legacy.retencao,
+    conversao: legacy.conversao,
+    faixa: legacy.faixa,
+    tendencia: legacy.tendencia,
     snapshot_date: snapshotDate,
   }, { onConflict: 'organization_id,snapshot_date' })
 
-  return { total: breakdown.total, faixa: breakdown.faixa }
+  return { total: legacy.total, faixa: legacy.faixa }
 }
 
 function buildAuditReport(place: PlaceDetails) {

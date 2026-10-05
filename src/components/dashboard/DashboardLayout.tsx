@@ -68,7 +68,7 @@ export function DashboardLayout({ children, activeHref, profileName, userEmail, 
       >
         {/* Logo */}
         <div className="px-2 mb-4">
-          <Logo size="md" href="/dashboard" vertical="Saude" />
+          <Logo size="md" href="/dashboard" vertical="Saúde" />
         </div>
 
         {/* Perfil */}

@@ -3,7 +3,7 @@
 
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { inngest } from '../client'
-import { calculateScore, buildScoreInput } from '@/lib/score/score-calculator'
+import { calculateScore, buildScoreInput, toLegacyBreakdown } from '@/lib/score/score-calculator'
 import { getActivePlan, updatePlanProgress, updatePlanInDb } from '@/lib/plan/plan-generator'
 
 function admin() {
@@ -39,12 +39,12 @@ export const scoreCalculator = inngest.createFunction(
         // Busca perfil GBP
         const { data: profile } = await db
           .from('gbp_profiles')
-          .select('description, categories, attributes, photo_count, hours')
+          .select('description, categories, attributes, photo_count, hours, website')
           .eq('organization_id', orgId)
           .single()
 
         if (!profile) {
-          return { org_id: orgId, error: 'perfil GBP não encontrado' }
+          return { org_id: orgId, error: 'perfil GBP nao encontrado' }
         }
 
         // Busca reviews
@@ -52,10 +52,21 @@ export const scoreCalculator = inngest.createFunction(
         const thirtyDaysAgo = new Date(today)
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
-        const { data: reviews } = await db
-          .from('reviews')
-          .select('rating, published_at')
-          .eq('organization_id', orgId)
+        const [
+          { data: reviews },
+          { data: responses },
+          { data: recentPosts },
+          { data: previousSnapshots },
+          { data: geoSnapshot },
+          { data: keywordRows },
+        ] = await Promise.all([
+          db.from('reviews').select('rating, published_at').eq('organization_id', orgId),
+          db.from('review_responses').select('review_id').eq('organization_id', orgId).eq('status', 'published'),
+          db.from('posts').select('id').eq('organization_id', orgId).eq('status', 'published').gte('published_at', thirtyDaysAgo.toISOString()),
+          db.from('scores').select('total').eq('organization_id', orgId).order('snapshot_date', { ascending: false }).limit(7),
+          db.from('geo_snapshots').select('regions').eq('org_id', orgId).order('week_start', { ascending: false }).limit(1).maybeSingle(),
+          db.from('keyword_snapshots').select('impressions, week_start').eq('org_id', orgId).order('week_start', { ascending: false }).limit(50),
+        ])
 
         const reviewList = reviews ?? []
         const reviewCount = reviewList.length
@@ -68,36 +79,23 @@ export const scoreCalculator = inngest.createFunction(
           return new Date(r.published_at) >= thirtyDaysAgo
         }).length
 
-        // Taxa de resposta
-        const { data: responses } = await db
-          .from('review_responses')
-          .select('review_id')
-          .eq('organization_id', orgId)
-          .eq('status', 'published')
-
         const responseRate = reviewCount > 0
           ? (responses?.length ?? 0) / reviewCount
           : 0
 
-        // Posts recentes (últimos 30 dias)
-        const { data: recentPosts } = await db
-          .from('posts')
-          .select('id')
-          .eq('organization_id', orgId)
-          .eq('status', 'published')
-          .gte('published_at', thirtyDaysAgo.toISOString())
-
         const recentPostCount = recentPosts?.length ?? 0
-
-        // Histórico de scores para calcular tendência
-        const { data: previousSnapshots } = await db
-          .from('scores')
-          .select('total')
-          .eq('organization_id', orgId)
-          .order('snapshot_date', { ascending: false })
-          .limit(7)
-
         const previousScores = (previousSnapshots ?? []).map((s: { total: number }) => s.total).reverse()
+
+        // Dados geograficos do snapshot mais recente
+        const regions = (geoSnapshot?.regions ?? []) as Array<{ status: string }>
+        const geoTotalZones = regions.length
+        const geoStrongZones = regions.filter(r => r.status === 'strong').length
+
+        // Keywords: soma de impressoes da semana mais recente
+        const kwList = keywordRows ?? []
+        const currentWeek = kwList[0]?.week_start ?? null
+        const currentWeekKws = currentWeek ? kwList.filter((k: { week_start: string }) => k.week_start === currentWeek) : []
+        const totalImpressions = currentWeekKws.reduce((sum: number, k: { impressions: number }) => sum + (k.impressions ?? 0), 0)
 
         // Calcula score
         const input = buildScoreInput({
@@ -107,23 +105,28 @@ export const scoreCalculator = inngest.createFunction(
           responseRate,
           reviewsLast30Days,
           recentPostCount,
+          geoStrongZones,
+          geoTotalZones,
+          totalImpressions,
         })
 
         const breakdown = calculateScore(input, previousScores)
+        const legacy = toLegacyBreakdown(breakdown)
 
         // Persiste snapshot (upsert para evitar duplicatas no mesmo dia)
         const snapshotDate = today.toISOString().split('T')[0]
 
         await db.from('scores').upsert({
           organization_id: orgId,
-          total: breakdown.total,
-          gmb_completude: breakdown.gmb_completude,
-          reputacao: breakdown.reputacao,
-          visibilidade: breakdown.visibilidade,
-          retencao: breakdown.retencao,
-          conversao: breakdown.conversao,
-          faixa: breakdown.faixa,
-          tendencia: breakdown.tendencia,
+          total: legacy.total,
+          projected_score: legacy.projected_score,
+          gmb_completude: legacy.gmb_completude,
+          reputacao: legacy.reputacao,
+          visibilidade: legacy.visibilidade,
+          retencao: legacy.retencao,
+          conversao: legacy.conversao,
+          faixa: legacy.faixa,
+          tendencia: legacy.tendencia,
           snapshot_date: snapshotDate,
         }, { onConflict: 'organization_id,snapshot_date' })
 
@@ -141,7 +144,7 @@ export const scoreCalculator = inngest.createFunction(
               reviewCount: input.reviewCount,
               avgRating: input.avgRating,
               reviewResponseRate: input.reviewResponseRate,
-              hasWebsite: true,
+              hasWebsite: input.hasWebsite,
               totalScore: breakdown.total,
             }
             const { updated, plan: updatedPlan } = updatePlanProgress(activePlan, planCtx)
