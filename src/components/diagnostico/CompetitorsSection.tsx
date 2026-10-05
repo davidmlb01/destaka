@@ -68,14 +68,14 @@ export default function CompetitorsSection({ concorrentes, userRating, userRevie
                 {i + 1}
               </span>
               <div>
-                <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-primary)' }}>{c.name}</p>
+                <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>{c.name}</p>
                 <div className="flex items-center gap-2" style={{ marginTop: 2 }}>
                   <StarRating rating={c.avg_rating ?? 0} />
                   <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{c.review_count} avaliações</span>
                 </div>
               </div>
             </div>
-            <span className="font-mono" style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>
+            <span className="font-mono font-bold" style={{ fontSize: 18, color: 'var(--text-primary)' }}>
               {(c.avg_rating ?? 0).toFixed(1)}
             </span>
           </div>
@@ -115,19 +115,19 @@ export default function CompetitorsSection({ concorrentes, userRating, userRevie
                 {userName || 'Você'}
               </p>
               <div className="flex items-center gap-2" style={{ marginTop: 2 }}>
-                <StarRating rating={userRating} />
-                <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{userReviewCount} avaliações</span>
+                {userRating > 0 ? <StarRating rating={userRating} /> : null}
+                <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{userReviewCount > 0 ? `${userReviewCount} avaliações` : 'Sem avaliações'}</span>
               </div>
             </div>
           </div>
-          <span className="font-mono" style={{ fontSize: 18, fontWeight: 700, color: isUserBehind ? 'var(--error)' : 'var(--success)' }}>
-            {userRating.toFixed(1)}
+          <span className="font-mono font-bold" style={{ fontSize: 18, color: isUserBehind ? 'var(--error)' : 'var(--success)' }}>
+            {userRating > 0 ? userRating.toFixed(1) : 'N/A'}
           </span>
         </div>
       </div>
 
       {isUserBehind && (
-        <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginTop: 16, lineHeight: 1.6, fontStyle: 'italic' }}>
+        <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginTop: 16, lineHeight: 1.6 }}>
           A diferença entre você e quem aparece primeiro não é competência. É visibilidade.
         </p>
       )}

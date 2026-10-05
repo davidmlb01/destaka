@@ -52,7 +52,7 @@ export default function OfferSection({ score }: OfferSectionProps) {
           >
             <span style={{ color: 'var(--success)', fontSize: 16, marginTop: 1, flexShrink: 0 }}>✓</span>
             <div className="flex-1">
-              <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-primary)' }}>{b.titulo}</p>
+              <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>{b.titulo}</p>
               <p style={{ fontSize: 13, color: 'var(--text-tertiary)', marginTop: 2 }}>{b.desc}</p>
             </div>
             <span
