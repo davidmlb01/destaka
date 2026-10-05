@@ -9,6 +9,7 @@ import ReviewsBlock from '@/components/diagnostico/ReviewsBlock'
 import OfferBlock from '@/components/diagnostico/OfferBlock'
 import StickyCTA from '@/components/diagnostico/StickyCTA'
 import AnimatedBlock from '@/components/diagnostico/AnimatedBlock'
+import { Logo } from '@/components/ui/Logo'
 
 export default function DiagnosticoPage() {
   const { data, isLoading, error } = useDiagnostico()
@@ -49,26 +50,7 @@ export default function DiagnosticoPage() {
         }}
       >
         <div className="max-w-[1024px] mx-auto px-6 md:px-12 h-full flex items-center gap-3">
-          {/* Logo sparkle */}
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="var(--accent)"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8L12 2z" />
-          </svg>
-          <a
-            href="https://destaka.com.br"
-            className="font-display font-bold"
-            style={{ fontSize: 18, color: 'var(--text-primary)', letterSpacing: '0.5px', textDecoration: 'none' }}
-          >
-            Destaka
-          </a>
+          <Logo size="sm" href="https://destaka.com.br" vertical="Saúde" />
         </div>
       </header>
 

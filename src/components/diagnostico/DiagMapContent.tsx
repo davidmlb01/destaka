@@ -1,7 +1,7 @@
 'use client'
 
-import { useMemo } from 'react'
-import { MapContainer, TileLayer, CircleMarker, Marker, Popup } from 'react-leaflet'
+import { useEffect, useMemo } from 'react'
+import { MapContainer, TileLayer, CircleMarker, Marker, Popup, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
@@ -30,6 +30,15 @@ const statusOpacity: Record<string, number> = {
   weak: 0.2,
 }
 
+function InvalidateSize() {
+  const map = useMap()
+  useEffect(() => {
+    const timer = setTimeout(() => map.invalidateSize(), 300)
+    return () => clearTimeout(timer)
+  }, [map])
+  return null
+}
+
 export default function DiagMapContent({ center, zones }: DiagMapContentProps) {
   const centerIcon = useMemo(() => L.divIcon({
     html: '<div style="width:14px;height:14px;background:#14B8A6;border:2px solid white;border-radius:50%;box-shadow:0 0 6px rgba(20,184,166,0.6);"></div>',
@@ -46,6 +55,7 @@ export default function DiagMapContent({ center, zones }: DiagMapContentProps) {
       style={{ height: '100%', width: '100%' }}
       attributionControl={false}
     >
+      <InvalidateSize />
       <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
 
       {zones.map((zone, i) => (
