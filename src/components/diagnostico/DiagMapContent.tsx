@@ -45,15 +45,24 @@ export default function DiagMapContent({ center, zones, radiusKm }: DiagMapConte
   const zoom = radiusKm <= 2 ? 14 : radiusKm <= 5 ? 13 : 12
 
   return (
-    <MapContainer
-      center={[center.lat, center.lng]}
-      zoom={zoom}
-      scrollWheelZoom={false}
-      style={{ height: '100%', width: '100%' }}
-      attributionControl={false}
-    >
-      <InvalidateSize />
-      <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
+    <>
+      <style>{`
+        .diag-map .leaflet-tile-pane {
+          filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
+        }
+        .diag-map .leaflet-overlay-pane { filter: none; }
+        .diag-map .leaflet-marker-pane { filter: none; }
+      `}</style>
+      <MapContainer
+        center={[center.lat, center.lng]}
+        zoom={zoom}
+        scrollWheelZoom={false}
+        style={{ height: '100%', width: '100%' }}
+        attributionControl={false}
+        className="diag-map"
+      >
+        <InvalidateSize />
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
       {/* Raio de alcance */}
       <Circle
@@ -98,5 +107,6 @@ export default function DiagMapContent({ center, zones, radiusKm }: DiagMapConte
         </Popup>
       </Marker>
     </MapContainer>
+    </>
   )
 }

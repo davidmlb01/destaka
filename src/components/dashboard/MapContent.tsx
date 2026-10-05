@@ -38,14 +38,23 @@ export default function MapContent({ center, zones }: MapContentProps) {
     className: '',
   }), [])
   return (
-    <MapContainer
-      center={[center.lat, center.lng]}
-      zoom={13}
-      scrollWheelZoom={false}
-      style={{ height: '100%', width: '100%', borderRadius: '0.5rem' }}
-      attributionControl={false}
-    >
-      <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
+    <>
+      <style>{`
+        .dash-map .leaflet-tile-pane {
+          filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
+        }
+        .dash-map .leaflet-overlay-pane { filter: none; }
+        .dash-map .leaflet-marker-pane { filter: none; }
+      `}</style>
+      <MapContainer
+        center={[center.lat, center.lng]}
+        zoom={13}
+        scrollWheelZoom={false}
+        style={{ height: '100%', width: '100%', borderRadius: '0.5rem' }}
+        attributionControl={false}
+        className="dash-map"
+      >
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
       {zones.map((zone, i) => (
         <CircleMarker
@@ -74,5 +83,6 @@ export default function MapContent({ center, zones }: MapContentProps) {
         </Popup>
       </Marker>
     </MapContainer>
+    </>
   )
 }
