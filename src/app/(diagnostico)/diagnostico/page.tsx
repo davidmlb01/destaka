@@ -7,6 +7,7 @@ import CompetitorsSection from '@/components/diagnostico/CompetitorsSection'
 import ReviewsSection from '@/components/diagnostico/ReviewsSection'
 import OfferSection from '@/components/diagnostico/OfferSection'
 import StickyCTA from '@/components/diagnostico/StickyCTA'
+import ShareButton from '@/components/diagnostico/ShareButton'
 import { Logo } from '@/components/ui/Logo'
 import type { DiagGap } from '@/components/diagnostico/useDiagnostico'
 
@@ -68,6 +69,14 @@ function getCtaText(score: number): string {
 
 export default function DiagnosticoPage() {
   const { data, isLoading, error } = useDiagnostico()
+  const [shareHash, setShareHash] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetch('/api/diagnostico/share')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.hash) setShareHash(d.hash) })
+      .catch(() => {})
+  }, [])
 
   if (isLoading || error || !data) {
     return (
@@ -149,6 +158,7 @@ export default function DiagnosticoPage() {
       totalZones={totalZones}
       radiusKm={radiusKm}
       data={data}
+      shareHash={shareHash}
     />
   )
 }
@@ -156,7 +166,7 @@ export default function DiagnosticoPage() {
 function DiagnosticoContent({
   nome, endereco, score, scoreColor, userRating, userReviewCount,
   rapidos, estrategicos, continuos, rapidoImpact, estrategicoImpact,
-  mapa, strongCount, weakCount, totalZones, radiusKm, data,
+  mapa, strongCount, weakCount, totalZones, radiusKm, data, shareHash,
 }: {
   nome: string
   endereco: string
@@ -175,6 +185,7 @@ function DiagnosticoContent({
   totalZones: number
   radiusKm: number
   data: NonNullable<ReturnType<typeof useDiagnostico>['data']>
+  shareHash: string | null
 }) {
   const { value: animatedScore, ref: scoreRef } = useCountUp(score)
 
@@ -185,15 +196,31 @@ function DiagnosticoContent({
         className="sticky top-0"
         style={{ zIndex: 40, background: 'rgba(7,26,25,0.95)', backdropFilter: 'blur(12px)', height: 56 }}
       >
-        <div className="max-w-[900px] mx-auto px-6 h-full flex items-center">
+        <div className="max-w-[900px] mx-auto px-6 h-full flex items-center justify-between">
           <Logo size="md" href="https://destaka.com.br" vertical="Saúde" />
+          {shareHash && <ShareButton hash={shareHash} />}
         </div>
       </header>
 
       <main className="max-w-[900px] mx-auto px-6 pb-28">
 
         {/* ═══ BLOCO 1: Hero (Score + Mapa lado a lado) ═══ */}
-        <section style={{ paddingTop: 40, paddingBottom: 32 }}>
+        <section style={{ paddingTop: 32, paddingBottom: 32 }}>
+          {/* Nome do negócio */}
+          <div style={{ marginBottom: 24 }}>
+            <p style={{ fontSize: 12, color: 'var(--text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>
+              Diagnóstico de visibilidade
+            </p>
+            <h1
+              className="font-display font-bold"
+              style={{ fontSize: 24, color: 'var(--text-primary)', lineHeight: 1.3, letterSpacing: '-0.3px' }}
+            >
+              {nome}
+            </h1>
+            {endereco && (
+              <p style={{ fontSize: 13, color: 'var(--text-tertiary)', marginTop: 4 }}>{endereco}</p>
+            )}
+          </div>
           <style>{`
             @media (max-width: 640px) {
               .hero-grid { grid-template-columns: 1fr !important; }
