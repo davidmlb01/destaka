@@ -67,7 +67,7 @@ export default async function DashboardPage({
 
   const [{ data: profile }, { count: unrepliedReviewCount }] = await Promise.all([
     supabase.from('gbp_profiles').select('optimization_report, description, photo_count').eq('organization_id', orgId).maybeSingle(),
-    supabase.from('reviews').select('id', { count: 'exact', head: true }).eq('organization_id', orgId).is('reply', null),
+    supabase.from('reviews').select('id', { count: 'exact', head: true }).eq('organization_id', orgId).is('response_text', null),
   ])
 
   return (

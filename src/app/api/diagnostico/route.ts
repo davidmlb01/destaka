@@ -102,7 +102,7 @@ export async function GET() {
       .from('reviews')
       .select('id', { count: 'exact', head: true })
       .eq('organization_id', orgId)
-      .is('reply', null),
+      .is('response_text', null),
   ])
 
   // Score e categorias

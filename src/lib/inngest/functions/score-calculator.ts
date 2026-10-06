@@ -37,15 +37,35 @@ export const scoreCalculator = inngest.createFunction(
 
     for (const orgId of orgIds) {
       const result = await step.run(`calc-score-${orgId}`, async () => {
-        // Busca perfil GBP
-        const { data: profile } = await db
+        // Busca perfil GBP (tenta gbp_profiles primeiro, fallback para gmb_profiles via professionals)
+        let profile: { description?: string | null; categories?: string[]; attributes?: unknown[]; photo_count?: number; hours?: unknown; website?: string | null } | null = null
+
+        const { data: gbpProfile } = await db
           .from('gbp_profiles')
           .select('description, categories, attributes, photo_count, hours, website')
           .eq('organization_id', orgId)
-          .single()
+          .maybeSingle()
+
+        if (gbpProfile) {
+          profile = gbpProfile
+        } else {
+          // Fallback: buscar via gmb_profiles (schema legado com user_id)
+          const { data: prof } = await db.from('professionals').select('user_id').eq('organization_id', orgId).maybeSingle()
+          if (prof?.user_id) {
+            const { data: gmbProfile } = await db
+              .from('gmb_profiles')
+              .select('website, category')
+              .eq('user_id', prof.user_id)
+              .maybeSingle()
+            if (gmbProfile) {
+              profile = { description: null, categories: gmbProfile.category ? [gmbProfile.category] : [], attributes: [], photo_count: 0, hours: null, website: gmbProfile.website }
+            }
+          }
+        }
 
         if (!profile) {
-          return { org_id: orgId, error: 'perfil GBP nao encontrado' }
+          // Perfil minimo: calcula score so com reviews/posts/geo
+          profile = { description: null, categories: [], attributes: [], photo_count: 0, hours: null, website: null }
         }
 
         // Busca reviews
@@ -130,6 +150,32 @@ export const scoreCalculator = inngest.createFunction(
           tendencia: legacy.tendencia,
           snapshot_date: snapshotDate,
         }, { onConflict: 'organization_id,snapshot_date' })
+
+        // Se audit_report esta vazio, popular com auto_gaps do score
+        if (breakdown.auto_gaps.length > 0) {
+          const { data: existingProfile } = await db
+            .from('gbp_profiles')
+            .select('audit_report')
+            .eq('organization_id', orgId)
+            .maybeSingle()
+
+          const existing = existingProfile?.audit_report as { issues?: unknown[] } | null
+          if (!existing?.issues?.length) {
+            const auditIssues = breakdown.auto_gaps.map(g => ({
+              field: g.field,
+              severity: g.impact >= 6 ? 'high' : 'medium',
+              message: g.message,
+              impact: g.impact,
+            }))
+
+            if (existingProfile) {
+              await db
+                .from('gbp_profiles')
+                .update({ audit_report: { issues: auditIssues, source: 'score-calculator', generated_at: new Date().toISOString() } })
+                .eq('organization_id', orgId)
+            }
+          }
+        }
 
         // Atualizar plano de superacao (se existir)
         try {
