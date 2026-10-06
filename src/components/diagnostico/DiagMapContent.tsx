@@ -1,8 +1,7 @@
 'use client'
 
 import { useEffect, useMemo } from 'react'
-import { MapContainer, TileLayer, Circle, CircleMarker, Marker, Popup, useMap } from 'react-leaflet'
-import L from 'leaflet'
+import { MapContainer, TileLayer, CircleMarker, Popup, useMap } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 
 interface MapZone {
@@ -25,6 +24,8 @@ const statusColors: Record<string, string> = {
   weak: '#EF4444',
 }
 
+const compassLabels = ['Norte', 'Nordeste', 'Leste', 'Sudeste', 'Sul', 'Sudoeste', 'Oeste', 'Noroeste']
+
 function InvalidateSize() {
   const map = useMap()
   useEffect(() => {
@@ -34,13 +35,56 @@ function InvalidateSize() {
   return null
 }
 
+/** Gera 8 pontos cardeais ao redor do centro, espaçados pelo raio */
+function buildGridPoints(
+  center: { lat: number; lng: number },
+  radiusKm: number,
+  zones: MapZone[],
+): Array<{ lat: number; lng: number; label: string; status: 'strong' | 'medium' | 'weak' }> {
+  const offsetDeg = (radiusKm * 0.65) / 111
+  const lngCorrection = Math.cos((center.lat * Math.PI) / 180)
+
+  // 8 direções: N, NE, E, SE, S, SW, W, NW
+  const directions = [
+    { dLat: 1, dLng: 0 },
+    { dLat: 0.7, dLng: 0.7 },
+    { dLat: 0, dLng: 1 },
+    { dLat: -0.7, dLng: 0.7 },
+    { dLat: -1, dLng: 0 },
+    { dLat: -0.7, dLng: -0.7 },
+    { dLat: 0, dLng: -1 },
+    { dLat: 0.7, dLng: -0.7 },
+  ]
+
+  return directions.map((dir, i) => {
+    const ptLat = center.lat + dir.dLat * offsetDeg
+    const ptLng = center.lng + (dir.dLng * offsetDeg) / lngCorrection
+
+    // Procurar zona real mais próxima deste ponto
+    let bestZone: MapZone | null = null
+    let bestDist = Infinity
+    for (const z of zones) {
+      const dist = Math.sqrt(Math.pow(z.lat - ptLat, 2) + Math.pow(z.lng - ptLng, 2))
+      if (dist < bestDist) {
+        bestDist = dist
+        bestZone = z
+      }
+    }
+
+    // Se a zona mais próxima está dentro de tolerância, usar seu status
+    const tolerance = offsetDeg * 0.8
+    const status = bestZone && bestDist < tolerance ? bestZone.status : 'weak'
+    const label = bestZone && bestDist < tolerance ? bestZone.label : compassLabels[i]
+
+    return { lat: ptLat, lng: ptLng, label, status }
+  })
+}
+
 export default function DiagMapContent({ center, zones, radiusKm }: DiagMapContentProps) {
-  const centerIcon = useMemo(() => L.divIcon({
-    html: `<div style="width:16px;height:16px;background:#14B8A6;border:3px solid white;border-radius:50%;box-shadow:0 0 12px rgba(20,184,166,0.8);"></div>`,
-    iconSize: [16, 16],
-    iconAnchor: [8, 8],
-    className: '',
-  }), [])
+  const gridPoints = useMemo(
+    () => buildGridPoints(center, radiusKm, zones),
+    [center, radiusKm, zones],
+  )
 
   const zoom = radiusKm <= 2 ? 14 : radiusKm <= 5 ? 13 : 12
 
@@ -64,49 +108,45 @@ export default function DiagMapContent({ center, zones, radiusKm }: DiagMapConte
         <InvalidateSize />
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-      {/* Raio de alcance */}
-      <Circle
-        center={[center.lat, center.lng]}
-        radius={radiusKm * 1000}
-        pathOptions={{
-          color: '#14B8A6',
-          weight: 2,
-          opacity: 0.4,
-          fillColor: '#14B8A6',
-          fillOpacity: 0.06,
-          dashArray: '8, 6',
-        }}
-      />
+        {/* 8 zonas ao redor */}
+        {gridPoints.map((pt, i) => (
+          <CircleMarker
+            key={i}
+            center={[pt.lat, pt.lng]}
+            radius={22}
+            pathOptions={{
+              fillColor: statusColors[pt.status],
+              fillOpacity: pt.status === 'strong' ? 0.55 : pt.status === 'medium' ? 0.4 : 0.3,
+              color: statusColors[pt.status],
+              weight: 2.5,
+              opacity: 0.85,
+            }}
+          >
+            <Popup>
+              <span style={{ color: '#000', fontWeight: 500, fontSize: 13 }}>
+                {pt.label}
+              </span>
+            </Popup>
+          </CircleMarker>
+        ))}
 
-      {/* Zonas de presença */}
-      {zones.map((zone, i) => (
+        {/* Centro = seu negócio (sempre verde) */}
         <CircleMarker
-          key={i}
-          center={[zone.lat, zone.lng]}
-          radius={zone.status === 'strong' ? 20 : zone.status === 'medium' ? 15 : 12}
+          center={[center.lat, center.lng]}
+          radius={14}
           pathOptions={{
-            fillColor: statusColors[zone.status] ?? '#6b7280',
-            fillOpacity: zone.status === 'strong' ? 0.45 : zone.status === 'medium' ? 0.3 : 0.2,
-            color: statusColors[zone.status] ?? '#6b7280',
-            weight: 2,
-            opacity: 0.7,
+            fillColor: '#4ADE80',
+            fillOpacity: 0.9,
+            color: '#fff',
+            weight: 3,
+            opacity: 1,
           }}
         >
           <Popup>
-            <span style={{ color: '#000', fontWeight: 500, fontSize: 13 }}>
-              {zone.label}
-            </span>
+            <span style={{ color: '#000', fontWeight: 600, fontSize: 13 }}>Seu negócio</span>
           </Popup>
         </CircleMarker>
-      ))}
-
-      {/* Marcador central */}
-      <Marker position={[center.lat, center.lng]} icon={centerIcon}>
-        <Popup>
-          <span style={{ color: '#000', fontWeight: 600, fontSize: 13 }}>Seu negócio</span>
-        </Popup>
-      </Marker>
-    </MapContainer>
+      </MapContainer>
     </>
   )
 }

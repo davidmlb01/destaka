@@ -185,7 +185,7 @@ function DiagnosticoContent({
         style={{ zIndex: 40, background: 'rgba(7,26,25,0.95)', backdropFilter: 'blur(12px)', height: 56 }}
       >
         <div className="max-w-[900px] mx-auto px-6 h-full flex items-center">
-          <Logo size="sm" href="https://destaka.com.br" vertical="Saúde" />
+          <Logo size="md" href="https://destaka.com.br" vertical="Saúde" />
         </div>
       </header>
 
@@ -193,9 +193,14 @@ function DiagnosticoContent({
 
         {/* ═══ BLOCO 1: Hero (Score + Mapa lado a lado) ═══ */}
         <section style={{ paddingTop: 40, paddingBottom: 32 }}>
+          <style>{`
+            @media (max-width: 640px) {
+              .hero-grid { grid-template-columns: 1fr !important; }
+            }
+          `}</style>
           <div
-            className="grid gap-6"
-            style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}
+            className="hero-grid grid gap-6"
+            style={{ gridTemplateColumns: '1fr 1.85fr' }}
           >
             {/* Coluna esquerda: Score */}
             <div
@@ -270,7 +275,7 @@ function DiagnosticoContent({
                 </p>
                 <div
                   style={{
-                    height: 160,
+                    height: 220,
                     borderRadius: 10,
                     overflow: 'hidden',
                     marginBottom: 12,
@@ -278,6 +283,21 @@ function DiagnosticoContent({
                   }}
                 >
                   <DiagMapContent center={mapa.center} zones={mapa.zonas} radiusKm={radiusKm} />
+                </div>
+                {/* Legenda do mapa */}
+                <div className="flex flex-wrap gap-4" style={{ marginBottom: 10 }}>
+                  <div className="flex items-center gap-1.5">
+                    <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#4ADE80', display: 'inline-block', boxShadow: '0 0 4px rgba(74,222,128,0.5)' }} />
+                    <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Forte</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#FBBF24', display: 'inline-block' }} />
+                    <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Moderado</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#EF4444', display: 'inline-block' }} />
+                    <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Fraco</span>
+                  </div>
                 </div>
                 <ul style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.7, listStyle: 'none', padding: 0, margin: 0 }}>
                   <li>Seu perfil alcança um raio de apenas <strong style={{ color: 'var(--text-primary)' }}>{radiusKm} km</strong></li>
@@ -289,6 +309,21 @@ function DiagnosticoContent({
             )}
           </div>
         </section>
+
+        {/* ═══ Tagline ═══ */}
+        <p
+          className="text-center font-display"
+          style={{
+            fontSize: 17,
+            color: 'var(--text-secondary)',
+            lineHeight: 1.6,
+            maxWidth: 520,
+            margin: '0 auto 40px',
+            fontWeight: 500,
+          }}
+        >
+          Você cuida de atender seus pacientes e nós cuidamos de fazer novos pacientes chegar até você.
+        </p>
 
         {/* ═══ BLOCO 2: Impacto + Quick Wins resumo + CTA ═══ */}
         <section style={{ paddingBottom: 48, textAlign: 'center' }}>
@@ -302,50 +337,50 @@ function DiagnosticoContent({
             O Destaka ajuda você a conquistar esses clientes.
           </p>
 
-          {/* Barras de quick wins (sempre visíveis) */}
+          {/* Barras de quick wins (só dados reais) */}
           <div className="flex flex-col gap-3 text-left" style={{ maxWidth: 560, margin: '0 auto 28px' }}>
-            <div
-              style={{
-                padding: '12px 16px',
-                borderRadius: 10,
-                background: 'var(--success-bg)',
-                border: '1px solid var(--success-border)',
-              }}
-            >
-              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--success)' }}>
-                {rapidos.length > 0
-                  ? <>{rapidos.length} {rapidos.length === 1 ? 'ajuste rápido' : 'ajustes rápidos'} = <span className="font-mono">+{rapidoImpact} pontos</span> em 7 dias</>
-                  : <>5 ajustes rápidos = <span className="font-mono">+20 pontos</span> em 7 dias</>
-                }
-              </p>
-            </div>
-            <div
-              style={{
-                padding: '12px 16px',
-                borderRadius: 10,
-                background: 'var(--warning-bg)',
-                border: '1px solid var(--warning-border)',
-              }}
-            >
-              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--warning)' }}>
-                {estrategicos.length > 0
-                  ? <>{estrategicos.length} {estrategicos.length === 1 ? 'ajuste estratégico' : 'ajustes estratégicos'} = <span className="font-mono">+{estrategicoImpact} pontos</span> em 30 dias</>
-                  : <>4 ajustes estratégicos = <span className="font-mono">+15 pontos</span> em 30 dias</>
-                }
-              </p>
-            </div>
-            <div
-              style={{
-                padding: '12px 16px',
-                borderRadius: 10,
-                background: 'var(--accent-bg)',
-                border: '1px solid var(--accent-border)',
-              }}
-            >
-              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--accent-bright)' }}>
-                Posts sob medida + respostas de avaliação = primeiras posições
-              </p>
-            </div>
+            {rapidos.length > 0 && (
+              <div
+                style={{
+                  padding: '12px 16px',
+                  borderRadius: 10,
+                  background: 'var(--success-bg)',
+                  border: '1px solid var(--success-border)',
+                }}
+              >
+                <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--success)' }}>
+                  {rapidos.length} {rapidos.length === 1 ? 'ajuste rápido' : 'ajustes rápidos'} = <span className="font-mono">+{rapidoImpact} pontos</span> em 7 dias
+                </p>
+              </div>
+            )}
+            {estrategicos.length > 0 && (
+              <div
+                style={{
+                  padding: '12px 16px',
+                  borderRadius: 10,
+                  background: 'var(--warning-bg)',
+                  border: '1px solid var(--warning-border)',
+                }}
+              >
+                <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--warning)' }}>
+                  {estrategicos.length} {estrategicos.length === 1 ? 'ajuste estratégico' : 'ajustes estratégicos'} = <span className="font-mono">+{estrategicoImpact} pontos</span> em 30 dias
+                </p>
+              </div>
+            )}
+            {continuos.length > 0 && (
+              <div
+                style={{
+                  padding: '12px 16px',
+                  borderRadius: 10,
+                  background: 'var(--accent-bg)',
+                  border: '1px solid var(--accent-border)',
+                }}
+              >
+                <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--accent-bright)' }}>
+                  {continuos.length} {continuos.length === 1 ? 'melhoria contínua' : 'melhorias contínuas'} para manter primeiras posições
+                </p>
+              </div>
+            )}
           </div>
 
           {/* CTA primário */}

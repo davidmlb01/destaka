@@ -250,15 +250,15 @@ function buildAutoGaps(
 ): Array<{ field: string; impact: number; message: string }> {
   const gaps: Array<{ field: string; impact: number; message: string }> = []
 
-  // Destaka gera descricao otimizada com IA
+  // Destaka gera descricao otimizada
   if (!input.hasDescription) {
-    gaps.push({ field: 'descricao', impact: 10, message: 'Destaka gera descricao otimizada com IA' })
+    gaps.push({ field: 'descricao', impact: 10, message: 'Descricao do perfil ausente ou incompleta' })
   }
 
   // Destaka gera posts automaticos semanais
   if (input.recentPostCount < 2) {
     const potentialGain = cont.details.frequencia !== undefined ? (4 - cont.details.frequencia) : 4
-    gaps.push({ field: 'posts', impact: Math.max(0, potentialGain), message: 'Posts automaticos semanais com IA' })
+    gaps.push({ field: 'posts', impact: Math.max(0, potentialGain), message: 'Posts semanais no perfil do Google' })
   }
 
   // Destaka responde reviews automaticamente

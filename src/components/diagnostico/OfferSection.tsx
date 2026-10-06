@@ -6,8 +6,8 @@ interface OfferSectionProps {
 
 const beneficios = [
   { titulo: 'Otimização completa do perfil', desc: 'Título, descrição, fotos, categorias, atributos e horários.', valor: 'R$800' },
-  { titulo: 'Posts semanais automáticos', desc: 'Conteúdo escrito do jeito que o Google e as IAs preferem.', valor: 'R$400/mês' },
-  { titulo: 'Resposta de avaliações com IA', desc: 'Respostas personalizadas em menos de 1 hora.', valor: 'R$300/mês' },
+  { titulo: 'Posts semanais automáticos', desc: 'Conteúdo otimizado para ranquear no Google.', valor: 'R$400/mês' },
+  { titulo: 'Resposta de avaliações', desc: 'Respostas personalizadas em menos de 1 hora.', valor: 'R$300/mês' },
   { titulo: 'Monitoramento de concorrentes', desc: 'Saiba o que seus concorrentes estão fazendo.', valor: 'R$200/mês' },
   { titulo: 'Relatório mensal', desc: 'Visualizações, ligações, rotas e evolução do score.', valor: 'R$150/mês' },
 ]
