@@ -230,21 +230,22 @@ function DiagnosticoContent({
               </p>
               <div
                 style={{
-                  width: 120,
-                  height: 120,
+                  width: 110,
+                  height: 110,
                   borderRadius: '50%',
                   border: `3px solid ${scoreColor}`,
+                  boxShadow: `0 0 24px ${scoreColor}22, inset 0 0 20px ${scoreColor}08`,
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  marginBottom: 16,
+                  marginBottom: 14,
                 }}
               >
-                <span className="font-mono font-bold" style={{ fontSize: 48, lineHeight: 1, color: scoreColor }}>
+                <span className="font-mono font-bold" style={{ fontSize: 44, lineHeight: 1, color: scoreColor }}>
                   {animatedScore}
                 </span>
-                <span style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>de 100</span>
+                <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>de 100</span>
               </div>
               <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.5, maxWidth: 260 }}>
                 Seu perfil só aparece para {score}% de quem procura pelo seu serviço na região.
@@ -309,21 +310,6 @@ function DiagnosticoContent({
             )}
           </div>
         </section>
-
-        {/* ═══ Tagline ═══ */}
-        <p
-          className="text-center font-display"
-          style={{
-            fontSize: 17,
-            color: 'var(--text-secondary)',
-            lineHeight: 1.6,
-            maxWidth: 520,
-            margin: '0 auto 40px',
-            fontWeight: 500,
-          }}
-        >
-          Você cuida de atender seus pacientes e nós cuidamos de fazer novos pacientes chegar até você.
-        </p>
 
         {/* ═══ BLOCO 2: Impacto + Quick Wins resumo + CTA ═══ */}
         <section style={{ paddingBottom: 48, textAlign: 'center' }}>
@@ -424,16 +410,34 @@ function DiagnosticoContent({
           />
         </div>
 
-        {/* Separador */}
-        <div
-          className="mx-auto"
-          style={{
-            width: '60%',
-            height: 1,
-            background: 'linear-gradient(90deg, transparent, var(--accent-border), transparent)',
-            marginBottom: 48,
-          }}
-        />
+        {/* ═══ Tagline de transição ═══ */}
+        <section className="text-center" style={{ paddingBottom: 48 }}>
+          <h2
+            className="font-display font-bold"
+            style={{
+              fontSize: 26,
+              color: 'var(--text-primary)',
+              lineHeight: 1.35,
+              maxWidth: 560,
+              margin: '0 auto 12px',
+              letterSpacing: '-0.3px',
+            }}
+          >
+            Você cuida de atender seus pacientes.
+          </h2>
+          <p
+            style={{
+              fontSize: 18,
+              color: 'var(--accent-bright)',
+              lineHeight: 1.5,
+              maxWidth: 480,
+              margin: '0 auto',
+              fontWeight: 500,
+            }}
+          >
+            Nós cuidamos de fazer novos pacientes chegar até você.
+          </p>
+        </section>
 
         {/* ═══ BLOCO 5: Oferta ═══ */}
         <OfferSection score={score} />

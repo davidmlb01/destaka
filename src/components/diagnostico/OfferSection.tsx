@@ -35,9 +35,7 @@ export default function OfferSection({ score }: OfferSectionProps) {
       >
         Tudo que o Destaka faz por você
       </h2>
-      <p className="text-center" style={{ fontSize: 15, color: 'var(--text-secondary)', marginBottom: 28 }}>
-        Deixe seu Google Meu Negócio com o Destaka enquanto você cuida dos seus clientes.
-      </p>
+      <div style={{ marginBottom: 28 }} />
 
       {/* Stack de benefícios */}
       <div className="flex flex-col" style={{ gap: 1, marginBottom: 28 }}>
