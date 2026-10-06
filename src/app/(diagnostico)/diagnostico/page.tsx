@@ -200,10 +200,15 @@ function DiagnosticoContent({
             {/* Coluna esquerda: Score */}
             <div
               style={{
-                padding: '24px',
+                padding: '28px 24px',
                 borderRadius: 16,
                 background: 'var(--card-subtle)',
                 border: '1px solid var(--border-card)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textAlign: 'center',
               }}
             >
               <p
@@ -213,34 +218,32 @@ function DiagnosticoContent({
                   color: 'var(--text-muted)',
                   letterSpacing: '0.12em',
                   textTransform: 'uppercase',
-                  marginBottom: 16,
+                  marginBottom: 20,
                 }}
               >
                 Sua nota
               </p>
-              <div className="flex items-center gap-4" style={{ marginBottom: 16 }}>
-                <div
-                  style={{
-                    width: 72,
-                    height: 72,
-                    borderRadius: '50%',
-                    border: `3px solid ${scoreColor}`,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                  }}
-                >
-                  <span className="font-mono font-bold" style={{ fontSize: 28, lineHeight: 1, color: scoreColor }}>
-                    {animatedScore}
-                  </span>
-                  <span style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 1 }}>de 100</span>
-                </div>
-                <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-                  Seu perfil só aparece para {score}% de quem procura pelo seu serviço na região.
-                </p>
+              <div
+                style={{
+                  width: 120,
+                  height: 120,
+                  borderRadius: '50%',
+                  border: `3px solid ${scoreColor}`,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: 16,
+                }}
+              >
+                <span className="font-mono font-bold" style={{ fontSize: 48, lineHeight: 1, color: scoreColor }}>
+                  {animatedScore}
+                </span>
+                <span style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>de 100</span>
               </div>
+              <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.5, maxWidth: 260 }}>
+                Seu perfil só aparece para {score}% de quem procura pelo seu serviço na região.
+              </p>
             </div>
 
             {/* Coluna direita: Mapa */}
@@ -299,50 +302,50 @@ function DiagnosticoContent({
             O Destaka ajuda você a conquistar esses clientes.
           </p>
 
-          {/* Barras de quick wins */}
+          {/* Barras de quick wins (sempre visíveis) */}
           <div className="flex flex-col gap-3 text-left" style={{ maxWidth: 560, margin: '0 auto 28px' }}>
-            {rapidos.length > 0 && (
-              <div
-                style={{
-                  padding: '12px 16px',
-                  borderRadius: 10,
-                  background: 'var(--success-bg)',
-                  border: '1px solid var(--success-border)',
-                }}
-              >
-                <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--success)' }}>
-                  {rapidos.length} {rapidos.length === 1 ? 'ajuste rápido' : 'ajustes rápidos'} = <span className="font-mono">+{rapidoImpact} pontos</span> em 7 dias
-                </p>
-              </div>
-            )}
-            {estrategicos.length > 0 && (
-              <div
-                style={{
-                  padding: '12px 16px',
-                  borderRadius: 10,
-                  background: 'var(--warning-bg)',
-                  border: '1px solid var(--warning-border)',
-                }}
-              >
-                <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--warning)' }}>
-                  {estrategicos.length} {estrategicos.length === 1 ? 'ajuste estratégico' : 'ajustes estratégicos'} = <span className="font-mono">+{estrategicoImpact} pontos</span> em 30 dias
-                </p>
-              </div>
-            )}
-            {continuos.length > 0 && (
-              <div
-                style={{
-                  padding: '12px 16px',
-                  borderRadius: 10,
-                  background: 'var(--accent-bg)',
-                  border: '1px solid var(--accent-border)',
-                }}
-              >
-                <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--accent-bright)' }}>
-                  Posts sob medida + respostas de avaliação = primeiras posições
-                </p>
-              </div>
-            )}
+            <div
+              style={{
+                padding: '12px 16px',
+                borderRadius: 10,
+                background: 'var(--success-bg)',
+                border: '1px solid var(--success-border)',
+              }}
+            >
+              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--success)' }}>
+                {rapidos.length > 0
+                  ? <>{rapidos.length} {rapidos.length === 1 ? 'ajuste rápido' : 'ajustes rápidos'} = <span className="font-mono">+{rapidoImpact} pontos</span> em 7 dias</>
+                  : <>5 ajustes rápidos = <span className="font-mono">+20 pontos</span> em 7 dias</>
+                }
+              </p>
+            </div>
+            <div
+              style={{
+                padding: '12px 16px',
+                borderRadius: 10,
+                background: 'var(--warning-bg)',
+                border: '1px solid var(--warning-border)',
+              }}
+            >
+              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--warning)' }}>
+                {estrategicos.length > 0
+                  ? <>{estrategicos.length} {estrategicos.length === 1 ? 'ajuste estratégico' : 'ajustes estratégicos'} = <span className="font-mono">+{estrategicoImpact} pontos</span> em 30 dias</>
+                  : <>4 ajustes estratégicos = <span className="font-mono">+15 pontos</span> em 30 dias</>
+                }
+              </p>
+            </div>
+            <div
+              style={{
+                padding: '12px 16px',
+                borderRadius: 10,
+                background: 'var(--accent-bg)',
+                border: '1px solid var(--accent-border)',
+              }}
+            >
+              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--accent-bright)' }}>
+                Posts sob medida + respostas de avaliação = primeiras posições
+              </p>
+            </div>
           </div>
 
           {/* CTA primário */}
