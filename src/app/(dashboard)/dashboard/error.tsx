@@ -48,6 +48,7 @@ export default function DashboardError({
         >
           Tentar novamente
         </button>
+        {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- error boundary needs hard nav */}
         <a
           href="/"
           className="px-5 py-2.5 rounded-xl text-sm font-medium transition-all"

@@ -10,12 +10,13 @@ interface HeroScoreProps {
 }
 
 function useCountUp(target: number, duration = 1200) {
-  const [value, setValue] = useState(0)
+  const reducedMotion = typeof window !== 'undefined'
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const [value, setValue] = useState(reducedMotion ? target : 0)
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
-    if (mq.matches) { setValue(target); return }
+    if (reducedMotion) return
 
     const observer = new IntersectionObserver(([entry]) => {
       if (!entry.isIntersecting) return
@@ -32,7 +33,7 @@ function useCountUp(target: number, duration = 1200) {
 
     if (ref.current) observer.observe(ref.current)
     return () => observer.disconnect()
-  }, [target, duration])
+  }, [target, duration, reducedMotion])
 
   return { value, ref }
 }

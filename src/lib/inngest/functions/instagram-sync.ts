@@ -22,6 +22,7 @@ export const instagramSync = inngest.createFunction(
     concurrency: [{ limit: 1 }],
     triggers: [{ event: 'destaka/instagram.sync.requested' }, { cron: '0 7 * * 1' }],
   },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- inngest step typing
   async ({ step }: { step: any }) => {
     const db = admin()
 

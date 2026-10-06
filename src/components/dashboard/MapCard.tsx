@@ -30,7 +30,7 @@ export default function MapCard({ isSubscriber }: { isSubscriber: boolean }) {
 
   useEffect(() => {
     if (!isSubscriber) {
-      setLoading(false)
+      setLoading(false) // eslint-disable-line react-hooks/set-state-in-effect -- guard clause
       return
     }
     fetch('/api/dashboard/map')

@@ -43,10 +43,14 @@ export function PopulateTrigger({ orgName, hasScore, hasProfile }: PopulateTrigg
 
   // Auto-trigger na primeira visita se nao tem dados
   useEffect(() => {
-    if (needsPopulate && !autoTriggered) {
+    if (!needsPopulate || autoTriggered) return
+    const trigger = () => {
       setAutoTriggered(true)
-      populate()
+      void populate()
     }
+    // Defer to avoid sync setState in effect body
+    const id = requestAnimationFrame(trigger)
+    return () => cancelAnimationFrame(id)
   }, [needsPopulate, autoTriggered, populate])
 
   // Se ja tem dados, nao mostra nada

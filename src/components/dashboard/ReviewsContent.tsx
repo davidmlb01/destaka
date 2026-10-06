@@ -142,7 +142,7 @@ export function ReviewsContent() {
               {/* Texto da avaliação */}
               {review.text && (
                 <p className="text-sm mb-3" style={{ color: 'rgba(255,255,255,0.65)', lineHeight: 1.6 }}>
-                  "{review.text}"
+                  &ldquo;{review.text}&rdquo;
                 </p>
               )}
 
@@ -254,7 +254,7 @@ export function ReviewsContent() {
                 style={{ background: 'rgba(255,255,255,0.04)' }}
               >
                 <p className="text-sm" style={{ color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 }}>
-                  "{modal.review.text}"
+                  &ldquo;{modal.review.text}&rdquo;
                 </p>
               </div>
             )}

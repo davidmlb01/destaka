@@ -25,7 +25,7 @@ export default function KeywordInsightCard({ isSubscriber }: { isSubscriber: boo
 
   useEffect(() => {
     if (!isSubscriber) {
-      setLoading(false)
+      setLoading(false) // eslint-disable-line react-hooks/set-state-in-effect -- guard clause
       return
     }
     fetch('/api/dashboard/keywords')
