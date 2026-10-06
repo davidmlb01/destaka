@@ -23,10 +23,10 @@ export const competitorMonitor = inngest.createFunction(
   },
   async ({ event, step }) => {
     const db = admin()
-    const mapsApiKey = process.env.GOOGLE_MAPS_API_KEY
+    const mapsApiKey = process.env.GOOGLE_PLACES_API_KEY ?? process.env.GOOGLE_MAPS_API_KEY
 
     if (!mapsApiKey) {
-      return { status: 'error', error: 'GOOGLE_MAPS_API_KEY não configurada' }
+      return { status: 'error', error: 'GOOGLE_PLACES_API_KEY não configurada' }
     }
 
     // Resolve quais organizações processar
