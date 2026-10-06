@@ -70,6 +70,20 @@ export async function cacheSet<T>(key: string, value: T, ttlSeconds: number): Pr
 }
 
 /**
+ * Remove chave do cache.
+ */
+export async function cacheDel(key: string): Promise<void> {
+  const redis = getRedis()
+  if (!redis) return
+
+  try {
+    await redis.del(key)
+  } catch {
+    // Fail-open
+  }
+}
+
+/**
  * Incrementa um contador de rate limit com comportamento fail-closed.
  * Lanca erro se Redis estiver indisponivel. Use em rotas de custo direto (LLM, billing).
  * O chamador deve tratar o erro retornando 503.

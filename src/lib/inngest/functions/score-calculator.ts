@@ -5,6 +5,7 @@ import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { inngest } from '../client'
 import { calculateScore, buildScoreInput, toLegacyBreakdown } from '@/lib/score/score-calculator'
 import { getActivePlan, updatePlanProgress, updatePlanInDb } from '@/lib/plan/plan-generator'
+import { cacheDel } from '@/lib/redis'
 
 function admin() {
   return createAdminSupa(
@@ -153,7 +154,10 @@ export const scoreCalculator = inngest.createFunction(
           snapshot_date: snapshotDate,
         }, { onConflict: 'organization_id,snapshot_date' })
 
-        // Se audit_report esta vazio, popular com auto_gaps do score
+        // Invalidar cache do diagnostico para mostrar score novo
+        await cacheDel(`diag:${orgId}`)
+
+        // Atualizar audit_report com auto_gaps (sempre quando source=score-calculator ou vazio)
         if (breakdown.auto_gaps.length > 0) {
           const { data: existingProfile } = await db
             .from('gbp_profiles')
@@ -161,8 +165,10 @@ export const scoreCalculator = inngest.createFunction(
             .eq('organization_id', orgId)
             .maybeSingle()
 
-          const existing = existingProfile?.audit_report as { issues?: unknown[] } | null
-          if (!existing?.issues?.length) {
+          const existing = existingProfile?.audit_report as { issues?: unknown[]; source?: string } | null
+          const shouldUpdate = !existing?.issues?.length || existing?.source === 'score-calculator'
+
+          if (shouldUpdate) {
             const auditIssues = breakdown.auto_gaps.map(g => ({
               field: g.field,
               severity: g.impact >= 6 ? 'high' : 'medium',
