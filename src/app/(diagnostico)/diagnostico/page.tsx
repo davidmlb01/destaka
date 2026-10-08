@@ -398,16 +398,25 @@ function DiagnosticoContent({
           </div>
 
           {/* CTA primário */}
-          <a
-            href="/api/stripe/checkout"
-            className="inline-block font-semibold"
+          <button
+            onClick={() => {
+              fetch('/api/stripe/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: '{}',
+              })
+                .then(r => r.json())
+                .then(d => { if (d.url) window.location.href = d.url })
+                .catch(() => {})
+            }}
+            className="inline-block font-semibold cursor-pointer"
             style={{
               padding: '16px 48px',
               borderRadius: 14,
               background: 'var(--accent)',
               color: '#fff',
               fontSize: 16,
-              textDecoration: 'none',
+              border: 'none',
               boxShadow: '0 4px 24px rgba(20,184,166,0.3)',
               transition: 'transform 150ms, box-shadow 150ms',
             }}
@@ -415,7 +424,7 @@ function DiagnosticoContent({
             onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 4px 24px rgba(20,184,166,0.3)' }}
           >
             {getCtaText(score)}
-          </a>
+          </button>
         </section>
 
         {/* ═══ BLOCO 3: Concorrentes ═══ */}

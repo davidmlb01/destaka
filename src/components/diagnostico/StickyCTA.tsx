@@ -44,21 +44,30 @@ export default function StickyCTA({ score }: StickyCTAProps) {
           <span style={{ fontSize: 14, color: 'var(--text-primary)', fontWeight: 500 }}>
             Menos de R$7/dia
           </span>
-          <a
-            href="/api/stripe/checkout"
-            className="font-semibold"
+          <button
+            onClick={() => {
+              fetch('/api/stripe/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: '{}',
+              })
+                .then(r => r.json())
+                .then(d => { if (d.url) window.location.href = d.url })
+                .catch(() => {})
+            }}
+            className="font-semibold cursor-pointer"
             style={{
               padding: '12px 24px',
               borderRadius: 10,
               background: 'var(--accent)',
               color: '#fff',
               fontSize: 14,
-              textDecoration: 'none',
+              border: 'none',
               whiteSpace: 'nowrap',
             }}
           >
             {getCtaText(score)}
-          </a>
+          </button>
         </div>
       </div>
     </>

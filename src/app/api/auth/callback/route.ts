@@ -6,6 +6,7 @@ import { populateFromPlaces } from '@/lib/places/populate'
 import { encrypt } from '@/lib/crypto'
 import { listGmbLocations } from '@/lib/gmb/client'
 import { detectSegment } from '@/lib/gmb/segment'
+import { isActiveSubscriber } from '@/lib/subscription'
 
 function createServiceClient() {
   return createAdminSupa(
@@ -62,7 +63,10 @@ export async function GET(request: NextRequest) {
         }
 
         populateFromPlaces(existingProfessional.organization_id).catch(() => {})
-        return NextResponse.redirect(`${origin}/dashboard`)
+
+        // Assinante vai pro dashboard, free vai pro diagnostico
+        const isSubscriber = await isActiveSubscriber(existingProfessional.organization_id)
+        return NextResponse.redirect(`${origin}${isSubscriber ? '/dashboard' : '/diagnostico'}`)
       }
 
       // Busca dados do GBP para criar org
@@ -163,8 +167,8 @@ export async function GET(request: NextRequest) {
 
       populateFromPlaces(org.id).catch(() => {})
 
-      // Direto pro dashboard (gratuito, sem onboarding)
-      return NextResponse.redirect(`${origin}/dashboard`)
+      // Novo usuario vai pro diagnostico (free), Stripe gate antes do dashboard
+      return NextResponse.redirect(`${origin}/diagnostico`)
     }
   }
 

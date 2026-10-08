@@ -87,7 +87,7 @@ export function IndicarContent({ userId }: { userId: string }) {
         <div className="flex flex-col gap-3">
           {[
             { n: '1', text: 'Envie seu link para um colega profissional de saúde.' },
-            { n: '2', text: 'Ele se cadastra pelo link e assina o plano Pro.' },
+            { n: '2', text: 'Ele se cadastra pelo link e assina o Destaka.' },
             { n: '3', text: 'Nossa equipe credita 1 mês grátis na sua assinatura.' },
           ].map(step => (
             <div key={step.n} className="flex items-start gap-3">

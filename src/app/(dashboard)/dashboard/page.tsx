@@ -38,31 +38,9 @@ export default async function DashboardPage({
 
   const profileName = org?.name ?? 'Meu Perfil'
 
+  // Nao-assinantes veem o diagnostico, nao o dashboard
   if (!isSubscriber) {
-    const { data: scoreData } = await supabase
-      .from('scores')
-      .select('total, snapshot_date')
-      .eq('organization_id', orgId)
-      .order('snapshot_date', { ascending: false })
-      .limit(1)
-      .maybeSingle()
-
-    return (
-      <DashboardLayout
-        activeHref="/dashboard"
-        profileName={profileName}
-        userEmail={user.email ?? ''}
-        isSubscriber={false}
-      >
-        {checkoutStatus && <CheckoutBanner status={checkoutStatus} />}
-        <FreeDashboard
-          score={Number((scoreData as Record<string, unknown>)?.total) || 0}
-          profileName={profileName}
-          specialty={org?.specialty ?? ''}
-          isNewUser={!scoreData}
-        />
-      </DashboardLayout>
-    )
+    redirect('/diagnostico')
   }
 
   const [{ data: profile }, { count: unrepliedReviewCount }] = await Promise.all([

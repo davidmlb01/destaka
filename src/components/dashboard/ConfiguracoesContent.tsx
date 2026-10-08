@@ -73,7 +73,7 @@ export function ConfiguracoesContent({ plan, tokenInvalid, userEmail }: Props) {
         <p className="text-sm mb-1" style={{ color: 'rgba(255,255,255,0.55)' }}>{userEmail}</p>
         <p className="text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>
           Plano: <span style={{ color: plan === 'free' ? 'rgba(255,255,255,0.45)' : '#4ADE80', fontWeight: 600 }}>
-            {plan === 'free' ? 'Gratuito' : 'Pro'}
+            {plan === 'free' ? 'Gratuito' : 'Ativo'}
           </span>
         </p>
       </Section>

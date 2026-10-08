@@ -13,23 +13,22 @@ export const stripe = new Proxy({} as Stripe, {
   },
 })
 
+// Plano unico R$197/mes (decisao David 08/10/2026)
+export const PLAN = {
+  name: 'Destaka',
+  price: 19700, // R$197 em centavos
+  priceId: process.env.STRIPE_PRICE_PRO!,
+  features: [
+    '1 perfil GMB',
+    'Diagnóstico semanal',
+    'Respostas automáticas',
+    'Posts automáticos',
+    'Relatório PDF',
+    'Monitoramento de concorrentes',
+  ],
+} as const
+
+/** @deprecated Use PLAN (plano unico). Mantido para compatibilidade temporaria. */
 export const PLANS = {
-  essencial: {
-    name: 'Essencial',
-    price: 14700, // R$147 em centavos
-    priceId: process.env.STRIPE_PRICE_ESSENCIAL!,
-    features: ['1 perfil GMB', 'Diagnóstico mensal', 'Monitoramento de avaliações'],
-  },
-  pro: {
-    name: 'Pro',
-    price: 19700, // R$197 em centavos
-    priceId: process.env.STRIPE_PRICE_PRO!,
-    features: ['1 perfil GMB', 'Diagnóstico semanal', 'Respostas automáticas', 'Posts automáticos', 'Relatório PDF'],
-  },
-  agencia: {
-    name: 'Agência',
-    price: 49700, // R$497 em centavos
-    priceId: process.env.STRIPE_PRICE_AGENCIA!,
-    features: ['Até 10 perfis GMB', 'Tudo do Pro', 'White label', 'Dashboard multi-cliente'],
-  },
+  pro: PLAN,
 } as const
