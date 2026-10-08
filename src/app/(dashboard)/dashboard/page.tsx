@@ -32,7 +32,7 @@ export default async function DashboardPage({
   const checkoutStatus = params.checkout ?? null
 
   const [{ data: org }, isSubscriber] = await Promise.all([
-    supabase.from('organizations').select('name, specialty').eq('id', orgId).maybeSingle(),
+    supabase.from('organizations').select('name, specialty, lgpd_ai_consent').eq('id', orgId).maybeSingle(),
     isActiveSubscriber(orgId),
   ])
 
@@ -41,6 +41,11 @@ export default async function DashboardPage({
   // Nao-assinantes veem o diagnostico, nao o dashboard
   if (!isSubscriber) {
     redirect('/diagnostico')
+  }
+
+  // Assinante que nao completou onboarding vai configurar o perfil
+  if (org?.lgpd_ai_consent === null) {
+    redirect('/onboarding')
   }
 
   const [{ data: profile }, { count: unrepliedReviewCount }] = await Promise.all([

@@ -54,8 +54,8 @@ export async function POST(request: NextRequest) {
     mode: 'subscription',
     line_items: [{ price: PLAN.priceId, quantity: 1 }],
     allow_promotion_codes: true,
-    success_url: `${origin}/dashboard?checkout=success`,
-    cancel_url: `${origin}/dashboard?checkout=cancel`,
+    success_url: `${origin}/onboarding`,
+    cancel_url: `${origin}/diagnostico`,
     metadata: { organization_id: orgId },
     subscription_data: {
       metadata: { organization_id: orgId },
