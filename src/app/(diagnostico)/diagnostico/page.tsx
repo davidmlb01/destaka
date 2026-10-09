@@ -10,6 +10,7 @@ import StickyCTA from '@/components/diagnostico/StickyCTA'
 import ShareButton from '@/components/diagnostico/ShareButton'
 import { Logo } from '@/components/ui/Logo'
 import type { DiagGap } from '@/components/diagnostico/useDiagnostico'
+import { trackBeginCheckout } from '@/lib/tracking/events'
 
 const DiagMapContent = dynamic(() => import('@/components/diagnostico/DiagMapContent'), { ssr: false })
 
@@ -400,6 +401,7 @@ function DiagnosticoContent({
           {/* CTA primário */}
           <button
             onClick={() => {
+              trackBeginCheckout()
               fetch('/api/stripe/checkout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

@@ -1,5 +1,7 @@
 'use client'
 
+import { trackBeginCheckout } from '@/lib/tracking/events'
+
 interface OfferSectionProps {
   score: number
 }
@@ -88,6 +90,7 @@ export default function OfferSection({ score }: OfferSectionProps) {
       {/* CTA */}
       <button
         onClick={() => {
+          trackBeginCheckout()
           fetch('/api/stripe/checkout', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

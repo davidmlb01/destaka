@@ -90,6 +90,13 @@ export async function GET(request: NextRequest) {
       const orgName = locationName || user.user_metadata?.full_name || user.email || 'Meu Negocio'
       const specialty = locationCategory ? detectSegment(locationCategory) : 'negócio local'
 
+      // Captura UTMs do cookie (setado pelo TrackingScripts no client)
+      const utmCookie = request.cookies.get('destaka_utm')?.value
+      let utmData: Record<string, string> = {}
+      if (utmCookie) {
+        try { utmData = JSON.parse(decodeURIComponent(utmCookie)) } catch { /* ignore */ }
+      }
+
       const { data: org, error: orgError } = await admin
         .from('organizations')
         .insert({
@@ -98,6 +105,9 @@ export async function GET(request: NextRequest) {
           phone: locationPhone || '',
           tone: 'proximo',
           automation_preference: 'automatico',
+          utm_source: utmData.utm_source ?? null,
+          utm_medium: utmData.utm_medium ?? null,
+          utm_campaign: utmData.utm_campaign ?? null,
         })
         .select()
         .single()

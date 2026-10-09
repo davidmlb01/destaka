@@ -1,5 +1,6 @@
 'use client'
 
+import { trackBeginCheckout } from '@/lib/tracking/events'
 import { useEffect, useState } from 'react'
 
 interface StickyCTAProps {
@@ -46,6 +47,7 @@ export default function StickyCTA({ score }: StickyCTAProps) {
           </span>
           <button
             onClick={() => {
+              trackBeginCheckout()
               fetch('/api/stripe/checkout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

@@ -14,6 +14,11 @@ const CaptureLeadBody = z.object({
   score: z.number().optional(),
   categories: z.array(z.any()).optional(),
   lgpdConsent: z.boolean(),
+  utm_source: z.string().max(100).optional(),
+  utm_medium: z.string().max(100).optional(),
+  utm_campaign: z.string().max(200).optional(),
+  utm_content: z.string().max(200).optional(),
+  utm_term: z.string().max(200).optional(),
 })
 
 function getServiceDb() {
@@ -54,12 +59,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Body invalido' }, { status: 400 })
   }
 
-  const { email, placeName, score, categories, lgpdConsent } = parsed.data as {
+  const { email, placeName, score, categories, lgpdConsent, utm_source, utm_medium, utm_campaign, utm_content, utm_term } = parsed.data as {
     email: string
     placeName?: string
     score?: number
     categories?: CategoryScore[]
     lgpdConsent: boolean
+    utm_source?: string
+    utm_medium?: string
+    utm_campaign?: string
+    utm_content?: string
+    utm_term?: string
   }
 
   if (!lgpdConsent) {
@@ -84,6 +94,11 @@ export async function POST(req: NextRequest) {
     ip_hash: ipHash,
     lgpd_consent: true,
     email_sent: false,
+    utm_source: utm_source ?? null,
+    utm_medium: utm_medium ?? null,
+    utm_campaign: utm_campaign ?? null,
+    utm_content: utm_content ?? null,
+    utm_term: utm_term ?? null,
   })
 
   if (insertError) {

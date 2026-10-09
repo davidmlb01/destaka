@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { trackPurchase, trackOnboardingComplete } from '@/lib/tracking/events'
 
 type Step =
   | 'welcome'
@@ -88,6 +89,15 @@ export default function OnboardingPage() {
   const [improvementCount, setImprovementCount] = useState(0)
   const [autoCount, setAutoCount] = useState(0)
 
+  // Dispara evento de purchase uma única vez (pós-Stripe)
+  const purchaseTracked = useRef(false)
+  useEffect(() => {
+    if (!purchaseTracked.current) {
+      trackPurchase()
+      purchaseTracked.current = true
+    }
+  }, [])
+
   // Fetch prefill data from existing org
   useEffect(() => {
     async function fetchPrefill() {
@@ -122,6 +132,7 @@ export default function OnboardingPage() {
     setImprovementCount(8)
     setAutoCount(3)
     setActivationDone(true)
+    trackOnboardingComplete()
   }, [])
 
   async function handleFinish() {

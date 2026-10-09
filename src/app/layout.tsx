@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Outfit } from "next/font/google";
 import "./globals.css";
 import CookieBanner from "@/components/CookieBanner";
+import TrackingScripts from "@/components/TrackingScripts";
+import { Suspense } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,7 +44,11 @@ export default function RootLayout({
       lang="pt-BR"
       className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}<CookieBanner /></body>
+      <body className="min-h-full flex flex-col">
+        <Suspense><TrackingScripts /></Suspense>
+        {children}
+        <CookieBanner />
+      </body>
     </html>
   );
 }
