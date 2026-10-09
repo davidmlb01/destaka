@@ -7,6 +7,7 @@ import { GBPClient } from '@/lib/google/gbp-client'
 import { generateReviewResponse, type ReviewTone } from '@/lib/gbp/review-response-engine'
 import { hasLgpdConsentForAi } from '@/lib/ai/prompt-sanitizer'
 import { getValidTokenForOrg } from '@/lib/google/token-refresh'
+import { sendReviewApprovalEmail } from '@/lib/email/review-approval'
 
 function admin() {
   return createAdminSupa(
@@ -170,6 +171,25 @@ export const reviewMonitor = inngest.createFunction(
               generated_text: responseText,
               status: 'pending',
             })
+
+            // Notifica o profissional por email
+            const { data: prof } = await db
+              .from('professionals')
+              .select('email')
+              .eq('organization_id', orgId)
+              .eq('role', 'owner')
+              .maybeSingle()
+
+            if (prof?.email) {
+              sendReviewApprovalEmail({
+                to: prof.email,
+                businessName: org.name,
+                reviewAuthor: review.reviewer.isAnonymous ? 'Anônimo' : review.reviewer.displayName,
+                reviewRating: GBPClient.starRatingToNumber(review.starRating),
+                reviewText: review.comment ?? null,
+                suggestedReply: responseText,
+              }).catch(() => {})
+            }
           }
 
           responsesQueued++

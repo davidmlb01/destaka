@@ -12,7 +12,7 @@ interface ReviewApprovalParams {
 export async function sendReviewApprovalEmail(params: ReviewApprovalParams) {
   const { to, businessName, reviewAuthor, reviewRating, reviewText, suggestedReply } = params
   const stars = '★'.repeat(reviewRating) + '☆'.repeat(5 - reviewRating)
-  const dashboardUrl = 'https://destaka.com.br/saude/dashboard/reviews'
+  const dashboardUrl = 'https://destaka.com.br/dashboard/reviews'
 
   const html = `
 <!DOCTYPE html>
