@@ -281,7 +281,7 @@ export function ReviewsContent() {
                       Gerando...
                     </>
                   ) : (
-                    <><PinIcon size={12} color="var(--accent-bright)" bg="transparent" /> Gerar com IA</>
+                    <><PinIcon size={12} color="var(--accent-bright)" bg="transparent" /> Sugerir resposta</>
                   )}
                 </button>
               </div>
@@ -297,7 +297,7 @@ export function ReviewsContent() {
                   color: 'white',
                   outline: 'none',
                 }}
-                placeholder="Escreva sua resposta ou clique em 'Gerar com IA'..."
+                placeholder="Escreva sua resposta ou clique em 'Sugerir resposta'..."
               />
               <p className="text-xs mt-1 text-right" style={{ color: 'rgba(255,255,255,0.25)' }}>
                 {modal.draft.length}/4096

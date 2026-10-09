@@ -35,7 +35,7 @@ const FAQ_ITEMS = [
   { q: 'Tem contrato ou fidelidade?', a: 'Não. Cancele quando quiser, sem multa. E se seu score não subir pelo menos 15 pontos em 30 dias, devolvemos 100% do valor.' },
   { q: 'Funciona na minha cidade?', a: 'Sim, funciona em qualquer cidade do Brasil.' },
   { q: 'Quanto tempo para ver resultado?', a: 'Seu perfil começa a ser otimizado em minutos. Resultados visíveis nas buscas em 2 a 4 semanas.' },
-  { q: 'Já uso Doctoralia. Preciso da Destaka?', a: 'São complementares. A Doctoralia é um marketplace. A Destaka otimiza seu Google, que é onde 46% das buscas locais acontecem.' },
+  { q: 'Já uso Doctoralia. Preciso do Destaka?', a: 'São complementares. A Doctoralia é um marketplace. O Destaka otimiza seu Google, que é onde 46% das buscas locais acontecem.' },
   { q: 'É seguro?', a: '100%. Conexão via API oficial do Google. Dados protegidos. Conformidade LGPD.' },
 ]
 
@@ -150,7 +150,7 @@ function Hero() {
               style={{ color: 'rgba(255,255,255,0.68)', fontSize: 'clamp(16px, 2vw, 19px)' }}
             >
               O Google decide para quem o seu paciente vai ligar.<br />
-              A Destaka decide o que o Google vai ver.
+              O Destaka decide o que o Google vai ver.
             </p>
 
             <Button variant="primary" size="lg" href="/login">
@@ -240,7 +240,7 @@ function Ancoragem() {
             Exigem reuniões, pedem conteúdo, demoram semanas.
           </h2>
           <p className="text-[17px]" style={{ color: 'rgba(255,255,255,0.68)' }}>
-            A Destaka entrega tudo no piloto automático, por uma fração do custo.
+            O Destaka entrega tudo no piloto automático, por uma fração do custo.
           </p>
         </div>
 
@@ -357,14 +357,14 @@ function ComoFunciona() {
     {
       num: '02',
       title: 'Conecte seu Google',
-      desc: 'Um clique para autorizar. A Destaka acessa seu Google Meu Negócio e começa a trabalhar. Sem formulários complicados, sem configuração técnica.',
+      desc: 'Um clique para autorizar. O Destaka acessa seu Google Meu Negócio e começa a trabalhar. Sem formulários complicados, sem configuração técnica.',
       cta: null,
       href: null,
     },
     {
       num: '03',
-      title: 'A Destaka cuida de tudo',
-      desc: 'Posts semanais gerados com IA, respostas automáticas para avaliações, sugestões de fotos, serviços otimizados. Você cuida dos pacientes. A Destaka cuida do Google.',
+      title: 'O Destaka cuida de tudo',
+      desc: 'Posts semanais automáticos, respostas personalizadas para avaliações, sugestões de fotos, serviços otimizados. Você cuida dos pacientes. O Destaka cuida do Google.',
       cta: null,
       href: null,
     },
@@ -484,7 +484,7 @@ function Recursos() {
     { title: 'Descubra por que você não aparece', desc: 'Em 30 segundos, você vê exatamente o que está afastando pacientes do seu perfil. Sem achismo, com diagnóstico claro de cada ponto fraco.', span: 'lg:col-span-7', large: true },
     { title: 'Pacientes te encontram sem você fazer nada', desc: 'Toda semana, conteúdo novo aparece no seu perfil do Google, escrito para a sua especialidade e a sua cidade. Você não toca em nada.', span: 'lg:col-span-5' },
     { title: 'Avaliação negativa? Já está respondida.', desc: 'Cada avaliação recebe uma resposta personalizada e profissional. Inclusive as de uma estrela, que são as que mais afastam pacientes novos.', span: 'lg:col-span-4' },
-    { title: '42% mais pacientes pedem rota até você', desc: 'A Destaka indica exatamente quais fotos publicar e quando atualizar. Perfis com fotos atualizadas recebem 42% mais pedidos de rota no Google.', span: 'lg:col-span-4' },
+    { title: '42% mais pacientes pedem rota até você', desc: 'O Destaka indica exatamente quais fotos publicar e quando atualizar. Perfis com fotos atualizadas recebem 42% mais pedidos de rota no Google.', span: 'lg:col-span-4' },
     { title: 'Seu consultório aparece para quem busca o que você faz', desc: 'Seus serviços ficam cadastrados com os termos que os pacientes realmente digitam. Consultórios similares têm em média 11 serviços visíveis. Quantos o seu tem?', span: 'lg:col-span-4' },
     { title: 'Saiba o que seus pacientes digitam para te encontrar', desc: 'Você descobre as buscas reais que trazem gente ao seu perfil. E recebe sugestões de termos novos para atrair ainda mais pacientes da sua região.', span: 'sm:col-span-2 lg:col-span-12', wide: true },
     { title: 'Mais avaliações 5 estrelas, no piloto automático', desc: 'Um código QR na recepção. O paciente escaneia e avalia na hora, sem complicação. Mais avaliações positivas, mais confiança, mais agendamentos.', span: 'lg:col-span-5' },
@@ -507,7 +507,7 @@ function Recursos() {
             <span style={{ color: 'rgba(255,255,255,0.7)' }}>Funcionando no piloto automático, sem depender de você.</span>
           </h2>
           <p className="text-[17px] max-w-2xl mx-auto" style={{ color: 'rgba(255,255,255,0.68)' }}>
-            A Destaka cuida da sua visibilidade enquanto você cuida dos pacientes. Cada um no que sabe fazer melhor.
+            O Destaka cuida da sua visibilidade enquanto você cuida dos pacientes. Cada um no que sabe fazer melhor.
           </p>
         </div>
 
@@ -582,7 +582,7 @@ function Manifesto() {
               {[
                 'E hoje, quando alguém digita "médico perto de mim", aparece o consultório do lado. O que faz menos. O que cobra mais caro. O que tem metade da sua experiência.',
                 'Não é injusto. É técnico. O Google não conhece você. Ainda.',
-                'A Destaka existe para isso. Para traduzir a sua competência em linguagem que o algoritmo entende. Para fazer o invisível aparecer.',
+                'O Destaka existe para isso. Para traduzir a sua competência em linguagem que o algoritmo entende. Para fazer o invisível aparecer.',
                 'Para garantir que, quando o paciente certo estiver buscando, ele vai te encontrar primeiro.',
               ].map((text, i) => (
                 <p

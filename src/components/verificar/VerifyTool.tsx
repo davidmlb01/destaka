@@ -189,10 +189,10 @@ export function VerifyTool() {
           >
             <div className="flex-1 text-center sm:text-left">
               <p className="font-display font-bold text-white mb-1" style={{ fontSize: 16 }}>
-                A Destaka corrige isso automaticamente.
+                O Destaka corrige isso automaticamente.
               </p>
               <p className="text-sm" style={{ color: 'rgba(255,255,255,0.4)', lineHeight: 1.5 }}>
-                Conecte seu perfil e veja as otimizacoes sendo aplicadas em minutos.
+                Conecte seu perfil e veja as otimizações sendo aplicadas em minutos.
               </p>
             </div>
             <a
@@ -260,7 +260,7 @@ export function VerifyTool() {
                   className="mt-0.5 shrink-0"
                 />
                 <span className="text-xs" style={{ color: 'rgba(255,255,255,0.3)', lineHeight: 1.5 }}>
-                  Concordo em receber o relatorio e comunicacoes da Destaka. Seus dados sao protegidos conforme a LGPD e nao serao compartilhados.
+                  Concordo em receber o relatório e comunicações do Destaka. Seus dados são protegidos conforme a LGPD e não serão compartilhados.
                 </span>
               </label>
             </div>

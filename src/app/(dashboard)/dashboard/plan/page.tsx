@@ -9,7 +9,7 @@ import { CheckoutButton } from './CheckoutButton'
 
 const VALUE_STACK = [
   { label: 'Gestão do Google Meu Negócio', value: 'R$400/mês', desc: 'O que uma agência cobraria para fazer o mesmo' },
-  { label: '4 posts mensais no perfil', value: 'R$200/mês', desc: 'Criados por IA, publicados automaticamente' },
+  { label: '4 posts mensais no perfil', value: 'R$200/mês', desc: 'Criados e publicados automaticamente' },
   { label: 'Monitoramento de avaliações', value: 'R$150/mês', desc: 'Alertas e histórico de todas as avaliações' },
   { label: 'Análise de concorrentes', value: 'R$250/mês', desc: 'Top 3 concorrentes monitorados em tempo real' },
   { label: 'Relatório de performance mensal', value: 'R$100/mês', desc: 'Score Destaka e evolução mês a mês' },
@@ -17,7 +17,7 @@ const VALUE_STACK = [
 
 const FEATURES = [
   'Google Meu Negócio no piloto automático',
-  'Posts semanais criados por IA',
+  'Posts semanais automáticos',
   'Gestão e monitoramento de avaliações',
   'Score Destaka com evolução mensal',
   'Análise dos 3 maiores concorrentes',
