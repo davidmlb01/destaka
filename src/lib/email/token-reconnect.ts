@@ -7,7 +7,7 @@ interface TokenReconnectParams {
 
 export async function sendTokenReconnectEmail({ to, name }: TokenReconnectParams) {
   const firstName = name.split(' ')[0]
-  const reconnectUrl = 'https://destaka.com.br/saude/configuracoes'
+  const reconnectUrl = 'https://destaka.com.br/configuracoes'
 
   const html = `
 <!DOCTYPE html>

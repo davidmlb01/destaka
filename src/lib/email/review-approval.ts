@@ -38,7 +38,7 @@ export async function sendReviewApprovalEmail(params: ReviewApprovalParams) {
             <p style="font-size:14px;color:#44403C;line-height:1.5;margin:0;font-style:italic;">"${reviewText || 'Sem texto'}"</p>
           </div>
 
-          <p style="font-size:13px;color:#78716C;margin:0 0 8px;font-weight:600;">Resposta sugerida pela Destaka:</p>
+          <p style="font-size:13px;color:#78716C;margin:0 0 8px;font-weight:600;">Resposta sugerida pelo Destaka:</p>
           <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:16px;margin:0 0 24px;">
             <p style="font-size:14px;color:#1E40AF;line-height:1.5;margin:0;">${suggestedReply}</p>
           </div>

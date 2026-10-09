@@ -87,7 +87,7 @@ export async function sendLeadMagnetEmail(params: LeadMagnetEmailParams) {
                 A Destaka corrige isso automaticamente.
               </p>
               <p style="margin:0 0 20px;font-size:14px;color:#57534e;line-height:1.5;">
-                Conecte seu perfil e veja as otimizacoes sendo aplicadas em minutos. Sem acao manual da sua parte.
+                Conecte seu perfil e veja as otimizações sendo aplicadas em minutos. Sem ação manual da sua parte.
               </p>
               <a href="${appUrl}/login"
                  style="display:inline-block;background:#161B26;color:#fff;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:15px;font-weight:700;">
@@ -101,7 +101,7 @@ export async function sendLeadMagnetEmail(params: LeadMagnetEmailParams) {
         <!-- Footer -->
         <tr><td style="padding:20px 0;text-align:center;">
           <p style="margin:0;font-size:11px;color:#a8a29e;">
-            destaka.com.br. Voce recebeu este email porque solicitou uma auditoria gratuita.
+            destaka.com.br. Você recebeu este email porque solicitou uma auditoria gratuita.
           </p>
         </td></tr>
 
