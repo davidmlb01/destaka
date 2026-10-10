@@ -8,44 +8,76 @@ import {
   templateDay3,
   templateDay7,
   templateDay14,
-  templateDay21,
   templateDay30,
 } from './onboarding-templates'
 
-export type OnboardingEmailDay = 0 | 1 | 3 | 7 | 14 | 21 | 30
+export type OnboardingEmailDay = 0 | 1 | 3 | 7 | 14 | 30
 
 interface SendOnboardingEmailParams {
   to: string
   firstName: string
   orgName: string
   day: OnboardingEmailDay
-}
-
-const templateMap: Record<OnboardingEmailDay, (firstName: string, orgName: string) => { subject: string; html: string }> = {
-  0: (firstName) => templateDay0(firstName),
-  1: (firstName) => templateDay1(firstName),
-  3: (firstName) => templateDay3(firstName),
-  7: (firstName, orgName) => templateDay7(firstName, orgName),
-  14: (firstName) => templateDay14(firstName),
-  21: (firstName) => templateDay21(firstName),
-  30: (firstName, orgName) => templateDay30(firstName, orgName),
+  gender?: 'M' | 'F'
+  initialScore?: number
+  postsCount?: number
+  scoreDelta?: number
+  day30Data?: {
+    scoreInitial: number
+    scoreCurrent: number
+    postsCount: number
+    reviewsCount: number
+    profileViews?: number
+    websiteClicks?: number
+    phoneClicks?: number
+    whatsappClicks?: number
+  }
 }
 
 export async function sendOnboardingEmail(params: SendOnboardingEmailParams) {
   const { to, firstName, orgName, day } = params
-  const buildTemplate = templateMap[day]
 
-  if (!buildTemplate) {
-    throw new Error(`Template de onboarding nao encontrado para dia ${day}`)
+  let template: { subject: string; html: string }
+
+  switch (day) {
+    case 0:
+      template = templateDay0(firstName, params.gender)
+      break
+    case 1:
+      template = templateDay1(firstName, orgName, params.initialScore ?? 0)
+      break
+    case 3:
+      template = templateDay3(firstName)
+      break
+    case 7:
+      template = templateDay7(firstName, orgName, params.postsCount ?? 0, params.scoreDelta ?? 0)
+      break
+    case 14:
+      template = templateDay14(firstName)
+      break
+    case 30:
+      template = templateDay30({
+        firstName,
+        orgName,
+        scoreInitial: params.day30Data?.scoreInitial ?? 0,
+        scoreCurrent: params.day30Data?.scoreCurrent ?? 0,
+        postsCount: params.day30Data?.postsCount ?? 0,
+        reviewsCount: params.day30Data?.reviewsCount ?? 0,
+        profileViews: params.day30Data?.profileViews,
+        websiteClicks: params.day30Data?.websiteClicks,
+        phoneClicks: params.day30Data?.phoneClicks,
+        whatsappClicks: params.day30Data?.whatsappClicks,
+      })
+      break
+    default:
+      throw new Error(`Template de onboarding nao encontrado para dia ${day}`)
   }
 
-  const { subject, html } = buildTemplate(firstName, orgName)
-
   const { data, error } = await resend.emails.send({
-    from: `Destaka <${FROM}>`,
+    from: `Destaka Saúde <${FROM}>`,
     to,
-    subject,
-    html,
+    subject: template.subject,
+    html: template.html,
   })
 
   if (error) {

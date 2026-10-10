@@ -216,6 +216,12 @@ export async function compileMonthlyReport(
     avg_rating: parseFloat(avgRating.toFixed(1)),
     response_rate: parseFloat(responseRate.toFixed(2)),
     posts_published_this_month: postsPublished,
+    days_as_customer: 0,
+    score_initial: scorePrevious,
+    profile_views: 0,
+    website_clicks: 0,
+    phone_clicks: 0,
+    whatsapp_clicks: 0,
     next_month_focus: focus,
     next_month_action: action,
   }

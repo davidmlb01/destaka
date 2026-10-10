@@ -24,8 +24,7 @@ const EMAIL_SCHEDULE: Array<{ day: OnboardingEmailDay; sleepDuration: string }> 
   { day: 3, sleepDuration: '2d' },
   { day: 7, sleepDuration: '4d' },
   { day: 14, sleepDuration: '7d' },
-  { day: 21, sleepDuration: '7d' },
-  { day: 30, sleepDuration: '9d' },
+  { day: 30, sleepDuration: '16d' },
 ]
 
 export const onboardingEmailSequence = inngest.createFunction(
