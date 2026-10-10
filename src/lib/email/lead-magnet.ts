@@ -1,6 +1,7 @@
 import { resend, FROM } from './index'
 import type { CategoryScore } from '@/lib/gmb/scorer'
 import { getScoreColor, getScoreLabel } from '@/lib/utils/score-colors'
+import { escapeHtml } from '@/lib/utils/escape-html'
 
 interface LeadMagnetEmailParams {
   to: string
@@ -32,9 +33,9 @@ export async function sendLeadMagnetEmail(params: LeadMagnetEmailParams) {
 
   const gapsHtml = topGaps.map(gap => `
     <tr>
-      <td style="padding:12px 0;border-bottom:1px solid #e7e5e4;">
-        <p style="margin:0;font-size:14px;font-weight:600;color:#1c1917;">${gap.message}</p>
-        <p style="margin:4px 0 0;font-size:12px;color:#78716c;">Impacto: +${gap.impact} pts se corrigido</p>
+      <td style="padding:12px 0;border-bottom:1px solid #f3f4f6;">
+        <p style="margin:0;font-size:14px;font-weight:600;color:#111827;">${escapeHtml(gap.message)}</p>
+        <p style="margin:4px 0 0;font-size:12px;color:#6b7280;">Impacto: +${gap.impact} pts se corrigido</p>
       </td>
     </tr>`).join('')
 
@@ -42,38 +43,44 @@ export async function sendLeadMagnetEmail(params: LeadMagnetEmailParams) {
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-<body style="margin:0;padding:0;background:#f5f5f4;font-family:Inter,Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f4;padding:32px 16px;">
+<body style="margin:0;padding:0;background:#f3f4f6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;padding:32px 0;">
     <tr><td align="center">
-      <table width="100%" style="max-width:560px;" cellpadding="0" cellspacing="0">
+      <table width="100%" style="max-width:580px;" cellpadding="0" cellspacing="0">
 
         <!-- Header -->
-        <tr><td style="background:linear-gradient(135deg,#161B26,#0F1117);border-radius:16px 16px 0 0;padding:28px 36px;text-align:center;">
-          <p style="margin:0;color:#0EA5E9;font-size:22px;">&#10022;</p>
-          <p style="margin:4px 0 0;color:#fff;font-size:20px;font-weight:800;letter-spacing:-0.5px;">Desta<span style="color:#0EA5E9;">ka</span></p>
-          <p style="margin:8px 0 0;color:rgba(255,255,255,0.6);font-size:13px;">Auditoria GMB Gratuita</p>
+        <tr><td style="background:#111827;border-radius:16px 16px 0 0;padding:28px 36px;">
+          <table cellpadding="0" cellspacing="0" border="0"><tr>
+            <td style="vertical-align:middle;padding-right:8px;">
+              <img src="https://destaka.com.br/email-pin.png" alt="" width="22" height="26" style="display:block;border:0;" />
+            </td>
+            <td style="vertical-align:middle;">
+              <span style="font-size:18px;font-weight:700;color:#ffffff;letter-spacing:-0.015em;line-height:1;">Destaka</span>
+            </td>
+          </tr></table>
+          <p style="margin:8px 0 0;color:#9ca3af;font-size:13px;">Auditoria gratuita do seu Google</p>
         </td></tr>
 
         <!-- Body -->
-        <tr><td style="background:#fff;border-radius:0 0 16px 16px;padding:36px;">
+        <tr><td style="background:#ffffff;padding:36px;">
 
-          <h1 style="margin:0 0 6px;font-size:22px;font-weight:800;color:#1c1917;letter-spacing:-0.3px;">
+          <h1 style="margin:0 0 6px;font-size:22px;font-weight:800;color:#111827;letter-spacing:-0.3px;">
             Resultado da auditoria
           </h1>
-          <p style="margin:0 0 28px;font-size:14px;color:#78716c;">${placeName}</p>
+          <p style="margin:0 0 28px;font-size:14px;color:#6b7280;">${escapeHtml(placeName)}</p>
 
           <!-- Score -->
-          <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f4;border-radius:12px;margin-bottom:28px;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;border-radius:10px;margin-bottom:28px;">
             <tr><td style="padding:24px;text-align:center;">
               <p style="margin:0;font-size:60px;font-weight:800;color:${color};line-height:1;">${score}</p>
-              <p style="margin:4px 0 0;font-size:12px;color:#78716c;">de 100 pontos</p>
+              <p style="margin:4px 0 0;font-size:12px;color:#6b7280;">de 100 pontos</p>
               <p style="margin:10px 0 0;font-size:14px;font-weight:700;color:${color};">${label}</p>
             </td></tr>
           </table>
 
           <!-- Gaps -->
           ${topGaps.length > 0 ? `
-          <p style="margin:0 0 12px;font-size:13px;font-weight:700;color:#57534e;text-transform:uppercase;letter-spacing:0.5px;">
+          <p style="margin:0 0 12px;font-size:13px;font-weight:700;color:#4b5563;text-transform:uppercase;letter-spacing:0.5px;">
             Principais problemas encontrados
           </p>
           <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
@@ -81,17 +88,17 @@ export async function sendLeadMagnetEmail(params: LeadMagnetEmailParams) {
           </table>` : ''}
 
           <!-- CTA -->
-          <table width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(135deg,rgba(15,17,23,0.06),rgba(15,17,23,0.03));border:1px solid rgba(15,17,23,0.12);border-radius:12px;margin-bottom:8px;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb;border:1px solid rgba(15,17,23,0.12);border-radius:10px;margin-bottom:8px;">
             <tr><td style="padding:24px;text-align:center;">
-              <p style="margin:0 0 6px;font-size:16px;font-weight:800;color:#1c1917;">
-                A Destaka corrige isso automaticamente.
+              <p style="margin:0 0 6px;font-size:16px;font-weight:800;color:#111827;">
+                O Destaka corrige isso automaticamente.
               </p>
-              <p style="margin:0 0 20px;font-size:14px;color:#57534e;line-height:1.5;">
+              <p style="margin:0 0 20px;font-size:14px;color:#4b5563;line-height:1.5;">
                 Conecte seu perfil e veja as otimizações sendo aplicadas em minutos. Sem ação manual da sua parte.
               </p>
               <a href="${appUrl}/login"
-                 style="display:inline-block;background:#161B26;color:#fff;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:15px;font-weight:700;">
-                Comecar por R$197/mes
+                 style="display:inline-block;background:#111827;color:#ffffff;font-weight:700;font-size:15px;padding:14px 32px;border-radius:10px;text-decoration:none;">
+                Começar por R$197/mês
               </a>
             </td></tr>
           </table>
@@ -99,10 +106,9 @@ export async function sendLeadMagnetEmail(params: LeadMagnetEmailParams) {
         </td></tr>
 
         <!-- Footer -->
-        <tr><td style="padding:20px 0;text-align:center;">
-          <p style="margin:0;font-size:11px;color:#a8a29e;">
-            destaka.com.br. Você recebeu este email porque solicitou uma auditoria gratuita.
-          </p>
+        <tr><td style="background:#f3f4f6;border-radius:0 0 16px 16px;padding:24px 36px;text-align:center;">
+          <p style="font-size:13px;color:#6b7280;margin:0 0 4px;font-weight:500;">Você cuida dos seus pacientes. O Destaka cuida do seu Google.</p>
+          <p style="font-size:11px;color:#9ca3af;margin:0;">destaka.com.br. Você recebeu este email porque solicitou uma auditoria gratuita.</p>
         </td></tr>
 
       </table>
@@ -114,7 +120,7 @@ export async function sendLeadMagnetEmail(params: LeadMagnetEmailParams) {
   return resend.emails.send({
     from: FROM,
     to,
-    subject: `Sua auditoria GMB: ${score}/100 | ${placeName}`,
+    subject: `Seu perfil no Google: ${score}/100 | ${placeName}`,
     html,
   })
 }

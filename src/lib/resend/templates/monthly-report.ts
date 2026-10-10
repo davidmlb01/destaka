@@ -1,5 +1,6 @@
 // Template HTML do relatório mensal — copy orientado a progresso e emoção
 import type { MonthlyReportData } from '@/lib/report/report-compiler'
+import { escapeHtml } from '@/lib/utils/escape-html'
 
 const FAIXA_COLOR: Record<string, string> = {
   fraca: '#ef4444',
@@ -26,7 +27,7 @@ function scoreBar(value: number, max: number, color: string): string {
 }
 
 function subjectLine(data: MonthlyReportData): string {
-  const firstName = data.professional_name.split(' ')[0]
+  const firstName = escapeHtml(data.professional_name.split(' ')[0])
 
   if (data.score_delta > 5) {
     return `${firstName}, você subiu ${data.score_delta} pontos em ${data.month_label}. Veja o que aconteceu.`
@@ -41,7 +42,7 @@ function subjectLine(data: MonthlyReportData): string {
 }
 
 function heroHeadline(data: MonthlyReportData): string {
-  const firstName = data.professional_name.split(' ')[0]
+  const firstName = escapeHtml(data.professional_name.split(' ')[0])
 
   if (data.score_delta > 5) return `${firstName}, você cresceu este mês.`
   if (data.score_delta > 0) return `${firstName}, movimento positivo em ${data.month_label}.`
@@ -61,19 +62,19 @@ function reputationInsight(data: MonthlyReportData): string {
   const lines: string[] = []
 
   if (data.reviews_new_this_month === 0) {
-    lines.push('Nenhuma avaliação nova este mês. Pedir reviews ativamente pode mudar esse número rapidamente.')
+    lines.push('Nenhuma avaliação nova este mês. Incentivar pacientes a avaliar pode mudar esse número rapidamente.')
   } else if (data.reviews_new_this_month === 1) {
-    lines.push('1 paciente te avaliou este mês. Cada review conta para o Google te mostrar mais.')
+    lines.push('1 paciente te avaliou este mês. Cada avaliação conta para o Google te mostrar mais.')
   } else {
     lines.push(`${data.reviews_new_this_month} pacientes te avaliaram. Isso alimenta diretamente sua posição no Maps.`)
   }
 
   if (rate >= 80) {
-    lines.push(`Você respondeu ${rate}% dos reviews. Pacientes percebem esse cuidado.`)
+    lines.push(`Você respondeu ${rate}% das avaliações. Pacientes percebem esse cuidado.`)
   } else if (rate >= 50) {
     lines.push(`${rate}% de taxa de resposta. Responder a todos aumenta sua nota de relevância no Google.`)
   } else if (rate > 0) {
-    lines.push(`Só ${rate}% dos reviews foram respondidos. Cada resposta é sinal de atividade para o algoritmo.`)
+    lines.push(`Só ${rate}% das avaliações foram respondidas. Cada resposta é sinal de atividade para o algoritmo.`)
   }
 
   return lines.join(' ')
@@ -110,11 +111,18 @@ export function buildMonthlyReportEmail(data: MonthlyReportData): { subject: str
 
     <!-- Header escuro -->
     <tr><td style="background:#111827;border-radius:16px 16px 0 0;padding:36px 36px 28px;">
-      <p style="color:#6b7280;font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 12px;">Destaka</p>
+      <table cellpadding="0" cellspacing="0" border="0" style="margin:0 0 12px;"><tr>
+        <td style="vertical-align:middle;padding-right:8px;">
+          <img src="https://destaka.com.br/email-pin.png" alt="" width="22" height="26" style="display:block;border:0;" />
+        </td>
+        <td style="vertical-align:middle;">
+          <span style="font-size:18px;font-weight:700;color:#ffffff;letter-spacing:-0.015em;line-height:1;">Destaka</span>
+        </td>
+      </tr></table>
       <h1 style="color:#ffffff;font-size:28px;font-weight:800;margin:0 0 6px;line-height:1.2;">
         ${heroHeadline(data)}
       </h1>
-      <p style="color:#9ca3af;font-size:14px;margin:0;">${data.organization_name} &bull; ${data.month_label} ${data.year}</p>
+      <p style="color:#9ca3af;font-size:14px;margin:0;">${escapeHtml(data.organization_name)} &bull; ${data.month_label} ${data.year}</p>
     </td></tr>
 
     <!-- Score hero -->
@@ -124,10 +132,8 @@ export function buildMonthlyReportEmail(data: MonthlyReportData): { subject: str
         <tr>
           <td style="vertical-align:middle;">
             <p style="color:#6b7280;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 4px;">Score Destaka</p>
-            <div style="display:inline-flex;align-items:baseline;">
-              <span style="font-size:72px;font-weight:900;color:${color};line-height:1;letter-spacing:-2px;">${data.score_current}</span>
-              <span style="font-size:24px;font-weight:400;color:#d1d5db;margin-left:4px;">/100</span>
-            </div>
+            <span style="font-size:72px;font-weight:900;color:${color};line-height:1;letter-spacing:-2px;vertical-align:baseline;">${data.score_current}</span>
+            <span style="font-size:24px;font-weight:400;color:#d1d5db;margin-left:4px;vertical-align:baseline;">/100</span>
             <br>
             <span style="display:inline-block;background:${color}20;color:${color};font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;margin-top:8px;">${faixaLabel}</span>
             <p style="font-size:13px;color:#6b7280;margin:10px 0 0;">${scoreDeltaCopy(data)}</p>
@@ -137,14 +143,14 @@ export function buildMonthlyReportEmail(data: MonthlyReportData): { subject: str
 
       <!-- Barra principal -->
       <div style="background:#e5e7eb;border-radius:8px;height:14px;margin:20px 0 6px;">
-        <div style="background:${color};width:${data.score_current}%;height:14px;border-radius:8px;transition:width 0.3s;"></div>
+        <div style="background:${color};width:${data.score_current}%;height:14px;border-radius:8px;"></div>
       </div>
       <p style="font-size:12px;color:#9ca3af;margin:0 0 24px;">
         ${data.score_current >= 70
           ? 'Você está no grupo dos perfis mais bem posicionados.'
           : data.score_current >= 40
             ? `Faltam ${70 - data.score_current} pontos para entrar no grupo Presença Forte.`
-            : `Com foco nos próximos 30 dias é possível subir para Presença Funcional.`}
+            : `Com foco nos próximos 30 dias, é possível subir para Presença Funcional.`}
       </p>
 
       <!-- Componentes -->
@@ -230,8 +236,8 @@ export function buildMonthlyReportEmail(data: MonthlyReportData): { subject: str
     <!-- Foco do próximo mês -->
     <tr><td style="background:#111827;padding:28px 36px;">
       <p style="color:#6b7280;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 10px;">Uma coisa para ${data.month_label === 'Dezembro' ? 'Janeiro' : 'o próximo mês'}</p>
-      <p style="color:#ffffff;font-size:18px;font-weight:700;margin:0 0 8px;">${data.next_month_focus}</p>
-      <p style="color:#9ca3af;font-size:14px;line-height:1.6;margin:0;">${data.next_month_action}</p>
+      <p style="color:#ffffff;font-size:18px;font-weight:700;margin:0 0 8px;">${escapeHtml(data.next_month_focus)}</p>
+      <p style="color:#9ca3af;font-size:14px;line-height:1.6;margin:0;">${escapeHtml(data.next_month_action)}</p>
     </td></tr>
 
     <!-- Footer -->
@@ -240,7 +246,7 @@ export function buildMonthlyReportEmail(data: MonthlyReportData): { subject: str
         Você cuida dos seus pacientes. O Destaka cuida do seu Google.
       </p>
       <p style="font-size:11px;color:#9ca3af;margin:0;">
-        Destaka &bull; ${data.organization_name}
+        Destaka &bull; ${escapeHtml(data.organization_name)}
       </p>
     </td></tr>
 

@@ -1,4 +1,5 @@
 import { resend, FROM } from './index'
+import { escapeHtml } from '@/lib/utils/escape-html'
 
 interface ReviewApprovalParams {
   to: string
@@ -12,47 +13,57 @@ interface ReviewApprovalParams {
 export async function sendReviewApprovalEmail(params: ReviewApprovalParams) {
   const { to, businessName, reviewAuthor, reviewRating, reviewText, suggestedReply } = params
   const stars = '★'.repeat(reviewRating) + '☆'.repeat(5 - reviewRating)
-  const dashboardUrl = 'https://destaka.com.br/dashboard/reviews'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://destaka.com.br'
+  const dashboardUrl = `${appUrl}/dashboard/reviews`
 
   const html = `
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-<body style="margin:0;padding:0;background:#f5f5f4;font-family:Inter,Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f4;padding:32px 0;">
+<body style="margin:0;padding:0;background:#f3f4f6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;padding:32px 0;">
     <tr><td align="center">
-      <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;">
-        <tr><td style="background:#091e2f;padding:24px 32px;">
-          <span style="font-family:Outfit,Arial,sans-serif;font-weight:700;font-size:18px;color:#ffffff;letter-spacing:0.5px;">Destaka</span>
-          <span style="font-family:Outfit,Arial,sans-serif;font-weight:300;font-size:18px;color:rgba(255,255,255,0.4);letter-spacing:0.5px;margin-left:4px;">Saúde</span>
+      <table width="580" cellpadding="0" cellspacing="0" style="max-width:580px;width:100%;">
+        <tr><td style="background:#111827;border-radius:16px 16px 0 0;padding:28px 36px;">
+          <table cellpadding="0" cellspacing="0" border="0"><tr>
+            <td style="vertical-align:middle;padding-right:8px;">
+              <img src="https://destaka.com.br/email-pin.png" alt="" width="22" height="26" style="display:block;border:0;" />
+            </td>
+            <td style="vertical-align:middle;">
+              <span style="font-size:18px;font-weight:700;color:#ffffff;letter-spacing:-0.015em;line-height:1;">Destaka</span>
+            </td>
+          </tr></table>
         </td></tr>
-        <tr><td style="padding:32px;">
-          <p style="font-size:16px;color:#1C1917;margin:0 0 16px;">Olá!</p>
-          <p style="font-size:15px;color:#57534E;line-height:1.6;margin:0 0 24px;">
-            <strong>${businessName}</strong> recebeu uma avaliação que precisa da sua aprovação antes de responder.
+        <tr><td style="background:#ffffff;padding:36px;">
+          <h1 style="margin:0 0 16px;font-size:22px;font-weight:800;color:#111827;letter-spacing:-0.3px;line-height:1.3;">
+            Nova avaliação para aprovação
+          </h1>
+          <p style="font-size:15px;color:#4b5563;line-height:1.6;margin:0 0 24px;">
+            <strong>${escapeHtml(businessName)}</strong> recebeu uma avaliação que precisa da sua aprovação antes de responder.
           </p>
 
-          <div style="background:#f5f5f4;border-radius:8px;padding:20px;margin:0 0 24px;">
-            <p style="font-size:13px;color:#78716C;margin:0 0 4px;">${reviewAuthor}</p>
+          <div style="background:#f9fafb;border-radius:10px;padding:20px;margin:0 0 24px;">
+            <p style="font-size:13px;color:#6b7280;margin:0 0 4px;">${escapeHtml(reviewAuthor)}</p>
             <p style="font-size:18px;color:#F59E0B;margin:0 0 8px;letter-spacing:2px;">${stars}</p>
-            <p style="font-size:14px;color:#44403C;line-height:1.5;margin:0;font-style:italic;">"${reviewText || 'Sem texto'}"</p>
+            <p style="font-size:14px;color:#4b5563;line-height:1.5;margin:0;font-style:italic;">"${escapeHtml(reviewText || 'Sem texto')}"</p>
           </div>
 
-          <p style="font-size:13px;color:#78716C;margin:0 0 8px;font-weight:600;">Resposta sugerida pelo Destaka:</p>
-          <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:16px;margin:0 0 24px;">
-            <p style="font-size:14px;color:#1E40AF;line-height:1.5;margin:0;">${suggestedReply}</p>
+          <p style="font-size:13px;color:#6b7280;margin:0 0 8px;font-weight:600;">Resposta sugerida pelo Destaka:</p>
+          <div style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:10px;padding:20px;margin:0 0 24px;">
+            <p style="font-size:14px;color:#134e4a;line-height:1.6;margin:0;">${escapeHtml(suggestedReply)}</p>
           </div>
 
-          <a href="${dashboardUrl}" style="display:inline-block;background:#0EA5E9;color:#ffffff;font-weight:600;font-size:15px;padding:12px 24px;border-radius:8px;text-decoration:none;">
+          <a href="${dashboardUrl}" style="display:inline-block;background:#111827;color:#ffffff;font-weight:700;font-size:15px;padding:14px 32px;border-radius:10px;text-decoration:none;margin-top:8px;">
             Revisar e aprovar
           </a>
 
-          <p style="font-size:12px;color:#A8A29E;margin:16px 0 0;line-height:1.5;">
+          <p style="font-size:13px;color:#9ca3af;margin:16px 0 0;line-height:1.5;">
             Se você não aprovar em 7 dias, a resposta não será publicada.
           </p>
         </td></tr>
-        <tr><td style="padding:16px 32px;border-top:1px solid #E7E5E4;">
-          <p style="font-size:11px;color:#A8A29E;margin:0;">Destaka Saúde. Quem te procura, te encontra.</p>
+        <tr><td style="background:#f3f4f6;border-radius:0 0 16px 16px;padding:24px 36px;text-align:center;">
+          <p style="font-size:13px;color:#6b7280;margin:0 0 4px;font-weight:500;">Você cuida dos seus pacientes. O Destaka cuida do seu Google.</p>
+          <p style="font-size:11px;color:#9ca3af;margin:0;">destaka.com.br</p>
         </td></tr>
       </table>
     </td></tr>

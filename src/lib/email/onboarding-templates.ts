@@ -1,8 +1,10 @@
-// Templates HTML da régua de email pós-contratação (onboarding)
+// Templates HTML da regua de email pos-contratacao (onboarding)
 // 7 emails: dia 0, 1, 3, 7, 14, 21, 30
 
+import { escapeHtml } from '@/lib/utils/escape-html'
+
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://destaka.com.br'
-const WHATSAPP_NUMBER = process.env.DESTAKA_WHATSAPP_NUMBER ?? ''
+const WHATSAPP_URL = 'https://wa.me/5511999999999' // TODO: substituir pelo numero real
 
 function layout(content: string): string {
   return `<!DOCTYPE html>
@@ -18,7 +20,14 @@ function layout(content: string): string {
 
     <!-- Header -->
     <tr><td style="background:#111827;border-radius:16px 16px 0 0;padding:28px 36px;">
-      <p style="color:#6b7280;font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 8px;">Destaka</p>
+      <table cellpadding="0" cellspacing="0" border="0"><tr>
+        <td style="vertical-align:middle;padding-right:8px;">
+          <img src="https://destaka.com.br/email-pin.png" alt="" width="22" height="26" style="display:block;border:0;" />
+        </td>
+        <td style="vertical-align:middle;">
+          <span style="font-size:18px;font-weight:700;color:#ffffff;letter-spacing:-0.015em;line-height:1;">Destaka</span>
+        </td>
+      </tr></table>
     </td></tr>
 
     <!-- Body -->
@@ -70,7 +79,7 @@ export function templateDay0(firstName: string): { subject: string; html: string
   const subject = 'Seu perfil já está no piloto automático'
 
   const html = layout(`
-    ${heading(`${firstName}, bem-vindo ao Destaka.`)}
+    ${heading(`${escapeHtml(firstName)}, bem-vindo ao Destaka.`)}
     ${paragraph('A partir de agora, seu perfil no Google está sendo cuidado automaticamente. Nos próximos 30 dias, o Destaka vai:')}
 
     <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
@@ -103,7 +112,7 @@ export function templateDay1(firstName: string): { subject: string; html: string
   const subject = 'Seu score inicial: veja onde você está'
 
   const html = layout(`
-    ${heading(`${firstName}, seu diagnóstico inicial está pronto.`)}
+    ${heading(`${escapeHtml(firstName)}, seu diagnóstico inicial está pronto.`)}
     ${paragraph('O Score Destaka analisa 5 dimensões do seu perfil no Google. Cada uma tem peso diferente na forma como o Google decide quem aparece primeiro nos resultados.')}
 
     <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb;border-radius:10px;padding:20px;margin:0 0 24px;">
@@ -139,7 +148,7 @@ export function templateDay3(firstName: string): { subject: string; html: string
   const subject = '3 coisas que só você pode fazer'
 
   const html = layout(`
-    ${heading(`${firstName}, o Destaka cuida de quase tudo. Mas tem 3 coisas que fazem toda a diferença quando vêm de você.`)}
+    ${heading(`${escapeHtml(firstName)}, o Destaka cuida de quase tudo. Mas tem 3 coisas que fazem toda a diferença quando vem de você.`)}
 
     <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
       <tr><td style="padding:16px 0;border-bottom:1px solid #f3f4f6;">
@@ -171,8 +180,8 @@ export function templateDay7(firstName: string, orgName: string): { subject: str
   const subject = '7 dias: o que já mudou no seu perfil'
 
   const html = layout(`
-    ${heading(`${firstName}, uma semana de Destaka.`)}
-    ${paragraph(`Nos primeiros 7 dias, o sistema trabalhou no perfil de <strong>${orgName}</strong>. Aqui está o que já foi feito:`)}
+    ${heading(`${escapeHtml(firstName)}, uma semana de Destaka.`)}
+    ${paragraph(`Nos primeiros 7 dias, o sistema trabalhou no perfil de <strong>${escapeHtml(orgName)}</strong>. Aqui está o que já foi feito:`)}
 
     <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb;border-radius:10px;padding:20px;margin:0 0 24px;">
       <tr><td style="padding:8px 0;">
@@ -203,10 +212,8 @@ export function templateDay7(firstName: string, orgName: string): { subject: str
 export function templateDay14(firstName: string): { subject: string; html: string } {
   const subject = 'Como está sendo a experiência?'
 
-  const whatsappUrl = WHATSAPP_NUMBER ? `https://wa.me/${WHATSAPP_NUMBER}` : ''
-
   const html = layout(`
-    ${heading(`${firstName}, tudo certo por aí?`)}
+    ${heading(`${escapeHtml(firstName)}, tudo certo por aí?`)}
     ${paragraph('Já faz duas semanas que o Destaka está cuidando do seu perfil no Google. O sistema continua trabalhando todos os dias, mesmo quando você não percebe.')}
     ${paragraph('Se tiver qualquer dúvida sobre o que está acontecendo, sobre o score ou sobre as otimizações, estamos aqui.')}
 
@@ -215,11 +222,11 @@ export function templateDay14(firstName: string): { subject: string; html: strin
         <td style="padding-right:8px;">
           ${button('Ver dashboard', `${APP_URL}/dashboard`)}
         </td>
-        ${whatsappUrl ? `<td>
-          <a href="${whatsappUrl}" style="display:inline-block;background:#ffffff;color:#111827;font-weight:700;font-size:15px;padding:14px 32px;border-radius:10px;text-decoration:none;border:1px solid #e5e7eb;margin-top:8px;">
+        <td>
+          <a href="${WHATSAPP_URL}" style="display:inline-block;background:#ffffff;color:#111827;font-weight:700;font-size:15px;padding:14px 32px;border-radius:10px;text-decoration:none;border:1px solid #e5e7eb;margin-top:8px;">
             Falar no WhatsApp
           </a>
-        </td>` : ''}
+        </td>
       </tr>
     </table>
 
@@ -236,7 +243,7 @@ export function templateDay21(firstName: string): { subject: string; html: strin
   const subject = 'Perfis como o seu já subiram mais de 20 pontos'
 
   const html = layout(`
-    ${heading(`${firstName}, você está no caminho certo.`)}
+    ${heading(`${escapeHtml(firstName)}, você está no caminho certo.`)}
     ${paragraph('Profissionais que usam o Destaka por 30 dias ou mais costumam ver uma evolução média de 20 a 35 pontos no Score Destaka. Isso significa mais visibilidade no Google Maps e mais pacientes encontrando o perfil.')}
 
     <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:10px;padding:24px;margin:0 0 24px;">
@@ -263,8 +270,8 @@ export function templateDay30(firstName: string, orgName: string): { subject: st
   const subject = 'Seu primeiro mês com o Destaka'
 
   const html = layout(`
-    ${heading(`${firstName}, um mês completo.`)}
-    ${paragraph(`O Destaka trabalhou no perfil de <strong>${orgName}</strong> todos os dias nos últimos 30 dias. Descrição otimizada, posts publicados, avaliações monitoradas, score calculado diariamente.`)}
+    ${heading(`${escapeHtml(firstName)}, um mês completo.`)}
+    ${paragraph(`O Destaka trabalhou no perfil de <strong>${escapeHtml(orgName)}</strong> todos os dias nos últimos 30 dias. Descrição otimizada, posts publicados, avaliações monitoradas, score calculado diariamente.`)}
 
     ${highlight('Acesse a dashboard para ver o comparativo completo: score inicial versus score atual, posts publicados, avaliações respondidas e visualizações do seu perfil.')}
 
