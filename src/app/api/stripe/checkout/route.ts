@@ -45,9 +45,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Criar checkout session
-  const ALLOWED_ORIGINS = ['https://destaka.com.br', 'https://www.destaka.com.br']
-  const rawOrigin = request.headers.get('origin') ?? ''
-  const origin = ALLOWED_ORIGINS.includes(rawOrigin) ? rawOrigin : 'https://destaka.com.br'
+  const origin = process.env.NEXT_PUBLIC_APP_URL ?? 'https://destaka.com.br'
 
   const session = await stripe.checkout.sessions.create({
     customer: customerId,

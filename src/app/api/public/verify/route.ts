@@ -22,7 +22,13 @@ export async function POST(req: NextRequest) {
       ?? 'unknown'
     const ipHash = createHash('sha256').update(ip + (process.env.ENCRYPTION_KEY ?? '')).digest('hex').slice(0, 16)
     const count = await rateLimit(`ratelimit:verify:${ipHash}`, 86400)
-    if (count !== null && count > MAX_VERIFY_PER_IP_PER_DAY) {
+    if (count === null) {
+      return NextResponse.json(
+        { error: 'Servico temporariamente indisponivel' },
+        { status: 503 }
+      )
+    }
+    if (count > MAX_VERIFY_PER_IP_PER_DAY) {
       return NextResponse.json(
         { error: 'Limite de verificacoes diarias atingido. Tente novamente amanha.' },
         { status: 429 }

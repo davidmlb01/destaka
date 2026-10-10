@@ -43,7 +43,13 @@ export async function POST(req: NextRequest) {
   // Rate limiting por IP — fail-closed (rotas publicas de custo)
   const key = `ratelimit:lead:${ipHash}`
   const count = await rateLimit(key, 86400)
-  if (count !== null && count > MAX_PER_IP_PER_DAY) {
+  if (count === null) {
+    return NextResponse.json(
+      { error: 'Servico temporariamente indisponivel' },
+      { status: 503 }
+    )
+  }
+  if (count > MAX_PER_IP_PER_DAY) {
     return NextResponse.json(
       { error: 'Limite de auditorias diarias atingido. Tente novamente amanha.' },
       { status: 429 }

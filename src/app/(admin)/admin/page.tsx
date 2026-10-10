@@ -1,14 +1,7 @@
 export const dynamic = 'force-dynamic'
 
-import { createClient as createAdminClient } from '@supabase/supabase-js'
+import { createServiceClient } from '@/lib/supabase/server'
 import { RetriggerButton } from './RetriggerButton'
-
-function admin() {
-  return createAdminClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
-}
 
 interface OrgRow {
   id: string
@@ -44,7 +37,7 @@ interface LeadRow {
 }
 
 async function getAdminData() {
-  const db = admin()
+  const db = await createServiceClient()
 
   const [
     { data: orgs },
