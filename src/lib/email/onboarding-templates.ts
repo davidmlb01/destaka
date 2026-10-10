@@ -1,10 +1,11 @@
-// Templates HTML da regua de email pos-contratacao (onboarding)
-// 7 emails: dia 0, 1, 3, 7, 14, 21, 30
+// Templates HTML da régua de email pós-contratação (onboarding)
+// 6 emails: dia 0, 1, 3, 7, 14, 30
 
 import { escapeHtml } from '@/lib/utils/escape-html'
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://destaka.com.br'
-const WHATSAPP_URL = 'https://wa.me/5511999999999' // TODO: substituir pelo numero real
+const WHATSAPP_NUMBER = process.env.DESTAKA_WHATSAPP_NUMBER ?? ''
+const SUPPORT_EMAIL = 'suporte@destaka.com.br'
 
 function layout(content: string): string {
   return `<!DOCTYPE html>
@@ -26,6 +27,7 @@ function layout(content: string): string {
         </td>
         <td style="vertical-align:middle;">
           <span style="font-size:18px;font-weight:700;color:#ffffff;letter-spacing:-0.015em;line-height:1;">Destaka</span>
+          <span style="font-size:18px;font-weight:300;color:rgba(255,255,255,0.5);letter-spacing:-0.015em;line-height:1;margin-left:4px;">Saúde</span>
         </td>
       </tr></table>
     </td></tr>
@@ -37,13 +39,11 @@ function layout(content: string): string {
 
     <!-- Footer -->
     <tr><td style="background:#f3f4f6;border-radius:0 0 16px 16px;padding:24px 36px;text-align:center;">
-      <p style="font-size:13px;color:#6b7280;margin:0 0 4px;font-weight:500;">
-        Você cuida dos seus pacientes. O Destaka cuida do seu Google.
-      </p>
-      <p style="font-size:11px;color:#9ca3af;margin:0;">
-        destaka.com.br
+      <p style="font-size:13px;color:#4b5563;margin:0;font-weight:500;">
+        Você cuida dos seus pacientes. O Destaka Saúde cuida de trazer os próximos.
       </p>
     </td></tr>
+
 
   </table>
   </td></tr>
@@ -53,7 +53,7 @@ function layout(content: string): string {
 }
 
 function button(text: string, url: string): string {
-  return `<a href="${url}" style="display:inline-block;background:#111827;color:#ffffff;font-weight:700;font-size:15px;padding:14px 32px;border-radius:10px;text-decoration:none;margin-top:8px;">
+  return `<a href="${url}" style="display:inline-block;background:#0f766e;color:#ffffff;font-weight:700;font-size:15px;padding:14px 32px;border-radius:10px;text-decoration:none;margin-top:8px;">
   ${text}
 </a>`
 }
@@ -66,108 +66,122 @@ function paragraph(text: string): string {
   return `<p style="font-size:15px;color:#4b5563;line-height:1.6;margin:0 0 16px;">${text}</p>`
 }
 
+function supportLine(): string {
+  return `<p style="font-size:13px;color:#4b5563;margin:16px 0 0;line-height:1.6;">Alguma dúvida? Escreva para <a href="mailto:${SUPPORT_EMAIL}" style="color:#0f766e;font-weight:600;text-decoration:none;">${SUPPORT_EMAIL}</a></p>`
+}
+
 function highlight(text: string): string {
   return `<div style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:10px;padding:20px;margin:0 0 24px;">
-  <p style="font-size:14px;color:#134e4a;line-height:1.6;margin:0;">${text}</p>
+  <p style="font-size:15px;color:#134e4a;line-height:1.6;margin:0;">${text}</p>
 </div>`
 }
 
 // ─────────────────────────────────────────────
 // Dia 0: Boas-vindas
 // ─────────────────────────────────────────────
-export function templateDay0(firstName: string): { subject: string; html: string } {
-  const subject = 'Seu perfil já está no piloto automático'
+export function templateDay0(firstName: string, gender?: 'M' | 'F'): { subject: string; html: string } {
+  const subject = 'Pronto. Seu consultório vai aparecer para mais pacientes'
+  const bemVindo = gender === 'F' ? 'bem-vinda' : 'bem-vindo'
 
   const html = layout(`
-    ${heading(`${escapeHtml(firstName)}, bem-vindo ao Destaka.`)}
-    ${paragraph('A partir de agora, seu perfil no Google está sendo cuidado automaticamente. Nos próximos 30 dias, o Destaka vai:')}
+    ${heading(`${escapeHtml(firstName)}, ${bemVindo} ao Destaka Saúde`)}
+    ${paragraph('A partir de agora, o Destaka Saúde trabalha todos os dias para que pacientes da sua região encontrem você primeiro no Google. Sem precisar mexer em nada. Nos próximos 30 dias, o Destaka Saúde vai:')}
 
     <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
       <tr><td style="padding:12px 0;border-bottom:1px solid #f3f4f6;">
-        <p style="margin:0;font-size:14px;color:#111827;"><strong>1.</strong> Otimizar seu perfil no Google (descrição, categorias, atributos)</p>
+        <p style="margin:0;font-size:14px;color:#111827;"><strong>1.</strong> Otimizar seu perfil no Google para aparecer nas buscas certas da sua especialidade</p>
       </td></tr>
       <tr><td style="padding:12px 0;border-bottom:1px solid #f3f4f6;">
-        <p style="margin:0;font-size:14px;color:#111827;"><strong>2.</strong> Publicar posts automáticos no seu nome</p>
+        <p style="margin:0;font-size:14px;color:#111827;"><strong>2.</strong> Publicar conteúdo no seu perfil para que o Google entenda que você está ativo e relevante</p>
       </td></tr>
       <tr><td style="padding:12px 0;border-bottom:1px solid #f3f4f6;">
-        <p style="margin:0;font-size:14px;color:#111827;"><strong>3.</strong> Monitorar e responder avaliações de pacientes</p>
+        <p style="margin:0;font-size:14px;color:#111827;"><strong>3.</strong> Responder avaliações de pacientes para manter sua reputação forte</p>
       </td></tr>
       <tr><td style="padding:12px 0;">
-        <p style="margin:0;font-size:14px;color:#111827;"><strong>4.</strong> Calcular seu Score Destaka diariamente</p>
+        <p style="margin:0;font-size:14px;color:#111827;"><strong>4.</strong> Medir seu Score Destaka Saúde todos os dias para acompanhar os resultados</p>
       </td></tr>
     </table>
 
-    ${highlight('Você não precisa fazer nada. O sistema já está trabalhando. Amanhã você recebe seu primeiro diagnóstico com o score inicial.')}
+    ${highlight('Não precisa fazer nada. O Destaka Saúde já está trabalhando no seu perfil agora. Amanhã seu Score Destaka Saúde inicial estará pronto, o ponto de partida para acompanhar o crescimento da sua visibilidade.')}
 
-    ${button('Ver minha dashboard', `${APP_URL}/dashboard`)}
+    ${button('Ver meu painel', `${APP_URL}/dashboard`)}
+
+    ${supportLine()}
   `)
 
   return { subject, html }
 }
 
 // ─────────────────────────────────────────────
-// Dia 1: Primeiro diagnóstico
+// Dia 1: Score inicial + contexto prático
 // ─────────────────────────────────────────────
-export function templateDay1(firstName: string): { subject: string; html: string } {
-  const subject = 'Seu score inicial: veja onde você está'
+export function templateDay1(firstName: string, orgName: string, initialScore: number): { subject: string; html: string } {
+  const subject = `Seu Score Destaka Saúde: ${initialScore}/100. Veja o que isso significa.`
 
   const html = layout(`
-    ${heading(`${escapeHtml(firstName)}, seu diagnóstico inicial está pronto.`)}
-    ${paragraph('O Score Destaka analisa 5 dimensões do seu perfil no Google. Cada uma tem peso diferente na forma como o Google decide quem aparece primeiro nos resultados.')}
+    ${heading(`${escapeHtml(firstName)}, esse número define quantos pacientes encontram você hoje`)}
+    ${paragraph(`O perfil de <strong>${escapeHtml(orgName)}</strong> foi analisado e o seu Score Destaka Saúde inicial é:`)}
 
-    <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb;border-radius:10px;padding:20px;margin:0 0 24px;">
-      <tr><td style="padding:8px 0;">
-        <p style="margin:0;font-size:13px;color:#374151;"><strong>Completude do Perfil</strong> (25 pts): descrição, categorias, fotos, horários</p>
-      </td></tr>
-      <tr><td style="padding:8px 0;">
-        <p style="margin:0;font-size:13px;color:#374151;"><strong>Reputação</strong> (25 pts): nota média, volume e taxa de resposta das avaliações</p>
-      </td></tr>
-      <tr><td style="padding:8px 0;">
-        <p style="margin:0;font-size:13px;color:#374151;"><strong>Visibilidade</strong> (20 pts): frequência de posts, atividade recente</p>
-      </td></tr>
-      <tr><td style="padding:8px 0;">
-        <p style="margin:0;font-size:13px;color:#374151;"><strong>Retenção</strong> (20 pts): engajamento, respostas personalizadas</p>
-      </td></tr>
-      <tr><td style="padding:8px 0;">
-        <p style="margin:0;font-size:13px;color:#374151;"><strong>Conversão</strong> (10 pts): CTA, links, informações de contato</p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb;border-radius:10px;margin:0 0 24px;">
+      <tr><td style="padding:24px;text-align:center;">
+        <p style="margin:0;font-size:60px;font-weight:800;color:#0f766e;line-height:1;">${initialScore}</p>
+        <p style="margin:4px 0 0;font-size:14px;color:#4b5563;">de 100 pontos</p>
       </td></tr>
     </table>
 
-    ${paragraph('A maioria dos profissionais começa entre 20 e 40 pontos. Em 30 dias, você vai ver a diferença.')}
+    ${paragraph('Esse número reflete o quanto seu perfil está visível para pacientes que buscam profissionais como você no Google agora. Quanto maior o score, mais você aparece. O Destaka Saúde vai trabalhar todos os dias para subir esse número.')}
 
-    ${button('Ver meu score', `${APP_URL}/dashboard`)}
+    ${paragraph('As primeiras ações já estão em andamento:')}
+
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
+      <tr><td style="padding:10px 0;border-bottom:1px solid #f3f4f6;">
+        <p style="margin:0;font-size:14px;color:#111827;">Otimização da descrição e categorias do perfil</p>
+      </td></tr>
+      <tr><td style="padding:10px 0;border-bottom:1px solid #f3f4f6;">
+        <p style="margin:0;font-size:14px;color:#111827;">Ajuste de atributos para melhor posicionamento no Maps</p>
+      </td></tr>
+      <tr><td style="padding:10px 0;border-bottom:1px solid #f3f4f6;">
+        <p style="margin:0;font-size:14px;color:#111827;">Publicação dos primeiros posts no seu perfil</p>
+      </td></tr>
+      <tr><td style="padding:10px 0;">
+        <p style="margin:0;font-size:14px;color:#111827;">Monitoramento de avaliações ativado</p>
+      </td></tr>
+    </table>
+
+    ${highlight('Cada ponto a mais no seu score significa mais pacientes encontrando você antes dos outros profissionais da sua região. Acompanhe no painel.')}
+
+    ${button('Ver meu score e evolução', `${APP_URL}/dashboard`)}
   `)
 
   return { subject, html }
 }
 
 // ─────────────────────────────────────────────
-// Dia 3: Tarefas manuais
+// Dia 3: Como acelerar o crescimento
 // ─────────────────────────────────────────────
 export function templateDay3(firstName: string): { subject: string; html: string } {
-  const subject = '3 coisas que só você pode fazer'
+  const subject = '2 ações que seus concorrentes mais bem posicionados já fazem'
 
   const html = layout(`
-    ${heading(`${escapeHtml(firstName)}, o Destaka cuida de quase tudo. Mas tem 3 coisas que fazem toda a diferença quando vem de você.`)}
+    ${heading(`${escapeHtml(firstName)}, o Destaka Saúde cuida de 80%. Esses 20% só você pode fazer.`)}
+    ${paragraph('O Destaka Saúde otimiza, publica e monitora no piloto automático. Mas os perfis que mais atraem pacientes no Google têm duas coisas que só o profissional pode fornecer:')}
 
     <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
       <tr><td style="padding:16px 0;border-bottom:1px solid #f3f4f6;">
-        <p style="margin:0 0 4px;font-size:15px;font-weight:700;color:#111827;">1. Adicione fotos reais</p>
-        <p style="margin:0;font-size:14px;color:#4b5563;line-height:1.5;">Fotos do consultório, da equipe, da fachada. O Google prioriza perfis com imagens autênticas. Fotos de banco de imagens não contam.</p>
-      </td></tr>
-      <tr><td style="padding:16px 0;border-bottom:1px solid #f3f4f6;">
-        <p style="margin:0 0 4px;font-size:15px;font-weight:700;color:#111827;">2. Responda avaliações com toque pessoal</p>
-        <p style="margin:0;font-size:14px;color:#4b5563;line-height:1.5;">O Destaka sugere respostas automáticas, mas quando você adiciona uma palavra pessoal, o paciente percebe. Isso gera confiança.</p>
+        <p style="margin:0 0 4px;font-size:15px;font-weight:700;color:#111827;">1. Peça avaliações (o fator #1 do algoritmo do Google)</p>
+        <p style="margin:0;font-size:14px;color:#4b5563;line-height:1.5;">Avaliações são o fator de maior peso no ranking do Google. Profissionais com mais de 30 avaliações recebem até 3x mais cliques no perfil. Dica prática: ao final do atendimento, diga "Se puder deixar uma avaliação no Google, ajuda muito outros pacientes a me encontrarem". Simples e eficaz.</p>
       </td></tr>
       <tr><td style="padding:16px 0;">
-        <p style="margin:0 0 4px;font-size:15px;font-weight:700;color:#111827;">3. Mantenha o horário de funcionamento atualizado</p>
-        <p style="margin:0;font-size:14px;color:#4b5563;line-height:1.5;">Feriados, férias, mudança de expediente. Quando o horário está errado, o Google reduz a relevância do perfil.</p>
+        <p style="margin:0 0 4px;font-size:15px;font-weight:700;color:#111827;">2. Envie fotos reais (perfis com fotos recebem 42% mais pedidos de rota)</p>
+        <p style="margin:0;font-size:14px;color:#4b5563;line-height:1.5;">Fotos da recepção, da equipe, do ambiente de atendimento. Perfis com fotos recentes recebem significativamente mais interações. Basta tirar 3 a 5 fotos com o celular e responder este email com elas. Nós publicamos para você.</p>
       </td></tr>
     </table>
 
-    ${highlight('O Destaka cuida do resto: posts, otimização, monitoramento, score. Essas 3 coisas são o seu diferencial.')}
+    ${highlight('O Destaka Saúde cuida de posts, otimização, respostas e monitoramento. Avaliações e fotos são o que separa os perfis bons dos perfis que dominam a busca na região.')}
 
-    ${button('Acessar dashboard', `${APP_URL}/dashboard`)}
+    ${button('Ver meu score atual', `${APP_URL}/dashboard`)}
+
+    ${supportLine()}
   `)
 
   return { subject, html }
@@ -176,112 +190,165 @@ export function templateDay3(firstName: string): { subject: string; html: string
 // ─────────────────────────────────────────────
 // Dia 7: Primeiro resultado
 // ─────────────────────────────────────────────
-export function templateDay7(firstName: string, orgName: string): { subject: string; html: string } {
-  const subject = '7 dias: o que já mudou no seu perfil'
+export function templateDay7(firstName: string, orgName: string, postsCount: number, scoreDelta: number): { subject: string; html: string } {
+  const subject = scoreDelta > 0
+    ? `7 dias, +${scoreDelta} pontos. Veja o que já mudou.`
+    : '7 dias de Destaka Saúde. Veja o progresso.'
 
   const html = layout(`
-    ${heading(`${escapeHtml(firstName)}, uma semana de Destaka.`)}
-    ${paragraph(`Nos primeiros 7 dias, o sistema trabalhou no perfil de <strong>${escapeHtml(orgName)}</strong>. Aqui está o que já foi feito:`)}
+    ${heading(`${escapeHtml(firstName)}, 7 dias. Zero esforço seu. Veja os resultados.`)}
+    ${paragraph(`Em 7 dias, o Destaka Saúde trabalhou no perfil de <strong>${escapeHtml(orgName)}</strong> sem precisar fazer nada. Aqui está o que já aconteceu:`)}
 
     <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb;border-radius:10px;padding:20px;margin:0 0 24px;">
       <tr><td style="padding:8px 0;">
-        <p style="margin:0;font-size:14px;color:#374151;">Descrição do perfil otimizada com palavras-chave relevantes</p>
+        <p style="margin:0;font-size:14px;color:#4b5563;">Descrição do perfil otimizada com palavras-chave relevantes</p>
       </td></tr>
       <tr><td style="padding:8px 0;">
-        <p style="margin:0;font-size:14px;color:#374151;">Categorias e atributos ajustados para melhor posicionamento</p>
+        <p style="margin:0;font-size:14px;color:#4b5563;">Categorias e atributos ajustados para melhor posicionamento</p>
       </td></tr>
       <tr><td style="padding:8px 0;">
-        <p style="margin:0;font-size:14px;color:#374151;">Posts publicados automaticamente no seu perfil</p>
+        <p style="margin:0;font-size:14px;color:#4b5563;">${postsCount} post${postsCount !== 1 ? 's publicados' : ' publicado'} no seu perfil</p>
       </td></tr>
       <tr><td style="padding:8px 0;">
-        <p style="margin:0;font-size:14px;color:#374151;">Score Destaka calculado diariamente</p>
+        <p style="margin:0;font-size:14px;color:#4b5563;">Score Destaka Saúde calculado diariamente</p>
       </td></tr>
     </table>
 
-    ${paragraph('Acesse a dashboard para ver os números detalhados e acompanhar a evolução do seu score.')}
+    ${scoreDelta > 0
+      ? highlight(`Seu score subiu ${scoreDelta} ponto${scoreDelta !== 1 ? 's' : ''} em 7 dias. Isso significa que mais pacientes estão encontrando seu perfil nas buscas. E o Destaka Saúde continua trabalhando todos os dias para subir ainda mais.`)
+      : highlight('As otimizações dos primeiros dias levam de 7 a 14 dias para refletir no ranking do Google. O trabalho está feito, os resultados estão a caminho. Acompanhe no painel.')}
 
-    ${button('Ver resultados', `${APP_URL}/dashboard`)}
+    ${button('Ver resultados da semana', `${APP_URL}/dashboard`)}
   `)
 
   return { subject, html }
 }
 
 // ─────────────────────────────────────────────
-// Dia 14: Check-in
+// Dia 14: Check-in com reafirmação de valor
 // ─────────────────────────────────────────────
 export function templateDay14(firstName: string): { subject: string; html: string } {
-  const subject = 'Como está sendo a experiência?'
+  const subject = '14 dias no piloto automático. Seu perfil continua crescendo.'
+
+  const whatsappUrl = WHATSAPP_NUMBER ? `https://wa.me/${WHATSAPP_NUMBER}` : ''
 
   const html = layout(`
-    ${heading(`${escapeHtml(firstName)}, tudo certo por aí?`)}
-    ${paragraph('Já faz duas semanas que o Destaka está cuidando do seu perfil no Google. O sistema continua trabalhando todos os dias, mesmo quando você não percebe.')}
-    ${paragraph('Se tiver qualquer dúvida sobre o que está acontecendo, sobre o score ou sobre as otimizações, estamos aqui.')}
+    ${heading(`${escapeHtml(firstName)}, 14 dias e o Destaka Saúde não parou um dia`)}
+    ${paragraph('Nos últimos 14 dias, o Destaka Saúde publicou conteúdo, respondeu avaliações, otimizou categorias e monitorou seu perfil no Google. Tudo sem precisar abrir o painel uma única vez. Esse trabalho consistente é o que faz o Google priorizar seu perfil sobre os concorrentes da região.')}
+    ${paragraph('Se quiser ver os números ou tiver qualquer dúvida, estamos aqui. Mas saiba: mesmo que não olhe, o Destaka Saúde continua trabalhando.')}
 
     <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
+      <tr><td>
+        ${button('Ver meu score atualizado', `${APP_URL}/dashboard`)}
+      </td></tr>
+      ${whatsappUrl ? `<tr><td style="padding-top:12px;">
+        <a href="${whatsappUrl}" style="display:inline-block;background:#ffffff;color:#111827;font-weight:700;font-size:15px;padding:14px 32px;border-radius:10px;text-decoration:none;border:1px solid #e5e7eb;">
+          Falar no WhatsApp
+        </a>
+      </td></tr>` : ''}
+    </table>
+
+    ${highlight('Em 16 dias você recebe o relatório completo do primeiro mês, com todas as métricas de visibilidade e engajamento do seu perfil.')}
+
+    ${supportLine()}
+  `)
+
+  return { subject, html }
+}
+
+// ─────────────────────────────────────────────
+// Dia 30: Resumo mensal com métricas traduzidas em pacientes
+// ─────────────────────────────────────────────
+interface Day30Data {
+  firstName: string
+  orgName: string
+  scoreInitial: number
+  scoreCurrent: number
+  postsCount: number
+  reviewsCount: number
+  profileViews?: number
+  websiteClicks?: number
+  phoneClicks?: number
+  whatsappClicks?: number
+}
+
+export function templateDay30(data: Day30Data): { subject: string; html: string } {
+  const { firstName, orgName, scoreInitial, scoreCurrent, postsCount, reviewsCount } = data
+  const scoreDelta = scoreCurrent - scoreInitial
+  const subject = `30 dias. +${scoreDelta > 0 ? scoreDelta : 0} pontos. Veja o impacto no seu consultório.`
+
+  const metricsRows: string[] = []
+
+  if (data.profileViews && data.profileViews > 0) {
+    metricsRows.push(`<tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6;">
+      <p style="margin:0;font-size:14px;color:#4b5563;"><strong>${data.profileViews.toLocaleString('pt-BR')}</strong> pessoas viram seu perfil no Google</p>
+    </td></tr>`)
+  }
+  if (data.websiteClicks && data.websiteClicks > 0) {
+    metricsRows.push(`<tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6;">
+      <p style="margin:0;font-size:14px;color:#4b5563;"><strong>${data.websiteClicks}</strong> visitaram seu site a partir do Google</p>
+    </td></tr>`)
+  }
+  if (data.phoneClicks && data.phoneClicks > 0) {
+    metricsRows.push(`<tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6;">
+      <p style="margin:0;font-size:14px;color:#4b5563;"><strong>${data.phoneClicks}</strong> ligaram para agendar pelo Google</p>
+    </td></tr>`)
+  }
+  if (data.whatsappClicks && data.whatsappClicks > 0) {
+    metricsRows.push(`<tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6;">
+      <p style="margin:0;font-size:14px;color:#4b5563;"><strong>${data.whatsappClicks}</strong> mandaram mensagem pelo Google</p>
+    </td></tr>`)
+  }
+
+  const html = layout(`
+    ${heading(`${escapeHtml(firstName)}, 30 dias no piloto automático. Aqui está o resultado.`)}
+    ${paragraph(`Nos últimos 30 dias, o Destaka Saúde trabalhou no perfil de <strong>${escapeHtml(orgName)}</strong> todos os dias, sem precisar dedicar um minuto sequer a isso.`)}
+
+    <!-- Score comparativo -->
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
       <tr>
-        <td style="padding-right:8px;">
-          ${button('Ver dashboard', `${APP_URL}/dashboard`)}
+        <td align="center" style="background:#f9fafb;border-radius:10px;padding:20px;width:45%;">
+          <p style="margin:0;font-size:12px;color:#4b5563;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Score inicial</p>
+          <p style="margin:4px 0 0;font-size:36px;font-weight:800;color:#6b7280;line-height:1;">${scoreInitial}</p>
         </td>
-        <td>
-          <a href="${WHATSAPP_URL}" style="display:inline-block;background:#ffffff;color:#111827;font-weight:700;font-size:15px;padding:14px 32px;border-radius:10px;text-decoration:none;border:1px solid #e5e7eb;margin-top:8px;">
-            Falar no WhatsApp
-          </a>
+        <td style="width:10%;text-align:center;">
+          <p style="margin:0;font-size:20px;color:#0f766e;font-weight:700;">→</p>
+        </td>
+        <td align="center" style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:10px;padding:20px;width:45%;">
+          <p style="margin:0;font-size:12px;color:#134e4a;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Score atual</p>
+          <p style="margin:4px 0 0;font-size:36px;font-weight:800;color:#0f766e;line-height:1;">${scoreCurrent}</p>
+          ${scoreDelta > 0 ? `<p style="margin:4px 0 0;font-size:13px;font-weight:700;color:#0f766e;">+${scoreDelta} pontos</p>` : ''}
         </td>
       </tr>
     </table>
 
-    ${highlight('O piloto automático não para. Seu próximo relatório completo chega no final do mês.')}
-  `)
-
-  return { subject, html }
-}
-
-// ─────────────────────────────────────────────
-// Dia 21: Prova social
-// ─────────────────────────────────────────────
-export function templateDay21(firstName: string): { subject: string; html: string } {
-  const subject = 'Perfis como o seu já subiram mais de 20 pontos'
-
-  const html = layout(`
-    ${heading(`${escapeHtml(firstName)}, você está no caminho certo.`)}
-    ${paragraph('Profissionais que usam o Destaka por 30 dias ou mais costumam ver uma evolução média de 20 a 35 pontos no Score Destaka. Isso significa mais visibilidade no Google Maps e mais pacientes encontrando o perfil.')}
-
-    <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:10px;padding:24px;margin:0 0 24px;">
-      <tr><td>
-        <p style="margin:0 0 8px;font-size:16px;font-weight:700;color:#134e4a;">O que faz a diferença:</p>
-        <p style="margin:0;font-size:14px;color:#134e4a;line-height:1.6;">
-          Perfil completo + posts frequentes + avaliações respondidas. O Destaka cuida dos dois primeiros. As avaliações, você complementa com o toque pessoal.
-        </p>
+    <!-- Ações realizadas -->
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb;border-radius:10px;padding:20px;margin:0 0 24px;">
+      <tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6;">
+        <p style="margin:0;font-size:14px;color:#4b5563;"><strong>${postsCount}</strong> post${postsCount !== 1 ? 's publicados' : ' publicado'} no seu perfil</p>
+      </td></tr>
+      <tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6;">
+        <p style="margin:0;font-size:14px;color:#4b5563;"><strong>${reviewsCount}</strong> ${reviewsCount !== 1 ? 'avaliações respondidas' : 'avaliação respondida'}</p>
+      </td></tr>
+      <tr><td style="padding:8px 0;">
+        <p style="margin:0;font-size:14px;color:#4b5563;">Descrição, categorias e atributos otimizados</p>
       </td></tr>
     </table>
 
-    ${paragraph('Acesse a dashboard para acompanhar como está a sua evolução.')}
+    ${metricsRows.length > 0 ? `
+    <!-- Métricas traduzidas em pacientes -->
+    <p style="margin:0 0 12px;font-size:13px;font-weight:700;color:#4b5563;text-transform:uppercase;letter-spacing:0.5px;">Pacientes que encontraram você pelo Google</p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
+      ${metricsRows.join('')}
+    </table>` : ''}
 
-    ${button('Ver meu progresso', `${APP_URL}/dashboard`)}
-  `)
+    ${paragraph('O algoritmo do Google recompensa quem é consistente. Perfis que mantêm atividade por 60+ dias ganham prioridade sobre concorrentes que param e voltam. O Destaka Saúde garante essa consistência todos os dias, para você focar no que importa: atender seus pacientes.')}
 
-  return { subject, html }
-}
+    ${button('Ver relatório completo', `${APP_URL}/dashboard`)}
 
-// ─────────────────────────────────────────────
-// Dia 30: Resumo mensal
-// ─────────────────────────────────────────────
-export function templateDay30(firstName: string, orgName: string): { subject: string; html: string } {
-  const subject = 'Seu primeiro mês com o Destaka'
+    ${paragraph('A partir de agora, ao final de cada mês você recebe um email como este com o relatório completo da evolução do seu perfil.')}
 
-  const html = layout(`
-    ${heading(`${escapeHtml(firstName)}, um mês completo.`)}
-    ${paragraph(`O Destaka trabalhou no perfil de <strong>${escapeHtml(orgName)}</strong> todos os dias nos últimos 30 dias. Descrição otimizada, posts publicados, avaliações monitoradas, score calculado diariamente.`)}
-
-    ${highlight('Acesse a dashboard para ver o comparativo completo: score inicial versus score atual, posts publicados, avaliações respondidas e visualizações do seu perfil.')}
-
-    ${paragraph('Continue no piloto automático. O próximo mês vai ser ainda melhor. O algoritmo do Google recompensa consistência, e o Destaka garante isso para você.')}
-
-    ${button('Ver resumo completo', `${APP_URL}/dashboard`)}
-
-    <p style="font-size:13px;color:#9ca3af;margin:24px 0 0;line-height:1.5;">
-      Seu relatório mensal detalhado será enviado separadamente com todos os números.
-    </p>
+    ${supportLine()}
   `)
 
   return { subject, html }

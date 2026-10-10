@@ -35,6 +35,14 @@ export interface MonthlyReportData {
   // Posts
   posts_published_this_month: number
 
+  // Engajamento
+  days_as_customer: number
+  score_initial: number
+  profile_views: number
+  website_clicks: number
+  phone_clicks: number
+  whatsapp_clicks: number
+
   // Foco do próximo mês
   next_month_focus: string
   next_month_action: string
