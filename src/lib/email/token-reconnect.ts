@@ -26,35 +26,35 @@ export async function sendTokenReconnectEmail({ to, name }: TokenReconnectParams
             </td>
             <td style="vertical-align:middle;">
               <span style="font-size:18px;font-weight:700;color:#ffffff;letter-spacing:-0.015em;line-height:1;">Destaka</span>
+              <span style="font-size:18px;font-weight:300;color:rgba(255,255,255,0.5);letter-spacing:-0.015em;line-height:1;margin-left:4px;">Saúde</span>
             </td>
           </tr></table>
         </td></tr>
         <tr><td style="background:#ffffff;padding:36px;">
           <h1 style="margin:0 0 16px;font-size:22px;font-weight:800;color:#111827;letter-spacing:-0.3px;line-height:1.3;">
-            ${escapeHtml(firstName)}, sua conexão precisa ser refeita.
+            ${escapeHtml(firstName)}, seus pacientes não estão te encontrando agora.
           </h1>
           <p style="font-size:15px;color:#4b5563;line-height:1.6;margin:0 0 16px;">
-            Sua conexão com o Google Meu Negócio foi interrompida. Por isso, as otimizações automáticas e posts estão pausados.
+            A conexão com o Google foi interrompida. Enquanto estiver desconectado, seu perfil não recebe otimizações e perde visibilidade para novos pacientes.
           </p>
 
           <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:20px;margin:0 0 24px;">
-            <p style="font-size:14px;color:#991B1B;margin:0;line-height:1.5;">
-              Isso acontece quando você revoga o acesso nas configurações do Google ou quando as permissões expiram.
-              Reconectar é simples e leva menos de 1 minuto.
+            <p style="font-size:15px;color:#991B1B;margin:0;line-height:1.5;">
+              Cada dia sem conexão é um dia em que pacientes buscam o que você oferece e encontram outro profissional. Reconectar leva menos de 1 minuto.
             </p>
           </div>
 
-          <a href="${reconnectUrl}" style="display:inline-block;background:#111827;color:#ffffff;font-weight:700;font-size:15px;padding:14px 32px;border-radius:10px;text-decoration:none;margin-top:8px;">
-            Reconectar agora
+          <a href="${reconnectUrl}" style="display:inline-block;background:#0f766e;color:#ffffff;font-weight:700;font-size:15px;padding:14px 32px;border-radius:10px;text-decoration:none;margin-top:8px;">
+            Reconectar e voltar a atrair pacientes
           </a>
 
           <p style="font-size:13px;color:#9ca3af;margin:16px 0 0;line-height:1.5;">
-            Enquanto não reconectar, as otimizações geradas ficam salvas como rascunho e serão aplicadas assim que a conexão for restabelecida.
+            As otimizações geradas ficam salvas como rascunho e serão aplicadas assim que a conexão for restabelecida.
           </p>
         </td></tr>
         <tr><td style="background:#f3f4f6;border-radius:0 0 16px 16px;padding:24px 36px;text-align:center;">
-          <p style="font-size:13px;color:#6b7280;margin:0 0 4px;font-weight:500;">Você cuida dos seus pacientes. O Destaka cuida do seu Google.</p>
-          <p style="font-size:11px;color:#9ca3af;margin:0;">destaka.com.br</p>
+          <p style="font-size:13px;color:#4b5563;margin:0 0 4px;font-weight:500;">Você cuida dos seus pacientes. O Destaka Saúde cuida de trazer os próximos.</p>
+          <p style="font-size:11px;color:#9ca3af;margin:0;">Dúvidas? <a href="mailto:suporte@destaka.com.br" style="color:#0f766e;text-decoration:none;">suporte@destaka.com.br</a></p>
         </td></tr>
       </table>
     </td></tr>
@@ -65,7 +65,7 @@ export async function sendTokenReconnectEmail({ to, name }: TokenReconnectParams
   await resend.emails.send({
     from: FROM,
     to,
-    subject: 'Ação necessária: reconecte sua conta Google',
+    subject: 'Seus pacientes não estão te encontrando. Reconecte em 1 minuto',
     html,
   })
 }

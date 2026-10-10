@@ -31,15 +31,16 @@ export async function sendReviewApprovalEmail(params: ReviewApprovalParams) {
             </td>
             <td style="vertical-align:middle;">
               <span style="font-size:18px;font-weight:700;color:#ffffff;letter-spacing:-0.015em;line-height:1;">Destaka</span>
+              <span style="font-size:18px;font-weight:300;color:rgba(255,255,255,0.5);letter-spacing:-0.015em;line-height:1;margin-left:4px;">Saúde</span>
             </td>
           </tr></table>
         </td></tr>
         <tr><td style="background:#ffffff;padding:36px;">
           <h1 style="margin:0 0 16px;font-size:22px;font-weight:800;color:#111827;letter-spacing:-0.3px;line-height:1.3;">
-            Nova avaliação para aprovação
+            Um paciente deixou uma avaliação. Sua resposta conquista o próximo.
           </h1>
           <p style="font-size:15px;color:#4b5563;line-height:1.6;margin:0 0 24px;">
-            <strong>${escapeHtml(businessName)}</strong> recebeu uma avaliação que precisa da sua aprovação antes de responder.
+            <strong>${escapeHtml(businessName)}</strong> recebeu uma avaliação. Cada resposta é um sinal de confiança para quem está escolhendo um profissional agora.
           </p>
 
           <div style="background:#f9fafb;border-radius:10px;padding:20px;margin:0 0 24px;">
@@ -48,22 +49,22 @@ export async function sendReviewApprovalEmail(params: ReviewApprovalParams) {
             <p style="font-size:14px;color:#4b5563;line-height:1.5;margin:0;font-style:italic;">"${escapeHtml(reviewText || 'Sem texto')}"</p>
           </div>
 
-          <p style="font-size:13px;color:#6b7280;margin:0 0 8px;font-weight:600;">Resposta sugerida pelo Destaka:</p>
+          <p style="font-size:13px;color:#6b7280;margin:0 0 8px;font-weight:600;">Resposta sugerida pelo Destaka Saúde:</p>
           <div style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:10px;padding:20px;margin:0 0 24px;">
             <p style="font-size:14px;color:#134e4a;line-height:1.6;margin:0;">${escapeHtml(suggestedReply)}</p>
           </div>
 
-          <a href="${dashboardUrl}" style="display:inline-block;background:#111827;color:#ffffff;font-weight:700;font-size:15px;padding:14px 32px;border-radius:10px;text-decoration:none;margin-top:8px;">
-            Revisar e aprovar
+          <a href="${dashboardUrl}" style="display:inline-block;background:#0f766e;color:#ffffff;font-weight:700;font-size:15px;padding:14px 32px;border-radius:10px;text-decoration:none;margin-top:8px;">
+            Aprovar e fortalecer sua reputação
           </a>
 
           <p style="font-size:13px;color:#9ca3af;margin:16px 0 0;line-height:1.5;">
-            Se você não aprovar em 7 dias, a resposta não será publicada.
+            Avaliações respondidas rapidamente geram mais confiança. Se não aprovar em 7 dias, a resposta não será publicada.
           </p>
         </td></tr>
         <tr><td style="background:#f3f4f6;border-radius:0 0 16px 16px;padding:24px 36px;text-align:center;">
-          <p style="font-size:13px;color:#6b7280;margin:0 0 4px;font-weight:500;">Você cuida dos seus pacientes. O Destaka cuida do seu Google.</p>
-          <p style="font-size:11px;color:#9ca3af;margin:0;">destaka.com.br</p>
+          <p style="font-size:13px;color:#4b5563;margin:0 0 4px;font-weight:500;">Você cuida dos seus pacientes. O Destaka Saúde cuida de trazer os próximos.</p>
+          <p style="font-size:11px;color:#9ca3af;margin:0;">Dúvidas? <a href="mailto:suporte@destaka.com.br" style="color:#0f766e;text-decoration:none;">suporte@destaka.com.br</a></p>
         </td></tr>
       </table>
     </td></tr>
@@ -74,7 +75,7 @@ export async function sendReviewApprovalEmail(params: ReviewApprovalParams) {
   await resend.emails.send({
     from: FROM,
     to,
-    subject: `Avaliação ${reviewRating} estrela${reviewRating !== 1 ? 's' : ''}: aprovação necessária`,
+    subject: `${reviewRating}★ de ${reviewAuthor}. Responda e conquiste o próximo paciente`,
     html,
   })
 }

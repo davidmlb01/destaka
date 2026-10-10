@@ -35,7 +35,7 @@ export async function sendLeadMagnetEmail(params: LeadMagnetEmailParams) {
     <tr>
       <td style="padding:12px 0;border-bottom:1px solid #f3f4f6;">
         <p style="margin:0;font-size:14px;font-weight:600;color:#111827;">${escapeHtml(gap.message)}</p>
-        <p style="margin:4px 0 0;font-size:12px;color:#6b7280;">Impacto: +${gap.impact} pts se corrigido</p>
+        <p style="margin:4px 0 0;font-size:13px;color:#6b7280;">Impacto: +${gap.impact} pts se corrigido</p>
       </td>
     </tr>`).join('')
 
@@ -56,18 +56,19 @@ export async function sendLeadMagnetEmail(params: LeadMagnetEmailParams) {
             </td>
             <td style="vertical-align:middle;">
               <span style="font-size:18px;font-weight:700;color:#ffffff;letter-spacing:-0.015em;line-height:1;">Destaka</span>
+              <span style="font-size:18px;font-weight:300;color:rgba(255,255,255,0.5);letter-spacing:-0.015em;line-height:1;margin-left:4px;">Saúde</span>
             </td>
           </tr></table>
-          <p style="margin:8px 0 0;color:#9ca3af;font-size:13px;">Auditoria gratuita do seu Google</p>
+          <p style="margin:8px 0 0;color:#9ca3af;font-size:13px;">Auditoria gratuita do seu perfil</p>
         </td></tr>
 
         <!-- Body -->
         <tr><td style="background:#ffffff;padding:36px;">
 
           <h1 style="margin:0 0 6px;font-size:22px;font-weight:800;color:#111827;letter-spacing:-0.3px;">
-            Resultado da auditoria
+            Quantos pacientes ${escapeHtml(placeName)} está perdendo?
           </h1>
-          <p style="margin:0 0 28px;font-size:14px;color:#6b7280;">${escapeHtml(placeName)}</p>
+          <p style="margin:0 0 28px;font-size:15px;color:#6b7280;">Veja o que encontramos na sua auditoria.</p>
 
           <!-- Score -->
           <table width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;border-radius:10px;margin-bottom:28px;">
@@ -81,7 +82,7 @@ export async function sendLeadMagnetEmail(params: LeadMagnetEmailParams) {
           <!-- Gaps -->
           ${topGaps.length > 0 ? `
           <p style="margin:0 0 12px;font-size:13px;font-weight:700;color:#4b5563;text-transform:uppercase;letter-spacing:0.5px;">
-            Principais problemas encontrados
+            Por que pacientes não estão te encontrando
           </p>
           <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
             ${gapsHtml}
@@ -91,14 +92,14 @@ export async function sendLeadMagnetEmail(params: LeadMagnetEmailParams) {
           <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb;border:1px solid rgba(15,17,23,0.12);border-radius:10px;margin-bottom:8px;">
             <tr><td style="padding:24px;text-align:center;">
               <p style="margin:0 0 6px;font-size:16px;font-weight:800;color:#111827;">
-                O Destaka corrige isso automaticamente.
+                Cada problema acima é um paciente que escolheu outro profissional.
               </p>
-              <p style="margin:0 0 20px;font-size:14px;color:#4b5563;line-height:1.5;">
-                Conecte seu perfil e veja as otimizações sendo aplicadas em minutos. Sem ação manual da sua parte.
+              <p style="margin:0 0 20px;font-size:15px;color:#4b5563;line-height:1.5;">
+                O Destaka Saúde corrige tudo automaticamente. Conecte seu perfil e comece a aparecer para quem está procurando você agora.
               </p>
               <a href="${appUrl}/login"
-                 style="display:inline-block;background:#111827;color:#ffffff;font-weight:700;font-size:15px;padding:14px 32px;border-radius:10px;text-decoration:none;">
-                Começar por R$197/mês
+                 style="display:inline-block;background:#0f766e;color:#ffffff;font-weight:700;font-size:15px;padding:14px 32px;border-radius:10px;text-decoration:none;">
+                Quero atrair mais pacientes
               </a>
             </td></tr>
           </table>
@@ -107,8 +108,9 @@ export async function sendLeadMagnetEmail(params: LeadMagnetEmailParams) {
 
         <!-- Footer -->
         <tr><td style="background:#f3f4f6;border-radius:0 0 16px 16px;padding:24px 36px;text-align:center;">
-          <p style="font-size:13px;color:#6b7280;margin:0 0 4px;font-weight:500;">Você cuida dos seus pacientes. O Destaka cuida do seu Google.</p>
-          <p style="font-size:11px;color:#9ca3af;margin:0;">destaka.com.br. Você recebeu este email porque solicitou uma auditoria gratuita.</p>
+          <p style="font-size:13px;color:#4b5563;margin:0 0 4px;font-weight:500;">Você cuida dos seus pacientes. O Destaka Saúde cuida de trazer os próximos.</p>
+          <p style="font-size:11px;color:#9ca3af;margin:0 0 4px;">Dúvidas? <a href="mailto:suporte@destaka.com.br" style="color:#0f766e;text-decoration:none;">suporte@destaka.com.br</a></p>
+          <p style="font-size:11px;color:#9ca3af;margin:0;">Você recebeu este email porque solicitou uma auditoria gratuita.</p>
         </td></tr>
 
       </table>
@@ -120,7 +122,7 @@ export async function sendLeadMagnetEmail(params: LeadMagnetEmailParams) {
   return resend.emails.send({
     from: FROM,
     to,
-    subject: `Seu perfil no Google: ${score}/100 | ${placeName}`,
+    subject: `${placeName}: ${score}/100. Veja quantos pacientes você está perdendo`,
     html,
   })
 }

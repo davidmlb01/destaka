@@ -42,7 +42,7 @@ export const onboardingEmailSequence = inngest.createFunction(
     const { organization_id, user_email } =
       event.data as SubscriptionActivatedData
 
-    // Busca dados do profissional e organizacao
+    // Busca dados do profissional, organizacao e score inicial
     const context = await step.run('fetch-context', async () => {
       const db = admin()
 
@@ -55,16 +55,25 @@ export const onboardingEmailSequence = inngest.createFunction(
 
       const { data: org } = await db
         .from('organizations')
-        .select('name')
+        .select('name, created_at')
         .eq('id', organization_id)
+        .single()
+
+      const { data: initialScoreRow } = await db
+        .from('scores')
+        .select('total')
+        .eq('organization_id', organization_id)
+        .order('snapshot_date', { ascending: true })
+        .limit(1)
         .single()
 
       const email = professional?.email ?? user_email
       const fullName = professional?.name ?? email.split('@')[0]
       const firstName = fullName.split(' ')[0]
       const orgName = org?.name ?? 'Sua clinica'
+      const initialScore = initialScoreRow?.total ?? 0
 
-      return { email, firstName, orgName }
+      return { email, firstName, orgName, initialScore }
     })
 
     const results: Array<{ day: OnboardingEmailDay; status: string; error?: string }> = []
@@ -77,12 +86,84 @@ export const onboardingEmailSequence = inngest.createFunction(
 
       const result = await step.run(`send-day-${day}`, async () => {
         try {
-          await sendOnboardingEmail({
+          const db = admin()
+          const emailParams: Parameters<typeof sendOnboardingEmail>[0] = {
             to: context.email,
             firstName: context.firstName,
             orgName: context.orgName,
             day,
-          })
+          }
+
+          if (day === 1) {
+            // Score mais recente como "initialScore" do primeiro dia
+            const { data: latestScore } = await db
+              .from('scores')
+              .select('total')
+              .eq('organization_id', organization_id)
+              .order('snapshot_date', { ascending: false })
+              .limit(1)
+              .single()
+            emailParams.initialScore = latestScore?.total ?? context.initialScore
+          }
+
+          if (day === 7) {
+            // Posts publicados nos ultimos 7 dias
+            const sevenDaysAgo = new Date()
+            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+            const { data: posts } = await db
+              .from('posts')
+              .select('id')
+              .eq('organization_id', organization_id)
+              .eq('status', 'published')
+              .gte('published_at', sevenDaysAgo.toISOString())
+            emailParams.postsCount = posts?.length ?? 0
+
+            // Score delta: score atual vs score inicial
+            const { data: currentScore } = await db
+              .from('scores')
+              .select('total')
+              .eq('organization_id', organization_id)
+              .order('snapshot_date', { ascending: false })
+              .limit(1)
+              .single()
+            emailParams.scoreDelta = (currentScore?.total ?? 0) - context.initialScore
+          }
+
+          if (day === 30) {
+            // Dados completos para o resumo de 30 dias
+            const thirtyDaysAgo = new Date()
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+
+            const { data: currentScore } = await db
+              .from('scores')
+              .select('total')
+              .eq('organization_id', organization_id)
+              .order('snapshot_date', { ascending: false })
+              .limit(1)
+              .single()
+
+            const { data: posts } = await db
+              .from('posts')
+              .select('id')
+              .eq('organization_id', organization_id)
+              .eq('status', 'published')
+              .gte('published_at', thirtyDaysAgo.toISOString())
+
+            const { data: reviews } = await db
+              .from('reviews')
+              .select('id')
+              .eq('organization_id', organization_id)
+              .gte('published_at', thirtyDaysAgo.toISOString())
+
+            emailParams.day30Data = {
+              scoreInitial: context.initialScore,
+              scoreCurrent: currentScore?.total ?? 0,
+              postsCount: posts?.length ?? 0,
+              reviewsCount: reviews?.length ?? 0,
+            }
+          }
+
+          await sendOnboardingEmail(emailParams)
           return { day, status: 'sent' as const }
         } catch (err) {
           const message = err instanceof Error ? err.message : String(err)

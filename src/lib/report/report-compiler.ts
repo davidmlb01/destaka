@@ -119,7 +119,7 @@ export async function compileMonthlyReport(
   // Dados da organização e profissional
   const { data: org } = await db
     .from('organizations')
-    .select('name')
+    .select('name, created_at')
     .eq('id', orgId)
     .single()
 
@@ -216,9 +216,11 @@ export async function compileMonthlyReport(
     avg_rating: parseFloat(avgRating.toFixed(1)),
     response_rate: parseFloat(responseRate.toFixed(2)),
     posts_published_this_month: postsPublished,
-    days_as_customer: 0,
-    score_initial: scorePrevious,
-    profile_views: 0,
+    days_as_customer: org.created_at
+      ? Math.floor((Date.now() - new Date(org.created_at).getTime()) / (1000 * 60 * 60 * 24))
+      : 0,
+    score_initial: scoreList.length > 0 ? scoreList[scoreList.length - 1]?.total ?? 0 : 0,
+    profile_views: 0,  // gbp_metrics ainda nao existe no schema
     website_clicks: 0,
     phone_clicks: 0,
     whatsapp_clicks: 0,
