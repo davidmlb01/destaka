@@ -65,7 +65,8 @@ export async function GET(request: NextRequest) {
   const { data: reviews, count, error } = await query.range(offset, offset + PAGE_SIZE - 1)
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    console.error('[reviews] query error:', error.message)
+    return NextResponse.json({ error: 'Erro ao buscar avaliacoes' }, { status: 500 })
   }
 
   // Get review_responses for these reviews to attach reply info

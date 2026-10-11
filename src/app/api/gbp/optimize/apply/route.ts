@@ -7,7 +7,22 @@ import { getAuthOrg } from '@/lib/api/with-auth'
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { getValidGmbToken } from '@/lib/gmb/auth'
 
-type OptimizationType = 'description' | 'categories' | 'attributes' | 'services'
+import { z } from 'zod'
+
+const CategorySchema = z.object({ displayName: z.string(), name: z.string() })
+
+const ApplyPayloadSchema = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('description'), value: z.string().min(1).max(750) }),
+  z.object({
+    type: z.literal('categories'),
+    value: z.object({
+      primaryCategory: CategorySchema.optional(),
+      additionalCategories: z.array(CategorySchema).max(9).optional(),
+    }),
+  }),
+  z.object({ type: z.literal('attributes'), value: z.array(z.object({ name: z.string(), valueType: z.string(), values: z.array(z.string()) })) }),
+  z.object({ type: z.literal('services'), value: z.array(z.record(z.unknown())) }),
+])
 
 function createServiceClient() {
   return createAdminSupa(
@@ -23,12 +38,11 @@ export async function POST(request: NextRequest) {
   if (auth.error) return auth.error
   const { user, orgId } = auth
 
-  const body = await request.json() as { type: OptimizationType; value: unknown }
-  const { type, value } = body
-
-  if (!type || !value) {
-    return NextResponse.json({ error: 'type e value são obrigatórios' }, { status: 400 })
+  const parsed = ApplyPayloadSchema.safeParse(await request.json().catch(() => null))
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Payload invalido' }, { status: 400 })
   }
+  const { type, value } = parsed.data
 
   const admin = createServiceClient()
 

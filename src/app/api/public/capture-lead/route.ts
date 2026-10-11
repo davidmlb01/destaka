@@ -28,8 +28,8 @@ function getServiceDb() {
   )
 }
 
-function hashIp(ip: string): string {
-  return createHash('sha256').update(ip + (process.env.ENCRYPTION_KEY ?? '')).digest('hex').slice(0, 16)
+function hashIp(ip: string, key: string): string {
+  return createHash('sha256').update(ip + key).digest('hex').slice(0, 16)
 }
 
 // POST /api/public/capture-lead
@@ -38,7 +38,12 @@ export async function POST(req: NextRequest) {
   const ip = req.headers.get('x-real-ip')
     ?? req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
     ?? 'unknown'
-  const ipHash = hashIp(ip)
+  const encryptionKey = process.env.ENCRYPTION_KEY
+  if (!encryptionKey) {
+    console.error('[security] ENCRYPTION_KEY not configured')
+    return NextResponse.json({ error: 'Server configuration error' }, { status: 500 })
+  }
+  const ipHash = hashIp(ip, encryptionKey)
 
   // Rate limiting por IP — fail-closed (rotas publicas de custo)
   const key = `ratelimit:lead:${ipHash}`
@@ -49,7 +54,7 @@ export async function POST(req: NextRequest) {
       { status: 503 }
     )
   }
-  if (count > MAX_PER_IP_PER_DAY) {
+  if (count >= MAX_PER_IP_PER_DAY) {
     return NextResponse.json(
       { error: 'Limite de auditorias diarias atingido. Tente novamente amanha.' },
       { status: 429 }

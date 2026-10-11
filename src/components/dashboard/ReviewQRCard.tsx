@@ -9,11 +9,14 @@ import { PinIcon } from '@/components/ui/PinIcon'
 // Aceita apenas elementos e atributos SVG legítimos — sem scripts, eventos ou hrefs externos
 function sanitizeQrSvg(raw: string): string {
   const sized = raw.replace('<svg ', '<svg width="116" height="116" ')
-  // Remove atributos de evento (on*) e tags script/foreignObject
   return sized
-    .replace(/\s+on\w+="[^"]*"/gi, '')
+    .replace(/\s+on\w+=['"][^'"]*['"]/gi, '')
     .replace(/<script[\s\S]*?<\/script>/gi, '')
     .replace(/<foreignObject[\s\S]*?<\/foreignObject>/gi, '')
+    .replace(/<a[\s\S]*?<\/a>/gi, '')
+    .replace(/<use[\s\S]*?<\/use>/gi, '')
+    .replace(/\s+href=['"][^'"]*['"]/gi, '')
+    .replace(/\s+xlink:href=['"][^'"]*['"]/gi, '')
 }
 
 interface QRData {

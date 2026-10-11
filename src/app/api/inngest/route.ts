@@ -2,7 +2,7 @@ import { serve } from 'inngest/next'
 import { inngest } from '@/lib/inngest/client'
 
 if (process.env.NODE_ENV === 'production' && !process.env.INNGEST_SIGNING_KEY) {
-  console.warn('[SECURITY] INNGEST_SIGNING_KEY not set. Inngest webhooks are unsigned in production.')
+  throw new Error('INNGEST_SIGNING_KEY is required in production')
 }
 import { gbpAudit } from '@/lib/inngest/functions/gbp-audit'
 import { gbpOptimizer } from '@/lib/inngest/functions/gbp-optimizer'

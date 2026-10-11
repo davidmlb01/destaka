@@ -22,8 +22,9 @@ export async function POST(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { post_id } = await request.json()
-  if (!post_id) return NextResponse.json({ error: 'post_id obrigatório' }, { status: 400 })
+  const parsed = PostIdSchema.safeParse(await request.json().catch(() => null))
+  if (!parsed.success) return NextResponse.json({ error: 'post_id invalido' }, { status: 400 })
+  const { post_id } = parsed.data
 
   const admin = createServiceClient()
 

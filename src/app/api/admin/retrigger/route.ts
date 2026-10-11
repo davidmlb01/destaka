@@ -4,14 +4,33 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { inngest } from '@/lib/inngest/client'
+import { timingSafeEqual } from 'crypto'
+import { rateLimit } from '@/lib/redis'
+
+function safeCompare(a: string, b: string): boolean {
+  const aBuf = Buffer.from(a)
+  const bBuf = Buffer.from(b)
+  if (aBuf.length !== bBuf.length) return false
+  return timingSafeEqual(aBuf, bBuf)
+}
 
 // POST /api/admin/retrigger
 // Dispara recalculo de score + auditoria + concorrentes para uma org ou todas
 // Protegido por auth + role admin OU header x-admin-key
 export async function POST(req: Request) {
-  // Auth via header (CLI/scripts) ou session (admin UI)
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
+  const count = await rateLimit(`admin:retrigger:${ip}`, 3600)
+  if (count === null) return NextResponse.json({ error: 'Service unavailable' }, { status: 503 })
+  if (count > 5) return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+
   const adminKey = req.headers.get('x-admin-key')
-  let isAuthorized = adminKey === process.env.ADMIN_SECRET_KEY
+  const adminSecretKey = process.env.ADMIN_SECRET_KEY
+
+  if (!adminSecretKey || adminSecretKey.length < 16) {
+    return NextResponse.json({ error: 'Server misconfiguration' }, { status: 500 })
+  }
+
+  let isAuthorized = !!adminKey && safeCompare(adminKey, adminSecretKey)
 
   if (!isAuthorized) {
     const supabase = await createClient()

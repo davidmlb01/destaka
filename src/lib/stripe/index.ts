@@ -2,7 +2,11 @@ import Stripe from 'stripe'
 
 let _stripe: Stripe | null = null
 export function getStripe(): Stripe {
-  if (!_stripe) _stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+  if (!_stripe) {
+    const key = process.env.STRIPE_SECRET_KEY
+    if (!key) throw new Error('STRIPE_SECRET_KEY is not configured')
+    _stripe = new Stripe(key)
+  }
   return _stripe
 }
 
@@ -17,7 +21,7 @@ export const stripe = new Proxy({} as Stripe, {
 export const PLAN = {
   name: 'Destaka',
   price: 19700, // R$197 em centavos
-  priceId: process.env.STRIPE_PRICE_PRO!,
+  priceId: process.env.STRIPE_PRICE_PRO ?? (() => { throw new Error('STRIPE_PRICE_PRO is not configured') })(),
   features: [
     '1 perfil GMB',
     'Diagnóstico semanal',

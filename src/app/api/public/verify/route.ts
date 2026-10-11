@@ -20,7 +20,12 @@ export async function POST(req: NextRequest) {
     const ip = req.headers.get('x-real-ip')
       ?? req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
       ?? 'unknown'
-    const ipHash = createHash('sha256').update(ip + (process.env.ENCRYPTION_KEY ?? '')).digest('hex').slice(0, 16)
+    const encryptionKey = process.env.ENCRYPTION_KEY
+    if (!encryptionKey) {
+      console.error('[security] ENCRYPTION_KEY not configured')
+      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 })
+    }
+    const ipHash = createHash('sha256').update(ip + encryptionKey).digest('hex').slice(0, 16)
     const count = await rateLimit(`ratelimit:verify:${ipHash}`, 86400)
     if (count === null) {
       return NextResponse.json(
@@ -28,7 +33,7 @@ export async function POST(req: NextRequest) {
         { status: 503 }
       )
     }
-    if (count > MAX_VERIFY_PER_IP_PER_DAY) {
+    if (count >= MAX_VERIFY_PER_IP_PER_DAY) {
       return NextResponse.json(
         { error: 'Limite de verificacoes diarias atingido. Tente novamente amanha.' },
         { status: 429 }

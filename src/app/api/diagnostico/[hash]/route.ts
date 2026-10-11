@@ -12,9 +12,9 @@ import { cacheGet, cacheSet } from '@/lib/redis'
 
 const CACHE_TTL = 3600 // 1 hora
 
-function generateHash(orgId: string): string {
+function generateHash(orgId: string, key: string): string {
   return createHash('sha256')
-    .update(orgId + (process.env.ENCRYPTION_KEY ?? ''))
+    .update(orgId + key)
     .digest('hex')
     .slice(0, 16)
 }
@@ -38,6 +38,12 @@ export async function GET(
     })
   }
 
+  const encryptionKey = process.env.ENCRYPTION_KEY
+  if (!encryptionKey) {
+    console.error('[security] ENCRYPTION_KEY not configured')
+    return NextResponse.json({ error: 'Server configuration error' }, { status: 500 })
+  }
+
   const supabase = await createClient()
 
   // Buscar todas as orgs e verificar qual bate com o hash
@@ -46,7 +52,7 @@ export async function GET(
     .from('organizations')
     .select('id, name, specialty')
 
-  const matchedOrg = (orgs ?? []).find((o: { id: string }) => generateHash(o.id) === hash)
+  const matchedOrg = (orgs ?? []).find((o: { id: string }) => generateHash(o.id, encryptionKey) === hash)
 
   if (!matchedOrg) {
     return NextResponse.json({ error: 'Diagnostico nao encontrado' }, { status: 404 })

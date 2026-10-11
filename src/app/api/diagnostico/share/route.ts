@@ -8,8 +8,14 @@ export async function GET() {
   if (auth.error) return auth.error
   const { orgId } = auth
 
+  const encryptionKey = process.env.ENCRYPTION_KEY
+  if (!encryptionKey) {
+    console.error('[security] ENCRYPTION_KEY not configured')
+    return privateJson({ error: 'Server configuration error' }, { status: 500 })
+  }
+
   const hash = createHash('sha256')
-    .update(orgId + (process.env.ENCRYPTION_KEY ?? ''))
+    .update(orgId + encryptionKey)
     .digest('hex')
     .slice(0, 16)
 
