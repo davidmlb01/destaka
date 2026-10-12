@@ -118,13 +118,19 @@ export async function GET() {
     conteudo: { pontos: (s?.conversao as number) ?? 0, max: 10, label: 'Conteudo / Posts' },
   }
 
-  // Gaps do audit_report
+  // Gaps do audit_report (suporta ambos os formatos: issues e gaps)
   const auditReport = gbpProfile?.audit_report as Record<string, unknown> | null
   const gaps: Array<{ field: string; severity: string; message: string; impact: number }> = []
   if (auditReport && typeof auditReport === 'object') {
-    const auditIssues = (auditReport as { issues?: Array<{ field: string; severity: string; message: string; impact: number }> }).issues
-    if (Array.isArray(auditIssues)) {
-      gaps.push(...auditIssues)
+    const auditItems = (auditReport as { issues?: Array<Record<string, unknown>>; gaps?: Array<Record<string, unknown>> }).issues
+      ?? (auditReport as { gaps?: Array<Record<string, unknown>> }).gaps
+    if (Array.isArray(auditItems)) {
+      gaps.push(...auditItems.map(item => ({
+        field: (item.field as string) ?? '',
+        severity: (item.severity as string) ?? 'info',
+        message: (item.message as string) ?? '',
+        impact: (item.impact as number) ?? 0,
+      })))
     }
   }
 
