@@ -86,6 +86,13 @@ export default function CategoryChecklist({ onComplete, onSkip }: CategoryCheckl
     }
   }
 
+  // Nenhuma sugestao, pular silenciosamente
+  useEffect(() => {
+    if (!loading && suggested.length === 0) {
+      onSkip()
+    }
+  }, [loading, suggested.length, onSkip])
+
   if (loading) {
     return (
       <div className="py-8 text-center">
@@ -100,14 +107,7 @@ export default function CategoryChecklist({ onComplete, onSkip }: CategoryCheckl
     )
   }
 
-  // Nenhuma sugestao, pular silenciosamente via useEffect
-  useEffect(() => {
-    if (!loading && suggested.length === 0) {
-      onSkip()
-    }
-  }, [loading, suggested.length, onSkip])
-
-  if (suggested.length === 0 && !loading) {
+  if (suggested.length === 0) {
     return null
   }
 
