@@ -108,12 +108,22 @@ export default function DiagnosticoPage() {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg-base)' }}>
         <div className="text-center max-w-md px-6">
+          <div
+            style={{
+              width: 48, height: 48, borderRadius: '50%',
+              border: '3px solid var(--accent)',
+              borderTopColor: 'transparent',
+              animation: 'spin 1s linear infinite',
+              margin: '0 auto 20px',
+            }}
+          />
           <p className="font-display font-bold" style={{ fontSize: 20, color: 'var(--text-primary)', marginBottom: 12 }}>
-            Estamos coletando dados de {data.perfil?.nome || 'seu perfil'}
+            Analisando {data.perfil?.nome || 'seu perfil'}
           </p>
           <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-            A analise do seu perfil no Google esta em andamento. Voce recebera um email quando o diagnostico estiver pronto.
+            Estamos coletando dados do seu Google Meu Negocio. Isso pode levar alguns segundos.
           </p>
+          <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
         </div>
       </div>
     )
