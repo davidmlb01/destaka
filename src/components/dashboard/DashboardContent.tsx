@@ -139,42 +139,42 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
 
         {/* Score gauge */}
         <div
-          className="rounded-2xl p-6 flex flex-col items-center gap-4"
-          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+          className="rounded-2xl p-6 flex flex-col items-center justify-between gap-4"
+          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', minHeight: 420 }}
         >
-          <ScoreGauge score={diagnostic?.score_total ?? 0} />
-          <p className={`text-sm ${isSubscriber ? 'text-zinc-400' : 'text-amber-400 font-medium'}`}>{getScoreMessage(diagnostic?.score_total ?? 0, isSubscriber)}</p>
+          <div className="flex-1 flex flex-col items-center justify-center gap-4 w-full">
+            <ScoreGauge score={diagnostic?.score_total ?? 0} />
+            <p className={`text-sm text-center ${isSubscriber ? 'text-zinc-400' : 'text-amber-400 font-medium'}`}>{getScoreMessage(diagnostic?.score_total ?? 0, isSubscriber)}</p>
+          </div>
 
           {isSubscriber ? (
-            <>
+            <div className="w-full flex flex-col gap-3">
               <OptimizationWizard
                 profileId={profile.id}
                 diagnosticId={diagnosticId}
                 onComplete={() => mutate()}
               />
-              <div className="w-full flex flex-col gap-1">
+              <div className="flex items-center justify-between">
                 {syncError && (
-                  <p className="text-xs font-medium text-center" style={{ color: '#F87171' }}>{syncError}</p>
+                  <p className="text-xs font-medium" style={{ color: '#F87171' }}>{syncError}</p>
                 )}
-                <div className="flex items-center justify-between">
-                  <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                    Sync: {lastSync}
-                  </p>
-                  <button
-                    onClick={handleSync}
-                    disabled={syncing}
-                    className="text-xs font-medium px-3 py-1.5 rounded-lg transition-all cursor-pointer"
-                    style={{
-                      background: syncing ? 'rgba(255,255,255,0.06)' : 'rgba(14,165,233,0.15)',
-                      color: syncing ? 'rgba(255,255,255,0.3)' : 'var(--accent-bright)',
-                      border: '1px solid rgba(14,165,233,0.2)',
-                    }}
-                  >
-                    {syncing ? 'Sincronizando...' : 'Sincronizar'}
-                  </button>
-                </div>
+                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                  Sync: {lastSync}
+                </p>
+                <button
+                  onClick={handleSync}
+                  disabled={syncing}
+                  className="text-xs font-medium px-3 py-1.5 rounded-lg transition-all cursor-pointer"
+                  style={{
+                    background: syncing ? 'rgba(255,255,255,0.06)' : 'rgba(14,165,233,0.15)',
+                    color: syncing ? 'rgba(255,255,255,0.3)' : 'var(--accent-bright)',
+                    border: '1px solid rgba(14,165,233,0.2)',
+                  }}
+                >
+                  {syncing ? 'Sincronizando...' : 'Sincronizar'}
+                </button>
               </div>
-            </>
+            </div>
           ) : (
             <>
               {impactText && (

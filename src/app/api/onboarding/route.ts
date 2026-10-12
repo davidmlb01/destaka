@@ -108,12 +108,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Falha ao salvar dados. Tente novamente.' }, { status: 500 })
   }
 
-  // Dispara jobs em background (auditoria, score, geo, keywords)
+  // Dispara todos os jobs em background apos onboarding completo
   inngest.send([
     { name: 'destaka/gbp.audit.requested', data: { organization_id: orgId } },
     { name: 'destaka/score.calculate.requested', data: { organization_id: orgId } },
     { name: 'destaka/geo.collect.requested', data: { organization_id: orgId } },
     { name: 'destaka/keywords.snapshot.requested', data: { organization_id: orgId } },
+    { name: 'destaka/performance.collect.requested', data: { organization_id: orgId } },
+    { name: 'destaka/reviews.sync.requested', data: {} },
   ]).catch(() => {})
 
   return NextResponse.json({ ok: true })

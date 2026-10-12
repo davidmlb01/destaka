@@ -36,7 +36,10 @@ async function publishReviewReply(
 export const reviewMonitor = inngest.createFunction(
   {
     id: 'review-monitor',
-    triggers: [{ cron: '0 */6 * * *' }],
+    triggers: [
+      { cron: '0 */6 * * *' },
+      { event: 'destaka/reviews.sync.requested' },
+    ],
   },
   async ({ step }) => {
     const db = admin()
