@@ -8,6 +8,8 @@ import { generateReviewResponse, type ReviewTone } from '@/lib/gbp/review-respon
 import { hasLgpdConsentForAi } from '@/lib/ai/prompt-sanitizer'
 import { getValidTokenForOrg } from '@/lib/google/token-refresh'
 import { sendReviewApprovalEmail } from '@/lib/email/review-approval'
+import { sendNegativeReviewAlert } from '@/lib/email/review-alert'
+import { handleTokenFailure } from '@/lib/alerts/token-alert-helper'
 
 function admin() {
   return createAdminSupa(
@@ -68,6 +70,7 @@ export const reviewMonitor = inngest.createFunction(
         const validToken = await getValidTokenForOrg(db, orgId)
 
         if (!validToken) {
+          await handleTokenFailure(orgId)
           return { org_id: orgId, new_reviews: 0, responses_queued: 0, error: 'sem token Google' }
         }
 
@@ -108,17 +111,75 @@ export const reviewMonitor = inngest.createFunction(
         })
 
         let responsesQueued = 0
+        let alertsSent = 0
 
         for (const review of newReviews) {
+          const rating = GBPClient.starRatingToNumber(review.starRating)
+          const authorName = review.reviewer.isAnonymous ? 'Anônimo' : review.reviewer.displayName
+
           // Salva o review no banco se ainda não existe
           await db.from('reviews').upsert({
             organization_id: orgId,
             review_id: review.reviewId,
-            author_name: review.reviewer.isAnonymous ? 'Anônimo' : review.reviewer.displayName,
-            rating: GBPClient.starRatingToNumber(review.starRating),
+            author_name: authorName,
+            rating,
             comment: review.comment ?? null,
             published_at: review.createTime,
           }, { onConflict: 'review_id', ignoreDuplicates: true })
+
+          // Reviews negativos (1-3 estrelas): enviar alerta por email, sem gerar resposta IA
+          if (rating <= 3) {
+            // Verifica se alerta ja foi enviado para este review
+            const { data: existingAlert } = await db
+              .from('alerts_sent')
+              .select('id')
+              .eq('organization_id', orgId)
+              .eq('alert_type', 'negative_review')
+              .eq('reference_id', review.reviewId)
+              .limit(1)
+              .maybeSingle()
+
+            if (existingAlert) continue
+
+            // Busca email do profissional owner
+            const { data: prof } = await db
+              .from('professionals')
+              .select('email')
+              .eq('organization_id', orgId)
+              .eq('role', 'owner')
+              .maybeSingle()
+
+            if (prof?.email) {
+              const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://destaka.com.br'
+              const dashboardUrl = `${appUrl}/dashboard/reviews`
+
+              try {
+                await sendNegativeReviewAlert({
+                  to: prof.email,
+                  orgName: org.name,
+                  reviewAuthor: authorName,
+                  reviewRating: rating,
+                  reviewText: review.comment ?? null,
+                  dashboardUrl,
+                })
+
+                await db.from('alerts_sent').insert({
+                  organization_id: orgId,
+                  alert_type: 'negative_review',
+                  reference_id: review.reviewId,
+                  email_to: prof.email,
+                })
+
+                alertsSent++
+              } catch {
+                console.error(`[review-monitor] Falha ao enviar alerta de review negativo para org ${orgId}`)
+              }
+            }
+
+            continue
+          }
+
+          // Reviews positivos (4-5 estrelas): fluxo normal com resposta IA
 
           // Busca o UUID do review no banco
           const { data: reviewRow } = await db
@@ -134,7 +195,7 @@ export const reviewMonitor = inngest.createFunction(
           try {
             responseText = await generateReviewResponse({
               reviewComment: review.comment ?? '',
-              starRating: GBPClient.starRatingToNumber(review.starRating),
+              starRating: rating,
               professionalName: org.name,
               specialty: org.specialty,
               city,
@@ -184,8 +245,8 @@ export const reviewMonitor = inngest.createFunction(
               sendReviewApprovalEmail({
                 to: prof.email,
                 businessName: org.name,
-                reviewAuthor: review.reviewer.isAnonymous ? 'Anônimo' : review.reviewer.displayName,
-                reviewRating: GBPClient.starRatingToNumber(review.starRating),
+                reviewAuthor: authorName,
+                reviewRating: rating,
                 reviewText: review.comment ?? null,
                 suggestedReply: responseText,
               }).catch(() => {})
@@ -199,6 +260,7 @@ export const reviewMonitor = inngest.createFunction(
           org_id: orgId,
           new_reviews: newReviews.length,
           responses_queued: responsesQueued,
+          alerts_sent: alertsSent,
         }
       })
 

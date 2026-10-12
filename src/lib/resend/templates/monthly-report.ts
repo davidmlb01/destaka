@@ -255,6 +255,42 @@ export function buildMonthlyReportEmail(data: MonthlyReportData): { subject: str
     <!-- Divisor -->
     <tr><td style="background:#ffffff;padding:0 36px;"><hr style="border:none;border-top:1px solid #f3f4f6;margin:0;"></td></tr>
 
+    <!-- EPIC-009: Avaliacoes do mes (Review Intelligence) -->
+    ${data.review_analysis && data.review_analysis.totalReviews > 0 ? `
+    <tr><td style="background:#ffffff;padding:28px 36px;">
+      <p style="color:#6b7280;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 8px;">Avaliações do mês</p>
+
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
+        <tr>
+          <td align="center" style="background:#f9fafb;border-radius:10px;padding:16px 8px;width:48%;">
+            <p style="font-size:36px;font-weight:800;color:#111827;margin:0;line-height:1;">${data.review_analysis.totalReviews}</p>
+            <p style="font-size:11px;color:#6b7280;font-weight:600;margin:4px 0 0;text-transform:uppercase;letter-spacing:0.05em;">novas avaliações</p>
+          </td>
+          <td style="width:4%;"></td>
+          <td align="center" style="background:#f9fafb;border-radius:10px;padding:16px 8px;width:48%;">
+            <p style="font-size:36px;font-weight:800;color:#111827;margin:0;line-height:1;">${data.review_analysis.averageRating.toFixed(1)}<span style="font-size:18px;color:#6b7280;">★</span></p>
+            <p style="font-size:11px;color:#6b7280;font-weight:600;margin:4px 0 0;text-transform:uppercase;letter-spacing:0.05em;">média do mês</p>
+          </td>
+        </tr>
+      </table>
+
+      ${data.review_analysis.topPraises.length > 0 ? `
+      <p style="font-size:15px;color:#4b5563;line-height:1.6;margin:0 0 8px;">
+        <strong>Seus pacientes mais elogiam:</strong>
+      </p>
+      <p style="font-size:15px;color:#111827;line-height:1.6;margin:0 0 16px;">
+        ${data.review_analysis.topPraises.map(p => `"${escapeHtml(p.theme)}" (${p.count}x)`).join(', ')}
+      </p>` : ''}
+
+      ${data.review_analysis.concerns && data.review_analysis.concerns.length > 0 ? `
+      <p style="font-size:14px;color:#92400e;line-height:1.6;margin:0;background:#fffbeb;border-radius:8px;padding:12px 16px;">
+        <strong>Ponto de atenção:</strong>
+        ${data.review_analysis.concerns.map(c => `${c.count} ${c.count === 1 ? 'menção' : 'menções'} a "${escapeHtml(c.theme)}" em avaliações 1-3★`).join('. ')}.
+      </p>` : ''}
+    </td></tr>
+
+    <tr><td style="background:#ffffff;padding:0 36px;"><hr style="border:none;border-top:1px solid #f3f4f6;margin:0;"></td></tr>` : ''}
+
     <!-- Pacientes que encontraram você -->
     ${(data.profile_views ?? 0) > 0 || (data.website_clicks ?? 0) > 0 || (data.phone_clicks ?? 0) > 0 || (data.whatsapp_clicks ?? 0) > 0 ? `
     <tr><td style="background:#ffffff;padding:28px 36px;">

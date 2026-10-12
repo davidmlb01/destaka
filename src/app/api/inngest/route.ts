@@ -16,6 +16,8 @@ import { onboardingWhatsappSequence } from '@/lib/inngest/functions/onboarding-w
 import { onboardingEmailSequence } from '@/lib/inngest/functions/onboarding-email-sequence'
 import { geoCollector } from '@/lib/inngest/functions/geo-collector'
 import { keywordSnapshot } from '@/lib/inngest/functions/keyword-snapshot'
+import { performanceCollector } from '@/lib/inngest/functions/performance-collector'
+import { geoExpansionEngine } from '@/lib/inngest/functions/geo-expansion-engine'
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -32,5 +34,7 @@ export const { GET, POST, PUT } = serve({
     onboardingEmailSequence,
     geoCollector,
     keywordSnapshot,
+    performanceCollector,
+    geoExpansionEngine,
   ],
 })

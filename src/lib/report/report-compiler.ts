@@ -2,6 +2,7 @@
 // Compila dados dos últimos 30 dias para o relatório mensal
 
 import { createClient as createAdminSupa, SupabaseClient } from '@supabase/supabase-js'
+import { analyzeMonthlyReviews, type ReviewAnalysis } from '@/lib/reviews/analyzer'
 
 export interface MonthlyReportData {
   organization_id: string
@@ -46,6 +47,9 @@ export interface MonthlyReportData {
   // Foco do próximo mês
   next_month_focus: string
   next_month_action: string
+
+  // EPIC-009: Review Intelligence
+  review_analysis: ReviewAnalysis | null
 }
 
 const MONTH_NAMES = [
@@ -197,6 +201,43 @@ export async function compileMonthlyReport(
 
   const { focus, action } = nextMonthFocus(components)
 
+  // EPIC-008: Performance metrics do mes (performance_metrics table)
+  const { data: perfRows } = await db
+    .from('performance_metrics')
+    .select('impressions_direct, impressions_indirect, views_maps, views_search, actions_phone, actions_directions, actions_website')
+    .eq('organization_id', orgId)
+    .gte('week_start', thirtyDaysAgo.toISOString().split('T')[0])
+
+  const perfTotals = (perfRows ?? []).reduce(
+    (acc, r) => ({
+      impressions: acc.impressions + ((r.impressions_direct ?? 0) + (r.impressions_indirect ?? 0)),
+      views: acc.views + ((r.views_maps ?? 0) + (r.views_search ?? 0)),
+      phone: acc.phone + (r.actions_phone ?? 0),
+      directions: acc.directions + (r.actions_directions ?? 0),
+      website: acc.website + (r.actions_website ?? 0),
+    }),
+    { impressions: 0, views: 0, phone: 0, directions: 0, website: 0 }
+  )
+
+  // EPIC-009: Review Intelligence, analise de textos do mes
+  const monthReviews = reviewList.filter(r =>
+    r.published_at && new Date(r.published_at) >= thirtyDaysAgo
+  )
+
+  let reviewAnalysis: ReviewAnalysis | null = null
+  if (monthReviews.length > 0) {
+    // Buscar comentarios das avaliacoes do mes
+    const { data: monthReviewsWithText } = await db
+      .from('reviews')
+      .select('comment, rating')
+      .eq('organization_id', orgId)
+      .gte('published_at', thirtyDaysAgo.toISOString())
+
+    if (monthReviewsWithText && monthReviewsWithText.length > 0) {
+      reviewAnalysis = await analyzeMonthlyReviews(monthReviewsWithText)
+    }
+  }
+
   return {
     organization_id: orgId,
     professional_name: professional.name,
@@ -226,5 +267,6 @@ export async function compileMonthlyReport(
     whatsapp_clicks: 0,
     next_month_focus: focus,
     next_month_action: action,
+    review_analysis: reviewAnalysis,
   }
 }

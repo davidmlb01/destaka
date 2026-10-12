@@ -8,6 +8,7 @@ import { runAudit } from '@/lib/gbp/audit-engine'
 import { getValidTokenForOrg } from '@/lib/google/token-refresh'
 import { enrichCompetitorKeywords } from '@/lib/gmb/competitors'
 import { analyzeCompetitivePosition, saveCompetitiveAnalysis, type CompetitorProfile } from '@/lib/gmb/competitive-analyzer'
+import { handleTokenFailure } from '@/lib/alerts/token-alert-helper'
 
 function admin() {
   return createAdminSupa(
@@ -47,6 +48,7 @@ export const gbpAudit = inngest.createFunction(
         const validToken = await getValidTokenForOrg(db, orgId)
 
         if (!validToken) {
+          await handleTokenFailure(orgId)
           return { org_id: orgId, status: 'skip', error: 'sem token Google' }
         }
 
