@@ -11,6 +11,7 @@ type Step =
   | 'routine'
   | 'services'
   | 'categories'
+  | 'attributes'
   | 'automation'
   | 'activating'
 
@@ -49,6 +50,17 @@ const AUTOMATION_OPTIONS = [
   },
 ]
 
+const BUSINESS_ATTRIBUTES = [
+  { value: 'wifi', label: 'Wi-Fi gratuito', icon: '📶' },
+  { value: 'parking', label: 'Estacionamento', icon: '🅿️' },
+  { value: 'wheelchair', label: 'Acessibilidade', icon: '♿' },
+  { value: 'air_conditioning', label: 'Ar condicionado', icon: '❄️' },
+  { value: 'accepts_card', label: 'Aceita cartão', icon: '💳' },
+  { value: 'restroom', label: 'Banheiro para clientes', icon: '🚻' },
+  { value: 'appointment', label: 'Agendamento prévio', icon: '📅' },
+  { value: 'pix', label: 'Aceita Pix', icon: '📱' },
+]
+
 const ACTIVATION_STEPS = [
   'Perfil conectado',
   'Fotos analisadas',
@@ -77,6 +89,9 @@ export default function OnboardingPage() {
   // Services
   const [services, setServices] = useState<string[]>([''])
   const [differentials, setDifferentials] = useState('')
+
+  // Attributes
+  const [selectedAttributes, setSelectedAttributes] = useState<Set<string>>(new Set())
 
   // Automation
   const [automation, setAutomation] = useState('')
@@ -158,6 +173,7 @@ export default function OnboardingPage() {
           patient_volume: patientVolume,
           services: filteredServices.length > 0 ? filteredServices : null,
           differentials: differentials.trim() || null,
+          attributes: selectedAttributes.size > 0 ? [...selectedAttributes] : null,
         }),
       })
 
@@ -176,7 +192,7 @@ export default function OnboardingPage() {
   }
 
   // Progress
-  const FORM_STEPS: Step[] = ['contact', 'routine', 'services', 'categories', 'automation']
+  const FORM_STEPS: Step[] = ['contact', 'routine', 'services', 'categories', 'attributes', 'automation']
   const currentIndex = FORM_STEPS.indexOf(step)
   const progress = currentIndex >= 0 ? ((currentIndex + 1) / FORM_STEPS.length) * 100 : 0
 
@@ -511,9 +527,67 @@ export default function OnboardingPage() {
           {/* CATEGORIES */}
           {step === 'categories' && (
             <CategoryChecklist
-              onComplete={() => setStep('automation')}
-              onSkip={() => setStep('automation')}
+              onComplete={() => setStep('attributes')}
+              onSkip={() => setStep('attributes')}
             />
+          )}
+
+          {/* ATTRIBUTES */}
+          {step === 'attributes' && (
+            <div>
+              <h1 className="text-lg font-semibold text-white mb-1">
+                Recursos do seu espaço
+              </h1>
+              <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                Marque o que seu negócio oferece. Isso ajuda clientes a escolherem você.
+              </p>
+
+              <div className="grid grid-cols-2 gap-2 mb-6">
+                {BUSINESS_ATTRIBUTES.map(attr => {
+                  const selected = selectedAttributes.has(attr.value)
+                  return (
+                    <button
+                      key={attr.value}
+                      onClick={() => {
+                        setSelectedAttributes(prev => {
+                          const next = new Set(prev)
+                          if (next.has(attr.value)) next.delete(attr.value)
+                          else next.add(attr.value)
+                          return next
+                        })
+                      }}
+                      className="flex items-center gap-2.5 p-3 rounded-xl text-left transition-colors cursor-pointer"
+                      style={{
+                        background: selected ? 'rgba(20,184,166,0.15)' : 'rgba(255,255,255,0.04)',
+                        border: `1px solid ${selected ? 'var(--accent)' : 'rgba(255,255,255,0.06)'}`,
+                      }}
+                    >
+                      <span style={{ fontSize: 18 }}>{attr.icon}</span>
+                      <span className="text-sm" style={{ color: selected ? 'var(--accent-bright)' : 'rgba(255,255,255,0.7)' }}>
+                        {attr.label}
+                      </span>
+                    </button>
+                  )
+                })}
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setStep('categories')}
+                  className="rounded-xl px-5 py-3.5 font-medium transition-colors cursor-pointer"
+                  style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.08)' }}
+                >
+                  Voltar
+                </button>
+                <button
+                  onClick={() => setStep('automation')}
+                  className="flex-1 rounded-xl px-6 py-3.5 font-medium transition-colors cursor-pointer"
+                  style={{ background: 'var(--accent)', color: '#fff' }}
+                >
+                  {selectedAttributes.size > 0 ? 'Continuar' : 'Pular'}
+                </button>
+              </div>
+            </div>
           )}
 
           {/* AUTOMATION */}
@@ -558,7 +632,7 @@ export default function OnboardingPage() {
 
               <div className="flex gap-3">
                 <button
-                  onClick={() => setStep('categories')}
+                  onClick={() => setStep('attributes')}
                   className="rounded-xl px-5 py-3.5 font-medium transition-colors cursor-pointer"
                   style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.08)' }}
                 >

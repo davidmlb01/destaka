@@ -13,6 +13,7 @@ const OnboardingSchema = z.object({
   patient_volume: z.enum(['under_10', '10_30', '30_60', 'over_60']).optional(),
   services: z.array(z.string().max(200)).max(8).nullable().optional(),
   differentials: z.string().max(500).nullable().optional(),
+  attributes: z.array(z.string().max(50)).max(20).nullable().optional(),
 })
 
 function createServiceClient() {
@@ -51,7 +52,7 @@ export async function POST(request: NextRequest) {
 
   const {
     automation_preference, phone, instagram_handle,
-    lgpd_ai_consent, challenge, patient_volume, services, differentials,
+    lgpd_ai_consent, challenge, patient_volume, services, differentials, attributes,
   } = parsed.data
 
   // Valida formato do instagram_handle se fornecido
@@ -75,6 +76,27 @@ export async function POST(request: NextRequest) {
   if (patient_volume) orgUpdate.patient_volume = patient_volume
   if (services && services.length > 0) orgUpdate.services = services
   if (differentials) orgUpdate.differentials = differentials
+
+  // Salva atributos no gbp_profiles (são dados do perfil GBP, não da org)
+  if (attributes && attributes.length > 0) {
+    const { data: gbpProfile } = await admin
+      .from('gbp_profiles')
+      .select('id, attributes')
+      .eq('organization_id', orgId)
+      .maybeSingle()
+
+    if (gbpProfile) {
+      const existingAttrs = (gbpProfile.attributes as Record<string, unknown>) ?? {}
+      const mergedAttrs = { ...existingAttrs }
+      for (const attr of attributes) {
+        mergedAttrs[attr] = true
+      }
+      await admin
+        .from('gbp_profiles')
+        .update({ attributes: mergedAttrs })
+        .eq('id', gbpProfile.id)
+    }
+  }
 
   const { error: updateError } = await admin
     .from('organizations')
