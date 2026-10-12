@@ -24,7 +24,7 @@ const FILTER_LABELS: Record<ReviewFilter, string> = {
   all: 'Todas',
   pending: 'Sem resposta',
   negative: 'Negativas (1-2)',
-  pending_approval: 'Aguardando aprovacao',
+  pending_approval: 'Aguardando aprovação',
 }
 
 export function ReviewsContent() {

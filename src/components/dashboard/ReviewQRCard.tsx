@@ -43,8 +43,9 @@ export function ReviewQRCard() {
         }
         const json = await res.json()
         if (mounted) setData(json)
-      } catch (e) {
-        if (mounted) setError(e instanceof Error ? e.message : 'Erro ao carregar QR code')
+      } catch {
+        // Se Place ID não existe, esconde o card silenciosamente
+        if (mounted) setData(null)
       } finally {
         if (mounted) setLoading(false)
       }
@@ -145,15 +146,7 @@ export function ReviewQRCard() {
     )
   }
 
-  if (error || !data) {
-    return (
-      <Card variant="subtle" padding="md">
-        <p className="text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>
-          {error ?? 'Não foi possível gerar o QR code.'}
-        </p>
-      </Card>
-    )
-  }
+  if (!data) return null
 
   return (
     <Card variant="accent" padding="md" className="mb-6">

@@ -102,7 +102,7 @@ export default function MapCard({ isSubscriber }: { isSubscriber: boolean }) {
           {(
             <div className="mt-3 space-y-1">
               <p className="text-sm text-zinc-300">
-                Seu negócio aparece em <span className="font-semibold text-zinc-100">{data.total_neighborhoods} bairros</span>
+                Seu negócio aparece em <span className="font-semibold text-zinc-100">{data.total_neighborhoods} {data.total_neighborhoods === 1 ? 'bairro' : 'bairros'}</span>
                 {data.radius_km > 0 && (
                   <span className="text-zinc-400"> (raio de {data.radius_km} km)</span>
                 )}
