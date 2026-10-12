@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic'
 
 import { createServiceClient } from '@/lib/supabase/server'
+import { Logo } from '@/components/ui/Logo'
 import { RetriggerButton } from './RetriggerButton'
 import { MrrLeadsChart, ScoreEvolutionChart } from './AdminCharts'
 import { TopMovers } from './TopMovers'
@@ -322,11 +323,8 @@ export default async function AdminPage() {
     <main className="min-h-screen" style={{ background: 'var(--bg-gradient)' }}>
       {/* Header */}
       <div style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-        <div className="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>Destaka</p>
-            <h1 className="text-base font-semibold" style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-display)' }}>Painel Admin</h1>
-          </div>
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+          <Logo size="sm" />
           <div className="flex items-center gap-2">
             {brokenTokens.length > 0 && (
               <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ background: 'var(--error-bg)', color: 'var(--error)', border: '1px solid var(--error-border)' }}>
@@ -345,7 +343,7 @@ export default async function AdminPage() {
       <div className="max-w-6xl mx-auto px-6 py-8 space-y-6">
 
         {/* Row 1: Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <StatCard value={`R$${mrr.toLocaleString('pt-BR')}`} label="MRR" color="var(--accent)" />
           <StatCard value={payingOrgs.length} label="pagantes" color="var(--success)" />
           <StatCard value={freeOrgs.length} label="free" />
