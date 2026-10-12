@@ -51,6 +51,17 @@ export const gbpOptimizer = inngest.createFunction(
         (c: { categories: string[] }) => c.categories ?? []
       )
 
+      // Buscar keyword opportunities da analise competitiva
+      const { data: competitiveData } = await db
+        .from('competitive_analyses')
+        .select('keyword_opportunities')
+        .eq('organization_id', orgId)
+        .order('analyzed_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+
+      const keywordOpportunities = (competitiveData?.keyword_opportunities as string[] | null) ?? []
+
       const currentServices = Array.isArray(profile.services)
         ? (profile.services as Array<{ freeFormServiceItem?: { label?: { displayName?: string } }; structuredServiceItem?: { serviceTypeId?: string } }>)
             .map(s => s.freeFormServiceItem?.label?.displayName ?? s.structuredServiceItem?.serviceTypeId ?? '')
@@ -66,6 +77,7 @@ export const gbpOptimizer = inngest.createFunction(
         currentCategories: profile.categories ?? [],
         currentServices,
         competitorCategories,
+        keywordOpportunities,
       })
 
       // Persiste no perfil GBP

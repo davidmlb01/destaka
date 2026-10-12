@@ -3,12 +3,14 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { trackPurchase, trackOnboardingComplete } from '@/lib/tracking/events'
+import CategoryChecklist from '@/components/onboarding/CategoryChecklist'
 
 type Step =
   | 'welcome'
   | 'contact'
   | 'routine'
   | 'services'
+  | 'categories'
   | 'automation'
   | 'activating'
 
@@ -174,7 +176,7 @@ export default function OnboardingPage() {
   }
 
   // Progress
-  const FORM_STEPS: Step[] = ['contact', 'routine', 'services', 'automation']
+  const FORM_STEPS: Step[] = ['contact', 'routine', 'services', 'categories', 'automation']
   const currentIndex = FORM_STEPS.indexOf(step)
   const progress = currentIndex >= 0 ? ((currentIndex + 1) / FORM_STEPS.length) * 100 : 0
 
@@ -495,7 +497,7 @@ export default function OnboardingPage() {
                   Voltar
                 </button>
                 <button
-                  onClick={() => setStep('automation')}
+                  onClick={() => setStep('categories')}
                   disabled={!services.some(s => s.trim())}
                   className="flex-1 rounded-xl px-6 py-3.5 font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                   style={{ background: 'var(--accent)', color: '#fff' }}
@@ -504,6 +506,14 @@ export default function OnboardingPage() {
                 </button>
               </div>
             </div>
+          )}
+
+          {/* CATEGORIES */}
+          {step === 'categories' && (
+            <CategoryChecklist
+              onComplete={() => setStep('automation')}
+              onSkip={() => setStep('automation')}
+            />
           )}
 
           {/* AUTOMATION */}
@@ -548,7 +558,7 @@ export default function OnboardingPage() {
 
               <div className="flex gap-3">
                 <button
-                  onClick={() => setStep('services')}
+                  onClick={() => setStep('categories')}
                   className="rounded-xl px-5 py-3.5 font-medium transition-colors cursor-pointer"
                   style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.08)' }}
                 >

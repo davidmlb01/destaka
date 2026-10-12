@@ -7,6 +7,7 @@ import { generatePost, nextPostType, type PostType } from '@/lib/gbp/post-genera
 import type { ReviewTone } from '@/lib/gbp/review-response-engine'
 import { GBPClient } from '@/lib/google/gbp-client'
 import { getValidTokenForOrg } from '@/lib/google/token-refresh'
+import { getLatestAnalysis } from '@/lib/gmb/competitive-analyzer'
 
 function admin() {
   return createAdminSupa(
@@ -133,6 +134,10 @@ export const postGenerator = inngest.createFunction(
         const address = profile?.address as { locality?: string; addressLines?: string[] } | null
         const city = address?.locality ?? 'Brasil'
 
+        // Buscar keyword_opportunities da analise competitiva (inteligencia interna)
+        const competitiveAnalysis = await getLatestAnalysis(db, orgId)
+        const keywordOpportunities = (competitiveAnalysis?.keyword_opportunities ?? []).slice(0, 3)
+
         // Determina próximo tipo de post (rotação) + sequência para seed de diversidade (Correção C)
         const { data: recentPosts } = await db
           .from('posts')
@@ -179,6 +184,7 @@ export const postGenerator = inngest.createFunction(
           recentReview,
           serviceAreas: org.service_areas ?? [],
           postSequence,
+          keywordOpportunities,
         })
 
         // Bloqueia post se não passou no compliance

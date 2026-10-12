@@ -46,11 +46,13 @@ export async function generateOptimizations(params: {
   currentCategories: string[]
   currentServices: string[]
   competitorCategories?: string[][]
+  keywordOpportunities?: string[]
 }): Promise<OptimizationReport> {
   const {
     auditReport, specialty, professionalName, city,
     currentDescription, currentCategories, currentServices,
     competitorCategories = [],
+    keywordOpportunities = [],
   } = params
 
   const criticalGaps = auditReport.gaps.filter((g: AuditGap) => g.severity === 'critico')
@@ -77,6 +79,10 @@ ${importantGaps.map((g: AuditGap) => `IMPORTANTE: ${g.title} — ${g.action}`).j
 
 CATEGORIAS USADAS POR CONCORRENTES QUE FALTAM:
 ${missingFromCompetitors.join(', ') || '(sem dados)'}
+
+KEYWORDS DE OPORTUNIDADE (termos que pacientes usam ao buscar concorrentes):
+${keywordOpportunities.length > 0 ? keywordOpportunities.join(', ') : '(sem dados)'}
+Incorpore essas keywords naturalmente nas descricoes e servicos otimizados.
 
 Gere um relatório de otimização completo com este JSON:
 {

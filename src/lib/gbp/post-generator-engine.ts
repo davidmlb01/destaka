@@ -68,8 +68,9 @@ export async function generatePost(params: {
   recentReview?: string  // para post tipo review_highlight
   serviceAreas?: string[]
   postSequence?: number  // contador sequencial por org para seed de diversidade
+  keywordOpportunities?: string[]  // keywords da inteligencia competitiva (uso interno, nunca exibidas ao usuario)
 }): Promise<GeneratedPost> {
-  const { postType, specialty, professionalName, city, neighborhood, tone, recentReview, serviceAreas, postSequence } = params
+  const { postType, specialty, professionalName, city, neighborhood, tone, recentReview, serviceAreas, postSequence, keywordOpportunities } = params
 
   const toneInstructions: Record<ReviewTone, string> = {
     formal: 'Tom formal e profissional. Linguagem cuidada e respeitosa.',
@@ -92,6 +93,10 @@ export async function generatePost(params: {
       ? `Mencione naturalmente a localização: ${locationContext}. Conecte o conteúdo com a comunidade local.`
       : ''
 
+  const keywordContext = keywordOpportunities && keywordOpportunities.length > 0
+    ? `\nPALAVRAS-CHAVE DE OPORTUNIDADE (incorpore 1-2 naturalmente no texto, sem forcar): ${keywordOpportunities.join(', ')}`
+    : ''
+
   const diversityContext = getDiversityContext(postSequence)
 
   const prompt = `Você é ${professionalName}, profissional de ${specialty} em ${city}.
@@ -105,6 +110,7 @@ CONTEXTO:
 - ${typeSpecificInstruction}
 
 TOM: ${toneInstructions[tone]}
+${keywordContext}
 
 ${diversityContext}
 

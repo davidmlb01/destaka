@@ -6,8 +6,11 @@ import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { inngest } from '../client'
 import { scrapeInstagramPosts } from '@/lib/instagram/scraper'
 import { rewriteCaption } from '@/lib/instagram/rewriter'
+import { GBPClient } from '@/lib/google/gbp-client'
+import { getValidTokenForOrg } from '@/lib/google/token-refresh'
 
 const MAX_POSTS_PER_WEEK = 3
+const MAX_GBP_PUBLISHES_PER_WEEK = 2
 
 function admin() {
   return createAdminSupa(
@@ -84,6 +87,17 @@ export const instagramSync = inngest.createFunction(
 
           const address = profile?.address as { locality?: string } | null
           const city = address?.locality ?? 'Brasil'
+
+          // Buscar keyword opportunities da inteligencia competitiva
+          const { data: competitiveData } = await db
+            .from('competitive_analyses')
+            .select('keyword_opportunities')
+            .eq('organization_id', org.id)
+            .order('analyzed_at', { ascending: false })
+            .limit(1)
+            .maybeSingle()
+
+          const keywordOpps = (competitiveData?.keyword_opportunities as string[] | null) ?? []
 
           let readyCount = 0
 
@@ -162,12 +176,115 @@ export const instagramSync = inngest.createFunction(
       results.push(result)
     }
 
-    // Posts ficam como 'ready' para o post-generator publicar 1 por vez (seg/qua/sex)
-    // Isso distribui o conteudo ao longo da semana em vez de publicar tudo de uma vez
+    // Step 7: publicar posts ready no GBP (max 2 por semana por org)
+    const publishResults: Array<{ org_id: string; published: number; skipped: number }> = []
+
+    for (const org of orgs) {
+      const pubResult = await step.run(`publish-gbp-${org.id}`, async () => {
+        // Verificar se org usa modo automatico
+        const { data: orgData } = await db
+          .from('organizations')
+          .select('automation_preference, gbp_location_id')
+          .eq('id', org.id)
+          .single()
+
+        if (!orgData?.gbp_location_id || orgData.automation_preference !== 'automatico') {
+          return { org_id: org.id, published: 0, skipped: 0 }
+        }
+
+        // Contar quantos posts ja foram publicados esta semana
+        const weekAgo = new Date()
+        weekAgo.setDate(weekAgo.getDate() - 7)
+
+        const { count: publishedThisWeek } = await db
+          .from('instagram_posts')
+          .select('*', { count: 'exact', head: true })
+          .eq('organization_id', org.id)
+          .eq('status', 'published_gbp')
+          .gte('published_to_gbp_at', weekAgo.toISOString())
+
+        const remainingSlots = MAX_GBP_PUBLISHES_PER_WEEK - (publishedThisWeek ?? 0)
+        if (remainingSlots <= 0) {
+          return { org_id: org.id, published: 0, skipped: 0 }
+        }
+
+        // Buscar posts ready para publicar
+        const { data: readyPosts } = await db
+          .from('instagram_posts')
+          .select('id, rewritten_caption, image_url')
+          .eq('organization_id', org.id)
+          .eq('status', 'ready')
+          .not('rewritten_caption', 'is', null)
+          .order('engagement_score', { ascending: false })
+          .limit(remainingSlots)
+
+        if (!readyPosts || readyPosts.length === 0) {
+          return { org_id: org.id, published: 0, skipped: 0 }
+        }
+
+        const validToken = await getValidTokenForOrg(db, org.id)
+        if (!validToken) {
+          return { org_id: org.id, published: 0, skipped: readyPosts.length }
+        }
+
+        const client = new GBPClient(validToken)
+        let published = 0
+        let skipped = 0
+
+        for (const post of readyPosts) {
+          try {
+            // Publicar no GBP com imagem se disponivel
+            const gbpPost = await client.createPost(orgData.gbp_location_id, {
+              summary: post.rewritten_caption,
+              imageUrl: post.image_url || undefined,
+            })
+
+            const gbpPostId = gbpPost.name ?? null
+
+            // Atualizar status no instagram_posts
+            await db.from('instagram_posts')
+              .update({
+                status: 'published_gbp',
+                gbp_post_id: gbpPostId,
+                published_to_gbp_at: new Date().toISOString(),
+              })
+              .eq('id', post.id)
+
+            // Inserir na tabela posts para tracking unificado
+            await db.from('posts').insert({
+              organization_id: org.id,
+              content: post.rewritten_caption,
+              post_type: 'instagram_adapted',
+              status: 'published',
+              published_at: new Date().toISOString(),
+              gbp_post_id: gbpPostId,
+              photo_suggestion: 'Foto original do Instagram',
+              source: 'instagram',
+            })
+
+            published++
+          } catch (err) {
+            console.error(`[instagram-sync] Falha ao publicar post ${post.id} no GBP:`, err)
+            await db.from('instagram_posts')
+              .update({
+                status: 'failed',
+                skip_reason: err instanceof Error ? err.message : 'Publicacao GBP falhou',
+              })
+              .eq('id', post.id)
+            skipped++
+          }
+        }
+
+        return { org_id: org.id, published, skipped }
+      })
+
+      publishResults.push(pubResult)
+    }
 
     return {
       processed: results.length,
       results,
+      publishing: publishResults,
     }
   }
 )

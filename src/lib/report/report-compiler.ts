@@ -261,10 +261,10 @@ export async function compileMonthlyReport(
       ? Math.floor((Date.now() - new Date(org.created_at).getTime()) / (1000 * 60 * 60 * 24))
       : 0,
     score_initial: scoreList.length > 0 ? scoreList[scoreList.length - 1]?.total ?? 0 : 0,
-    profile_views: 0,  // gbp_metrics ainda nao existe no schema
-    website_clicks: 0,
-    phone_clicks: 0,
-    whatsapp_clicks: 0,
+    profile_views: perfTotals.views,
+    website_clicks: perfTotals.website,
+    phone_clicks: perfTotals.phone,
+    whatsapp_clicks: 0,  // GBP API nao separa WhatsApp de phone
     next_month_focus: focus,
     next_month_action: action,
     review_analysis: reviewAnalysis,

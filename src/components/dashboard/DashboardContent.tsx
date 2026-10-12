@@ -19,6 +19,7 @@ import { PinIcon } from '@/components/ui/PinIcon'
 import { useDashboard, type DashboardData } from './hooks/useDashboard'
 import MapCard from './MapCard'
 import KeywordInsightCard from './KeywordInsightCard'
+import { PatientFunnelCard } from './PatientFunnelCard'
 
 const CATEGORY_LABELS: Record<string, string> = {
   'Informações Básicas': 'Seu perfil está completo?',
@@ -224,6 +225,14 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
               <MetricCard label="Ligações geradas" value={metrics.clicksCall} icon={<PinIcon size={16} />} hint={metrics.period} />
             </div>
           </LockedOverlay>
+        </div>
+      )}
+
+      {/* ===== FUNIL: Pacientes ===== */}
+      {isSubscriber && (
+        <div className="animate-fade-in-up stagger-1">
+          <SectionTitle>Seus pacientes</SectionTitle>
+          <PatientFunnelCard />
         </div>
       )}
 
