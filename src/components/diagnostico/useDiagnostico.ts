@@ -76,11 +76,11 @@ export function useDiagnostico() {
     {
       revalidateOnFocus: false,
       dedupingInterval: 60000,
-      // Polling: revalida a cada 5s enquanto score nao chegar
+      // Polling: revalida a cada 3s enquanto score ou mapa nao chegarem
       refreshInterval: (latestData) => {
-        if (!latestData?.score || (latestData.score.atual === 0 && latestData.gaps.length === 0)) {
-          return 5000
-        }
+        const hasScore = latestData?.score && (latestData.score.atual > 0 || (latestData.gaps ?? []).length > 0)
+        const hasMap = !!latestData?.mapa
+        if (!hasScore || !hasMap) return 3000
         return 0
       },
     }
