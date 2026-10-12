@@ -248,19 +248,10 @@ export default function DiagnosticoPage() {
           </div>
         </section>
 
-        {/* BLOCO 2: Impacto + Quick Wins resumo + CTA */}
+        {/* BLOCO 2: Quick Wins + Impacto + CTA */}
         <section style={{ paddingBottom: 48, textAlign: 'center' }}>
-          <h2
-            className="font-display font-bold"
-            style={{ fontSize: 22, color: 'var(--text-primary)', lineHeight: 1.4, marginBottom: 6 }}
-          >
-            Você está perdendo até {lostClients} clientes por semana.
-          </h2>
-          <p style={{ fontSize: 16, color: 'var(--text-secondary)', marginBottom: 24 }}>
-            O Destaka ajuda você a conquistar esses clientes.
-          </p>
 
-          {/* Barras de quick wins */}
+          {/* Barras de quick wins (antes do impacto) */}
           <div className="flex flex-col gap-3 text-left" style={{ maxWidth: 560, margin: '0 auto 28px' }}>
             {rapidos.length > 0 && (
               <div style={{ padding: '12px 16px', borderRadius: 10, background: 'var(--success-bg)', border: '1px solid var(--success-border)' }}>
@@ -284,6 +275,16 @@ export default function DiagnosticoPage() {
               </div>
             )}
           </div>
+
+          <h2
+            className="font-display font-bold"
+            style={{ fontSize: 22, color: 'var(--text-primary)', lineHeight: 1.4, marginBottom: 6 }}
+          >
+            Você está perdendo até {lostClients} clientes por semana.
+          </h2>
+          <p style={{ fontSize: 16, color: 'var(--text-secondary)', marginBottom: 24 }}>
+            O Destaka ajuda você a conquistar esses clientes.
+          </p>
 
           {/* CTA primário */}
           <button
