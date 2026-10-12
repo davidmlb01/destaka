@@ -129,8 +129,9 @@ export const geoExpansionEngine = inngest.createFunction(
 
           let accessToken: string
           try {
-            const tokenResult = await getValidTokenForOrg(orgId)
-            accessToken = tokenResult.access_token
+            const validToken = await getValidTokenForOrg(db, orgId)
+            if (!validToken) throw new Error('token not found')
+            accessToken = validToken
           } catch {
             return { org_id: orgId, status: 'skip', error: 'token invalido' }
           }
@@ -163,7 +164,7 @@ O tom deve ser profissional e acolhedor. Nao use hashtags.
 Nao mencione que e um post para SEO ou otimizacao.
 Responda APENAS com o texto do post, sem aspas.`
 
-            const postContent = await generateContent(prompt)
+            const postContent = await generateContent(prompt, 'Voce e um assistente de marketing digital para profissionais de saude.')
             if (postContent && postContent.length > 20) {
               await gbp.createPost(locationName, { summary: postContent.slice(0, 1500) })
               actionsTaken.push({ type: 'post', detail: `Post geo-targeted: ${targetRegions.join(', ')}` })
@@ -193,7 +194,7 @@ ${currentDesc}
 
 Responda APENAS com a nova descricao, sem aspas.`
 
-              const newDesc = await generateContent(prompt)
+              const newDesc = await generateContent(prompt, 'Voce e um especialista em otimizacao de perfis do Google Meu Negocio.')
               if (newDesc && newDesc.length >= 50 && newDesc.length <= 750) {
                 const url = `https://mybusinessbusinessinformation.googleapis.com/v1/${locationName}?updateMask=profile.description`
                 const res = await fetch(url, {

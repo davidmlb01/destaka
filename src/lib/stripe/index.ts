@@ -18,10 +18,16 @@ export const stripe = new Proxy({} as Stripe, {
 })
 
 // Plano unico R$197/mes (decisao David 08/10/2026)
+export function getPriceId(): string {
+  const id = process.env.STRIPE_PRICE_PRO
+  if (!id) throw new Error('STRIPE_PRICE_PRO is not configured')
+  return id
+}
+
 export const PLAN = {
   name: 'Destaka',
   price: 19700, // R$197 em centavos
-  priceId: process.env.STRIPE_PRICE_PRO ?? (() => { throw new Error('STRIPE_PRICE_PRO is not configured') })(),
+  get priceId() { return getPriceId() },
   features: [
     '1 perfil GMB',
     'Diagnóstico semanal',

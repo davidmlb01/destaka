@@ -129,6 +129,7 @@ export const instagramSync = inngest.createFunction(
               professionalName: org.name ?? '',
               city,
               tone: org.tone ?? 'proximo',
+              keywords: keywordOpps.slice(0, 3),
             })
 
             if (!rewrite.compliancePassed || !rewrite.rewrittenCaption) {
