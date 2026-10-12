@@ -237,12 +237,7 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
         </div>
       )}
 
-      {/* ===== EXPANSAO GEOGRAFICA ===== */}
-      {isSubscriber && (
-        <div className="animate-fade-in-up stagger-2">
-          <GeoExpansionCard />
-        </div>
-      )}
+      {/* GeoExpansionCard removido: dado integrado no MapCard */}
 
       {/* ===== NIVEL 3: Insights (Keywords + Acoes) ===== */}
       {isSubscriber ? (

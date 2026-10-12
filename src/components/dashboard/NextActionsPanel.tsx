@@ -22,8 +22,9 @@ export function NextActionsPanel({ actions }: { actions: Action[] }) {
     )
   }
 
-  const destakaActions = actions.filter(a => ['description', 'review_response', 'posts'].includes(a.field))
-  const userActions = actions.filter(a => !['description', 'review_response', 'posts'].includes(a.field))
+  const destakaFields = ['description', 'review_response', 'posts', 'attributes']
+  const destakaActions = actions.filter(a => destakaFields.includes(a.field))
+  const userActions = actions.filter(a => !destakaFields.includes(a.field))
 
   return (
     <div className="flex flex-col gap-4">
