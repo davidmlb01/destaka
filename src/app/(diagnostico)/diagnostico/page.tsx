@@ -20,26 +20,22 @@ function useCountUp(target: number, duration = 1200) {
   const reducedMotion = typeof window !== 'undefined'
     && window.matchMedia('(prefers-reduced-motion: reduce)').matches
   const [value, setValue] = useState(reducedMotion ? target : 0)
+  const started = useRef(false)
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (reducedMotion) return
+    if (reducedMotion || target === 0) { setValue(target); return }
+    if (started.current) { setValue(target); return }
+    started.current = true
 
-    const observer = new IntersectionObserver(([entry]) => {
-      if (!entry.isIntersecting) return
-      observer.disconnect()
-      const start = performance.now()
-      const animate = (now: number) => {
-        const progress = Math.min((now - start) / duration, 1)
-        const eased = 1 - Math.pow(1 - progress, 3)
-        setValue(Math.round(eased * target))
-        if (progress < 1) requestAnimationFrame(animate)
-      }
-      requestAnimationFrame(animate)
-    }, { threshold: 0.3 })
-
-    if (ref.current) observer.observe(ref.current)
-    return () => observer.disconnect()
+    const start = performance.now()
+    const animate = (now: number) => {
+      const progress = Math.min((now - start) / duration, 1)
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setValue(Math.round(eased * target))
+      if (progress < 1) requestAnimationFrame(animate)
+    }
+    requestAnimationFrame(animate)
   }, [target, duration, reducedMotion])
 
   return { value, ref }
@@ -87,27 +83,15 @@ function getVerticalLabel(categoria: string): string | undefined {
 function getTagline(categoria: string): { title: string; subtitle: string } {
   const lower = (categoria || '').toLowerCase()
   if (lower.includes('saúde') || lower.includes('saude') || lower.includes('médic') || lower.includes('medic') || lower.includes('dentist') || lower.includes('fisio') || lower.includes('psicol') || lower.includes('nutrici')) {
-    return {
-      title: 'Você cuida de atender seus pacientes.',
-      subtitle: 'Nós cuidamos de fazer novos pacientes chegar até você.',
-    }
+    return { title: 'Você cuida de atender seus pacientes.', subtitle: 'Nós cuidamos de fazer novos pacientes chegar até você.' }
   }
   if (lower.includes('pet') || lower.includes('veterinár') || lower.includes('veterinar')) {
-    return {
-      title: 'Você cuida dos pets.',
-      subtitle: 'Nós cuidamos de trazer novos tutores até você.',
-    }
+    return { title: 'Você cuida dos pets.', subtitle: 'Nós cuidamos de trazer novos tutores até você.' }
   }
   if (lower.includes('advogad') || lower.includes('jurídi') || lower.includes('juridi')) {
-    return {
-      title: 'Você cuida dos seus clientes.',
-      subtitle: 'Nós cuidamos de trazer novos clientes até você.',
-    }
+    return { title: 'Você cuida dos seus clientes.', subtitle: 'Nós cuidamos de trazer novos clientes até você.' }
   }
-  return {
-    title: 'Você cuida do seu negócio.',
-    subtitle: 'Nós cuidamos de trazer novos clientes até você.',
-  }
+  return { title: 'Você cuida do seu negócio.', subtitle: 'Nós cuidamos de trazer novos clientes até você.' }
 }
 
 /* ── Page ── */
@@ -123,75 +107,39 @@ export default function DiagnosticoPage() {
       .catch(() => {})
   }, [])
 
+  // Loading inicial (sem nenhum dado ainda)
   if (isLoading || error || !data) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg-base)' }}>
         <div className="text-center">
-          <div
-            style={{
-              width: 48, height: 48, borderRadius: '50%',
-              border: '3px solid var(--accent)',
-              borderTopColor: 'transparent',
-              animation: 'spin 1s linear infinite',
-              margin: '0 auto 20px',
-            }}
-          />
-          <p className="font-display font-bold" style={{ fontSize: 18, color: 'var(--text-primary)', marginBottom: 8 }}>
-            Analisando seu perfil
-          </p>
-          <p style={{ fontSize: 14, color: 'var(--text-tertiary)' }}>
-            Isso leva alguns segundos.
-          </p>
+          <div style={{ width: 48, height: 48, borderRadius: '50%', border: '3px solid var(--accent)', borderTopColor: 'transparent', animation: 'spin 1s linear infinite', margin: '0 auto 20px' }} />
+          <p className="font-display font-bold" style={{ fontSize: 18, color: 'var(--text-primary)', marginBottom: 8 }}>Analisando seu perfil</p>
+          <p style={{ fontSize: 14, color: 'var(--text-tertiary)' }}>Isso leva alguns segundos.</p>
           <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
         </div>
       </div>
     )
   }
 
-  if (!data.score || (data.score.atual === 0 && data.gaps.length === 0)) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg-base)' }}>
-        <div className="text-center max-w-md px-6">
-          <div
-            style={{
-              width: 48, height: 48, borderRadius: '50%',
-              border: '3px solid var(--accent)',
-              borderTopColor: 'transparent',
-              animation: 'spin 1s linear infinite',
-              margin: '0 auto 20px',
-            }}
-          />
-          <p className="font-display font-bold" style={{ fontSize: 20, color: 'var(--text-primary)', marginBottom: 12 }}>
-            Analisando {data.perfil?.nome || 'seu perfil'}
-          </p>
-          <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-            Estamos coletando dados do seu Google Meu Negócio. Isso pode levar alguns segundos.
-          </p>
-          <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
-        </div>
-      </div>
-    )
-  }
-
+  // Dados chegaram (mesmo que parciais), renderiza a pagina inteira
   const nome = data.perfil?.nome || 'Seu negócio'
   const endereco = data.perfil?.endereco || ''
   const categoria = data.perfil?.categoria || ''
-  const score = data.score.atual
-  const scoreColor = getScoreColor(score)
-  const userRating = data.reviews.ultima?.nota ?? 0
-  const userReviewCount = data.reviews.sem_resposta_count + (data.reviews.ultima ? 1 : 0)
-  const lostClients = estimateLostClients(score)
+  const hasScore = !!data.score && (data.score.atual > 0 || data.gaps.length > 0)
+  const score = data.score?.atual ?? 0
+  const scoreColor = hasScore ? getScoreColor(score) : 'var(--text-muted)'
+  const lostClients = hasScore ? estimateLostClients(score) : 0
   const vertical = getVerticalLabel(categoria)
   const tagline = getTagline(categoria)
+  const userRating = data.reviews?.ultima?.nota ?? 0
+  const userReviewCount = (data.reviews?.sem_resposta_count ?? 0) + (data.reviews?.ultima ? 1 : 0)
 
-  // Quick wins summary
   const rapidos = data.gaps.filter(g => categorizeGap(g) === 'rapido')
   const estrategicos = data.gaps.filter(g => categorizeGap(g) === 'estrategico')
   const continuos = data.gaps.filter(g => categorizeGap(g) === 'continuo')
   const rapidoImpact = rapidos.reduce((s, g) => s + g.impact, 0)
   const estrategicoImpact = estrategicos.reduce((s, g) => s + g.impact, 0)
 
-  // Map data
   const mapa = data.mapa
   const weakCount = mapa?.zonas.filter(z => z.status === 'weak').length ?? 0
   const totalZones = mapa?.zonas.length ?? 0
@@ -199,11 +147,10 @@ export default function DiagnosticoPage() {
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg-base)' }}>
+      <style>{`@keyframes spin { to { transform: rotate(360deg) } } @keyframes pulse-ring { 0% { opacity: 0.4 } 50% { opacity: 1 } 100% { opacity: 0.4 } }`}</style>
+
       {/* Header */}
-      <header
-        className="sticky top-0"
-        style={{ zIndex: 40, background: 'rgba(7,26,25,0.95)', backdropFilter: 'blur(12px)', height: 56 }}
-      >
+      <header className="sticky top-0" style={{ zIndex: 40, background: 'rgba(7,26,25,0.95)', backdropFilter: 'blur(12px)', height: 56 }}>
         <div className="max-w-[900px] mx-auto px-6 h-full flex items-center justify-between">
           <Logo size="md" href="https://destaka.com.br" vertical={vertical} />
           {shareHash && <ShareButton hash={shareHash} />}
@@ -212,185 +159,159 @@ export default function DiagnosticoPage() {
 
       <main className="max-w-[900px] mx-auto px-6 pb-28">
 
-        {/* BLOCO 1: Hero (Score + Mapa lado a lado) */}
+        {/* BLOCO 1: Hero */}
         <section style={{ paddingTop: 32, paddingBottom: 32 }}>
-          {/* Nome do negócio */}
           <div style={{ marginBottom: 24 }}>
             <p style={{ fontSize: 12, color: 'var(--text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>
               Diagnóstico de visibilidade
             </p>
-            <h1
-              className="font-display font-bold"
-              style={{ fontSize: 24, color: 'var(--text-primary)', lineHeight: 1.3, letterSpacing: '-0.3px' }}
-            >
+            <h1 className="font-display font-bold" style={{ fontSize: 24, color: 'var(--text-primary)', lineHeight: 1.3, letterSpacing: '-0.3px' }}>
               {nome}
             </h1>
-            {endereco && (
-              <p style={{ fontSize: 13, color: 'var(--text-tertiary)', marginTop: 4 }}>{endereco}</p>
-            )}
+            {endereco && <p style={{ fontSize: 13, color: 'var(--text-tertiary)', marginTop: 4 }}>{endereco}</p>}
           </div>
-          <style>{`
-            @media (max-width: 640px) {
-              .hero-grid { grid-template-columns: 1fr !important; }
-            }
-          `}</style>
-          <div
-            className="hero-grid grid gap-6"
-            style={{ gridTemplateColumns: mapa ? '1fr 1.85fr' : '1fr' }}
-          >
-            {/* Coluna esquerda: Score */}
-            <ScoreCard score={score} scoreColor={scoreColor} />
 
-            {/* Coluna direita: Mapa */}
-            {mapa && (
+          <style>{`@media (max-width: 640px) { .hero-grid { grid-template-columns: 1fr !important; } }`}</style>
+          <div className="hero-grid grid gap-6" style={{ gridTemplateColumns: mapa ? '1fr 1.85fr' : '1fr' }}>
+
+            {/* Score Card (progressivo) */}
+            <ScoreCard score={score} scoreColor={scoreColor} loading={!hasScore} />
+
+            {/* Mapa (progressivo) */}
+            {mapa ? (
               <MapCard mapa={mapa} radiusKm={radiusKm} totalZones={totalZones} weakCount={weakCount} />
+            ) : (
+              <div style={{ padding: '24px', borderRadius: 16, background: 'var(--card-subtle)', border: '1px solid var(--border-card)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 280 }}>
+                <div style={{ width: 32, height: 32, borderRadius: '50%', border: '2px solid var(--accent)', borderTopColor: 'transparent', animation: 'spin 1s linear infinite', marginBottom: 12 }} />
+                <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>Mapeando seu alcance...</p>
+              </div>
             )}
           </div>
         </section>
 
-        {/* BLOCO 2: Quick Wins + Impacto + CTA */}
-        <section style={{ paddingBottom: 48, textAlign: 'center' }}>
+        {/* BLOCO 2: Quick Wins + Impacto + CTA (só aparece com score) */}
+        {hasScore && (
+          <section style={{ paddingBottom: 48, textAlign: 'center' }}>
+            {/* Quick wins */}
+            <div className="flex flex-col gap-3 text-left" style={{ maxWidth: 560, margin: '0 auto 28px' }}>
+              {rapidos.length > 0 && (
+                <div style={{ padding: '12px 16px', borderRadius: 10, background: 'var(--success-bg)', border: '1px solid var(--success-border)' }}>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--success)' }}>
+                    {rapidos.length} {rapidos.length === 1 ? 'ajuste rápido' : 'ajustes rápidos'} = <span className="font-mono">+{rapidoImpact} pontos</span> em 7 dias
+                  </p>
+                </div>
+              )}
+              {estrategicos.length > 0 && (
+                <div style={{ padding: '12px 16px', borderRadius: 10, background: 'var(--warning-bg)', border: '1px solid var(--warning-border)' }}>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--warning)' }}>
+                    {estrategicos.length} {estrategicos.length === 1 ? 'ajuste estratégico' : 'ajustes estratégicos'} = <span className="font-mono">+{estrategicoImpact} pontos</span> em 30 dias
+                  </p>
+                </div>
+              )}
+              {continuos.length > 0 && (
+                <div style={{ padding: '12px 16px', borderRadius: 10, background: 'var(--accent-bg)', border: '1px solid var(--accent-border)' }}>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--accent-bright)' }}>
+                    {continuos.length} {continuos.length === 1 ? 'melhoria contínua' : 'melhorias contínuas'} para manter primeiras posições
+                  </p>
+                </div>
+              )}
+            </div>
 
-          {/* Barras de quick wins (antes do impacto) */}
-          <div className="flex flex-col gap-3 text-left" style={{ maxWidth: 560, margin: '0 auto 28px' }}>
-            {rapidos.length > 0 && (
-              <div style={{ padding: '12px 16px', borderRadius: 10, background: 'var(--success-bg)', border: '1px solid var(--success-border)' }}>
-                <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--success)' }}>
-                  {rapidos.length} {rapidos.length === 1 ? 'ajuste rápido' : 'ajustes rápidos'} = <span className="font-mono">+{rapidoImpact} pontos</span> em 7 dias
-                </p>
-              </div>
-            )}
-            {estrategicos.length > 0 && (
-              <div style={{ padding: '12px 16px', borderRadius: 10, background: 'var(--warning-bg)', border: '1px solid var(--warning-border)' }}>
-                <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--warning)' }}>
-                  {estrategicos.length} {estrategicos.length === 1 ? 'ajuste estratégico' : 'ajustes estratégicos'} = <span className="font-mono">+{estrategicoImpact} pontos</span> em 30 dias
-                </p>
-              </div>
-            )}
-            {continuos.length > 0 && (
-              <div style={{ padding: '12px 16px', borderRadius: 10, background: 'var(--accent-bg)', border: '1px solid var(--accent-border)' }}>
-                <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--accent-bright)' }}>
-                  {continuos.length} {continuos.length === 1 ? 'melhoria contínua' : 'melhorias contínuas'} para manter primeiras posições
-                </p>
-              </div>
-            )}
-          </div>
+            <h2 className="font-display font-bold" style={{ fontSize: 22, color: 'var(--text-primary)', lineHeight: 1.4, marginBottom: 6 }}>
+              Você está perdendo até {lostClients} clientes por semana.
+            </h2>
+            <p style={{ fontSize: 16, color: 'var(--text-secondary)', marginBottom: 12 }}>
+              O Destaka ajuda você a conquistar esses clientes.
+            </p>
 
-          <h2
-            className="font-display font-bold"
-            style={{ fontSize: 22, color: 'var(--text-primary)', lineHeight: 1.4, marginBottom: 6 }}
-          >
-            Você está perdendo até {lostClients} clientes por semana.
-          </h2>
-          <p style={{ fontSize: 16, color: 'var(--text-secondary)', marginBottom: 12 }}>
-            O Destaka ajuda você a conquistar esses clientes.
-          </p>
-
-          {/* CTA primário */}
-          <button
-            onClick={() => {
-              trackBeginCheckout()
-              fetch('/api/stripe/checkout', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: '{}',
-              })
-                .then(r => r.json())
-                .then(d => { if (d.url) window.location.href = d.url })
-                .catch(() => {})
-            }}
-            className="inline-block font-semibold cursor-pointer"
-            style={{
-              padding: '16px 48px',
-              borderRadius: 14,
-              background: 'var(--accent)',
-              color: '#fff',
-              fontSize: 16,
-              border: 'none',
-              boxShadow: '0 4px 24px rgba(20,184,166,0.3)',
-              transition: 'transform 150ms, box-shadow 150ms',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.02)'; e.currentTarget.style.boxShadow = '0 6px 32px rgba(20,184,166,0.4)' }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 4px 24px rgba(20,184,166,0.3)' }}
-          >
-            {getCtaText(score)}
-          </button>
-        </section>
+            <button
+              onClick={() => {
+                trackBeginCheckout()
+                fetch('/api/stripe/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })
+                  .then(r => r.json())
+                  .then(d => { if (d.url) window.location.href = d.url })
+                  .catch(() => {})
+              }}
+              className="inline-block font-semibold cursor-pointer"
+              style={{ padding: '16px 48px', borderRadius: 14, background: 'var(--accent)', color: '#fff', fontSize: 16, border: 'none', boxShadow: '0 4px 24px rgba(20,184,166,0.3)', transition: 'transform 150ms, box-shadow 150ms' }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.02)'; e.currentTarget.style.boxShadow = '0 6px 32px rgba(20,184,166,0.4)' }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 4px 24px rgba(20,184,166,0.3)' }}
+            >
+              {getCtaText(score)}
+            </button>
+          </section>
+        )}
 
         {/* BLOCO 3: Concorrentes */}
         {data.concorrentes.length > 0 && (
           <div style={{ paddingBottom: 48 }}>
-            <CompetitorsSection
-              concorrentes={data.concorrentes}
-              userRating={userRating}
-              userReviewCount={userReviewCount}
-              userName={nome}
-            />
+            <CompetitorsSection concorrentes={data.concorrentes} userRating={userRating} userReviewCount={userReviewCount} userName={nome} />
           </div>
         )}
 
         {/* BLOCO 4: Avaliações */}
         <div style={{ paddingBottom: 48 }}>
-          <ReviewsSection
-            unansweredCount={data.reviews.sem_resposta_count}
-            lastReviewDate={data.reviews.ultima?.data ?? null}
-          />
+          <ReviewsSection unansweredCount={data.reviews?.sem_resposta_count ?? 0} lastReviewDate={data.reviews?.ultima?.data ?? null} />
         </div>
 
-        {/* Tagline de transição */}
-        <section className="text-center" style={{ paddingBottom: 48 }}>
-          <h2
-            className="font-display font-bold"
-            style={{ fontSize: 26, color: 'var(--text-primary)', lineHeight: 1.35, maxWidth: 560, margin: '0 auto 12px', letterSpacing: '-0.3px' }}
-          >
-            {tagline.title}
-          </h2>
-          <p style={{ fontSize: 18, color: 'var(--accent-bright)', lineHeight: 1.5, maxWidth: 480, margin: '0 auto', fontWeight: 500 }}>
-            {tagline.subtitle}
-          </p>
-        </section>
+        {/* Tagline */}
+        {hasScore && (
+          <section className="text-center" style={{ paddingBottom: 48 }}>
+            <h2 className="font-display font-bold" style={{ fontSize: 26, color: 'var(--text-primary)', lineHeight: 1.35, maxWidth: 560, margin: '0 auto 12px', letterSpacing: '-0.3px' }}>
+              {tagline.title}
+            </h2>
+            <p style={{ fontSize: 18, color: 'var(--accent-bright)', lineHeight: 1.5, maxWidth: 480, margin: '0 auto', fontWeight: 500 }}>
+              {tagline.subtitle}
+            </p>
+          </section>
+        )}
 
         {/* BLOCO 5: Oferta */}
-        <OfferSection score={score} />
+        {hasScore && <OfferSection score={score} />}
       </main>
 
-      <StickyCTA score={score} />
+      {hasScore && <StickyCTA score={score} />}
     </div>
   )
 }
 
 /* ── Sub-components ── */
 
-function ScoreCard({ score, scoreColor }: { score: number; scoreColor: string }) {
-  const { value: animatedScore, ref: scoreRef } = useCountUp(score)
+function ScoreCard({ score, scoreColor, loading }: { score: number; scoreColor: string; loading: boolean }) {
+  const { value: animatedScore } = useCountUp(score)
 
   return (
-    <div
-      ref={scoreRef}
-      style={{
-        padding: '28px 24px', borderRadius: 16,
-        background: 'var(--card-subtle)', border: '1px solid var(--border-card)',
-        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center',
-      }}
-    >
+    <div style={{
+      padding: '28px 24px', borderRadius: 16,
+      background: 'var(--card-subtle)', border: '1px solid var(--border-card)',
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center',
+    }}>
       <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 20 }}>
         Sua nota
       </p>
-      <div
-        style={{
-          width: 110, height: 110, borderRadius: '50%',
-          border: `3px solid ${scoreColor}`,
-          boxShadow: `0 0 24px ${scoreColor}22, inset 0 0 20px ${scoreColor}08`,
-          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginBottom: 14,
-        }}
-      >
-        <span className="font-mono font-bold" style={{ fontSize: 44, lineHeight: 1, color: scoreColor }}>
-          {animatedScore}
-        </span>
-        <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>de 100</span>
+      <div style={{
+        width: 110, height: 110, borderRadius: '50%',
+        border: `3px solid ${loading ? 'var(--border-card)' : scoreColor}`,
+        boxShadow: loading ? 'none' : `0 0 24px ${scoreColor}22, inset 0 0 20px ${scoreColor}08`,
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginBottom: 14,
+        transition: 'border-color 0.6s, box-shadow 0.6s',
+      }}>
+        {loading ? (
+          <>
+            <div style={{ width: 28, height: 28, borderRadius: '50%', border: '2px solid var(--accent)', borderTopColor: 'transparent', animation: 'spin 1s linear infinite' }} />
+            <span style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 6 }}>calculando...</span>
+          </>
+        ) : (
+          <>
+            <span className="font-mono font-bold" style={{ fontSize: 44, lineHeight: 1, color: scoreColor }}>{animatedScore}</span>
+            <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>de 100</span>
+          </>
+        )}
       </div>
       <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.5, maxWidth: 260 }}>
-        Seu perfil só aparece para {score}% de quem procura pelo seu serviço na região.
+        {loading
+          ? 'Coletando dados do seu Google Meu Negócio...'
+          : `Seu perfil só aparece para ${score}% de quem procura pelo seu serviço na região.`}
       </p>
     </div>
   )
@@ -398,9 +319,7 @@ function ScoreCard({ score, scoreColor }: { score: number; scoreColor: string })
 
 function MapCard({ mapa, radiusKm, totalZones, weakCount }: {
   mapa: NonNullable<ReturnType<typeof useDiagnostico>['data']>['mapa']
-  radiusKm: number
-  totalZones: number
-  weakCount: number
+  radiusKm: number; totalZones: number; weakCount: number
 }) {
   if (!mapa) return null
   return (
