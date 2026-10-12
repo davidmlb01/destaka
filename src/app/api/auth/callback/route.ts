@@ -64,9 +64,21 @@ export async function GET(request: NextRequest) {
 
         populateFromPlaces(existingProfessional.organization_id).catch(() => {})
 
-        // Assinante vai pro dashboard, free vai pro diagnostico
+        // Verifica se onboarding foi completado
+        const { data: orgCheck } = await admin
+          .from('organizations')
+          .select('lgpd_ai_consent')
+          .eq('id', existingProfessional.organization_id)
+          .maybeSingle()
+
         const isSubscriber = await isActiveSubscriber(existingProfessional.organization_id)
-        return NextResponse.redirect(`${origin}${isSubscriber ? '/dashboard' : '/diagnostico'}`)
+
+        // Assinante com onboarding completo vai pro dashboard
+        // Todos os outros veem o diagnostico primeiro
+        if (isSubscriber && orgCheck?.lgpd_ai_consent === true) {
+          return NextResponse.redirect(`${origin}/dashboard`)
+        }
+        return NextResponse.redirect(`${origin}/diagnostico`)
       }
 
       // Busca dados do GBP para criar org

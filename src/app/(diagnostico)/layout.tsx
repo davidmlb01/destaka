@@ -12,7 +12,7 @@ export default async function DiagnosticoLayout({
 
   if (!user) redirect('/login')
 
-  // Assinantes vao direto pro dashboard
+  // Assinantes que ja completaram onboarding vao pro dashboard
   const { data: professional } = await supabase
     .from('professionals')
     .select('organization_id')
@@ -21,7 +21,18 @@ export default async function DiagnosticoLayout({
 
   if (professional?.organization_id) {
     const isSubscriber = await isActiveSubscriber(professional.organization_id)
-    if (isSubscriber) redirect('/dashboard')
+    if (isSubscriber) {
+      const { data: org } = await supabase
+        .from('organizations')
+        .select('lgpd_ai_consent')
+        .eq('id', professional.organization_id)
+        .maybeSingle()
+
+      // So redireciona se onboarding completo. Senao, mostra diagnostico normalmente.
+      if (org?.lgpd_ai_consent === true) {
+        redirect('/dashboard')
+      }
+    }
   }
 
   return <>{children}</>

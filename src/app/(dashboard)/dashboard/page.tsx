@@ -44,7 +44,7 @@ export default async function DashboardPage({
   }
 
   // Assinante que nao completou onboarding vai configurar o perfil
-  if (org?.lgpd_ai_consent === null) {
+  if (org?.lgpd_ai_consent !== true) {
     redirect('/onboarding')
   }
 
