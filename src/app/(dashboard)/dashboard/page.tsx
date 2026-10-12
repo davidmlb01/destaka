@@ -65,11 +65,6 @@ export default async function DashboardPage({
 
         <DashboardContent />
 
-        <ManualTasksCard
-          photoCount={profile?.photo_count ?? 0}
-          unrepliedReviewCount={unrepliedReviewCount ?? 0}
-        />
-
         <OptimizationConfirmCard
           optimizationReport={profile?.optimization_report ?? null}
           currentDescription={profile?.description ?? null}
