@@ -181,10 +181,11 @@ export async function GET(request: NextRequest) {
         })
       }
 
-      // Dispara auditoria + score + geo + populacao em background
+      // Dispara auditoria + geo + keywords em background
+      // Score NAO e disparado aqui: o audit ja dispara score.calculate ao finalizar,
+      // garantindo que o score seja calculado apenas UMA vez com dados completos
       inngest.send([
         { name: 'destaka/gbp.audit.requested', data: { organization_id: org.id } },
-        { name: 'destaka/score.calculate.requested', data: { organization_id: org.id } },
         { name: 'destaka/geo.collect.requested', data: { organization_id: org.id } },
         { name: 'destaka/keywords.snapshot.requested', data: { organization_id: org.id } },
       ]).catch(() => {})
