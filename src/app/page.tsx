@@ -169,15 +169,6 @@ function Hero() {
               Grátis. Sem cartão de crédito. Resultado em 30 segundos.
             </p>
 
-            <div className="flex items-center gap-4 mt-6">
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full" style={{ background: 'rgba(20,184,166,0.1)', border: '1px solid rgba(20,184,166,0.2)' }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                </svg>
-                <span className="text-[11px] font-medium" style={{ color: 'var(--accent)' }}>Conectado à API oficial do Google</span>
-              </div>
-            </div>
           </div>
 
           <div
@@ -224,7 +215,7 @@ function Hero() {
 function CustoDaInvisibilidade() {
   const impactos = [
     {
-      numero: '15–25',
+      numero: '15-25',
       titulo: 'Pacientes perdidos por mês',
       desc: 'Um profissional com perfil otimizado recebe em média 1.500 buscas por mês no Google. Se você aparece em 50% dessas buscas em vez de 80%, são 15 a 25 pacientes ligando para outro.',
     },
@@ -345,9 +336,6 @@ function Problema() {
       <div className="max-w-4xl mx-auto">
         <div className="grid md:grid-cols-2 gap-16 items-center">
           <div>
-            <p className="text-[11px] font-bold tracking-[2px] uppercase mb-4" style={{ color: 'var(--accent)' }}>
-              O problema real
-            </p>
             <h2
               id="problema-heading"
               className="font-display font-bold leading-[1.1] tracking-[-1.5px] mb-6"
@@ -511,7 +499,6 @@ function ComoFunciona() {
     <section id="como-funciona" aria-labelledby="como-funciona-heading" className="px-6 py-24" style={{ background: 'var(--bg-gradient)' }}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
-          <p className="text-[11px] font-bold tracking-[2px] uppercase mb-4" style={{ color: 'var(--accent)' }}>Como funciona</p>
           <h2
             id="como-funciona-heading"
             className="font-display font-bold text-white leading-[1.1] tracking-[-1.5px]"
@@ -595,7 +582,6 @@ function Recursos() {
     <section id="recursos" aria-labelledby="recursos-heading" className="px-6 py-24" style={{ background: 'var(--bg-gradient)' }}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
-          <p className="text-[11px] font-bold tracking-[2px] uppercase mb-4" style={{ color: 'var(--accent)' }}>O que a Destaka faz</p>
           <h2
             id="recursos-heading"
             className="font-display font-bold leading-[1.1] tracking-[-1.5px] mb-4"
