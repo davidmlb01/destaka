@@ -104,22 +104,22 @@ export default function DiagnosticoPage() {
     )
   }
 
-  if (data.score.atual === 0 && data.gaps.length === 0) {
+  if (!data.score || (data.score.atual === 0 && data.gaps.length === 0)) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg-base)' }}>
         <div className="text-center max-w-md px-6">
           <p className="font-display font-bold" style={{ fontSize: 20, color: 'var(--text-primary)', marginBottom: 12 }}>
-            Estamos coletando dados de {data.perfil.nome || 'seu perfil'}
+            Estamos coletando dados de {data.perfil?.nome || 'seu perfil'}
           </p>
           <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-            A análise do seu perfil no Google está em andamento. Você receberá um email quando o diagnóstico estiver pronto.
+            A analise do seu perfil no Google esta em andamento. Voce recebera um email quando o diagnostico estiver pronto.
           </p>
         </div>
       </div>
     )
   }
 
-  const nome = data.perfil.nome || 'Seu negócio'
+  const nome = data.perfil?.nome || 'Seu negocio'
   const endereco = data.perfil.endereco || ''
   const score = data.score.atual
   const scoreColor = getScoreColor(score)
