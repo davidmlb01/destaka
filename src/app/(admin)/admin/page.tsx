@@ -324,7 +324,10 @@ export default async function AdminPage() {
       {/* Header */}
       <div style={{ borderBottom: '1px solid var(--border-subtle)' }}>
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Logo size="sm" />
+          <div className="flex items-center gap-3">
+            <Logo size="sm" />
+            <h1 className="text-sm font-semibold" style={{ color: 'var(--text-tertiary)' }}>Admin</h1>
+          </div>
           <div className="flex items-center gap-2">
             {brokenTokens.length > 0 && (
               <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ background: 'var(--error-bg)', color: 'var(--error)', border: '1px solid var(--error-border)' }}>
@@ -415,7 +418,10 @@ export default async function AdminPage() {
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
                         {isAtRisk && (
-                          <span className="shrink-0 w-1.5 h-1.5 rounded-full" style={{ background: 'var(--error)' }} />
+                          <span className="shrink-0 flex items-center gap-1" role="status">
+                            <span className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--error)' }} aria-hidden="true" />
+                            <span className="sr-only">Cliente em risco</span>
+                          </span>
                         )}
                         <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{org.name}</p>
                         <span className="shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded-md" style={{ background: sub.bg, color: sub.text, border: `1px solid ${sub.border}` }}>
@@ -429,10 +435,10 @@ export default async function AdminPage() {
                       </div>
                       <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
                         {org.specialty}
-                        {org.utm_source ? ` · via ${org.utm_source}` : ''}
-                        {' · '}{formatDate(org.created_at)}
-                        {!org.lgpd_ai_consent ? ' · sem onboarding' : ''}
-                        {daysSinceScore !== null ? ` · score ${daysSinceScore}d atras` : ''}
+                        {org.utm_source && <><span aria-hidden="true"> · </span>via {org.utm_source}</>}
+                        <span aria-hidden="true"> · </span>{formatDate(org.created_at)}
+                        {!org.lgpd_ai_consent && <><span aria-hidden="true"> · </span>sem onboarding</>}
+                        {daysSinceScore !== null && <><span aria-hidden="true"> · </span>score {daysSinceScore}d atras</>}
                       </p>
                     </div>
 
@@ -502,6 +508,8 @@ export default async function AdminPage() {
               <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Nenhum lead capturado ainda.</p>
             </div>
           ) : (
+            <>
+            <p className="text-[10px] px-6 py-1 md:hidden" style={{ color: 'var(--text-muted)' }}>← Deslize para ver mais →</p>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
@@ -538,6 +546,7 @@ export default async function AdminPage() {
                 </tbody>
               </table>
             </div>
+            </>
           )}
         </section>
 

@@ -19,6 +19,8 @@ export function Attribution({ channels }: { channels: ChannelRow[] }) {
       {channels.length === 0 ? (
         <p className="text-sm py-8 text-center" style={{ color: 'var(--text-muted)' }}>Nenhum dado de UTM capturado ainda.</p>
       ) : (
+        <>
+        <p className="text-[10px] px-5 py-1 md:hidden" style={{ color: 'var(--text-muted)' }}>← Deslize para ver mais →</p>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -52,6 +54,7 @@ export function Attribution({ channels }: { channels: ChannelRow[] }) {
             </tbody>
           </table>
         </div>
+        </>
       )}
     </div>
   )
