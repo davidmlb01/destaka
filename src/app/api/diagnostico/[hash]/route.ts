@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
 import { createHash } from 'crypto'
 import { createClient } from '@/lib/supabase/server'
-import { cacheGet, cacheSet } from '@/lib/redis'
+import { cacheGet, cacheSet, rateLimit } from '@/lib/redis'
 
 const CACHE_TTL = 3600 // 1 hora
 
@@ -27,6 +27,15 @@ export async function GET(
 
   if (!hash || hash.length !== 16) {
     return NextResponse.json({ error: 'Link invalido' }, { status: 400 })
+  }
+
+  // Rate limit per hash (prevent brute-force enumeration)
+  const rlCount = await rateLimit(`ratelimit:diag:${hash}`, 3600)
+  if (rlCount === null) {
+    return NextResponse.json({ error: 'Servico temporariamente indisponivel' }, { status: 503 })
+  }
+  if (rlCount >= 30) {
+    return NextResponse.json({ error: 'Muitas requisicoes. Tente novamente em 1 hora.' }, { status: 429 })
   }
 
   // Cache

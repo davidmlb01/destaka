@@ -46,7 +46,8 @@ export async function GET() {
   try {
     accessToken = decrypt(tokenRow.access_token)
   } catch {
-    accessToken = tokenRow.access_token
+    console.error('[users/status] Failed to decrypt access token')
+    return NextResponse.json({ gmb_token_invalid: true })
   }
 
   try {

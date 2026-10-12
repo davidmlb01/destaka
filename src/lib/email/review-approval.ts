@@ -75,7 +75,7 @@ export async function sendReviewApprovalEmail(params: ReviewApprovalParams) {
   await resend.emails.send({
     from: FROM,
     to,
-    subject: `${reviewRating}★ de ${reviewAuthor}. Responda e conquiste o próximo paciente`,
+    subject: `${reviewRating}★ de ${(reviewAuthor ?? '').replace(/[\r\n\t]/g, ' ').slice(0, 100)}. Responda e conquiste o proximo paciente`,
     html,
   })
 }

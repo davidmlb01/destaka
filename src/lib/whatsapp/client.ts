@@ -17,10 +17,8 @@ class StubWhatsAppClient implements WhatsAppClient {
     templateName: string,
     params: Record<string, string>
   ): Promise<void> {
-    console.log(
-      `[whatsapp:stub] Enviaria template "${templateName}" para ${phone}`,
-      JSON.stringify(params)
-    )
+    const masked = phone.length > 4 ? phone.slice(0, -4).replace(/\d/g, '*') + phone.slice(-4) : '****'
+    console.log(`[whatsapp:stub] Enviaria template "${templateName}" para ${masked}`)
   }
 }
 
@@ -73,7 +71,8 @@ class TwilioWhatsAppClient implements WhatsAppClient {
       throw new Error(`[whatsapp:twilio] Falha ao enviar: ${res.status} ${error}`)
     }
 
-    console.log(`[whatsapp:twilio] Template "${templateName}" enviado para ${phone}`)
+    const masked = phone.length > 4 ? phone.slice(0, -4).replace(/\d/g, '*') + phone.slice(-4) : '****'
+    console.log(`[whatsapp:twilio] Template "${templateName}" enviado para ${masked}`)
   }
 }
 
@@ -128,7 +127,8 @@ class GupshupWhatsAppClient implements WhatsAppClient {
       throw new Error(`[whatsapp:gupshup] Falha ao enviar: ${res.status} ${error}`)
     }
 
-    console.log(`[whatsapp:gupshup] Template "${templateName}" enviado para ${phone}`)
+    const masked = phone.length > 4 ? phone.slice(0, -4).replace(/\d/g, '*') + phone.slice(-4) : '****'
+    console.log(`[whatsapp:gupshup] Template "${templateName}" enviado para ${masked}`)
   }
 }
 

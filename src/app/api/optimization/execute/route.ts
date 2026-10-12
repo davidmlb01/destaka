@@ -108,26 +108,34 @@ Inclua keywords de SEO local. Sem travessao. Retorne APENAS o texto da descricao
           results.push({ action, status: 'failed', error: 'IA não gerou descrição válida' })
         }
       } else if (action.type === 'update_categories' || action.type === 'update_attributes' || action.type === 'add_services') {
-        // Delega para a rota /api/gbp/optimize/apply que faz PATCH real na GBP API
-        const typeMap: Record<string, string> = {
+        // Chamada direta a GBP API (sem fetch interno, sem cookie forwarding)
+        const updateMaskMap: Record<string, string> = {
           update_categories: 'categories',
           update_attributes: 'attributes',
-          add_services: 'services',
+          add_services: 'serviceItems',
         }
-        const applyBase = process.env.NEXT_PUBLIC_APP_URL ?? 'https://destaka.com.br'
-        const applyRes = await fetch(new URL('/api/gbp/optimize/apply', applyBase), {
-          method: 'POST',
+        const bodyKeyMap: Record<string, string> = {
+          update_categories: 'categories',
+          update_attributes: 'attributes',
+          add_services: 'serviceItems',
+        }
+        const updateMask = updateMaskMap[action.type]
+        const bodyKey = bodyKeyMap[action.type]
+        const patchUrl = `${GBP_INFO_BASE}/${locationName}?updateMask=${updateMask}`
+        const patchRes = await fetch(patchUrl, {
+          method: 'PATCH',
           headers: {
+            Authorization: `Bearer ${accessToken}`,
             'Content-Type': 'application/json',
-            Cookie: request.headers.get('cookie') ?? '',
           },
-          body: JSON.stringify({ type: typeMap[action.type], value: action.payload }),
+          body: JSON.stringify({ [bodyKey]: action.payload }),
         })
-        if (applyRes.ok) {
+        if (patchRes.ok) {
           results.push({ action, status: 'done' })
         } else {
-          const errData = await applyRes.json().catch(() => ({ error: 'Falha na API' }))
-          results.push({ action, status: 'failed', error: (errData as { error?: string }).error ?? 'Falha ao aplicar no Google' })
+          const errBody = await patchRes.text()
+          console.error(`[optimization/execute] GBP PATCH ${action.type} error:`, errBody)
+          results.push({ action, status: 'failed', error: 'Falha ao aplicar no Google' })
         }
       } else {
         results.push({ action, status: 'failed', error: `Tipo '${action.type}' ainda não suportado` })

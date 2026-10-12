@@ -4,14 +4,13 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { inngest } from '@/lib/inngest/client'
-import { timingSafeEqual } from 'crypto'
+import { timingSafeEqual, createHmac } from 'crypto'
 import { rateLimit } from '@/lib/redis'
 
 function safeCompare(a: string, b: string): boolean {
-  const aBuf = Buffer.from(a)
-  const bBuf = Buffer.from(b)
-  if (aBuf.length !== bBuf.length) return false
-  return timingSafeEqual(aBuf, bBuf)
+  const ha = createHmac('sha256', 'destaka-admin').update(a).digest()
+  const hb = createHmac('sha256', 'destaka-admin').update(b).digest()
+  return timingSafeEqual(ha, hb)
 }
 
 // POST /api/admin/retrigger
@@ -21,7 +20,7 @@ export async function POST(req: Request) {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
   const count = await rateLimit(`admin:retrigger:${ip}`, 3600)
   if (count === null) return NextResponse.json({ error: 'Service unavailable' }, { status: 503 })
-  if (count > 5) return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  if (count >= 5) return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
 
   const adminKey = req.headers.get('x-admin-key')
   const adminSecretKey = process.env.ADMIN_SECRET_KEY

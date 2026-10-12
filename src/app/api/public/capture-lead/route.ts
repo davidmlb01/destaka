@@ -70,6 +70,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Body invalido' }, { status: 400 })
   }
 
+  // Rate limit per email (prevent relay abuse from rotating IPs)
+  const emailHash = createHash('sha256').update(parsed.data.email + encryptionKey).digest('hex').slice(0, 16)
+  const emailCount = await rateLimit(`ratelimit:lead-email:${emailHash}`, 86400)
+  if (emailCount !== null && emailCount >= 2) {
+    return NextResponse.json(
+      { error: 'Email ja recebeu auditoria recentemente. Tente novamente amanha.' },
+      { status: 429 }
+    )
+  }
+
   const { email, placeName, score, categories, lgpdConsent, utm_source, utm_medium, utm_campaign, utm_content, utm_term } = parsed.data as {
     email: string
     placeName?: string
