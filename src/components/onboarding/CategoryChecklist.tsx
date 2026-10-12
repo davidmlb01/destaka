@@ -100,9 +100,14 @@ export default function CategoryChecklist({ onComplete, onSkip }: CategoryCheckl
     )
   }
 
-  if (suggested.length === 0) {
-    // Nenhuma sugestao, pular silenciosamente
-    onSkip()
+  // Nenhuma sugestao, pular silenciosamente via useEffect
+  useEffect(() => {
+    if (!loading && suggested.length === 0) {
+      onSkip()
+    }
+  }, [loading, suggested.length, onSkip])
+
+  if (suggested.length === 0 && !loading) {
     return null
   }
 

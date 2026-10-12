@@ -20,6 +20,7 @@ import { useDashboard, type DashboardData } from './hooks/useDashboard'
 import MapCard from './MapCard'
 import KeywordInsightCard from './KeywordInsightCard'
 import { PatientFunnelCard } from './PatientFunnelCard'
+import { GeoExpansionCard } from './GeoExpansionCard'
 
 const CATEGORY_LABELS: Record<string, string> = {
   'Informações Básicas': 'Seu perfil está completo?',
@@ -233,6 +234,13 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
         <div className="animate-fade-in-up stagger-1">
           <SectionTitle>Seus pacientes</SectionTitle>
           <PatientFunnelCard />
+        </div>
+      )}
+
+      {/* ===== EXPANSAO GEOGRAFICA ===== */}
+      {isSubscriber && (
+        <div className="animate-fade-in-up stagger-2">
+          <GeoExpansionCard />
         </div>
       )}
 
