@@ -140,7 +140,7 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
         {/* Score gauge */}
         <div
           className="rounded-2xl p-6 flex flex-col items-center justify-between gap-4"
-          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', minHeight: 420 }}
+          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', minHeight: 340 }}
         >
           <div className="flex-1 flex flex-col items-center justify-center gap-4 w-full">
             <ScoreGauge score={diagnostic?.score_total ?? 0} />

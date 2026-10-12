@@ -22,7 +22,17 @@ export function NextActionsPanel({ actions }: { actions: Action[] }) {
     )
   }
 
-  const destakaFields = ['description', 'review_response', 'posts', 'attributes']
+  // Tudo que o Destaka faz automaticamente
+  const destakaFields = [
+    'description',        // Destaka escreve a descricao
+    'review_response',    // Destaka responde avaliacoes
+    'reply_rate',         // Destaka responde avaliacoes
+    'posts',              // Destaka publica posts
+    'post_recency',       // Destaka publica posts
+    'attributes',         // Preenchido no onboarding, Destaka aplica
+    'services_count',     // Preenchido no onboarding
+    'services_desc',      // Preenchido no onboarding
+  ]
   const destakaActions = actions.filter(a => destakaFields.includes(a.field))
   const userActions = actions.filter(a => !destakaFields.includes(a.field))
 
