@@ -2,21 +2,21 @@ export const dynamic = 'force-dynamic'
 
 // GET /api/diagnostico/[hash]
 // URL publica (read-only, sem dados sensiveis)
-// Hash = sha256(orgId + ENCRYPTION_KEY).slice(0, 16)
-// Sem autenticacao. Sem metricas de performance, sem tokens, sem dados internos.
+// Lookup direto por share_hash (indexed), sem full table scan
+// Fallback para hash computation se share_hash nao populado ainda
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createHash } from 'crypto'
-import { createClient } from '@/lib/supabase/server'
+import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { cacheGet, cacheSet, rateLimit } from '@/lib/redis'
 
 const CACHE_TTL = 3600 // 1 hora
 
-function generateHash(orgId: string, key: string): string {
-  return createHash('sha256')
-    .update(orgId + key)
-    .digest('hex')
-    .slice(0, 16)
+function getServiceDb() {
+  return createAdminSupa(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
 }
 
 export async function GET(
@@ -53,15 +53,36 @@ export async function GET(
     return NextResponse.json({ error: 'Server configuration error' }, { status: 500 })
   }
 
-  const supabase = await createClient()
+  const db = getServiceDb()
 
-  // Buscar todas as orgs e verificar qual bate com o hash
-  // (por seguranca, nao expoe orgId na URL)
-  const { data: orgs } = await supabase
+  // Direct indexed lookup by share_hash (O(1) instead of O(n))
+  let matchedOrg: { id: string; name: string; specialty: string } | null = null
+
+  const { data: directMatch } = await db
     .from('organizations')
     .select('id, name, specialty')
+    .eq('share_hash', hash)
+    .maybeSingle()
 
-  const matchedOrg = (orgs ?? []).find((o: { id: string }) => generateHash(o.id, encryptionKey) === hash)
+  if (directMatch) {
+    matchedOrg = directMatch
+  } else {
+    // Fallback: orgs without share_hash populated yet (pre-migration backfill)
+    const { data: orgs } = await db
+      .from('organizations')
+      .select('id, name, specialty')
+      .is('share_hash', null)
+
+    const found = (orgs ?? []).find(
+      (o: { id: string }) =>
+        createHash('sha256').update(o.id + encryptionKey).digest('hex').slice(0, 16) === hash
+    )
+    if (found) {
+      matchedOrg = found
+      // Backfill share_hash for this org so next lookup is direct
+      await db.from('organizations').update({ share_hash: hash }).eq('id', found.id)
+    }
+  }
 
   if (!matchedOrg) {
     return NextResponse.json({ error: 'Diagnostico nao encontrado' }, { status: 404 })
@@ -76,26 +97,26 @@ export async function GET(
     { data: geoSnapshot },
     { data: keywordRows },
   ] = await Promise.all([
-    supabase
+    db
       .from('scores')
       .select('total, projected_score, gmb_completude, reputacao, visibilidade, retencao, conversao, faixa, snapshot_date')
       .eq('organization_id', orgId)
       .order('snapshot_date', { ascending: false })
       .limit(1)
       .maybeSingle(),
-    supabase
+    db
       .from('gbp_profiles')
       .select('name, address, audit_report, categories, photo_count')
       .eq('organization_id', orgId)
       .maybeSingle(),
-    supabase
+    db
       .from('geo_snapshots')
       .select('center_lat, center_lng, radius_km, regions, week_start')
       .eq('org_id', orgId)
       .order('week_start', { ascending: false })
       .limit(1)
       .maybeSingle(),
-    supabase
+    db
       .from('keyword_snapshots')
       .select('keyword, impressions, week_start')
       .eq('org_id', orgId)
