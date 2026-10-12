@@ -18,7 +18,7 @@ function buildCsp(): string {
   ].join('; ')
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const response = await updateSession(request)
   response.headers.set('Content-Security-Policy', buildCsp())
   response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains')

@@ -21,7 +21,7 @@ const ApplyPayloadSchema = z.discriminatedUnion('type', [
     }),
   }),
   z.object({ type: z.literal('attributes'), value: z.array(z.object({ name: z.string(), valueType: z.string(), values: z.array(z.string()) })) }),
-  z.object({ type: z.literal('services'), value: z.array(z.record(z.unknown())) }),
+  z.object({ type: z.literal('services'), value: z.array(z.record(z.string(), z.unknown())) }),
 ])
 
 function createServiceClient() {
