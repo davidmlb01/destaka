@@ -54,14 +54,14 @@ export default function MapCard({ isSubscriber }: { isSubscriber: boolean }) {
       <p className="text-sm text-zinc-400 mb-3">Seu alcance no Google Maps</p>
 
       {loading && (
-        <div className="h-[300px] sm:h-[400px] flex items-center justify-center text-zinc-500">
+        <div className="h-[240px] sm:h-[280px] flex items-center justify-center text-zinc-500">
           Carregando mapa...
         </div>
       )}
 
       {!loading && !isSubscriber && (
         <div className="relative">
-          <div className="h-[300px] sm:h-[400px] rounded-lg overflow-hidden" style={{ filter: 'blur(4px)', opacity: 0.7 }}>
+          <div className="h-[240px] sm:h-[280px] rounded-lg overflow-hidden" style={{ filter: 'blur(4px)', opacity: 0.7 }}>
             <MapContent
               center={{ lat: -23.5505, lng: -46.6333 }}
               zones={[
@@ -88,14 +88,14 @@ export default function MapCard({ isSubscriber }: { isSubscriber: boolean }) {
       )}
 
       {!loading && isSubscriber && (!data || data.empty) && (
-        <div className="h-[300px] sm:h-[400px] flex items-center justify-center text-zinc-500 text-center px-4">
+        <div className="h-[240px] sm:h-[280px] flex items-center justify-center text-zinc-500 text-center px-4">
           <p>Estamos mapeando seu alcance. Recarregue em alguns minutos</p>
         </div>
       )}
 
       {!loading && isSubscriber && data && !data.empty && (
         <div className="relative">
-          <div className="h-[300px] sm:h-[400px] rounded-lg overflow-hidden">
+          <div className="h-[240px] sm:h-[280px] rounded-lg overflow-hidden">
             <MapContent center={data.center} zones={data.zones} />
           </div>
 

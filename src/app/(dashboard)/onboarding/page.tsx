@@ -89,6 +89,7 @@ export default function OnboardingPage() {
   // Services
   const [services, setServices] = useState<string[]>([''])
   const [differentials, setDifferentials] = useState('')
+  const [serviceSuggestions, setServiceSuggestions] = useState<string[]>([])
 
   // Attributes
   const [selectedAttributes, setSelectedAttributes] = useState<Set<string>>(new Set())
@@ -128,6 +129,14 @@ export default function OnboardingPage() {
           }
           if (data.org) {
             setPrefill(data.org)
+          }
+          // Pre-fill serviços do GBP
+          if (data.gbpServices && data.gbpServices.length > 0) {
+            setServices(data.gbpServices)
+          }
+          // Sugestões dos concorrentes
+          if (data.competitorServices && data.competitorServices.length > 0) {
+            setServiceSuggestions(data.competitorServices)
           }
         }
       } catch {
@@ -451,6 +460,34 @@ export default function OnboardingPage() {
               <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.5)' }}>
                 Usamos essa informação para criar conteúdo relevante no seu perfil do Google.
               </p>
+
+              {/* Sugestões dos concorrentes */}
+              {serviceSuggestions.length > 0 && (
+                <div className="mb-4">
+                  <p className="text-xs mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                    Seus concorrentes oferecem:
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {serviceSuggestions.filter(s => !services.includes(s)).map(suggestion => (
+                      <button
+                        key={suggestion}
+                        onClick={() => {
+                          const emptyIdx = services.findIndex(s => !s.trim())
+                          if (emptyIdx >= 0) {
+                            updateService(emptyIdx, suggestion)
+                          } else if (services.length < 8) {
+                            setServices([...services, suggestion])
+                          }
+                        }}
+                        className="text-xs px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                        style={{ background: 'rgba(20,184,166,0.1)', color: 'var(--accent-bright)', border: '1px solid rgba(20,184,166,0.2)' }}
+                      >
+                        + {suggestion}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="space-y-2 mb-4">
                 {services.map((s, i) => (
