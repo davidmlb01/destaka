@@ -282,7 +282,7 @@ export default function DiagnosticoPage() {
           >
             Você está perdendo até {lostClients} clientes por semana.
           </h2>
-          <p style={{ fontSize: 16, color: 'var(--text-secondary)', marginBottom: 24 }}>
+          <p style={{ fontSize: 16, color: 'var(--text-secondary)', marginBottom: 12 }}>
             O Destaka ajuda você a conquistar esses clientes.
           </p>
 
