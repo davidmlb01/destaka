@@ -40,9 +40,6 @@ function LoginContent() {
         <h1 className="text-2xl font-semibold text-white mb-2">
           Bem-vindo ao Destaka
         </h1>
-        <p className="text-sm leading-relaxed mb-3" style={{ color: 'rgba(255,255,255,0.6)' }}>
-          Sua presença digital no piloto automático.
-        </p>
         <p className="text-sm leading-relaxed mb-8" style={{ color: 'rgba(255,255,255,0.45)' }}>
           Use a mesma conta Google que gerencia seu perfil no Google Meu Negócio.
         </p>
