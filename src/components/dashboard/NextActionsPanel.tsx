@@ -27,11 +27,15 @@ export function NextActionsPanel({ actions }: { actions: Action[] }) {
     'description',        // Destaka escreve a descricao
     'review_response',    // Destaka responde avaliacoes
     'reply_rate',         // Destaka responde avaliacoes
+    'reviews',            // Destaka responde avaliacoes (fallback field)
+    'reviews_count',      // Destaka incentiva avaliacoes
+    'rating',             // Destaka melhora rating via respostas
     'posts',              // Destaka publica posts
     'post_recency',       // Destaka publica posts
     'attributes',         // Preenchido no onboarding, Destaka aplica
     'services_count',     // Preenchido no onboarding
     'services_desc',      // Preenchido no onboarding
+    'services',           // Preenchido no onboarding (fallback field)
   ]
   const destakaActions = actions.filter(a => destakaFields.includes(a.field))
   const userActions = actions.filter(a => !destakaFields.includes(a.field))
