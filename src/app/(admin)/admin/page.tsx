@@ -55,20 +55,17 @@ async function getAdminData() {
     db.from('leads').select('id, email, place_name, score, utm_source, utm_medium, utm_campaign, created_at').order('created_at', { ascending: false }).limit(20),
   ])
 
-  // Latest + previous score per org (para tendência)
   const scoresByOrg: Record<string, ScoreRow[]> = {}
   for (const s of (scores ?? []) as ScoreRow[]) {
     if (!scoresByOrg[s.organization_id]) scoresByOrg[s.organization_id] = []
     if (scoresByOrg[s.organization_id].length < 2) scoresByOrg[s.organization_id].push(s)
   }
 
-  // Token status per org
   const tokenByOrg: Record<string, { hasToken: boolean; updatedAt: string | null }> = {}
   for (const t of (tokens ?? []) as TokenRow[]) {
     tokenByOrg[t.organization_id] = { hasToken: true, updatedAt: t.updated_at }
   }
 
-  // Pending counts per org
   const pendingByOrg: Record<string, number> = {}
   for (const r of pendingResponses ?? []) {
     pendingByOrg[(r as { organization_id: string }).organization_id] = (pendingByOrg[(r as { organization_id: string }).organization_id] ?? 0) + 1
@@ -86,11 +83,11 @@ async function getAdminData() {
   }
 }
 
-const FAIXA_BADGE: Record<string, string> = {
-  fraca: 'bg-red-50 text-red-600',
-  funcional: 'bg-amber-50 text-amber-700',
-  forte: 'bg-green-50 text-green-700',
-  perfeita: 'bg-blue-50 text-blue-700',
+const FAIXA_STYLE: Record<string, { bg: string; text: string }> = {
+  fraca: { bg: 'var(--error-bg)', text: 'var(--error)' },
+  funcional: { bg: 'var(--warning-bg)', text: 'var(--warning)' },
+  forte: { bg: 'var(--success-bg)', text: 'var(--success)' },
+  perfeita: { bg: 'var(--accent-bg)', text: 'var(--accent-bright)' },
 }
 
 const FAIXA_LABEL: Record<string, string> = {
@@ -100,10 +97,10 @@ const FAIXA_LABEL: Record<string, string> = {
   perfeita: 'Perfeita',
 }
 
-const SUB_BADGE: Record<string, { bg: string; text: string; label: string }> = {
-  active: { bg: 'bg-green-50', text: 'text-green-700', label: 'Pagante' },
-  cancelled: { bg: 'bg-red-50', text: 'text-red-600', label: 'Cancelado' },
-  free: { bg: 'bg-slate-100', text: 'text-slate-500', label: 'Free' },
+const SUB_STYLE: Record<string, { bg: string; border: string; text: string; label: string }> = {
+  active: { bg: 'var(--success-bg)', border: 'var(--success-border)', text: 'var(--success)', label: 'Pagante' },
+  cancelled: { bg: 'var(--error-bg)', border: 'var(--error-border)', text: 'var(--error)', label: 'Cancelado' },
+  free: { bg: 'rgba(255,255,255,0.06)', border: 'rgba(255,255,255,0.1)', text: 'var(--text-muted)', label: 'Free' },
 }
 
 function formatDate(iso: string) {
@@ -117,7 +114,7 @@ function formatDateFull(iso: string) {
 function isTokenStale(updatedAt: string | null): boolean {
   if (!updatedAt) return true
   const diff = Date.now() - new Date(updatedAt).getTime()
-  return diff > 7 * 24 * 60 * 60 * 1000 // 7 dias sem atualização
+  return diff > 7 * 24 * 60 * 60 * 1000
 }
 
 export default async function AdminPage() {
@@ -138,22 +135,28 @@ export default async function AdminPage() {
     : 0
 
   return (
-    <main className="min-h-screen bg-slate-50">
+    <main className="min-h-screen" style={{ background: 'var(--bg-gradient)' }}>
       {/* Header */}
-      <div className="bg-white border-b border-slate-100">
+      <div style={{ borderBottom: '1px solid var(--border-subtle)' }}>
         <div className="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Destaka</p>
-            <h1 className="text-base font-semibold text-slate-900">Painel Admin</h1>
+            <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>Destaka</p>
+            <h1 className="text-base font-semibold" style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-display)' }}>Painel Admin</h1>
           </div>
           <div className="flex items-center gap-2">
             {brokenTokens.length > 0 && (
-              <span className="bg-red-100 text-red-700 text-xs font-bold px-2.5 py-1 rounded-full">
+              <span
+                className="text-xs font-bold px-2.5 py-1 rounded-full"
+                style={{ background: 'var(--error-bg)', color: 'var(--error)', border: '1px solid var(--error-border)' }}
+              >
                 {brokenTokens.length} token{brokenTokens.length > 1 ? 's' : ''} com problema
               </span>
             )}
             {totalPending > 0 && (
-              <span className="bg-amber-100 text-amber-700 text-xs font-bold px-2.5 py-1 rounded-full">
+              <span
+                className="text-xs font-bold px-2.5 py-1 rounded-full"
+                style={{ background: 'var(--warning-bg)', color: 'var(--warning)', border: '1px solid var(--warning-border)' }}
+              >
                 {totalPending} pendentes
               </span>
             )}
@@ -163,27 +166,30 @@ export default async function AdminPage() {
 
       <div className="max-w-6xl mx-auto px-6 py-8 space-y-8">
 
-        {/* ═══ STATS ═══ */}
+        {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          <StatCard value={`R$${mrr.toLocaleString('pt-BR')}`} label="MRR" accent />
-          <StatCard value={payingOrgs.length} label="pagantes" />
+          <StatCard value={`R$${mrr.toLocaleString('pt-BR')}`} label="MRR" color="var(--accent)" />
+          <StatCard value={payingOrgs.length} label="pagantes" color="var(--success)" />
           <StatCard value={freeOrgs.length} label="free" />
-          <StatCard value={avgScore} label="score médio" />
-          <StatCard value={brokenTokens.length} label="tokens quebrados" warn={brokenTokens.length > 0} />
+          <StatCard value={avgScore} label="score medio" />
+          <StatCard value={brokenTokens.length} label="tokens quebrados" color={brokenTokens.length > 0 ? 'var(--error)' : undefined} />
         </div>
 
-        {/* ═══ CLIENTES ═══ */}
-        <section className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-            <h2 className="font-semibold text-slate-900">Clientes ({orgs.length})</h2>
+        {/* Clientes */}
+        <section
+          className="rounded-2xl overflow-hidden"
+          style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}
+        >
+          <div className="px-6 py-4 flex items-center justify-between" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+            <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Clientes ({orgs.length})</h2>
             <div className="flex gap-2 text-xs">
-              <span className="text-green-600 font-semibold">{payingOrgs.length} pagantes</span>
-              <span className="text-slate-400">|</span>
-              <span className="text-slate-500">{freeOrgs.length} free</span>
+              <span style={{ color: 'var(--success)' }} className="font-semibold">{payingOrgs.length} pagantes</span>
+              <span style={{ color: 'var(--text-muted)' }}>|</span>
+              <span style={{ color: 'var(--text-tertiary)' }}>{freeOrgs.length} free</span>
               {cancelledOrgs.length > 0 && (
                 <>
-                  <span className="text-slate-400">|</span>
-                  <span className="text-red-500">{cancelledOrgs.length} cancelados</span>
+                  <span style={{ color: 'var(--text-muted)' }}>|</span>
+                  <span style={{ color: 'var(--error)' }}>{cancelledOrgs.length} cancelados</span>
                 </>
               )}
             </div>
@@ -191,11 +197,11 @@ export default async function AdminPage() {
 
           {orgs.length === 0 ? (
             <div className="px-6 py-12 text-center">
-              <p className="text-sm text-slate-400">Nenhum cliente cadastrado ainda.</p>
+              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Nenhum cliente cadastrado ainda.</p>
             </div>
           ) : (
-            <div className="divide-y divide-slate-50">
-              {orgs.map(org => {
+            <div>
+              {orgs.map((org, i) => {
                 const scoreArr = scoresByOrg[org.id]
                 const current = scoreArr?.[0]
                 const previous = scoreArr?.[1]
@@ -204,23 +210,34 @@ export default async function AdminPage() {
                 const token = tokenByOrg[org.id]
                 const tokenBroken = !token?.hasToken || isTokenStale(token.updatedAt)
                 const subStatus = org.subscription_status ?? 'free'
-                const sub = SUB_BADGE[subStatus] ?? SUB_BADGE.free
+                const sub = SUB_STYLE[subStatus] ?? SUB_STYLE.free
+                const faixa = current ? (FAIXA_STYLE[current.faixa] ?? { bg: 'rgba(255,255,255,0.06)', text: 'var(--text-muted)' }) : null
 
                 return (
-                  <div key={org.id} className="px-6 py-4 flex items-center justify-between gap-4">
+                  <div
+                    key={org.id}
+                    className="px-6 py-4 flex items-center justify-between gap-4"
+                    style={i > 0 ? { borderTop: '1px solid var(--border-subtle)' } : undefined}
+                  >
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <p className="text-sm font-semibold text-slate-900 truncate">{org.name}</p>
-                        <span className={`shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded-full ${sub.bg} ${sub.text}`}>
+                        <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{org.name}</p>
+                        <span
+                          className="shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded-md"
+                          style={{ background: sub.bg, color: sub.text, border: `1px solid ${sub.border}` }}
+                        >
                           {sub.label}
                         </span>
                         {tokenBroken && (
-                          <span className="shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-red-50 text-red-600">
+                          <span
+                            className="shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded-md"
+                            style={{ background: 'var(--error-bg)', color: 'var(--error)', border: '1px solid var(--error-border)' }}
+                          >
                             Token
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-slate-400">
+                      <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
                         {org.specialty}
                         {org.utm_source ? ` · via ${org.utm_source}` : ''}
                         {' · '}{formatDate(org.created_at)}
@@ -230,24 +247,30 @@ export default async function AdminPage() {
 
                     <div className="flex items-center gap-3 shrink-0">
                       {pending > 0 && (
-                        <span className="bg-amber-100 text-amber-700 text-xs font-bold px-2 py-0.5 rounded-full">
+                        <span
+                          className="text-xs font-bold px-2 py-0.5 rounded-full"
+                          style={{ background: 'var(--warning-bg)', color: 'var(--warning)', border: '1px solid var(--warning-border)' }}
+                        >
                           {pending}
                         </span>
                       )}
                       {current ? (
                         <div className="text-right flex items-center gap-1.5">
-                          <span className="text-sm font-black text-slate-900">{current.total}</span>
+                          <span className="text-sm font-black" style={{ color: 'var(--text-primary)' }}>{current.total}</span>
                           {delta !== null && delta !== 0 && (
-                            <span className={`text-xs font-bold ${delta > 0 ? 'text-green-600' : 'text-red-500'}`}>
+                            <span className="text-xs font-bold" style={{ color: delta > 0 ? 'var(--success)' : 'var(--error)' }}>
                               {delta > 0 ? '+' : ''}{delta}
                             </span>
                           )}
-                          <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${FAIXA_BADGE[current.faixa] ?? 'bg-slate-100 text-slate-400'}`}>
+                          <span
+                            className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md"
+                            style={{ background: faixa!.bg, color: faixa!.text }}
+                          >
                             {FAIXA_LABEL[current.faixa] ?? current.faixa}
                           </span>
                         </div>
                       ) : (
-                        <span className="text-xs text-slate-400">sem score</span>
+                        <span className="text-xs" style={{ color: 'var(--text-muted)' }}>sem score</span>
                       )}
                       <RetriggerButton orgId={org.id} orgName={org.name} />
                     </div>
@@ -258,22 +281,29 @@ export default async function AdminPage() {
           )}
         </section>
 
-        {/* ═══ TOKENS COM PROBLEMA ═══ */}
+        {/* Tokens com problema */}
         {brokenTokens.length > 0 && (
-          <section className="bg-white rounded-2xl border border-red-100 overflow-hidden">
-            <div className="px-6 py-4 border-b border-red-50">
-              <h2 className="font-semibold text-red-700">Tokens com problema ({brokenTokens.length})</h2>
-              <p className="text-xs text-red-400 mt-0.5">Clientes com entrega parada. Automações não estão funcionando.</p>
+          <section
+            className="rounded-2xl overflow-hidden"
+            style={{ background: 'var(--card-subtle)', border: '1px solid var(--error-border)' }}
+          >
+            <div className="px-6 py-4" style={{ borderBottom: '1px solid var(--error-border)' }}>
+              <h2 className="font-semibold" style={{ color: 'var(--error)' }}>Tokens com problema ({brokenTokens.length})</h2>
+              <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>Clientes com entrega parada. Automacoes nao estao funcionando.</p>
             </div>
-            <div className="divide-y divide-red-50">
-              {brokenTokens.map(org => {
+            <div>
+              {brokenTokens.map((org, i) => {
                 const t = tokenByOrg[org.id]
                 return (
-                  <div key={org.id} className="px-6 py-3 flex items-center justify-between">
+                  <div
+                    key={org.id}
+                    className="px-6 py-3 flex items-center justify-between"
+                    style={i > 0 ? { borderTop: '1px solid var(--border-subtle)' } : undefined}
+                  >
                     <div>
-                      <p className="text-sm font-medium text-slate-900">{org.name}</p>
-                      <p className="text-xs text-slate-400">
-                        {!t?.hasToken ? 'Sem token Google' : `Última atualização: ${t.updatedAt ? formatDateFull(t.updatedAt) : 'nunca'}`}
+                      <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{org.name}</p>
+                      <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                        {!t?.hasToken ? 'Sem token Google' : `Ultima atualizacao: ${t.updatedAt ? formatDateFull(t.updatedAt) : 'nunca'}`}
                       </p>
                     </div>
                     <RetriggerButton orgId={org.id} orgName={org.name} />
@@ -284,47 +314,53 @@ export default async function AdminPage() {
           </section>
         )}
 
-        {/* ═══ ÚLTIMOS LEADS ═══ */}
-        <section className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-100">
-            <h2 className="font-semibold text-slate-900">Últimos leads ({leads.length})</h2>
+        {/* Ultimos leads */}
+        <section
+          className="rounded-2xl overflow-hidden"
+          style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}
+        >
+          <div className="px-6 py-4" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+            <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Ultimos leads ({leads.length})</h2>
           </div>
           {leads.length === 0 ? (
             <div className="px-6 py-8 text-center">
-              <p className="text-sm text-slate-400">Nenhum lead capturado ainda.</p>
+              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Nenhum lead capturado ainda.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-slate-50 text-left">
-                    <th className="px-6 py-2.5 text-xs font-semibold text-slate-500">Email</th>
-                    <th className="px-4 py-2.5 text-xs font-semibold text-slate-500">Negócio</th>
-                    <th className="px-4 py-2.5 text-xs font-semibold text-slate-500">Score</th>
-                    <th className="px-4 py-2.5 text-xs font-semibold text-slate-500">Fonte</th>
-                    <th className="px-4 py-2.5 text-xs font-semibold text-slate-500">Data</th>
+                  <tr style={{ background: 'rgba(255,255,255,0.03)' }}>
+                    <th className="px-6 py-2.5 text-left text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>Email</th>
+                    <th className="px-4 py-2.5 text-left text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>Negocio</th>
+                    <th className="px-4 py-2.5 text-left text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>Score</th>
+                    <th className="px-4 py-2.5 text-left text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>Fonte</th>
+                    <th className="px-4 py-2.5 text-left text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>Data</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-50">
-                  {leads.map(lead => (
-                    <tr key={lead.id}>
-                      <td className="px-6 py-2.5 text-slate-900 font-medium">{lead.email}</td>
-                      <td className="px-4 py-2.5 text-slate-600 truncate max-w-[200px]">{lead.place_name ?? '-'}</td>
+                <tbody>
+                  {leads.map((lead, i) => (
+                    <tr key={lead.id} style={i > 0 ? { borderTop: '1px solid var(--border-subtle)' } : undefined}>
+                      <td className="px-6 py-2.5 font-medium" style={{ color: 'var(--text-primary)' }}>{lead.email}</td>
+                      <td className="px-4 py-2.5 truncate max-w-[200px]" style={{ color: 'var(--text-secondary)' }}>{lead.place_name ?? '-'}</td>
                       <td className="px-4 py-2.5">
                         {lead.score !== null ? (
-                          <span className="font-bold text-slate-900">{lead.score}</span>
-                        ) : '-'}
+                          <span className="font-bold" style={{ color: 'var(--text-primary)' }}>{lead.score}</span>
+                        ) : <span style={{ color: 'var(--text-muted)' }}>-</span>}
                       </td>
                       <td className="px-4 py-2.5">
                         {lead.utm_source ? (
-                          <span className="text-xs bg-blue-50 text-blue-700 font-semibold px-2 py-0.5 rounded-full">
+                          <span
+                            className="text-xs font-semibold px-2 py-0.5 rounded-md"
+                            style={{ background: 'var(--accent-bg)', color: 'var(--accent-bright)', border: '1px solid var(--accent-border)' }}
+                          >
                             {lead.utm_source}{lead.utm_medium ? `/${lead.utm_medium}` : ''}
                           </span>
                         ) : (
-                          <span className="text-xs text-slate-400">orgânico</span>
+                          <span className="text-xs" style={{ color: 'var(--text-muted)' }}>organico</span>
                         )}
                       </td>
-                      <td className="px-4 py-2.5 text-slate-400 text-xs whitespace-nowrap">{formatDateFull(lead.created_at)}</td>
+                      <td className="px-4 py-2.5 text-xs whitespace-nowrap" style={{ color: 'var(--text-muted)' }}>{formatDateFull(lead.created_at)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -338,13 +374,16 @@ export default async function AdminPage() {
   )
 }
 
-function StatCard({ value, label, accent, warn }: { value: string | number; label: string; accent?: boolean; warn?: boolean }) {
+function StatCard({ value, label, color }: { value: string | number; label: string; color?: string }) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 px-5 py-4">
-      <p className={`text-2xl font-black ${warn ? 'text-red-600' : accent ? 'text-green-700' : 'text-slate-900'}`}>
+    <div
+      className="rounded-2xl px-5 py-4"
+      style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}
+    >
+      <p className="text-2xl font-black" style={{ color: color ?? 'var(--text-primary)' }}>
         {value}
       </p>
-      <p className="text-xs text-slate-400 mt-1">{label}</p>
+      <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>{label}</p>
     </div>
   )
 }
