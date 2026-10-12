@@ -125,7 +125,8 @@ export default function DiagnosticoPage() {
   const nome = data.perfil?.nome || 'Seu negócio'
   const endereco = data.perfil?.endereco || ''
   const categoria = data.perfil?.categoria || ''
-  const hasScore = !!data.score && (data.score.atual > 0 || data.gaps.length > 0)
+  const gaps = data.gaps ?? []
+  const hasScore = !!data.score && (data.score.atual > 0 || gaps.length > 0)
   const score = data.score?.atual ?? 0
   const scoreColor = hasScore ? getScoreColor(score) : 'var(--text-muted)'
   const lostClients = hasScore ? estimateLostClients(score) : 0
@@ -134,9 +135,9 @@ export default function DiagnosticoPage() {
   const userRating = data.reviews?.ultima?.nota ?? 0
   const userReviewCount = (data.reviews?.sem_resposta_count ?? 0) + (data.reviews?.ultima ? 1 : 0)
 
-  const rapidos = data.gaps.filter(g => categorizeGap(g) === 'rapido')
-  const estrategicos = data.gaps.filter(g => categorizeGap(g) === 'estrategico')
-  const continuos = data.gaps.filter(g => categorizeGap(g) === 'continuo')
+  const rapidos = gaps.filter(g => categorizeGap(g) === 'rapido')
+  const estrategicos = gaps.filter(g => categorizeGap(g) === 'estrategico')
+  const continuos = gaps.filter(g => categorizeGap(g) === 'continuo')
   const rapidoImpact = rapidos.reduce((s, g) => s + g.impact, 0)
   const estrategicoImpact = estrategicos.reduce((s, g) => s + g.impact, 0)
 
@@ -243,9 +244,9 @@ export default function DiagnosticoPage() {
         )}
 
         {/* BLOCO 3: Concorrentes */}
-        {data.concorrentes.length > 0 && (
+        {(data.concorrentes ?? []).length > 0 && (
           <div style={{ paddingBottom: 48 }}>
-            <CompetitorsSection concorrentes={data.concorrentes} userRating={userRating} userReviewCount={userReviewCount} userName={nome} />
+            <CompetitorsSection concorrentes={data.concorrentes ?? []} userRating={userRating} userReviewCount={userReviewCount} userName={nome} />
           </div>
         )}
 
