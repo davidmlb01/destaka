@@ -108,7 +108,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Falha ao salvar dados. Tente novamente.' }, { status: 500 })
   }
 
-  // Dispara todos os jobs em background apos onboarding completo
+  // Dispara TODOS os jobs em background apos onboarding completo
+  // O Destaka comeca a agir imediatamente: otimiza perfil, responde avaliacoes, gera posts
   inngest.send([
     { name: 'destaka/gbp.audit.requested', data: { organization_id: orgId } },
     { name: 'destaka/score.calculate.requested', data: { organization_id: orgId } },
@@ -116,6 +117,8 @@ export async function POST(request: NextRequest) {
     { name: 'destaka/keywords.snapshot.requested', data: { organization_id: orgId } },
     { name: 'destaka/performance.collect.requested', data: { organization_id: orgId } },
     { name: 'destaka/reviews.sync.requested', data: {} },
+    { name: 'destaka/gbp.optimize.requested', data: { organization_id: orgId } },
+    { name: 'destaka/post.generate.requested', data: { organization_id: orgId } },
   ]).catch(() => {})
 
   return NextResponse.json({ ok: true })

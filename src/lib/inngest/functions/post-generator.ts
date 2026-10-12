@@ -35,7 +35,10 @@ async function publishGbpPost(
 export const postGenerator = inngest.createFunction(
   {
     id: 'post-generator',
-    triggers: [{ cron: '0 10 * * 1,3,5' }],
+    triggers: [
+      { cron: '0 10 * * 1,3,5' },
+      { event: 'destaka/post.generate.requested' },
+    ],
   },
   async ({ step }) => {
     const db = admin()

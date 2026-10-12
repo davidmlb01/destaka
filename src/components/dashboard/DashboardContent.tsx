@@ -204,6 +204,28 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
         <MapCard isSubscriber={isSubscriber} />
       </div>
 
+      {/* ===== DETALHES DO SCORE (aberto, logo abaixo do hero) ===== */}
+      {isSubscriber && (
+        <div className="animate-fade-in-up stagger-1">
+          <SectionTitle>Detalhes do score</SectionTitle>
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
+            {categories.map(cat => (
+              <ScoreCard
+                key={cat.name}
+                category={{
+                  ...cat,
+                  label: CATEGORY_LABELS[cat.label] ?? cat.label,
+                }}
+              />
+            ))}
+          </div>
+          <Card variant="dark" padding="sm">
+            <SectionTitle>Evolução do score</SectionTitle>
+            <ScoreChart data={scoreHistory} />
+          </Card>
+        </div>
+      )}
+
       {/* ===== NIVEL 2: Metricas com tendencia ===== */}
       {isSubscriber ? (
         <div className="animate-fade-in-up stagger-1">
@@ -239,86 +261,22 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
 
       {/* GeoExpansionCard removido: dado integrado no MapCard */}
 
-      {/* ===== NIVEL 3: Insights (Keywords + Acoes) ===== */}
+      {/* ===== PROXIMAS ACOES (full width) ===== */}
       {isSubscriber ? (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fade-in-up stagger-2">
-          <KeywordInsightCard isSubscriber={true} />
-          <div>
-            <SectionTitle>Próximas ações</SectionTitle>
-            <NextActionsPanel actions={nextActions} />
-          </div>
+        <div className="animate-fade-in-up stagger-2">
+          <SectionTitle>Próximas ações</SectionTitle>
+          <NextActionsPanel actions={nextActions} />
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <KeywordInsightCard isSubscriber={false} />
-          <div>
-            <SectionTitle>Próximas ações</SectionTitle>
-            <LockedOverlay label={`${nextActions.length} ajustes que fariam você aparecer para mais clientes.`}>
-              <NextActionsPanel actions={nextActions} />
-            </LockedOverlay>
-          </div>
+        <div>
+          <SectionTitle>Próximas ações</SectionTitle>
+          <LockedOverlay label={`${nextActions.length} ajustes que fariam você aparecer para mais clientes.`}>
+            <NextActionsPanel actions={nextActions} />
+          </LockedOverlay>
         </div>
       )}
 
-      {/* ===== NIVEL 4: Categorias do score (colapsavel) + Grafico ===== */}
-      <div className="animate-fade-in-up stagger-3">
-        <button
-          onClick={() => setCategoriesOpen(!categoriesOpen)}
-          className="w-full flex items-center justify-between mb-4 group cursor-pointer"
-        >
-          <div className="flex items-center gap-3">
-            <p
-              className="text-xs font-bold tracking-[0.12em] uppercase"
-              style={{ color: 'rgba(255,255,255,0.38)' }}
-            >
-              Detalhes do score
-            </p>
-            <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
-          </div>
-          <span className="text-xs text-zinc-500 group-hover:text-zinc-400 transition-colors ml-3">
-            {categoriesOpen ? '▲ ocultar' : '▼ expandir'}
-          </span>
-        </button>
-
-        {categoriesOpen && (
-          <>
-            {isSubscriber ? (
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
-                {categories.map(cat => (
-                  <ScoreCard
-                    key={cat.name}
-                    category={{
-                      ...cat,
-                      label: CATEGORY_LABELS[cat.label] ?? cat.label,
-                    }}
-                  />
-                ))}
-              </div>
-            ) : (
-              <LockedOverlay label={`${categories.length} pontos fracos identificados. Veja o que corrigir.`}>
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
-                  {categories.map(cat => (
-                    <ScoreCard
-                      key={cat.name}
-                      category={{
-                        ...cat,
-                        label: CATEGORY_LABELS[cat.label] ?? cat.label,
-                      }}
-                    />
-                  ))}
-                </div>
-              </LockedOverlay>
-            )}
-
-            {isSubscriber && (
-              <Card variant="dark" padding="sm">
-                <SectionTitle>Evolução do score</SectionTitle>
-                <ScoreChart data={scoreHistory} />
-              </Card>
-            )}
-          </>
-        )}
-      </div>
+      {/* Detalhes do score movido para logo abaixo do hero */}
 
     </div>
     </ErrorBoundary>
