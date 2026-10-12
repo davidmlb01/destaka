@@ -57,6 +57,7 @@ export async function GET(request: NextRequest) {
             { name: 'destaka/score.calculate.requested', data: { organization_id: existingProfessional.organization_id } },
             { name: 'destaka/geo.collect.requested', data: { organization_id: existingProfessional.organization_id } },
             { name: 'destaka/keywords.snapshot.requested', data: { organization_id: existingProfessional.organization_id } },
+            { name: 'destaka/performance.collect.requested', data: { organization_id: existingProfessional.organization_id } },
           ]).catch(() => {})
         } else {
           console.log(`[callback] provider_token ausente para org ${existingProfessional.organization_id}. Token nao atualizado.`)
@@ -181,13 +182,14 @@ export async function GET(request: NextRequest) {
         })
       }
 
-      // Dispara auditoria + geo + keywords em background
+      // Dispara auditoria + geo + keywords + performance em background
       // Score NAO e disparado aqui: o audit ja dispara score.calculate ao finalizar,
       // garantindo que o score seja calculado apenas UMA vez com dados completos
       inngest.send([
         { name: 'destaka/gbp.audit.requested', data: { organization_id: org.id } },
         { name: 'destaka/geo.collect.requested', data: { organization_id: org.id } },
         { name: 'destaka/keywords.snapshot.requested', data: { organization_id: org.id } },
+        { name: 'destaka/performance.collect.requested', data: { organization_id: org.id } },
       ]).catch(() => {})
 
       populateFromPlaces(org.id).catch(() => {})

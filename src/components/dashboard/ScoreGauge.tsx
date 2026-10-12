@@ -1,9 +1,15 @@
 'use client'
 
 function scoreTheme(score: number) {
-  if (score >= 70) return { statusColor: 'var(--success)', label: 'Seu perfil esta otimo!' }
-  if (score >= 40) return { statusColor: 'var(--warning)', label: 'Tem espaco para melhorar' }
-  return { statusColor: 'var(--error)', label: 'Precisa de atencao' }
+  if (score >= 70) return { statusColor: 'var(--success)', label: 'Excelente! Seu perfil está otimizado.' }
+  if (score >= 40) return { statusColor: 'var(--warning)', label: 'Bom, mas tem espaço para crescer.' }
+  return { statusColor: 'var(--error)', label: 'Precisa de atenção urgente.' }
+}
+
+function scoreDescription(score: number): string {
+  if (score < 40) return 'A maioria dos clientes não encontra seu perfil nas buscas.'
+  if (score < 70) return 'Seu perfil aparece, mas concorrentes estão à frente.'
+  return 'Você está entre os perfis mais visíveis da região.'
 }
 
 const ARC_COLOR = 'var(--accent)'
@@ -124,12 +130,17 @@ export function ScoreGauge({ score, size = 160, showGlow = true }: ScoreGaugePro
       </svg>
 
       {showGlow && (
-        <p
-          className="font-display font-bold text-sm text-center -mt-2"
-          style={{ color: statusColor }}
-        >
-          {label}
-        </p>
+        <>
+          <p
+            className="font-display font-bold text-sm text-center -mt-2"
+            style={{ color: statusColor }}
+          >
+            {label}
+          </p>
+          <p className="text-xs text-center mt-1" style={{ color: 'rgba(255,255,255,0.4)', maxWidth: 220 }}>
+            {scoreDescription(score)}
+          </p>
+        </>
       )}
     </div>
   )

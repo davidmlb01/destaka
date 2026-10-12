@@ -38,10 +38,10 @@ function getScoreMessage(score: number, isSubscriber: boolean): string {
     if (score <= 80) return 'Quase lá. Alguns ajustes fazem diferença'
     return 'Bem posicionado'
   }
-  if (score <= 30) return 'Precisa de atenção urgente'
-  if (score <= 60) return 'Em progresso'
-  if (score <= 80) return 'Bom, pode melhorar'
-  return 'Excelente'
+  if (score <= 30) return 'Precisa de atenção. Seus clientes não estão te encontrando.'
+  if (score <= 60) return 'Em progresso. Cada melhoria aumenta sua visibilidade.'
+  if (score <= 80) return 'Bom. Pequenos ajustes podem te colocar à frente dos concorrentes.'
+  return 'Excelente! Seu perfil está otimizado.'
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {

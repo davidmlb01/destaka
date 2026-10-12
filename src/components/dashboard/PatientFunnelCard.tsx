@@ -90,7 +90,7 @@ export function PatientFunnelCard() {
         </p>
         <div className="flex flex-col items-center py-8 text-center">
           <p className="text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>
-            Dados sendo coletados. O primeiro relatorio aparece na proxima segunda-feira.
+            Dados sendo coletados. O primeiro relatório aparece na próxima segunda-feira.
           </p>
         </div>
       </div>

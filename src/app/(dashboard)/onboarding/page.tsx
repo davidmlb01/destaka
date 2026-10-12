@@ -630,8 +630,11 @@ export default function OnboardingPage() {
                   <h1 className="text-lg font-semibold text-white mb-2">
                     Perfil configurado
                   </h1>
-                  <p className="text-sm mb-8" style={{ color: 'rgba(255,255,255,0.6)' }}>
-                    Encontramos {improvementCount} melhorias para aplicar no seu perfil. {autoCount} delas são automáticas.
+                  <p className="text-sm mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                    Encontramos {improvementCount} melhorias para aplicar no seu perfil.
+                  </p>
+                  <p className="text-sm mb-8" style={{ color: 'var(--accent-bright)' }}>
+                    {autoCount} delas são automáticas.
                   </p>
                   <button
                     onClick={() => router.push('/dashboard')}

@@ -57,10 +57,10 @@ export function GeoExpansionCard() {
     return (
       <Card variant="subtle" padding="md">
         <h3 className="font-display font-bold text-white text-[15px] mb-2">
-          Expansao Geografica
+          Expansão Geográfica
         </h3>
         <p className="text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>
-          Dados sendo coletados. O mapa de alcance aparece apos a primeira semana.
+          Dados sendo coletados. O mapa de alcance aparece após a primeira semana.
         </p>
       </Card>
     )
@@ -78,7 +78,7 @@ export function GeoExpansionCard() {
   return (
     <Card variant="accent" padding="md">
       <h3 className="font-display font-bold text-white text-[15px] mb-3">
-        Expansao Geografica
+        Expansão Geográfica
       </h3>
 
       {/* Current radius */}
@@ -94,7 +94,7 @@ export function GeoExpansionCard() {
             className="text-xs font-medium px-2 py-0.5 rounded-full ml-auto"
             style={{ background: 'rgba(74,222,128,0.15)', color: '#4ADE80' }}
           >
-            +{totalGrowth.toFixed(1)}km desde o inicio
+            +{totalGrowth.toFixed(1)}km desde o início
           </span>
         )}
       </div>
@@ -133,7 +133,7 @@ export function GeoExpansionCard() {
           </p>
           {expansion.actionCount > 0 && (
             <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
-              {expansion.actionCount} {expansion.actionCount === 1 ? 'acao executada' : 'acoes executadas'} esta semana
+              {expansion.actionCount} {expansion.actionCount === 1 ? 'ação executada' : 'ações executadas'} esta semana
             </p>
           )}
         </div>

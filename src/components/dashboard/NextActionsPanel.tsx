@@ -22,34 +22,50 @@ export function NextActionsPanel({ actions }: { actions: Action[] }) {
     )
   }
 
-  return (
-    <div className="flex flex-col gap-2">
-      {actions.map((action, i) => {
-        const borderColor = action.severity === 'critical'
-          ? 'rgba(248,113,113,0.25)'
-          : 'rgba(252,211,77,0.2)'
-        const iconColor = action.severity === 'critical'
-          ? 'rgba(248,113,113,0.8)'
-          : 'rgba(252,211,77,0.7)'
+  const destakaActions = actions.filter(a => ['description', 'review_response', 'posts'].includes(a.field))
+  const userActions = actions.filter(a => !['description', 'review_response', 'posts'].includes(a.field))
 
-        return (
-          <div
-            key={i}
-            className="rounded-xl p-4 flex items-start gap-3"
-            style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid ${borderColor}` }}
-          >
-            <div style={{ marginTop: 2, color: iconColor, flexShrink: 0 }}>
-              <PinIcon size={16} />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm text-white" style={{ lineHeight: 1.5 }}>{action.message}</p>
-              <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                +{action.impact} pts ao corrigir
-              </p>
-            </div>
+  return (
+    <div className="flex flex-col gap-4">
+      {destakaActions.length > 0 && (
+        <div>
+          <p className="text-xs font-semibold mb-2" style={{ color: 'var(--accent-bright)' }}>O Destaka cuida disso</p>
+          <div className="flex flex-col gap-2">
+            {destakaActions.map((action, i) => (
+              <ActionItem key={`d-${i}`} action={action} auto />
+            ))}
           </div>
-        )
-      })}
+        </div>
+      )}
+      {userActions.length > 0 && (
+        <div>
+          <p className="text-xs font-semibold mb-2" style={{ color: 'var(--warning)' }}>Precisa da sua ação</p>
+          <div className="flex flex-col gap-2">
+            {userActions.map((action, i) => (
+              <ActionItem key={`u-${i}`} action={action} />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function ActionItem({ action, auto }: { action: Action; auto?: boolean }) {
+  const borderColor = auto ? 'rgba(94,234,212,0.2)' : action.severity === 'critical' ? 'rgba(248,113,113,0.25)' : 'rgba(252,211,77,0.2)'
+  const iconColor = auto ? 'var(--accent-bright)' : action.severity === 'critical' ? 'rgba(248,113,113,0.8)' : 'rgba(252,211,77,0.7)'
+
+  return (
+    <div className="rounded-xl p-4 flex items-start gap-3" style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid ${borderColor}` }}>
+      <div style={{ marginTop: 2, color: iconColor, flexShrink: 0 }}>
+        <PinIcon size={16} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm text-white" style={{ lineHeight: 1.5 }}>{action.message}</p>
+        <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>
+          {auto ? 'Automático' : `+${action.impact} pts ao corrigir`}
+        </p>
+      </div>
     </div>
   )
 }
