@@ -101,7 +101,7 @@ function Nav() {
           border: '1px solid rgba(255,255,255,0.08)',
         }}
       >
-        <Logo size="sm" href="/" vertical="Saúde" />
+        <Logo size="md" href="/" vertical="Saúde" />
         <div className="hidden md:flex items-center gap-6 text-[13px] font-medium" style={{ color: 'rgba(255,255,255,0.68)' }}>
           <a href="#como-funciona" className="hover:text-white transition-colors">Como funciona</a>
           <a href="#recursos" className="hover:text-white transition-colors">Recursos</a>
@@ -140,17 +140,23 @@ function Hero() {
               className="font-display font-bold text-white leading-[1.05] tracking-[-2.5px] mb-6"
               style={{ fontSize: 'clamp(36px, 5vw, 64px)' }}
             >
-              Você deveria<br />
-              aparecer primeiro no Google.<br />
-              <em className="not-italic" style={{ color: 'var(--accent)' }}>A gente faz isso acontecer.</em>
+              Você deveria aparecer primeiro no Google.<br />
+              <em className="not-italic" style={{ color: 'var(--accent)' }}>O Destaka faz isso acontecer.</em>
             </h1>
 
             <p
-              className="leading-relaxed mb-10"
+              className="leading-relaxed mb-3"
               style={{ color: 'rgba(255,255,255,0.68)', fontSize: 'clamp(16px, 2vw, 19px)' }}
             >
               O Google decide para quem o seu paciente vai ligar.<br />
               O Destaka decide o que o Google vai ver.
+            </p>
+
+            <p
+              className="leading-relaxed mb-10"
+              style={{ color: 'rgba(255,255,255,0.55)', fontSize: 'clamp(14px, 1.6vw, 16px)' }}
+            >
+              Descubra em 30 segundos se seu perfil está te ajudando ou te prejudicando.
             </p>
 
             <Button variant="primary" size="lg" href="/login">
@@ -213,22 +219,31 @@ function Hero() {
   )
 }
 
-// ANCORAGEM
+// CUSTO DA INVISIBILIDADE
 
-function Ancoragem() {
-  const rows = [
-    { label: 'Custo mensal',          destaka: 'R$ 197',          agencia: 'R$ 3.000 a 8.000',  diy: 'Seu tempo' },
-    { label: 'Tempo de setup',        destaka: '5 minutos',       agencia: '2 a 4 semanas',      diy: 'Horas todo mês' },
-    { label: 'Posts no Google',       destaka: 'Automático',      agencia: 'Você fornece',       diy: 'Você faz' },
-    { label: 'Respostas avaliações',  destaka: 'Automático',      agencia: 'Pode incluir',       diy: 'Você faz' },
-    { label: 'Contrato',              destaka: 'Nenhum',          agencia: '6 a 12 meses',       diy: '-' },
-    { label: 'Garantia resultado',    destaka: '30 dias ou 100%', agencia: 'Nenhuma',            diy: '-' },
+function CustoDaInvisibilidade() {
+  const impactos = [
+    {
+      numero: '15–25',
+      titulo: 'Pacientes perdidos por mês',
+      desc: 'Um profissional com perfil otimizado recebe em média 1.500 buscas por mês no Google. Se você aparece em 50% dessas buscas em vez de 80%, são 15 a 25 pacientes ligando para outro.',
+    },
+    {
+      numero: '51%',
+      titulo: 'Dos perfis de saúde estão incompletos',
+      desc: 'O Google penaliza silenciosamente cada campo vazio. Isso significa que metade dos seus concorrentes já estão vulneráveis. O campo está aberto.',
+    },
+    {
+      numero: '88%',
+      titulo: 'Confiam em avaliações como indicação pessoal',
+      desc: 'Cada mês sem responder avaliações e sem postar conteúdo novo é um mês de credibilidade perdida. A distância entre você e quem aparece primeiro só aumenta.',
+    },
   ]
 
   return (
-    <section aria-label="Comparativo com agências" style={{ background: 'rgba(20,184,166,0.04)', borderTop: '1px solid rgba(20,184,166,0.15)', borderBottom: '1px solid rgba(20,184,166,0.15)' }}>
+    <section aria-label="O custo da invisibilidade" style={{ background: 'rgba(20,184,166,0.04)', borderTop: '1px solid rgba(20,184,166,0.15)', borderBottom: '1px solid rgba(20,184,166,0.15)' }}>
       <div className="max-w-5xl mx-auto px-6 py-20">
-        <div className="text-center mb-12">
+        <div className="text-center mb-14">
           <p className="text-[11px] font-bold tracking-[2px] uppercase mb-4" style={{ color: 'var(--accent)' }}>
             O custo da invisibilidade
           </p>
@@ -236,36 +251,75 @@ function Ancoragem() {
             className="font-display font-bold text-white leading-[1.15] tracking-[-1.5px] mb-4"
             style={{ fontSize: 'clamp(24px, 3.5vw, 38px)' }}
           >
-            Agências cobram R$3.000 a 8.000 por mês.<br className="hidden md:block" />
-            Exigem reuniões, pedem conteúdo, demoram semanas.
+            Cada dia sem aparecer no Google<br className="hidden md:block" />
+            é dinheiro saindo do seu consultório.
           </h2>
-          <p className="text-[17px]" style={{ color: 'rgba(255,255,255,0.68)' }}>
-            O Destaka entrega tudo no piloto automático, por uma fração do custo.
+          <p className="text-[17px] max-w-2xl mx-auto" style={{ color: 'rgba(255,255,255,0.68)' }}>
+            Enquanto seu perfil está incompleto, pacientes que precisam de você estão ligando para o consultório ao lado.
           </p>
         </div>
 
-        <div className="rounded-2xl overflow-hidden mb-10" style={{ border: '1px solid rgba(20,184,166,0.20)' }}>
-          <div className="grid grid-cols-4 text-[12px] font-bold uppercase tracking-widest" style={{ background: 'rgba(20,184,166,0.10)' }}>
-            <div className="px-5 py-3" style={{ color: 'rgba(255,255,255,0.40)' }}>Critério</div>
-            <div className="px-5 py-3 flex items-center gap-1.5" style={{ color: '#14B8A6' }}>
-              <PinIcon size={12} />Destaka
-            </div>
-            <div className="px-5 py-3" style={{ color: 'rgba(255,255,255,0.40)' }}>Agência</div>
-            <div className="px-5 py-3" style={{ color: 'rgba(255,255,255,0.40)' }}>Você mesmo</div>
-          </div>
-
-          {rows.map((row, i) => (
+        <div className="grid md:grid-cols-3 gap-5 mb-12">
+          {impactos.map((item) => (
             <div
-              key={row.label}
-              className="grid grid-cols-4 text-[14px]"
-              style={{ borderTop: '1px solid rgba(255,255,255,0.06)', background: i % 2 === 0 ? 'rgba(7,26,25,0.8)' : '#071a19' }}
+              key={item.numero}
+              className="p-[2px] rounded-2xl"
+              style={{ background: 'rgba(20,184,166,0.10)', boxShadow: '0 0 0 1px rgba(20,184,166,0.22)' }}
             >
-              <div className="px-5 py-4 font-medium" style={{ color: 'rgba(255,255,255,0.55)' }}>{row.label}</div>
-              <div className="px-5 py-4 font-bold" style={{ color: '#14B8A6' }}>{row.destaka}</div>
-              <div className="px-5 py-4" style={{ color: 'rgba(255,255,255,0.45)' }}>{row.agencia}</div>
-              <div className="px-5 py-4" style={{ color: 'rgba(255,255,255,0.45)' }}>{row.diy}</div>
+              <div
+                className="rounded-[14px] p-7 h-full flex flex-col"
+                style={{ background: '#071a19', boxShadow: 'inset 0 1px 1px rgba(20,184,166,0.10)' }}
+              >
+                <div
+                  className="font-display font-bold leading-none tracking-[-2px] mb-4"
+                  style={{ fontSize: 44, color: '#14B8A6' }}
+                >
+                  {item.numero}
+                </div>
+                <h3 className="font-display font-bold text-[17px] text-white mb-2">{item.titulo}</h3>
+                <p className="text-[14px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.68)' }}>{item.desc}</p>
+              </div>
             </div>
           ))}
+        </div>
+
+        <div
+          className="p-[2px] rounded-2xl max-w-3xl mx-auto mb-12"
+          style={{ background: 'rgba(20,184,166,0.10)', boxShadow: '0 0 0 1px rgba(20,184,166,0.22)' }}
+        >
+          <div
+            className="rounded-[14px] p-8 text-center"
+            style={{ background: '#071a19', boxShadow: 'inset 0 1px 1px rgba(20,184,166,0.10)' }}
+          >
+            <p className="text-[17px] leading-relaxed mb-2" style={{ color: 'rgba(255,255,255,0.75)' }}>
+              Com o Destaka, profissionais aumentam em média
+            </p>
+            <p className="font-display font-bold text-white tracking-[-1px] mb-2" style={{ fontSize: 'clamp(28px, 4vw, 40px)' }}>
+              <span style={{ color: '#14B8A6' }}>3x mais visualizações</span> no Google
+            </p>
+            <p className="text-[15px]" style={{ color: 'rgba(255,255,255,0.55)' }}>
+              nas primeiras 4 semanas. Mais visualizações, mais ligações, mais pacientes.
+            </p>
+          </div>
+        </div>
+
+        <div
+          className="p-[2px] rounded-2xl max-w-3xl mx-auto mb-12"
+          style={{ background: 'rgba(255,255,255,0.06)', boxShadow: '0 0 0 1px rgba(255,255,255,0.10)' }}
+        >
+          <div
+            className="rounded-[14px] px-8 py-6 flex flex-col sm:flex-row items-center gap-4 sm:gap-6"
+            style={{ background: '#071a19', boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.08)' }}
+          >
+            <div className="flex-shrink-0">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#14B8A6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <p className="text-[15px] leading-relaxed text-center sm:text-left" style={{ color: 'rgba(255,255,255,0.75)' }}>
+              <span className="font-display font-bold text-white">Garantia Destaka:</span> seu score sobe no mínimo 15 pontos em 30 dias. Se não subir, devolvemos 100% do valor. Sem perguntas.
+            </p>
+          </div>
         </div>
 
         <div className="text-center">
@@ -275,7 +329,7 @@ function Ancoragem() {
             <span className="w-7 h-7 rounded-full bg-black/20 flex items-center justify-center flex-shrink-0 text-[13px]">→</span>
           </Button>
           <p className="mt-4 text-[13px]" style={{ color: 'rgba(255,255,255,0.5)' }}>
-            Sem contrato. Sem cadastro. Cancele quando quiser.
+            Descubra quanto seu perfil pode melhorar. Resultado em 30 segundos.
           </p>
         </div>
       </div>
@@ -309,7 +363,7 @@ function Problema() {
               O profissional que aparece em primeiro não é necessariamente o melhor. É o mais visível. Quando alguém digita &quot;médico perto de mim&quot;, o Google decide quem aparece. E na maioria das vezes, não é quem merece mais.
             </p>
             <p className="text-[15px] leading-relaxed font-medium" style={{ color: 'var(--accent)' }}>
-              Enquanto você lê isso, seus concorrentes estão recebendo os pacientes que deveriam ser seus.
+              Agora mesmo, alguém na sua cidade está digitando sua especialidade no Google. Se você não aparece nos 3 primeiros resultados, esse paciente já escolheu outro.
             </p>
           </div>
 
@@ -337,6 +391,89 @@ function Problema() {
               </div>
             ))}
           </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// MANIFESTO
+
+function Manifesto() {
+  return (
+    <section
+      aria-labelledby="manifesto-heading"
+      className="px-6 py-28 relative overflow-hidden"
+      style={{ background: 'var(--bg-gradient)' }}
+    >
+      <div className="absolute pointer-events-none" style={{ inset: 0, background: 'radial-gradient(ellipse 50% 40% at 90% 0%, rgba(20,184,166,0.10) 0%, transparent 70%)' }} />
+
+      <div className="max-w-5xl mx-auto relative z-10">
+        <div className="grid md:grid-cols-[1fr_auto] gap-12 md:gap-20 items-start">
+
+          <div>
+            <div className="mb-8">
+              <PinIcon size={48} />
+            </div>
+
+            <h2
+              id="manifesto-heading"
+              className="font-display font-bold text-white leading-[1.15] tracking-[-1.5px] mb-10"
+              style={{ fontSize: 'clamp(24px, 4vw, 38px)' }}
+            >
+              Você passou anos estudando até se formar.<br />
+              Aprendeu a cuidar de pessoas melhor<br />
+              do que qualquer um na sua cidade.
+            </h2>
+
+            <div className="space-y-5">
+              {[
+                'E hoje, quando alguém procura no Google, quem aparece é o profissional do lado. O que faz menos. O que cobra mais caro. O que tem metade da sua experiência.',
+                'Não é injusto. É técnico. O Google Meu Negócio não conhece você. Ainda.',
+                'O Destaka existe para isso. Para traduzir a sua competência em linguagem que o Google entende. Para fazer o invisível aparecer.',
+                'Para garantir que, quando o paciente certo estiver buscando, ele vai te encontrar primeiro.',
+              ].map((text, i) => (
+                <p
+                  key={i}
+                  className="text-[17px] leading-relaxed"
+                  style={{ color: i === 1 ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.58)' }}
+                >
+                  {text}
+                </p>
+              ))}
+            </div>
+          </div>
+
+          <div className="md:sticky md:top-32 flex flex-col items-start md:max-w-[340px]">
+            <div className="p-[2px] rounded-2xl mb-8 w-full" style={{ background: 'rgba(20,184,166,0.10)', boxShadow: '0 0 0 1px rgba(20,184,166,0.22)' }}>
+              <div
+                className="p-7 rounded-[14px]"
+                style={{ background: '#071a19', boxShadow: 'inset 0 1px 1px rgba(20,184,166,0.10)' }}
+              >
+                <p
+                  className="font-display font-bold text-[18px] leading-[1.35]"
+                  style={{ color: 'var(--accent-bright)' }}
+                >
+                  Quem cuida da saúde das pessoas não deveria perder pacientes por causa de burocracia digital.
+                </p>
+              </div>
+            </div>
+
+            <p className="text-[14px] font-medium mb-5" style={{ color: 'rgba(255,255,255,0.55)' }}>
+              Se você sabe que merece aparecer, comece aqui.
+            </p>
+
+            <Button variant="primary" size="lg" href="/login" className="whitespace-nowrap">
+              <PinIcon size={16} color="#fff" bg="var(--accent)" />
+              Fazer diagnóstico gratuito
+              <span className="w-7 h-7 rounded-full bg-black/20 flex items-center justify-center flex-shrink-0 text-[13px]">→</span>
+            </Button>
+
+            <p className="mt-5 text-[12px]" style={{ color: 'rgba(255,255,255,0.45)' }}>
+              Grátis. Sem cartão. Resultado em 30 segundos.
+            </p>
+          </div>
+
         </div>
       </div>
     </section>
@@ -432,45 +569,6 @@ function ComoFunciona() {
   )
 }
 
-// FAQ
-
-function FAQ() {
-  return (
-    <section id="faq" aria-labelledby="faq-heading" className="px-6 py-24" style={{ background: '#071a19' }}>
-      <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-14">
-          <p className="text-[11px] font-bold tracking-[2px] uppercase mb-4" style={{ color: 'var(--accent)' }}>Perguntas frequentes</p>
-          <h2
-            id="faq-heading"
-            className="font-display font-bold text-white leading-[1.1] tracking-[-1.5px]"
-            style={{ fontSize: 'clamp(28px, 4vw, 40px)' }}
-          >
-            Tudo que você precisa saber
-          </h2>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-4">
-          {FAQ_ITEMS.map((faq) => (
-            <div
-              key={faq.q}
-              className="p-[2px] rounded-2xl"
-              style={{ background: 'rgba(255,255,255,0.06)', boxShadow: '0 0 0 1px rgba(255,255,255,0.10)' }}
-            >
-              <div
-                className="p-6 rounded-[14px] h-full"
-                style={{ background: '#071a19', boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.08)' }}
-              >
-                <h3 className="font-display font-bold text-[16px] text-white mb-2">{faq.q}</h3>
-                <p className="text-[15px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.68)' }}>{faq.a}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
 // RECURSOS
 
 function Recursos() {
@@ -503,11 +601,11 @@ function Recursos() {
             className="font-display font-bold leading-[1.1] tracking-[-1.5px] mb-4"
             style={{ fontSize: 'clamp(28px, 4vw, 44px)', color: '#fff' }}
           >
-            Tudo que uma agência cobraria milhares por mês.<br />
-            <span style={{ color: 'rgba(255,255,255,0.7)' }}>Funcionando no piloto automático, sem depender de você.</span>
+            Tudo no piloto automático.<br />
+            <span style={{ color: 'rgba(255,255,255,0.7)' }}>Sem depender de você.</span>
           </h2>
           <p className="text-[17px] max-w-2xl mx-auto" style={{ color: 'rgba(255,255,255,0.68)' }}>
-            O Destaka cuida da sua visibilidade enquanto você cuida dos pacientes. Cada um no que sabe fazer melhor.
+            O Destaka cuida da sua visibilidade enquanto você cuida dos pacientes.
           </p>
         </div>
 
@@ -543,85 +641,6 @@ function Recursos() {
           <p className="mt-4 text-[13px]" style={{ color: 'rgba(255,255,255,0.5)' }}>
             Descubra quanto seu perfil pode melhorar. Resultado em 30 segundos.
           </p>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-// MANIFESTO
-
-function Manifesto() {
-  return (
-    <section
-      aria-labelledby="manifesto-heading"
-      className="px-6 py-28 relative overflow-hidden"
-      style={{ background: 'var(--bg-gradient)' }}
-    >
-      <div className="absolute pointer-events-none" style={{ inset: 0, background: 'radial-gradient(ellipse 50% 40% at 90% 0%, rgba(20,184,166,0.10) 0%, transparent 70%)' }} />
-
-      <div className="max-w-5xl mx-auto relative z-10">
-        <div className="grid md:grid-cols-[1fr_auto] gap-12 md:gap-20 items-start">
-
-          <div>
-            <div className="mb-8">
-              <PinIcon size={48} />
-            </div>
-
-            <h2
-              id="manifesto-heading"
-              className="font-display font-bold text-white leading-[1.15] tracking-[-1.5px] mb-10"
-              style={{ fontSize: 'clamp(24px, 4vw, 38px)' }}
-            >
-              Você passou anos se formando.<br />
-              Fez residência. Aprendeu a cuidar<br />
-              de pessoas melhor do que qualquer um na sua cidade.
-            </h2>
-
-            <div className="space-y-5">
-              {[
-                'E hoje, quando alguém digita "médico perto de mim", aparece o consultório do lado. O que faz menos. O que cobra mais caro. O que tem metade da sua experiência.',
-                'Não é injusto. É técnico. O Google não conhece você. Ainda.',
-                'O Destaka existe para isso. Para traduzir a sua competência em linguagem que o algoritmo entende. Para fazer o invisível aparecer.',
-                'Para garantir que, quando o paciente certo estiver buscando, ele vai te encontrar primeiro.',
-              ].map((text, i) => (
-                <p
-                  key={i}
-                  className="text-[17px] leading-relaxed"
-                  style={{ color: i === 1 ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.58)' }}
-                >
-                  {text}
-                </p>
-              ))}
-            </div>
-          </div>
-
-          <div className="md:sticky md:top-32 flex flex-col items-start md:max-w-[300px]">
-            <div className="p-[2px] rounded-2xl mb-8 w-full" style={{ background: 'rgba(20,184,166,0.10)', boxShadow: '0 0 0 1px rgba(20,184,166,0.22)' }}>
-              <div
-                className="p-7 rounded-[14px]"
-                style={{ background: '#071a19', boxShadow: 'inset 0 1px 1px rgba(20,184,166,0.10)' }}
-              >
-                <p
-                  className="font-display font-bold text-[18px] leading-[1.35]"
-                  style={{ color: 'var(--accent-bright)' }}
-                >
-                  Quem salva vidas não deveria perder pacientes por causa de burocracia digital.
-                </p>
-              </div>
-            </div>
-
-            <Button variant="primary" size="lg" href="/login">
-              <PinIcon size={16} color="#fff" bg="var(--accent)" />
-              Fazer diagnóstico gratuito
-              <span className="w-7 h-7 rounded-full bg-black/20 flex items-center justify-center flex-shrink-0 text-[13px]">→</span>
-            </Button>
-
-            <p className="mt-5 text-[12px]" style={{ color: 'rgba(255,255,255,0.45)' }}>
-              Grátis. Sem cartão. Resultado em 30 segundos.
-            </p>
-          </div>
-
         </div>
       </div>
     </section>
@@ -679,12 +698,11 @@ export default function Home() {
       <Nav />
       <main>
         <Hero />
-        <Ancoragem />
+        <CustoDaInvisibilidade />
         <Problema />
-        <ComoFunciona />
-        <FAQ />
-        <Recursos />
         <Manifesto />
+        <ComoFunciona />
+        <Recursos />
       </main>
       <Footer />
     </>
