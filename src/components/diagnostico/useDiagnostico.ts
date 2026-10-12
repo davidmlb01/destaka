@@ -70,10 +70,20 @@ export interface DiagnosticoData {
 }
 
 export function useDiagnostico() {
-  const { data, error, isLoading } = useSWR<DiagnosticoData>(
+  const { data, error, isLoading, mutate } = useSWR<DiagnosticoData>(
     '/api/diagnostico',
     fetcher,
-    { revalidateOnFocus: false, dedupingInterval: 60000 }
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 60000,
+      // Polling: revalida a cada 5s enquanto score nao chegar
+      refreshInterval: (latestData) => {
+        if (!latestData?.score || (latestData.score.atual === 0 && latestData.gaps.length === 0)) {
+          return 5000
+        }
+        return 0
+      },
+    }
   )
-  return { data, error, isLoading }
+  return { data, error, isLoading, mutate }
 }

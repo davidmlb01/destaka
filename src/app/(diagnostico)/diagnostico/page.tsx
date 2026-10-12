@@ -66,6 +66,50 @@ function getCtaText(score: number): string {
   return 'Manter minha liderança'
 }
 
+function estimateLostClients(score: number): number {
+  if (score >= 80) return 1
+  if (score >= 60) return 2
+  if (score >= 40) return 4
+  if (score >= 20) return 6
+  return 8
+}
+
+function getVerticalLabel(categoria: string): string | undefined {
+  const lower = (categoria || '').toLowerCase()
+  if (lower.includes('saúde') || lower.includes('saude') || lower.includes('médic') || lower.includes('medic') || lower.includes('dentist') || lower.includes('fisio') || lower.includes('psicol') || lower.includes('nutrici')) return 'Saúde'
+  if (lower.includes('pet') || lower.includes('veterinár') || lower.includes('veterinar')) return 'Pet'
+  if (lower.includes('advogad') || lower.includes('jurídi') || lower.includes('juridi')) return 'Jurídico'
+  if (lower.includes('contab') || lower.includes('contábil')) return 'Contábil'
+  if (lower.includes('imobiliár') || lower.includes('imobiliar')) return 'Imóveis'
+  return undefined
+}
+
+function getTagline(categoria: string): { title: string; subtitle: string } {
+  const lower = (categoria || '').toLowerCase()
+  if (lower.includes('saúde') || lower.includes('saude') || lower.includes('médic') || lower.includes('medic') || lower.includes('dentist') || lower.includes('fisio') || lower.includes('psicol') || lower.includes('nutrici')) {
+    return {
+      title: 'Você cuida de atender seus pacientes.',
+      subtitle: 'Nós cuidamos de fazer novos pacientes chegar até você.',
+    }
+  }
+  if (lower.includes('pet') || lower.includes('veterinár') || lower.includes('veterinar')) {
+    return {
+      title: 'Você cuida dos pets.',
+      subtitle: 'Nós cuidamos de trazer novos tutores até você.',
+    }
+  }
+  if (lower.includes('advogad') || lower.includes('jurídi') || lower.includes('juridi')) {
+    return {
+      title: 'Você cuida dos seus clientes.',
+      subtitle: 'Nós cuidamos de trazer novos clientes até você.',
+    }
+  }
+  return {
+    title: 'Você cuida do seu negócio.',
+    subtitle: 'Nós cuidamos de trazer novos clientes até você.',
+  }
+}
+
 /* ── Page ── */
 
 export default function DiagnosticoPage() {
@@ -121,7 +165,7 @@ export default function DiagnosticoPage() {
             Analisando {data.perfil?.nome || 'seu perfil'}
           </p>
           <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-            Estamos coletando dados do seu Google Meu Negocio. Isso pode levar alguns segundos.
+            Estamos coletando dados do seu Google Meu Negócio. Isso pode levar alguns segundos.
           </p>
           <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
         </div>
@@ -129,12 +173,16 @@ export default function DiagnosticoPage() {
     )
   }
 
-  const nome = data.perfil?.nome || 'Seu negocio'
-  const endereco = data.perfil.endereco || ''
+  const nome = data.perfil?.nome || 'Seu negócio'
+  const endereco = data.perfil?.endereco || ''
+  const categoria = data.perfil?.categoria || ''
   const score = data.score.atual
   const scoreColor = getScoreColor(score)
   const userRating = data.reviews.ultima?.nota ?? 0
   const userReviewCount = data.reviews.sem_resposta_count + (data.reviews.ultima ? 1 : 0)
+  const lostClients = estimateLostClients(score)
+  const vertical = getVerticalLabel(categoria)
+  const tagline = getTagline(categoria)
 
   // Quick wins summary
   const rapidos = data.gaps.filter(g => categorizeGap(g) === 'rapido')
@@ -145,77 +193,26 @@ export default function DiagnosticoPage() {
 
   // Map data
   const mapa = data.mapa
-  const strongCount = mapa?.zonas.filter(z => z.status === 'strong').length ?? 0
   const weakCount = mapa?.zonas.filter(z => z.status === 'weak').length ?? 0
   const totalZones = mapa?.zonas.length ?? 0
   const radiusKm = mapa?.radius_km ?? 0
 
   return (
-    <DiagnosticoContent
-      nome={nome}
-      endereco={endereco}
-      score={score}
-      scoreColor={scoreColor}
-      userRating={userRating}
-      userReviewCount={userReviewCount}
-      rapidos={rapidos}
-      estrategicos={estrategicos}
-      continuos={continuos}
-      rapidoImpact={rapidoImpact}
-      estrategicoImpact={estrategicoImpact}
-      mapa={mapa}
-      strongCount={strongCount}
-      weakCount={weakCount}
-      totalZones={totalZones}
-      radiusKm={radiusKm}
-      data={data}
-      shareHash={shareHash}
-    />
-  )
-}
-
-function DiagnosticoContent({
-  nome, endereco, score, scoreColor, userRating, userReviewCount,
-  rapidos, estrategicos, continuos, rapidoImpact, estrategicoImpact,
-  mapa, strongCount, weakCount, totalZones, radiusKm, data, shareHash,
-}: {
-  nome: string
-  endereco: string
-  score: number
-  scoreColor: string
-  userRating: number
-  userReviewCount: number
-  rapidos: DiagGap[]
-  estrategicos: DiagGap[]
-  continuos: DiagGap[]
-  rapidoImpact: number
-  estrategicoImpact: number
-  mapa: typeof data.mapa
-  strongCount: number
-  weakCount: number
-  totalZones: number
-  radiusKm: number
-  data: NonNullable<ReturnType<typeof useDiagnostico>['data']>
-  shareHash: string | null
-}) {
-  const { value: animatedScore, ref: scoreRef } = useCountUp(score)
-
-  return (
-    <div ref={scoreRef} className="min-h-screen" style={{ background: 'var(--bg-base)' }}>
+    <div className="min-h-screen" style={{ background: 'var(--bg-base)' }}>
       {/* Header */}
       <header
         className="sticky top-0"
         style={{ zIndex: 40, background: 'rgba(7,26,25,0.95)', backdropFilter: 'blur(12px)', height: 56 }}
       >
         <div className="max-w-[900px] mx-auto px-6 h-full flex items-center justify-between">
-          <Logo size="md" href="https://destaka.com.br" vertical="Saúde" />
+          <Logo size="md" href="https://destaka.com.br" vertical={vertical} />
           {shareHash && <ShareButton hash={shareHash} />}
         </div>
       </header>
 
       <main className="max-w-[900px] mx-auto px-6 pb-28">
 
-        {/* ═══ BLOCO 1: Hero (Score + Mapa lado a lado) ═══ */}
+        {/* BLOCO 1: Hero (Score + Mapa lado a lado) */}
         <section style={{ paddingTop: 32, paddingBottom: 32 }}>
           {/* Nome do negócio */}
           <div style={{ marginBottom: 24 }}>
@@ -239,168 +236,48 @@ function DiagnosticoContent({
           `}</style>
           <div
             className="hero-grid grid gap-6"
-            style={{ gridTemplateColumns: '1fr 1.85fr' }}
+            style={{ gridTemplateColumns: mapa ? '1fr 1.85fr' : '1fr' }}
           >
             {/* Coluna esquerda: Score */}
-            <div
-              style={{
-                padding: '28px 24px',
-                borderRadius: 16,
-                background: 'var(--card-subtle)',
-                border: '1px solid var(--border-card)',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                textAlign: 'center',
-              }}
-            >
-              <p
-                style={{
-                  fontSize: 11,
-                  fontWeight: 600,
-                  color: 'var(--text-muted)',
-                  letterSpacing: '0.12em',
-                  textTransform: 'uppercase',
-                  marginBottom: 20,
-                }}
-              >
-                Sua nota
-              </p>
-              <div
-                style={{
-                  width: 110,
-                  height: 110,
-                  borderRadius: '50%',
-                  border: `3px solid ${scoreColor}`,
-                  boxShadow: `0 0 24px ${scoreColor}22, inset 0 0 20px ${scoreColor}08`,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginBottom: 14,
-                }}
-              >
-                <span className="font-mono font-bold" style={{ fontSize: 44, lineHeight: 1, color: scoreColor }}>
-                  {animatedScore}
-                </span>
-                <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>de 100</span>
-              </div>
-              <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.5, maxWidth: 260 }}>
-                Seu perfil só aparece para {score}% de quem procura pelo seu serviço na região.
-              </p>
-            </div>
+            <ScoreCard score={score} scoreColor={scoreColor} />
 
             {/* Coluna direita: Mapa */}
             {mapa && (
-              <div
-                style={{
-                  padding: '24px',
-                  borderRadius: 16,
-                  background: 'var(--card-subtle)',
-                  border: '1px solid var(--border-card)',
-                }}
-              >
-                <p
-                  style={{
-                    fontSize: 11,
-                    fontWeight: 600,
-                    color: 'var(--text-muted)',
-                    letterSpacing: '0.12em',
-                    textTransform: 'uppercase',
-                    marginBottom: 16,
-                  }}
-                >
-                  Onde você aparece no Google
-                </p>
-                <div
-                  style={{
-                    height: 220,
-                    borderRadius: 10,
-                    overflow: 'hidden',
-                    marginBottom: 12,
-                    border: '1px solid var(--border-subtle)',
-                  }}
-                >
-                  <DiagMapContent center={mapa.center} zones={mapa.zonas} radiusKm={radiusKm} />
-                </div>
-                {/* Legenda do mapa */}
-                <div className="flex flex-wrap gap-4" style={{ marginBottom: 10 }}>
-                  <div className="flex items-center gap-1.5">
-                    <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#4ADE80', display: 'inline-block', boxShadow: '0 0 4px rgba(74,222,128,0.5)' }} />
-                    <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Forte</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#FBBF24', display: 'inline-block' }} />
-                    <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Moderado</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#EF4444', display: 'inline-block' }} />
-                    <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Fraco</span>
-                  </div>
-                </div>
-                <ul style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.7, listStyle: 'none', padding: 0, margin: 0 }}>
-                  <li>Seu perfil alcança um raio de apenas <strong style={{ color: 'var(--text-primary)' }}>{radiusKm} km</strong></li>
-                  <li>Você está presente em {totalZones === 1 ? 'apenas 1 região' : `${totalZones} regiões`}
-                    {weakCount > 0 && <>, com <strong style={{ color: 'var(--error)' }}>{weakCount} {weakCount === 1 ? 'área fraca' : 'áreas fracas'}</strong></>}
-                  </li>
-                </ul>
-              </div>
+              <MapCard mapa={mapa} radiusKm={radiusKm} totalZones={totalZones} weakCount={weakCount} />
             )}
           </div>
         </section>
 
-        {/* ═══ BLOCO 2: Impacto + Quick Wins resumo + CTA ═══ */}
+        {/* BLOCO 2: Impacto + Quick Wins resumo + CTA */}
         <section style={{ paddingBottom: 48, textAlign: 'center' }}>
           <h2
             className="font-display font-bold"
             style={{ fontSize: 22, color: 'var(--text-primary)', lineHeight: 1.4, marginBottom: 6 }}
           >
-            Você está perdendo até 3 clientes por semana.
+            Você está perdendo até {lostClients} clientes por semana.
           </h2>
           <p style={{ fontSize: 16, color: 'var(--text-secondary)', marginBottom: 24 }}>
             O Destaka ajuda você a conquistar esses clientes.
           </p>
 
-          {/* Barras de quick wins (só dados reais) */}
+          {/* Barras de quick wins */}
           <div className="flex flex-col gap-3 text-left" style={{ maxWidth: 560, margin: '0 auto 28px' }}>
             {rapidos.length > 0 && (
-              <div
-                style={{
-                  padding: '12px 16px',
-                  borderRadius: 10,
-                  background: 'var(--success-bg)',
-                  border: '1px solid var(--success-border)',
-                }}
-              >
+              <div style={{ padding: '12px 16px', borderRadius: 10, background: 'var(--success-bg)', border: '1px solid var(--success-border)' }}>
                 <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--success)' }}>
                   {rapidos.length} {rapidos.length === 1 ? 'ajuste rápido' : 'ajustes rápidos'} = <span className="font-mono">+{rapidoImpact} pontos</span> em 7 dias
                 </p>
               </div>
             )}
             {estrategicos.length > 0 && (
-              <div
-                style={{
-                  padding: '12px 16px',
-                  borderRadius: 10,
-                  background: 'var(--warning-bg)',
-                  border: '1px solid var(--warning-border)',
-                }}
-              >
+              <div style={{ padding: '12px 16px', borderRadius: 10, background: 'var(--warning-bg)', border: '1px solid var(--warning-border)' }}>
                 <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--warning)' }}>
                   {estrategicos.length} {estrategicos.length === 1 ? 'ajuste estratégico' : 'ajustes estratégicos'} = <span className="font-mono">+{estrategicoImpact} pontos</span> em 30 dias
                 </p>
               </div>
             )}
             {continuos.length > 0 && (
-              <div
-                style={{
-                  padding: '12px 16px',
-                  borderRadius: 10,
-                  background: 'var(--accent-bg)',
-                  border: '1px solid var(--accent-border)',
-                }}
-              >
+              <div style={{ padding: '12px 16px', borderRadius: 10, background: 'var(--accent-bg)', border: '1px solid var(--accent-border)' }}>
                 <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--accent-bright)' }}>
                   {continuos.length} {continuos.length === 1 ? 'melhoria contínua' : 'melhorias contínuas'} para manter primeiras posições
                 </p>
@@ -439,7 +316,7 @@ function DiagnosticoContent({
           </button>
         </section>
 
-        {/* ═══ BLOCO 3: Concorrentes ═══ */}
+        {/* BLOCO 3: Concorrentes */}
         {data.concorrentes.length > 0 && (
           <div style={{ paddingBottom: 48 }}>
             <CompetitorsSection
@@ -451,7 +328,7 @@ function DiagnosticoContent({
           </div>
         )}
 
-        {/* ═══ BLOCO 4: Avaliações ═══ */}
+        {/* BLOCO 4: Avaliações */}
         <div style={{ paddingBottom: 48 }}>
           <ReviewsSection
             unansweredCount={data.reviews.sem_resposta_count}
@@ -459,40 +336,100 @@ function DiagnosticoContent({
           />
         </div>
 
-        {/* ═══ Tagline de transição ═══ */}
+        {/* Tagline de transição */}
         <section className="text-center" style={{ paddingBottom: 48 }}>
           <h2
             className="font-display font-bold"
-            style={{
-              fontSize: 26,
-              color: 'var(--text-primary)',
-              lineHeight: 1.35,
-              maxWidth: 560,
-              margin: '0 auto 12px',
-              letterSpacing: '-0.3px',
-            }}
+            style={{ fontSize: 26, color: 'var(--text-primary)', lineHeight: 1.35, maxWidth: 560, margin: '0 auto 12px', letterSpacing: '-0.3px' }}
           >
-            Você cuida de atender seus pacientes.
+            {tagline.title}
           </h2>
-          <p
-            style={{
-              fontSize: 18,
-              color: 'var(--accent-bright)',
-              lineHeight: 1.5,
-              maxWidth: 480,
-              margin: '0 auto',
-              fontWeight: 500,
-            }}
-          >
-            Nós cuidamos de fazer novos pacientes chegar até você.
+          <p style={{ fontSize: 18, color: 'var(--accent-bright)', lineHeight: 1.5, maxWidth: 480, margin: '0 auto', fontWeight: 500 }}>
+            {tagline.subtitle}
           </p>
         </section>
 
-        {/* ═══ BLOCO 5: Oferta ═══ */}
+        {/* BLOCO 5: Oferta */}
         <OfferSection score={score} />
       </main>
 
       <StickyCTA score={score} />
+    </div>
+  )
+}
+
+/* ── Sub-components ── */
+
+function ScoreCard({ score, scoreColor }: { score: number; scoreColor: string }) {
+  const { value: animatedScore, ref: scoreRef } = useCountUp(score)
+
+  return (
+    <div
+      ref={scoreRef}
+      style={{
+        padding: '28px 24px', borderRadius: 16,
+        background: 'var(--card-subtle)', border: '1px solid var(--border-card)',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center',
+      }}
+    >
+      <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 20 }}>
+        Sua nota
+      </p>
+      <div
+        style={{
+          width: 110, height: 110, borderRadius: '50%',
+          border: `3px solid ${scoreColor}`,
+          boxShadow: `0 0 24px ${scoreColor}22, inset 0 0 20px ${scoreColor}08`,
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginBottom: 14,
+        }}
+      >
+        <span className="font-mono font-bold" style={{ fontSize: 44, lineHeight: 1, color: scoreColor }}>
+          {animatedScore}
+        </span>
+        <span style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>de 100</span>
+      </div>
+      <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.5, maxWidth: 260 }}>
+        Seu perfil só aparece para {score}% de quem procura pelo seu serviço na região.
+      </p>
+    </div>
+  )
+}
+
+function MapCard({ mapa, radiusKm, totalZones, weakCount }: {
+  mapa: NonNullable<ReturnType<typeof useDiagnostico>['data']>['mapa']
+  radiusKm: number
+  totalZones: number
+  weakCount: number
+}) {
+  if (!mapa) return null
+  return (
+    <div style={{ padding: '24px', borderRadius: 16, background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}>
+      <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 16 }}>
+        Onde você aparece no Google
+      </p>
+      <div style={{ height: 220, borderRadius: 10, overflow: 'hidden', marginBottom: 12, border: '1px solid var(--border-subtle)' }}>
+        <DiagMapContent center={mapa.center} zones={mapa.zonas} radiusKm={radiusKm} />
+      </div>
+      <div className="flex flex-wrap gap-4" style={{ marginBottom: 10 }}>
+        <div className="flex items-center gap-1.5">
+          <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#4ADE80', display: 'inline-block', boxShadow: '0 0 4px rgba(74,222,128,0.5)' }} />
+          <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Forte</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#FBBF24', display: 'inline-block' }} />
+          <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Moderado</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#EF4444', display: 'inline-block' }} />
+          <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Fraco</span>
+        </div>
+      </div>
+      <ul style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.7, listStyle: 'none', padding: 0, margin: 0 }}>
+        <li>Seu perfil alcança um raio de apenas <strong style={{ color: 'var(--text-primary)' }}>{radiusKm} km</strong></li>
+        <li>Você está presente em {totalZones === 1 ? 'apenas 1 região' : `${totalZones} regiões`}
+          {weakCount > 0 && <>, com <strong style={{ color: 'var(--error)' }}>{weakCount} {weakCount === 1 ? 'área fraca' : 'áreas fracas'}</strong></>}
+        </li>
+      </ul>
     </div>
   )
 }
