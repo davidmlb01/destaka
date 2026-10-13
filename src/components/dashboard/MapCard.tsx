@@ -93,7 +93,15 @@ export default function MapCard({ isSubscriber }: { isSubscriber: boolean }) {
         </div>
       )}
 
-      {!loading && isSubscriber && data && !data.empty && (
+      {!loading && isSubscriber && data && !data.empty && data.zones.length <= 1 && (
+        <div className="h-[240px] sm:h-[280px] flex items-center justify-center text-zinc-400 text-center px-6">
+          <p className="text-sm leading-relaxed">
+            Seu negócio atende por área de serviço. O mapa de bairros aparece para negócios com endereço fixo.
+          </p>
+        </div>
+      )}
+
+      {!loading && isSubscriber && data && !data.empty && data.zones.length > 1 && (
         <div className="relative">
           <div className="h-[240px] sm:h-[280px] rounded-lg overflow-hidden">
             <MapContent center={data.center} zones={data.zones} />

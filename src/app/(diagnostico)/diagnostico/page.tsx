@@ -323,6 +323,20 @@ function MapCard({ mapa, radiusKm, totalZones, weakCount }: {
   radiusKm: number; totalZones: number; weakCount: number
 }) {
   if (!mapa) return null
+
+  if (mapa.zonas.length <= 1) {
+    return (
+      <div style={{ padding: '24px', borderRadius: 16, background: 'var(--card-subtle)', border: '1px solid var(--border-card)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 280 }}>
+        <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 16 }}>
+          Onde você aparece no Google
+        </p>
+        <p style={{ fontSize: 13, color: 'var(--text-tertiary)', textAlign: 'center', lineHeight: 1.6, maxWidth: 280 }}>
+          Seu negócio atende por área de serviço. O mapa de bairros aparece para negócios com endereço fixo.
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div style={{ padding: '24px', borderRadius: 16, background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}>
       <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 16 }}>

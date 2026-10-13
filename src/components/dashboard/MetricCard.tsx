@@ -42,15 +42,34 @@ export const MetricCard = memo(function MetricCard({ label, value, icon, hint }:
         </span>
       </div>
 
-      <p
-        className="font-display font-extrabold text-white relative"
-        style={{ fontSize: 30, lineHeight: 1, letterSpacing: '-0.5px' }}
-      >
-        {value.toLocaleString('pt-BR')}
-      </p>
-      <p className="text-xs mt-1.5" style={{ color: 'var(--text-tertiary)' }}>
-        {label}
-      </p>
+      {value > 0 ? (
+        <>
+          <p
+            className="font-display font-extrabold text-white relative"
+            style={{ fontSize: 30, lineHeight: 1, letterSpacing: '-0.5px' }}
+          >
+            {value.toLocaleString('pt-BR')}
+          </p>
+          <p className="text-xs mt-1.5" style={{ color: 'var(--text-tertiary)' }}>
+            {label}
+          </p>
+        </>
+      ) : (
+        <>
+          <p
+            className="font-display font-extrabold relative"
+            style={{ fontSize: 30, lineHeight: 1, letterSpacing: '-0.5px', color: 'rgba(255,255,255,0.3)' }}
+          >
+            -
+          </p>
+          <p className="text-xs mt-1.5" style={{ color: 'var(--text-tertiary)' }}>
+            {label}
+          </p>
+          <p className="text-[10px] mt-0.5" style={{ color: 'rgba(255,255,255,0.25)' }}>
+            (coletando)
+          </p>
+        </>
+      )}
     </div>
   )
 })

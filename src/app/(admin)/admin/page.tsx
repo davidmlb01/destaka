@@ -6,6 +6,7 @@ import { RetriggerButton } from './RetriggerButton'
 import { MrrLeadsChart, ScoreEvolutionChart } from './AdminCharts'
 import { TopMovers } from './TopMovers'
 import { Attribution } from './Attribution'
+import { getPageViews } from '@/lib/analytics/ga4'
 
 interface OrgRow {
   id: string
@@ -132,6 +133,17 @@ async function getAdminData() {
   const payingCount = safeOrgs.filter(o => o.subscription_status === 'active').length
   const leadToPayingRate = safeAllLeads.length > 0 ? Math.round((payingCount / safeAllLeads.length) * 100) : 0
 
+  // === GA4 traffic (graceful fallback) ===
+  const ga4PropertyId = process.env.GA4_PROPERTY_ID ?? ''
+  let ga4Data: Awaited<ReturnType<typeof getPageViews>> = null
+  if (ga4PropertyId) {
+    const now = new Date()
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+    const endDate = now.toISOString().slice(0, 10)
+    const startDate = thirtyDaysAgo.toISOString().slice(0, 10)
+    ga4Data = await getPageViews(ga4PropertyId, startDate, endDate)
+  }
+
   return {
     orgs: safeOrgs,
     scoresByOrg,
@@ -145,6 +157,7 @@ async function getAdminData() {
     activationRate,
     churnRate,
     leadToPayingRate,
+    ga4Data,
   }
 }
 
@@ -302,7 +315,7 @@ export default async function AdminPage() {
   const {
     orgs, scoresByOrg, pendingByOrg, tokenByOrg, leads,
     mrrLeadsData, scoreEvolution, topMovers, attribution,
-    activationRate, churnRate, leadToPayingRate,
+    activationRate, churnRate, leadToPayingRate, ga4Data,
   } = await getAdminData()
 
   const totalPending = Object.values(pendingByOrg).reduce((a, b) => a + b, 0)
@@ -368,6 +381,35 @@ export default async function AdminPage() {
           <TopMovers movers={topMovers} />
           <Attribution channels={attribution} />
         </div>
+
+        {/* Row 3b: Trafego do site (GA4) */}
+        <section className="rounded-2xl overflow-hidden" style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}>
+          <div className="px-6 py-4" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+            <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Tráfego do site</h2>
+            <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>Page views dos últimos 30 dias (GA4)</p>
+          </div>
+          {ga4Data ? (
+            <div className="px-6 py-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {['/', '/diagnostico', '/login', '/dashboard'].map(path => {
+                  const row = ga4Data.find(r => r.pagePath === path)
+                  return (
+                    <div key={path} className="rounded-xl px-4 py-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-subtle)' }}>
+                      <p className="text-xs font-mono truncate" style={{ color: 'var(--text-muted)' }}>{path}</p>
+                      <p className="text-lg font-bold mt-1" style={{ color: 'var(--text-primary)' }}>
+                        {row ? row.screenPageViews.toLocaleString('pt-BR') : '0'}
+                      </p>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className="px-6 py-8 text-center">
+              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Configure GA4_SERVICE_ACCOUNT_KEY para ver dados de tráfego.</p>
+            </div>
+          )}
+        </section>
 
         {/* Row 4: Clientes */}
         <section className="rounded-2xl overflow-hidden" style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}>
