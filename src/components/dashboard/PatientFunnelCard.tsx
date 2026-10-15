@@ -82,12 +82,6 @@ export function PatientFunnelCard() {
         className="rounded-2xl p-6"
         style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}
       >
-        <p
-          className="text-xs font-bold tracking-[0.12em] uppercase mb-3"
-          style={{ color: 'rgba(255,255,255,0.38)' }}
-        >
-          Seus pacientes
-        </p>
         <div className="flex flex-col items-center py-8 text-center">
           <p className="text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>
             Dados sendo coletados. O primeiro relatório aparece na próxima segunda-feira.
@@ -109,7 +103,7 @@ export function PatientFunnelCard() {
         className="text-xs font-bold tracking-[0.12em] uppercase mb-5"
         style={{ color: 'rgba(255,255,255,0.38)' }}
       >
-        Seus pacientes esta semana
+        Seus clientes esta semana
       </p>
 
       {/* Funil vertical */}

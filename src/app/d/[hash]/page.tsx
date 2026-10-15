@@ -109,7 +109,7 @@ export default function PublicDiagnosticoPage() {
       {/* Header */}
       <header style={{ background: 'rgba(7,26,25,0.95)', backdropFilter: 'blur(12px)', height: 56 }}>
         <div className="max-w-[900px] mx-auto px-6 h-full flex items-center justify-between">
-          <Logo size="md" href="https://destaka.com.br" vertical="Saúde" />
+          <Logo size="md" href="https://destaka.com.br" />
           <a
             href="https://destaka.com.br/verificar"
             className="font-semibold"

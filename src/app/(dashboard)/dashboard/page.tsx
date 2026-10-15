@@ -60,7 +60,7 @@ export default async function DashboardPage({
       userEmail={user.email ?? ''}
       isSubscriber={true}
     >
-      <div className="max-w-5xl mx-auto px-6 py-8 space-y-6">
+      <div className="max-w-5xl mx-auto px-6 py-10 space-y-8">
         {checkoutStatus && <CheckoutBanner status={checkoutStatus} />}
 
         <DashboardContent />

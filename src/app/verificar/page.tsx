@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/Button'
 import { VerifyTool } from '@/components/verificar/VerifyTool'
 
 export const metadata = {
-  title: 'Diagnostico GMB Gratuito — Destaka',
-  description: 'Cole o link do Google Maps de qualquer clinica ou consultorio e veja o score de visibilidade em segundos.',
+  title: 'Diagnóstico GMB Gratuito | Destaka',
+  description: 'Cole o link do Google Maps de qualquer clínica ou consultório e veja o score de visibilidade em segundos.',
 }
 
 export default function VerificarPage() {
@@ -26,7 +26,7 @@ export default function VerificarPage() {
 
       {/* Header */}
       <header className="relative z-10 px-6 py-5 flex items-center justify-between max-w-4xl mx-auto">
-        <Logo size="lg" href="/" vertical="Saúde" />
+        <Logo size="lg" href="/" />
         <Button variant="ghost" size="sm" href="/login">
           Entrar na plataforma
         </Button>
@@ -37,20 +37,20 @@ export default function VerificarPage() {
 
         {/* Hero */}
         <div className="text-center pt-8 pb-10">
-          <Badge className="mb-5">Diagnostico gratuito</Badge>
+          <Badge className="mb-5">Diagnóstico gratuito</Badge>
 
           <h1
             className="font-display font-extrabold text-white mb-4"
             style={{ fontSize: 'clamp(28px, 5vw, 42px)', letterSpacing: '-0.5px', lineHeight: 1.12 }}
           >
-            Descubra o score de visibilidade<br />de qualquer negocio no Google
+            Descubra o score de visibilidade<br />de qualquer negócio no Google
           </h1>
 
           <p
             className="text-base max-w-md mx-auto"
             style={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1.7 }}
           >
-            Cole o link do Google Maps, receba uma analise completa em segundos. Sem cadastro, sem login.
+            Cole o link do Google Maps, receba uma análise completa em segundos. Sem cadastro, sem login.
           </p>
         </div>
 
