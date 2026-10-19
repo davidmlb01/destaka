@@ -46,8 +46,8 @@ const PET: VerticalVocab = {
   cliente: 'tutor',
   local: 'clínica',
   atendimento: 'atendimento',
-  profissional: 'profissional pet',
-  volumeLabel: 'Quantos tutores você atende por semana?',
+  profissional: 'veterinário',
+  volumeLabel: 'Quantos animais você atende por semana?',
   tagline: {
     title: 'Você cuida dos pets.',
     subtitle: 'Nós cuidamos de trazer novos tutores até você.',

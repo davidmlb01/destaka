@@ -27,6 +27,7 @@ interface QRData {
 }
 
 export function ReviewQRCard({ specialty }: { specialty?: string | null }) {
+  const vocab = getVocab(specialty)
   const [data, setData] = useState<QRData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -166,7 +167,7 @@ export function ReviewQRCard({ specialty }: { specialty?: string | null }) {
             QR Code para avaliações
           </h3>
           <p className="text-sm mb-4" style={{ color: 'rgba(255,255,255,0.55)', lineHeight: 1.6 }}>
-            Imprima e coloque na recepção{getVocab(specialty).local !== 'estabelecimento' ? ` do ${getVocab(specialty).local}` : ''}. Seus {getVocab(specialty).clientes} escaneiam e avaliam direto no Google.
+            Imprima e coloque na recepção{vocab.local !== 'estabelecimento' ? ` do ${vocab.local}` : ''}. Seus {vocab.clientes} escaneiam e avaliam direto no Google.
           </p>
 
           {/* Link copiável */}

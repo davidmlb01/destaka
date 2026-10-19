@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og'
 
-export const alt = 'Destaka Saúde — presença digital para profissionais de saúde'
+export const alt = 'Destaka — presença digital no piloto automático'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -38,7 +38,7 @@ export default function Image() {
             D
           </div>
           <span style={{ color: '#14B8A6', fontSize: 26, fontWeight: 700, letterSpacing: '-0.5px' }}>
-            Destaka Saúde
+            Destaka
           </span>
         </div>
 
@@ -59,7 +59,7 @@ export default function Image() {
         </h1>
 
         <p style={{ color: 'rgba(255,255,255,0.60)', fontSize: 24, margin: 0, lineHeight: 1.5 }}>
-          Presença digital no piloto automático para profissionais de saúde.
+          Presença digital no piloto automático para seu negócio.
         </p>
 
         <div style={{ marginTop: 48, display: 'flex' }}>

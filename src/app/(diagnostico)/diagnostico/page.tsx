@@ -9,6 +9,7 @@ import OfferSection from '@/components/diagnostico/OfferSection'
 import StickyCTA from '@/components/diagnostico/StickyCTA'
 import ShareButton from '@/components/diagnostico/ShareButton'
 import { detectSegment } from '@/lib/gmb/segment'
+import { getVocab } from '@/lib/vertical-vocab'
 import { Logo } from '@/components/ui/Logo'
 import type { DiagGap } from '@/components/diagnostico/useDiagnostico'
 import { trackBeginCheckout } from '@/lib/tracking/events'
@@ -72,27 +73,8 @@ function estimateLostClients(score: number): number {
 }
 
 function getVerticalLabel(categoria: string): string | undefined {
-  const lower = (categoria || '').toLowerCase()
-  if (lower.includes('saúde') || lower.includes('saude') || lower.includes('médic') || lower.includes('medic') || lower.includes('dentist') || lower.includes('fisio') || lower.includes('psicol') || lower.includes('nutrici')) return 'Saúde'
-  if (lower.includes('pet') || lower.includes('veterinár') || lower.includes('veterinar')) return 'Pet'
-  if (lower.includes('advogad') || lower.includes('jurídi') || lower.includes('juridi')) return 'Jurídico'
-  if (lower.includes('contab') || lower.includes('contábil')) return 'Contábil'
-  if (lower.includes('imobiliár') || lower.includes('imobiliar')) return 'Imóveis'
-  return undefined
-}
-
-function getTagline(categoria: string): { title: string; subtitle: string } {
-  const lower = (categoria || '').toLowerCase()
-  if (lower.includes('saúde') || lower.includes('saude') || lower.includes('médic') || lower.includes('medic') || lower.includes('dentist') || lower.includes('fisio') || lower.includes('psicol') || lower.includes('nutrici')) {
-    return { title: 'Você cuida de atender seus pacientes.', subtitle: 'Nós cuidamos de fazer novos pacientes chegar até você.' }
-  }
-  if (lower.includes('pet') || lower.includes('veterinár') || lower.includes('veterinar')) {
-    return { title: 'Você cuida dos pets.', subtitle: 'Nós cuidamos de trazer novos tutores até você.' }
-  }
-  if (lower.includes('advogad') || lower.includes('jurídi') || lower.includes('juridi')) {
-    return { title: 'Você cuida dos seus clientes.', subtitle: 'Nós cuidamos de trazer novos clientes até você.' }
-  }
-  return { title: 'Você cuida do seu negócio.', subtitle: 'Nós cuidamos de trazer novos clientes até você.' }
+  const vocab = getVocab(categoria ? detectSegment(categoria) : null)
+  return vocab.brandLabel || undefined
 }
 
 /* ── Page ── */
@@ -131,8 +113,10 @@ export default function DiagnosticoPage() {
   const score = data.score?.atual ?? 0
   const scoreColor = hasScore ? getScoreColor(score) : 'var(--text-muted)'
   const lostClients = hasScore ? estimateLostClients(score) : 0
+  const segment = categoria ? detectSegment(categoria) : null
   const vertical = getVerticalLabel(categoria)
-  const tagline = getTagline(categoria)
+  const vocab = getVocab(segment)
+  const tagline = vocab.tagline
   const userRating = data.reviews?.ultima?.nota ?? 0
   const userReviewCount = (data.reviews?.sem_resposta_count ?? 0) + (data.reviews?.ultima ? 1 : 0)
 
@@ -269,7 +253,7 @@ export default function DiagnosticoPage() {
         )}
 
         {/* BLOCO 5: Oferta */}
-        {hasScore && <OfferSection score={score} specialty={categoria ? detectSegment(categoria) : null} />}
+        {hasScore && <OfferSection score={score} specialty={segment} />}
       </main>
 
       {hasScore && <StickyCTA score={score} />}

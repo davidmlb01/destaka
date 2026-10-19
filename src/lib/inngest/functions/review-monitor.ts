@@ -164,7 +164,7 @@ export const reviewMonitor = inngest.createFunction(
                   reviewRating: rating,
                   reviewText: review.comment ?? null,
                   dashboardUrl,
-                  specialty: org.specialty as string ?? null,
+                  specialty: (org.specialty as string) ?? null,
                 })
 
                 await db.from('alerts_sent').insert({
@@ -253,7 +253,7 @@ export const reviewMonitor = inngest.createFunction(
                 reviewRating: rating,
                 reviewText: review.comment ?? null,
                 suggestedReply: responseText,
-                specialty: org.specialty as string ?? null,
+                specialty: (org.specialty as string) ?? null,
               }).catch(() => {})
             }
           }
