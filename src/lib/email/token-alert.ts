@@ -1,14 +1,19 @@
 import { resend, FROM } from './index'
 import { escapeHtml } from '@/lib/utils/escape-html'
+import { getVocab, getBrandName } from '@/lib/vertical-vocab'
 
 interface TokenDisconnectedParams {
   to: string
   orgName: string
   dashboardUrl: string
+  specialty?: string | null
 }
 
 export async function sendTokenDisconnectedAlert(params: TokenDisconnectedParams) {
-  const { to, orgName, dashboardUrl } = params
+  const { to, orgName, dashboardUrl, specialty } = params
+  const vocab = getVocab(specialty)
+  const brand = getBrandName(specialty)
+  const brandSuffix = vocab.brandLabel ? `<span style="font-size:18px;font-weight:300;color:rgba(255,255,255,0.5);letter-spacing:-0.015em;line-height:1;margin-left:4px;">${vocab.brandLabel}</span>` : ''
 
   const html = `
 <!DOCTYPE html>
@@ -25,7 +30,7 @@ export async function sendTokenDisconnectedAlert(params: TokenDisconnectedParams
             </td>
             <td style="vertical-align:middle;">
               <span style="font-size:18px;font-weight:700;color:#ffffff;letter-spacing:-0.015em;line-height:1;">Destaka</span>
-              <span style="font-size:18px;font-weight:300;color:rgba(255,255,255,0.5);letter-spacing:-0.015em;line-height:1;margin-left:4px;">Sa\u00fade</span>
+              ${brandSuffix}
             </td>
           </tr></table>
         </td></tr>
@@ -47,7 +52,7 @@ export async function sendTokenDisconnectedAlert(params: TokenDisconnectedParams
           </a>
         </td></tr>
         <tr><td style="background:#f3f4f6;border-radius:0 0 16px 16px;padding:24px 36px;text-align:center;">
-          <p style="font-size:13px;color:#4b5563;margin:0 0 4px;font-weight:500;">Voc\u00ea cuida dos seus pacientes. O Destaka Sa\u00fade cuida de trazer os pr\u00f3ximos.</p>
+          <p style="font-size:13px;color:#4b5563;margin:0 0 4px;font-weight:500;">${vocab.emailFooter}</p>
           <p style="font-size:11px;color:#9ca3af;margin:0;">D\u00favidas? <a href="mailto:suporte@destaka.com.br" style="color:#0f766e;text-decoration:none;">suporte@destaka.com.br</a></p>
         </td></tr>
       </table>

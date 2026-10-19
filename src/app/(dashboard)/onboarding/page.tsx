@@ -22,12 +22,14 @@ interface PrefillData {
   specialty: string
 }
 
-const CHALLENGES = [
-  { value: 'more_patients', label: 'Atrair mais clientes novos' },
-  { value: 'more_reviews', label: 'Aumentar avaliações positivas' },
-  { value: 'more_visibility', label: 'Aparecer melhor no Google' },
-  { value: 'all', label: 'Melhorar tudo, não sei por onde começar' },
-]
+function getChallenges(clientes: string) {
+  return [
+    { value: 'more_patients', label: `Atrair mais ${clientes} novos` },
+    { value: 'more_reviews', label: 'Aumentar avaliações positivas' },
+    { value: 'more_visibility', label: 'Aparecer melhor no Google' },
+    { value: 'all', label: 'Melhorar tudo, não sei por onde começar' },
+  ]
+}
 
 const VOLUMES = [
   { value: 'under_10', label: 'Menos de 10' },
@@ -398,7 +400,7 @@ export default function OnboardingPage() {
               </p>
 
               <div className="space-y-2 mb-6">
-                {CHALLENGES.map(c => (
+                {getChallenges(vocab.clientes).map(c => (
                   <button
                     key={c.value}
                     onClick={() => setChallenge(c.value)}

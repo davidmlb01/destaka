@@ -1,5 +1,6 @@
 import { resend, FROM } from './index'
 import { escapeHtml } from '@/lib/utils/escape-html'
+import { getVocab, getBrandName } from '@/lib/vertical-vocab'
 
 interface NegativeReviewAlertParams {
   to: string
@@ -8,10 +9,13 @@ interface NegativeReviewAlertParams {
   reviewRating: number
   reviewText: string | null
   dashboardUrl: string
+  specialty?: string | null
 }
 
 export async function sendNegativeReviewAlert(params: NegativeReviewAlertParams) {
-  const { to, orgName, reviewAuthor, reviewRating, reviewText, dashboardUrl } = params
+  const { to, orgName, reviewAuthor, reviewRating, reviewText, dashboardUrl, specialty } = params
+  const vocab = getVocab(specialty)
+  const brandSuffix = vocab.brandLabel ? `<span style="font-size:18px;font-weight:300;color:rgba(255,255,255,0.5);letter-spacing:-0.015em;line-height:1;margin-left:4px;">${vocab.brandLabel}</span>` : ''
   const stars = '\u2605'.repeat(reviewRating) + '\u2606'.repeat(5 - reviewRating)
   const safeAuthor = (reviewAuthor ?? '').replace(/[\r\n\t]/g, ' ').slice(0, 100)
 
@@ -30,7 +34,7 @@ export async function sendNegativeReviewAlert(params: NegativeReviewAlertParams)
             </td>
             <td style="vertical-align:middle;">
               <span style="font-size:18px;font-weight:700;color:#ffffff;letter-spacing:-0.015em;line-height:1;">Destaka</span>
-              <span style="font-size:18px;font-weight:300;color:rgba(255,255,255,0.5);letter-spacing:-0.015em;line-height:1;margin-left:4px;">Sa\u00fade</span>
+              ${brandSuffix}
             </td>
           </tr></table>
         </td></tr>
@@ -46,7 +50,7 @@ export async function sendNegativeReviewAlert(params: NegativeReviewAlertParams)
           </div>
 
           <p style="font-size:15px;color:#4b5563;line-height:1.6;margin:0 0 24px;">
-            Responder pessoalmente a avalia\u00e7\u00f5es negativas \u00e9 fundamental. Pacientes que veem uma resposta cuidadosa do profissional confiam mais do que se o review negativo n\u00e3o existisse.
+            Responder pessoalmente a avalia\u00e7\u00f5es negativas \u00e9 fundamental. ${vocab.clientes.charAt(0).toUpperCase() + vocab.clientes.slice(1)} que veem uma resposta cuidadosa do profissional confiam mais do que se o review negativo n\u00e3o existisse.
           </p>
 
           <a href="${escapeHtml(dashboardUrl)}" style="display:inline-block;background:#0f766e;color:#ffffff;font-weight:700;font-size:15px;padding:14px 32px;border-radius:10px;text-decoration:none;margin-top:8px;">
@@ -54,7 +58,7 @@ export async function sendNegativeReviewAlert(params: NegativeReviewAlertParams)
           </a>
         </td></tr>
         <tr><td style="background:#f3f4f6;border-radius:0 0 16px 16px;padding:24px 36px;text-align:center;">
-          <p style="font-size:13px;color:#4b5563;margin:0 0 4px;font-weight:500;">Voc\u00ea cuida dos seus pacientes. O Destaka Sa\u00fade cuida de trazer os pr\u00f3ximos.</p>
+          <p style="font-size:13px;color:#4b5563;margin:0 0 4px;font-weight:500;">${vocab.emailFooter}</p>
           <p style="font-size:11px;color:#9ca3af;margin:0;">D\u00favidas? <a href="mailto:suporte@destaka.com.br" style="color:#0f766e;text-decoration:none;">suporte@destaka.com.br</a></p>
         </td></tr>
       </table>

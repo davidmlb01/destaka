@@ -8,10 +8,11 @@ interface PageViewRow {
  * Requires GA4_SERVICE_ACCOUNT_KEY env var with service account JSON.
  * Returns null when not configured (graceful fallback).
  *
- * TODO: Configurar service account no Google Cloud com acesso ao GA4.
+ * Requer service account no Google Cloud com acesso ao GA4.
  * Env vars necessarias:
  *   GA4_SERVICE_ACCOUNT_KEY = JSON da credencial do service account
  *   GA4_PROPERTY_ID = ID da propriedade GA4 (ex: 123456789)
+ * Nao bloqueia MVP: retorna null quando nao configurado.
  */
 export async function getPageViews(
   _propertyId: string,

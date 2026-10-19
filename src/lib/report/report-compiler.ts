@@ -36,6 +36,9 @@ export interface MonthlyReportData {
   // Posts
   posts_published_this_month: number
 
+  // Vertical
+  specialty: string | null
+
   // Engajamento
   days_as_customer: number
   score_initial: number
@@ -123,7 +126,7 @@ export async function compileMonthlyReport(
   // Dados da organização e profissional
   const { data: org } = await db
     .from('organizations')
-    .select('name, created_at')
+    .select('name, created_at, specialty')
     .eq('id', orgId)
     .single()
 
@@ -257,6 +260,7 @@ export async function compileMonthlyReport(
     avg_rating: parseFloat(avgRating.toFixed(1)),
     response_rate: parseFloat(responseRate.toFixed(2)),
     posts_published_this_month: postsPublished,
+    specialty: (org.specialty as string) ?? null,
     days_as_customer: org.created_at
       ? Math.floor((Date.now() - new Date(org.created_at).getTime()) / (1000 * 60 * 60 * 24))
       : 0,

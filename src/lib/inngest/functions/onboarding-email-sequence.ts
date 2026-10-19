@@ -55,7 +55,7 @@ export const onboardingEmailSequence = inngest.createFunction(
 
       const { data: org } = await db
         .from('organizations')
-        .select('name, created_at')
+        .select('name, created_at, specialty')
         .eq('id', organization_id)
         .single()
 
@@ -72,8 +72,9 @@ export const onboardingEmailSequence = inngest.createFunction(
       const firstName = fullName.split(' ')[0]
       const orgName = org?.name ?? 'Sua clinica'
       const initialScore = initialScoreRow?.total ?? 0
+      const specialty = (org?.specialty as string) ?? null
 
-      return { email, firstName, orgName, initialScore }
+      return { email, firstName, orgName, initialScore, specialty }
     })
 
     const results: Array<{ day: OnboardingEmailDay; status: string; error?: string }> = []
@@ -92,6 +93,7 @@ export const onboardingEmailSequence = inngest.createFunction(
             firstName: context.firstName,
             orgName: context.orgName,
             day,
+            specialty: context.specialty,
           }
 
           if (day === 1) {

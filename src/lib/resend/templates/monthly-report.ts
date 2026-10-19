@@ -2,6 +2,7 @@
 // Todos os dados devem vir do cliente. Proibido inventar ou usar dados genéricos.
 import type { MonthlyReportData } from '@/lib/report/report-compiler'
 import { escapeHtml } from '@/lib/utils/escape-html'
+import { getVocab, getBrandName } from '@/lib/vertical-vocab'
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://destaka.com.br'
 const SUPPORT_EMAIL = 'suporte@destaka.com.br'
@@ -39,6 +40,7 @@ function scoreBar(value: number, max: number, color: string): string {
 
 function subjectLine(data: MonthlyReportData): string {
   const firstName = escapeHtml(data.professional_name.split(' ')[0])
+  const v = getVocab(data.specialty)
 
   if (data.score_delta > 5) {
     return `${firstName}, +${data.score_delta} pontos em ${data.month_label}. Seus números estão aqui.`
@@ -49,7 +51,7 @@ function subjectLine(data: MonthlyReportData): string {
   if (data.score_delta < 0) {
     return `${firstName}, seu relatório de ${data.month_label} está pronto. Já temos o plano.`
   }
-  return `${firstName}, ${data.month_label} fechou. ${data.reviews_new_this_month > 0 ? `${data.reviews_new_this_month} pacientes avaliaram você.` : 'Veja o resumo completo.'}`
+  return `${firstName}, ${data.month_label} fechou. ${data.reviews_new_this_month > 0 ? `${data.reviews_new_this_month} ${v.clientes} avaliaram você.` : 'Veja o resumo completo.'}`
 }
 
 function heroHeadline(data: MonthlyReportData): string {
@@ -77,18 +79,19 @@ function daysAsCustomerCopy(days: number): string {
 
 function reputationInsight(data: MonthlyReportData): string {
   const rate = Math.round(data.response_rate * 100)
+  const v = getVocab(data.specialty)
   const lines: string[] = []
 
   if (data.reviews_new_this_month === 0) {
-    lines.push('Nenhuma avaliação nova este mês. Incentivar pacientes a avaliar pode mudar esse número rapidamente.')
+    lines.push(`Nenhuma avaliação nova este mês. Incentivar ${v.clientes} a avaliar pode mudar esse número rapidamente.`)
   } else if (data.reviews_new_this_month === 1) {
-    lines.push('1 paciente avaliou você este mês. Cada avaliação conta para o Google te mostrar mais.')
+    lines.push(`1 ${v.cliente} avaliou você este mês. Cada avaliação conta para o Google te mostrar mais.`)
   } else {
-    lines.push(`${data.reviews_new_this_month} pacientes avaliaram você. Isso alimenta diretamente sua posição no Maps.`)
+    lines.push(`${data.reviews_new_this_month} ${v.clientes} avaliaram você. Isso alimenta diretamente sua posição no Maps.`)
   }
 
   if (rate >= 80) {
-    lines.push(`Você respondeu ${rate}% das avaliações. Pacientes percebem esse cuidado.`)
+    lines.push(`Você respondeu ${rate}% das avaliações. ${v.clientes.charAt(0).toUpperCase() + v.clientes.slice(1)} percebem esse cuidado.`)
   } else if (rate >= 50) {
     lines.push(`${rate}% de taxa de resposta. Responder a todos aumenta sua nota de relevância no Google.`)
   } else if (rate > 0) {
@@ -120,6 +123,9 @@ function engagementInsight(data: MonthlyReportData): string {
 }
 
 export function buildMonthlyReportEmail(data: MonthlyReportData): { subject: string; html: string } {
+  const vocab = getVocab(data.specialty)
+  const brand = getBrandName(data.specialty)
+  const brandSuffix = vocab.brandLabel ? `<span style="font-size:18px;font-weight:300;color:rgba(255,255,255,0.5);letter-spacing:-0.015em;line-height:1;margin-left:4px;">${vocab.brandLabel}</span>` : ''
   const color = FAIXA_COLOR[data.score_faixa] ?? '#6b7280'
   const faixaLabel = FAIXA_LABEL[data.score_faixa] ?? 'Presença'
   const badgeTextColor = FAIXA_BADGE_TEXT[data.score_faixa] ?? color
@@ -134,7 +140,7 @@ export function buildMonthlyReportEmail(data: MonthlyReportData): { subject: str
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Destaka Saúde ${data.month_label} ${data.year}</title>
+  <title>${brand} ${data.month_label} ${data.year}</title>
 </head>
 <body style="margin:0;padding:0;background:#f3f4f6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;padding:32px 0;">
@@ -149,7 +155,7 @@ export function buildMonthlyReportEmail(data: MonthlyReportData): { subject: str
         </td>
         <td style="vertical-align:middle;">
           <span style="font-size:18px;font-weight:700;color:#ffffff;letter-spacing:-0.015em;line-height:1;">Destaka</span>
-          <span style="font-size:18px;font-weight:300;color:rgba(255,255,255,0.5);letter-spacing:-0.015em;line-height:1;margin-left:4px;">Saúde</span>
+          ${brandSuffix}
         </td>
       </tr></table>
       <h1 style="color:#ffffff;font-size:28px;font-weight:800;margin:0 0 6px;line-height:1.2;">
@@ -160,7 +166,7 @@ export function buildMonthlyReportEmail(data: MonthlyReportData): { subject: str
 
     <!-- Tempo como cliente -->
     <tr><td style="background:#ffffff;padding:36px 36px 28px;">
-      <p style="color:#6b7280;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 8px;">Seu histórico com o Destaka Saúde</p>
+      <p style="color:#6b7280;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 8px;">Seu histórico com o ${brand}</p>
       <p style="font-size:48px;font-weight:900;color:#111827;line-height:1;margin:0;">${data.days_as_customer} <span style="font-size:20px;font-weight:400;color:#6b7280;">dias</span></p>
       <p style="font-size:15px;color:#4b5563;line-height:1.6;margin:12px 0 0;">${daysAsCustomerCopy(data.days_as_customer)}</p>
     </td></tr>
@@ -190,7 +196,7 @@ export function buildMonthlyReportEmail(data: MonthlyReportData): { subject: str
       ${totalDelta > 20
         ? `<p style="font-size:15px;color:#4b5563;line-height:1.6;margin:16px 0 0;">Essa evolução não é sorte. É o resultado de ${data.days_as_customer} dias de trabalho contínuo no seu perfil.</p>`
         : totalDelta > 0
-          ? `<p style="font-size:15px;color:#4b5563;line-height:1.6;margin:16px 0 0;">Crescimento real. Cada ponto a mais significa que o Google está mostrando você para mais pacientes.</p>`
+          ? `<p style="font-size:15px;color:#4b5563;line-height:1.6;margin:16px 0 0;">Crescimento real. Cada ponto a mais significa que o Google está mostrando você para mais ${vocab.clientes}.</p>`
           : totalDelta === 0
             ? `<p style="font-size:15px;color:#4b5563;line-height:1.6;margin:16px 0 0;">O score se manteve. Vamos identificar onde destravar o próximo salto.</p>`
             : `<p style="font-size:15px;color:#4b5563;line-height:1.6;margin:16px 0 0;">Seu score caiu em relação ao início. Isso acontece quando fatores externos mudam. Já estamos corrigindo.</p>`}
@@ -201,7 +207,7 @@ export function buildMonthlyReportEmail(data: MonthlyReportData): { subject: str
 
     <!-- Score do mês -->
     <tr><td style="background:#ffffff;padding:28px 36px;">
-      <p style="color:#6b7280;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 4px;">Score Destaka Saúde</p>
+      <p style="color:#6b7280;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 4px;">Score ${brand}</p>
       <span style="font-size:72px;font-weight:900;color:${color};line-height:1;letter-spacing:-2px;vertical-align:baseline;">${data.score_current}</span>
       <span style="font-size:24px;font-weight:400;color:#9ca3af;margin-left:4px;vertical-align:baseline;">/100</span>
       <br>
@@ -276,7 +282,7 @@ export function buildMonthlyReportEmail(data: MonthlyReportData): { subject: str
 
       ${data.review_analysis.topPraises.length > 0 ? `
       <p style="font-size:15px;color:#4b5563;line-height:1.6;margin:0 0 8px;">
-        <strong>Seus pacientes mais elogiam:</strong>
+        <strong>Seus ${vocab.clientes} mais elogiam:</strong>
       </p>
       <p style="font-size:15px;color:#111827;line-height:1.6;margin:0 0 16px;">
         ${data.review_analysis.topPraises.map(p => `"${escapeHtml(p.theme)}" (${p.count}x)`).join(', ')}
@@ -326,9 +332,9 @@ export function buildMonthlyReportEmail(data: MonthlyReportData): { subject: str
 
     <tr><td style="background:#ffffff;padding:0 36px;"><hr style="border:none;border-top:1px solid #f3f4f6;margin:0;"></td></tr>` : ''}
 
-    <!-- O que o Destaka Saúde fez -->
+    <!-- O que o ${brand} fez -->
     <tr><td style="background:#ffffff;padding:28px 36px;">
-      <p style="color:#111827;font-size:16px;font-weight:700;margin:0 0 12px;">Enquanto você atendia pacientes</p>
+      <p style="color:#111827;font-size:16px;font-weight:700;margin:0 0 12px;">Enquanto você atendia ${vocab.clientes}</p>
       <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
           <td style="background:#f9fafb;border-radius:10px;padding:16px;">
@@ -345,7 +351,7 @@ export function buildMonthlyReportEmail(data: MonthlyReportData): { subject: str
 
     <!-- Reputação -->
     <tr><td style="background:#ffffff;padding:28px 36px;">
-      <p style="color:#111827;font-size:16px;font-weight:700;margin:0 0 16px;">O que os pacientes disseram</p>
+      <p style="color:#111827;font-size:16px;font-weight:700;margin:0 0 16px;">O que os ${vocab.clientes} disseram</p>
 
       <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
         <tr>
@@ -383,13 +389,13 @@ export function buildMonthlyReportEmail(data: MonthlyReportData): { subject: str
     <!-- Footer -->
     <tr><td style="background:#f3f4f6;border-radius:0 0 16px 16px;padding:24px 36px;text-align:center;">
       <p style="font-size:13px;color:#4b5563;margin:0 0 8px;font-weight:500;">
-        Você cuida dos seus pacientes. O Destaka Saúde cuida de trazer os próximos.
+        ${vocab.emailFooter}
       </p>
       <p style="font-size:12px;color:#6b7280;margin:0 0 4px;">
         Dúvidas? <a href="mailto:${SUPPORT_EMAIL}" style="color:#0f766e;font-weight:600;text-decoration:none;">${SUPPORT_EMAIL}</a>
       </p>
       <p style="font-size:11px;color:#6b7280;margin:0;">
-        Destaka Saúde &bull; ${escapeHtml(data.organization_name)}
+        ${brand} &bull; ${escapeHtml(data.organization_name)}
       </p>
     </td></tr>
 
