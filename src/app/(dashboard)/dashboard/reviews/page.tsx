@@ -20,9 +20,10 @@ export default async function ReviewsPage() {
   if (!await isActiveSubscriber(professional.organization_id)) redirect('/dashboard/upgrade?feature=reviews')
 
   const { data: org } = await supabase
-    .from('organizations').select('name').eq('id', professional.organization_id).maybeSingle()
+    .from('organizations').select('name, specialty').eq('id', professional.organization_id).maybeSingle()
 
   const profileName = org?.name ?? 'Meu Perfil'
+  const specialty = (org?.specialty as string) ?? null
 
   return (
     <DashboardLayout activeHref="/dashboard/reviews" profileName={profileName} userEmail={user.email ?? ''}>
@@ -36,7 +37,7 @@ export default async function ReviewsPage() {
             Responder avaliações rápido melhora seu ranking no Google. O Destaka sugere respostas personalizadas, você revisa e publica.
           </p>
         </div>
-        <ReviewQRCard />
+        <ReviewQRCard specialty={specialty} />
         <ReviewsContent />
       </div>
     </DashboardLayout>

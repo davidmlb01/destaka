@@ -5,6 +5,7 @@ import { CompetitorsSkeleton } from './Skeletons'
 import { Spinner } from '@/components/ui/Spinner'
 import { useCompetitors } from './hooks/useCompetitors'
 import { useCompetitiveAnalysis } from './hooks/useCompetitiveAnalysis'
+import { getVocab } from '@/lib/vertical-vocab'
 
 interface Profile {
   id: string
@@ -140,7 +141,8 @@ const PRIORITY_CONFIG = {
   low: { label: 'Opcional', color: '#60A5FA', bg: 'rgba(96,165,250,0.1)', border: 'rgba(96,165,250,0.2)' },
 }
 
-function OpportunitiesSection() {
+function OpportunitiesSection({ specialty }: { specialty?: string | null }) {
+  const vocab = getVocab(specialty)
   const { analysis, isLoading } = useCompetitiveAnalysis()
 
   if (isLoading) return null
@@ -219,7 +221,7 @@ function OpportunitiesSection() {
 
               {!gap.suggested_action && gap.type === 'reviews' && (
                 <p className="mt-2 text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                  Peça uma avaliação ao paciente no final de cada consulta.
+                  Peça uma avaliação ao {vocab.cliente} no final de cada {vocab.atendimento}.
                 </p>
               )}
             </div>
@@ -230,7 +232,7 @@ function OpportunitiesSection() {
       {analysis.keyword_opportunities.length > 0 && (
         <div className="mt-4">
           <p className="text-xs font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
-            O que os pacientes mais buscam na sua região:
+            O que seus {vocab.clientes} mais buscam na sua região:
           </p>
           <div className="flex flex-wrap gap-1.5">
             {analysis.keyword_opportunities.slice(0, 8).map((kw: string, i: number) => (
@@ -255,7 +257,8 @@ function OpportunitiesSection() {
   )
 }
 
-export function CompetitorsContent() {
+export function CompetitorsContent({ specialty }: { specialty?: string | null }) {
+  const vocab = getVocab(specialty)
   const {
     data,
     error,
@@ -346,7 +349,7 @@ export function CompetitorsContent() {
           {data.competitors.map(comp => (
             <CompetitorCard key={comp.id} comp={comp} profile={data.profile} />
           ))}
-          <OpportunitiesSection />
+          <OpportunitiesSection specialty={specialty} />
         </>
       )}
     </div>

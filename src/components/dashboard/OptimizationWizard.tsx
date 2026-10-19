@@ -2,6 +2,7 @@
 
 import { Spinner } from '@/components/ui/Spinner'
 import { useOptimizationWizard } from './hooks/useOptimizationWizard'
+import { getVocab } from '@/lib/vertical-vocab'
 
 const ACTION_ICONS: Record<string, string> = {
   update_hours: '🕐',
@@ -20,11 +21,13 @@ interface ActionWithSource {
   payload?: Record<string, unknown>
 }
 
-export function OptimizationWizard({ profileId, diagnosticId, onComplete }: {
+export function OptimizationWizard({ profileId, diagnosticId, onComplete, specialty }: {
   profileId: string
   diagnosticId: string
   onComplete?: () => void
+  specialty?: string | null
 }) {
+  const vocab = getVocab(specialty)
   const {
     step,
     plan,
@@ -243,7 +246,7 @@ export function OptimizationWizard({ profileId, diagnosticId, onComplete }: {
               style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
             >
               <p className="text-xs font-medium text-white mb-1">
-                Conhece outro profissional de saúde?
+                Conhece outro {vocab.profissional}?
               </p>
               <p className="text-xs mb-2" style={{ color: 'rgba(255,255,255,0.5)' }}>
                 Indique o Destaka e ganhe 1 mês grátis para cada profissional que assinar.

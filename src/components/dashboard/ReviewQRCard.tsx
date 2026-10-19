@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useCallback } from 'react'
 import { Card } from '@/components/ui/Card'
 import { Spinner } from '@/components/ui/Spinner'
 import { PinIcon } from '@/components/ui/PinIcon'
+import { getVocab } from '@/lib/vertical-vocab'
 
 // HIGH-04: sanitiza SVG do QR code antes de injetar no DOM
 // Aceita apenas elementos e atributos SVG legítimos — sem scripts, eventos ou hrefs externos
@@ -25,7 +26,7 @@ interface QRData {
   profileName: string
 }
 
-export function ReviewQRCard() {
+export function ReviewQRCard({ specialty }: { specialty?: string | null }) {
   const [data, setData] = useState<QRData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -165,7 +166,7 @@ export function ReviewQRCard() {
             QR Code para avaliações
           </h3>
           <p className="text-sm mb-4" style={{ color: 'rgba(255,255,255,0.55)', lineHeight: 1.6 }}>
-            Imprima e coloque na recepção do consultório. Seus pacientes escaneiam e avaliam direto no Google.
+            Imprima e coloque na recepção{getVocab(specialty).local !== 'estabelecimento' ? ` do ${getVocab(specialty).local}` : ''}. Seus {getVocab(specialty).clientes} escaneiam e avaliam direto no Google.
           </p>
 
           {/* Link copiável */}

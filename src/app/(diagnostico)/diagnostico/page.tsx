@@ -8,6 +8,7 @@ import ReviewsSection from '@/components/diagnostico/ReviewsSection'
 import OfferSection from '@/components/diagnostico/OfferSection'
 import StickyCTA from '@/components/diagnostico/StickyCTA'
 import ShareButton from '@/components/diagnostico/ShareButton'
+import { detectSegment } from '@/lib/gmb/segment'
 import { Logo } from '@/components/ui/Logo'
 import type { DiagGap } from '@/components/diagnostico/useDiagnostico'
 import { trackBeginCheckout } from '@/lib/tracking/events'
@@ -268,7 +269,7 @@ export default function DiagnosticoPage() {
         )}
 
         {/* BLOCO 5: Oferta */}
-        {hasScore && <OfferSection score={score} />}
+        {hasScore && <OfferSection score={score} specialty={categoria ? detectSegment(categoria) : null} />}
       </main>
 
       {hasScore && <StickyCTA score={score} />}

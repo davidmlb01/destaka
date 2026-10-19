@@ -2,6 +2,7 @@
 // Usa templates de onboarding-templates.ts + Resend via email/index.ts
 
 import { resend, FROM } from './index'
+import { getBrandName } from '@/lib/vertical-vocab'
 import {
   templateDay0,
   templateDay1,
@@ -19,6 +20,7 @@ interface SendOnboardingEmailParams {
   orgName: string
   day: OnboardingEmailDay
   gender?: 'M' | 'F'
+  specialty?: string | null
   initialScore?: number
   postsCount?: number
   scoreDelta?: number
@@ -35,25 +37,25 @@ interface SendOnboardingEmailParams {
 }
 
 export async function sendOnboardingEmail(params: SendOnboardingEmailParams) {
-  const { to, firstName, orgName, day } = params
+  const { to, firstName, orgName, day, specialty } = params
 
   let template: { subject: string; html: string }
 
   switch (day) {
     case 0:
-      template = templateDay0(firstName, params.gender)
+      template = templateDay0(firstName, params.gender, specialty)
       break
     case 1:
-      template = templateDay1(firstName, orgName, params.initialScore ?? 0)
+      template = templateDay1(firstName, orgName, params.initialScore ?? 0, specialty)
       break
     case 3:
-      template = templateDay3(firstName)
+      template = templateDay3(firstName, specialty)
       break
     case 7:
-      template = templateDay7(firstName, orgName, params.postsCount ?? 0, params.scoreDelta ?? 0)
+      template = templateDay7(firstName, orgName, params.postsCount ?? 0, params.scoreDelta ?? 0, specialty)
       break
     case 14:
-      template = templateDay14(firstName)
+      template = templateDay14(firstName, specialty)
       break
     case 30:
       template = templateDay30({
@@ -67,14 +69,16 @@ export async function sendOnboardingEmail(params: SendOnboardingEmailParams) {
         websiteClicks: params.day30Data?.websiteClicks,
         phoneClicks: params.day30Data?.phoneClicks,
         whatsappClicks: params.day30Data?.whatsappClicks,
+        specialty,
       })
       break
     default:
       throw new Error(`Template de onboarding nao encontrado para dia ${day}`)
   }
 
+  const brand = getBrandName(specialty)
   const { data, error } = await resend.emails.send({
-    from: `Destaka Saúde <${FROM}>`,
+    from: `${brand} <${FROM}>`,
     to,
     subject: template.subject,
     html: template.html,

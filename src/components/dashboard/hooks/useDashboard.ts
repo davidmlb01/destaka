@@ -11,6 +11,7 @@ interface DashboardData {
   metrics: { viewsSearch: number; viewsMaps: number; clicksWebsite: number; clicksCall: number; clicksDirections: number; period: string }
   nextActions: Array<{ field: string; message: string; impact: number; severity: string }>
   weeklySummary: { posts_published: number; reviews_replied: number; score_delta: number } | null
+  specialty: string | null
 }
 
 const FIELD_MAP: Record<string, string[]> = {

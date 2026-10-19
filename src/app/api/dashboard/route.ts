@@ -205,5 +205,6 @@ export async function GET() {
     metrics,
     nextActions,
     weeklySummary,
+    specialty: (org?.specialty as string) ?? null,
   })
 }

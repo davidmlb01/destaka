@@ -19,9 +19,10 @@ export default async function CompetitorsPage() {
   if (!await isActiveSubscriber(professional.organization_id)) redirect('/dashboard/upgrade?feature=competitors')
 
   const { data: org } = await supabase
-    .from('organizations').select('name').eq('id', professional.organization_id).maybeSingle()
+    .from('organizations').select('name, specialty').eq('id', professional.organization_id).maybeSingle()
 
   const profileName = org?.name ?? 'Meu Perfil'
+  const specialty = (org?.specialty as string) ?? null
 
   return (
     <DashboardLayout activeHref="/dashboard/competitors" profileName={profileName} userEmail={user.email ?? ''}>
@@ -35,7 +36,7 @@ export default async function CompetitorsPage() {
             Compare seu perfil com os concorrentes que aparecem nas buscas da sua região. Veja onde você está na frente e onde ainda pode melhorar.
           </p>
         </div>
-        <CompetitorsContent />
+        <CompetitorsContent specialty={specialty} />
       </div>
     </DashboardLayout>
   )

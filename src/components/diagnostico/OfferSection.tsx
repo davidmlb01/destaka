@@ -1,9 +1,11 @@
 'use client'
 
 import { trackBeginCheckout } from '@/lib/tracking/events'
+import { getVocab } from '@/lib/vertical-vocab'
 
 interface OfferSectionProps {
   score: number
+  specialty?: string | null
 }
 
 const beneficios = [
@@ -21,7 +23,7 @@ function getCtaText(score: number): string {
   return 'Quero manter minha liderança'
 }
 
-export default function OfferSection({ score }: OfferSectionProps) {
+export default function OfferSection({ score, specialty }: OfferSectionProps) {
   return (
     <section
       style={{
@@ -38,7 +40,7 @@ export default function OfferSection({ score }: OfferSectionProps) {
         Tudo que o Destaka faz por você
       </h2>
       <p className="text-center" style={{ fontSize: 15, color: 'var(--text-secondary)', marginBottom: 28 }}>
-        Enquanto você cuida dos seus pacientes, o Destaka cuida do seu Google.
+        Enquanto você cuida dos seus {getVocab(specialty).clientes}, o Destaka cuida do seu Google.
       </p>
 
       {/* Stack de benefícios */}

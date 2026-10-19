@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { trackPurchase, trackOnboardingComplete } from '@/lib/tracking/events'
 import CategoryChecklist from '@/components/onboarding/CategoryChecklist'
+import { getVocab } from '@/lib/vertical-vocab'
 
 type Step =
   | 'welcome'
@@ -236,6 +237,7 @@ export default function OnboardingPage() {
     return digits
   }
 
+  const vocab = getVocab(prefill?.specialty)
   const isFormStep = currentIndex >= 0
 
   return (
@@ -412,7 +414,7 @@ export default function OnboardingPage() {
                 ))}
               </div>
 
-              <FieldGroup label="Quantos clientes você atende por semana?">
+              <FieldGroup label={vocab.volumeLabel}>
                 <div className="grid grid-cols-2 gap-2">
                   {VOLUMES.map(v => (
                     <button

@@ -21,6 +21,7 @@ import MapCard from './MapCard'
 import KeywordInsightCard from './KeywordInsightCard'
 import { PatientFunnelCard } from './PatientFunnelCard'
 import { GeoExpansionCard } from './GeoExpansionCard'
+import { getVocab } from '@/lib/vertical-vocab'
 
 const CATEGORY_LABELS: Record<string, string> = {
   'Informações Básicas': 'Seu perfil está completo?',
@@ -123,7 +124,8 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
     </div>
   )
 
-  const { profile, diagnostic, scoreHistory, metrics, nextActions, weeklySummary } = data
+  const { profile, diagnostic, scoreHistory, metrics, nextActions, weeklySummary, specialty } = data
+  const vocab = getVocab(specialty)
 
   return (
     <ErrorBoundary>
@@ -153,6 +155,7 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
                 profileId={profile.id}
                 diagnosticId={diagnosticId}
                 onComplete={() => mutate()}
+                specialty={specialty}
               />
               <div className="flex items-center justify-between">
                 {syncError && (

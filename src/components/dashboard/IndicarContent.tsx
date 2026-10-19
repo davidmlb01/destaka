@@ -5,9 +5,12 @@ import useSWR from 'swr'
 
 const fetcher = (url: string) => fetch(url).then(r => r.json())
 
+import { getVocab } from '@/lib/vertical-vocab'
+
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://destaka.com.br'
 
-export function IndicarContent({ userId }: { userId: string }) {
+export function IndicarContent({ userId, specialty }: { userId: string; specialty?: string | null }) {
+  const vocab = getVocab(specialty)
   const [copied, setCopied] = useState(false)
   const { data } = useSWR<{ count: number }>('/api/referral/count', fetcher)
 
@@ -86,7 +89,7 @@ export function IndicarContent({ userId }: { userId: string }) {
         <p className="font-display font-bold text-white text-sm mb-4">Como funciona</p>
         <div className="flex flex-col gap-3">
           {[
-            { n: '1', text: 'Envie seu link para um colega profissional de saúde.' },
+            { n: '1', text: `Envie seu link para um colega ${vocab.profissional}.` },
             { n: '2', text: 'Ele se cadastra pelo link e assina o Destaka.' },
             { n: '3', text: 'Nossa equipe credita 1 mês grátis na sua assinatura.' },
           ].map(step => (

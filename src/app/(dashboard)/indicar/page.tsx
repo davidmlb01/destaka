@@ -20,11 +20,12 @@ export default async function IndicarPage() {
 
   const { data: org } = await supabase
     .from('organizations')
-    .select('name')
+    .select('name, specialty')
     .eq('id', professional.organization_id)
     .maybeSingle()
 
   const profileName = org?.name ?? 'Meu Perfil'
+  const specialty = (org?.specialty as string) ?? null
 
   return (
     <DashboardLayout activeHref="/indicar" profileName={profileName} userEmail={user.email ?? ''}>
@@ -37,7 +38,7 @@ export default async function IndicarPage() {
             Cada profissional que você indicar e assinar dá 1 mês grátis para você.
           </p>
         </div>
-        <IndicarContent userId={user.id} />
+        <IndicarContent userId={user.id} specialty={specialty} />
       </div>
     </DashboardLayout>
   )
