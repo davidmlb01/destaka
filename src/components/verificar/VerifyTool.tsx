@@ -6,6 +6,7 @@ import { PinIcon } from '@/components/ui/PinIcon'
 import { ScoreGauge } from '@/components/dashboard/ScoreGauge'
 import { useVerifyDiagnostic } from '@/components/dashboard/hooks/useVerifyDiagnostic'
 import { useLeadCapture } from '@/components/dashboard/hooks/useLeadCapture'
+import { detectSegment } from '@/lib/gmb/segment'
 import { InfoRow } from './InfoRow'
 import { CategoryRow } from './CategoryRow'
 
@@ -42,7 +43,7 @@ export function VerifyTool() {
     handleCapture,
   } = useLeadCapture(
     result
-      ? { placeName: result.place.name, score: result.score.total, categories: result.score.categories }
+      ? { placeName: result.place.name, score: result.score.total, categories: result.score.categories, specialty: result.place.types[0] ? detectSegment(result.place.types[0]) : null }
       : null,
   )
 

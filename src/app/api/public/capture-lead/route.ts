@@ -13,6 +13,7 @@ const CaptureLeadBody = z.object({
   placeName: z.string().optional(),
   score: z.number().optional(),
   categories: z.array(z.any()).optional(),
+  specialty: z.string().max(50).optional(),
   lgpdConsent: z.boolean(),
   utm_source: z.string().max(100).optional(),
   utm_medium: z.string().max(100).optional(),
@@ -80,11 +81,12 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  const { email, placeName, score, categories, lgpdConsent, utm_source, utm_medium, utm_campaign, utm_content, utm_term } = parsed.data as {
+  const { email, placeName, score, categories, specialty, lgpdConsent, utm_source, utm_medium, utm_campaign, utm_content, utm_term } = parsed.data as {
     email: string
     placeName?: string
     score?: number
     categories?: CategoryScore[]
+    specialty?: string
     lgpdConsent: boolean
     utm_source?: string
     utm_medium?: string
@@ -131,7 +133,7 @@ export async function POST(req: NextRequest) {
   let emailSent = false
   if (categories && score !== undefined && placeName) {
     try {
-      await sendLeadMagnetEmail({ to: email, placeName, score, categories })
+      await sendLeadMagnetEmail({ to: email, placeName, score, categories, specialty })
       emailSent = true
       await db.from('leads').update({ email_sent: true }).eq('email', email).order('created_at', { ascending: false }).limit(1)
     } catch (err) {

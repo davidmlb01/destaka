@@ -47,7 +47,7 @@ export async function handleTokenFailure(orgId: string): Promise<void> {
     // Busca nome da organizacao
     const { data: org } = await db
       .from('organizations')
-      .select('name')
+      .select('name, specialty')
       .eq('id', orgId)
       .single()
 
@@ -59,6 +59,7 @@ export async function handleTokenFailure(orgId: string): Promise<void> {
       to: prof.email,
       orgName,
       dashboardUrl,
+      specialty: (org?.specialty as string) ?? null,
     })
 
     // Registra alerta enviado

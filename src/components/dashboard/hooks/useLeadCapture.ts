@@ -4,6 +4,7 @@ interface CaptureParams {
   placeName: string
   score: number
   categories?: unknown[]
+  specialty?: string | null
 }
 
 export function useLeadCapture(params: CaptureParams | null) {
@@ -24,6 +25,7 @@ export function useLeadCapture(params: CaptureParams | null) {
         placeName: params.placeName,
         score: params.score,
         categories: params.categories,
+        specialty: params.specialty ?? undefined,
         lgpdConsent: true,
       }),
     })

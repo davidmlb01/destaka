@@ -44,9 +44,16 @@ export async function getValidGmbToken(userId: string): Promise<string> {
         .eq('id', userId)
 
       if (userForNotif.email) {
+        const { data: orgForSpec } = await serviceClient
+          .from('organizations')
+          .select('specialty')
+          .eq('id', professional.organization_id)
+          .maybeSingle()
+
         sendTokenReconnectEmail({
           to: userForNotif.email,
           name: userForNotif.name ?? userForNotif.email,
+          specialty: (orgForSpec?.specialty as string) ?? null,
         }).catch(() => { /* falha silenciosa no email */ })
       }
     }
