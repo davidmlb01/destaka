@@ -1,7 +1,7 @@
 // Report Compiler — Story 008
 // Compila dados dos últimos 30 dias para o relatório mensal
 
-import { createClient as createAdminSupa, SupabaseClient } from '@supabase/supabase-js'
+import { SupabaseClient } from '@supabase/supabase-js'
 import { analyzeMonthlyReviews, type ReviewAnalysis } from '@/lib/reviews/analyzer'
 
 export interface MonthlyReportData {

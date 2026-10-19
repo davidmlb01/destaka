@@ -4,8 +4,6 @@
 // Usado em: dashboard, diagnóstico, onboarding, emails.
 // =============================================================================
 
-import type { Segment } from '@/lib/gmb/segment'
-
 export interface VerticalVocab {
   /** "Destaka Saúde", "Destaka Pet", etc. */
   brandLabel: string

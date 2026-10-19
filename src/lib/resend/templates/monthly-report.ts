@@ -4,7 +4,6 @@ import type { MonthlyReportData } from '@/lib/report/report-compiler'
 import { escapeHtml } from '@/lib/utils/escape-html'
 import { getVocab, getBrandName } from '@/lib/vertical-vocab'
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://destaka.com.br'
 const SUPPORT_EMAIL = 'suporte@destaka.com.br'
 
 const FAIXA_COLOR: Record<string, string> = {
