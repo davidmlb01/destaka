@@ -1,10 +1,12 @@
 export const dynamic = 'force-dynamic'
 
 // Cria sessao de checkout no Stripe
+// Inclui logica de indicacao (referral): aplica cupom e armazena codigo no metadata
 import { NextRequest, NextResponse } from 'next/server'
 import { getAuthOrg } from '@/lib/api/with-auth'
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { getStripe, PLAN } from '@/lib/stripe'
+import { REFERRAL_COOKIE_NAME } from '@/lib/referral/constants'
 
 function createServiceClient() {
   return createAdminSupa(
@@ -44,21 +46,84 @@ export async function POST(request: NextRequest) {
       .eq('id', orgId)
   }
 
+  // --- Referral: verificar cookie de indicacao ---
+  let referralCode: string | null = null
+  let referralCouponId: string | null = null
+
+  const refCookie = request.cookies.get(REFERRAL_COOKIE_NAME)
+  if (refCookie?.value) {
+    try {
+      const { data: codeRecord } = await admin
+        .from('referral_codes')
+        .select('code, owner_type, owner_user_id, stripe_coupon_id')
+        .eq('code', refCookie.value)
+        .eq('active', true)
+        .maybeSingle()
+
+      if (codeRecord) {
+        // Bloquear auto-indicacao: se o dono do codigo e o mesmo usuario
+        const isSelfReferral =
+          codeRecord.owner_type === 'client' &&
+          codeRecord.owner_user_id === user.id
+
+        if (isSelfReferral) {
+          console.log(`[referral] Auto-indicacao bloqueada: user=${user.id}, code=${codeRecord.code}`)
+        } else {
+          referralCode = codeRecord.code
+          referralCouponId = codeRecord.stripe_coupon_id ?? null
+          console.log(`[referral] Codigo valido: ${referralCode}, cupom=${referralCouponId ?? 'nenhum'}`)
+        }
+      } else {
+        console.log(`[referral] Codigo do cookie nao encontrado ou inativo: ${refCookie.value}`)
+      }
+    } catch (refErr) {
+      console.error('[referral] Erro ao verificar codigo de indicacao:', refErr)
+    }
+  }
+
   // Criar checkout session
   const origin = process.env.NEXT_PUBLIC_APP_URL ?? 'https://destaka.com.br'
 
-  const session = await stripe.checkout.sessions.create({
+  // Metadata com referral e UTMs
+  const sessionMetadata: Record<string, string> = { organization_id: orgId }
+  const subscriptionMetadata: Record<string, string> = { organization_id: orgId }
+
+  if (referralCode) {
+    sessionMetadata.referral_code = referralCode
+    subscriptionMetadata.referral_code = referralCode
+  }
+
+  // Capturar UTM params do query string
+  const url = new URL(request.url)
+  const utmParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content']
+  for (const param of utmParams) {
+    const value = url.searchParams.get(param)
+    if (value) {
+      sessionMetadata[param] = value
+    }
+  }
+
+  // Se tem cupom de indicacao, usar discounts (nao pode usar allow_promotion_codes junto)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const checkoutParams: any = {
     customer: customerId,
-    mode: 'subscription',
+    mode: 'subscription' as const,
     line_items: [{ price: PLAN.priceId, quantity: 1 }],
-    allow_promotion_codes: true,
     success_url: `${origin}/onboarding`,
     cancel_url: `${origin}/diagnostico`,
-    metadata: { organization_id: orgId },
+    metadata: sessionMetadata,
     subscription_data: {
-      metadata: { organization_id: orgId },
+      metadata: subscriptionMetadata,
     },
-  })
+  }
+
+  if (referralCouponId) {
+    checkoutParams.discounts = [{ coupon: referralCouponId }]
+  } else {
+    checkoutParams.allow_promotion_codes = true
+  }
+
+  const session = await stripe.checkout.sessions.create(checkoutParams)
 
   return NextResponse.json({ url: session.url })
 }

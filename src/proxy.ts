@@ -1,5 +1,6 @@
-import { type NextRequest } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
+import { REFERRAL_COOKIE_NAME, REFERRAL_COOKIE_MAX_AGE } from '@/lib/referral/constants'
 
 function buildCsp(): string {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
@@ -19,6 +20,22 @@ function buildCsp(): string {
 }
 
 export async function proxy(request: NextRequest) {
+  // Captura ?ref= e salva cookie de 90 dias (URL limpa apos redirect)
+  const refCode = request.nextUrl.searchParams.get('ref')
+  if (refCode && refCode.trim().length > 0) {
+    const cleanUrl = request.nextUrl.clone()
+    cleanUrl.searchParams.delete('ref')
+    const redirect = NextResponse.redirect(cleanUrl)
+    redirect.cookies.set(REFERRAL_COOKIE_NAME, refCode.trim().toUpperCase(), {
+      maxAge: REFERRAL_COOKIE_MAX_AGE,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+    })
+    return redirect
+  }
+
   const response = await updateSession(request)
   response.headers.set('Content-Security-Policy', buildCsp())
   response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains')
