@@ -23,27 +23,28 @@ North Star: % de novos clientes vindos por indicacao (meta 40% em 6 meses)
 
 ## Stories
 
-### REF-001.1: Schema + Stripe Config (Fases 1-2)
-- [~] Migration 028: 5 tabelas (partners, referral_codes, referrals, rewards, stripe_events)
-- [ ] Aplicar migration no Supabase
-- [ ] Criar cupons no Stripe test mode (indicado: 20% forever, 50% first month)
-- [ ] Criar cupons escalonados (indicador: 20%, 40%, 60%, 80%, 100%)
-- [ ] Registrar webhook events adicionais (invoice.paid, charge.refunded)
-- [ ] Guardar webhook secret de referral nas env vars
+### REF-001.1: Schema + Stripe Config (Fases 1-2) -- DONE
+- [x] Migration 028: 5 tabelas (partners, referral_codes, referrals, rewards, stripe_events)
+- [x] Aplicar migration no Supabase
+- [x] Criar cupons no Stripe test mode (indicado: 20% forever, 50% first month)
+- [x] Criar cupons escalonados (indicador: 20%, 40%, 60%, 80%, 100%)
+- [x] Registrar webhook events adicionais (invoice.paid, charge.refunded)
+- [x] Constants centralizadas em src/lib/referral/constants.ts
 
-### REF-001.2: Captura de Codigo (Fase 3)
-- [ ] Middleware para ler ?ref= e salvar cookie 90 dias
-- [ ] Campo de codigo no checkout
-- [ ] Pre-aplicar cupom e gravar referral_code no metadata
-- [ ] Bloqueio de autoindicacao
+### REF-001.2: Captura de Codigo (Fase 3) -- DONE
+- [x] Proxy.ts para ler ?ref= e salvar cookie 90 dias
+- [x] Cupom pre-aplicado no checkout via discounts
+- [x] referral_code gravado no metadata da session e subscription
+- [x] Bloqueio de autoindicacao
+- [x] UTM params capturados no metadata
 
-### REF-001.3: Webhook Core (Fase 4)
-- [ ] Idempotencia via stripe_events
-- [ ] checkout.session.completed: registrar referral
-- [ ] invoice.paid: contar mensalidades, aplicar regras por tipo
-- [ ] charge.refunded: marcar reward como reversed
-- [ ] customer.subscription.deleted: recalcular cupom
-- [ ] Race condition: transacao com lock por cliente
+### REF-001.3: Webhook Core (Fase 4) -- DONE
+- [x] Idempotencia via stripe_events (registerStripeEvent helper)
+- [x] checkout.session.completed: registrar referral
+- [x] invoice.paid: contar mensalidades, ativar na 2a, comissao parceiro
+- [x] charge.refunded: marcar reward como reversed, recalcular cupom
+- [x] customer.subscription.deleted: cancelar referral, recalcular cupom
+- [x] recalculateIndicadorCoupon helper (busca subscription, aplica cupom escalonado)
 
 ### REF-001.4: Codigos Automaticos (Fase 5)
 - [ ] Gerar codigo no onboarding (nome -> DRANA)
