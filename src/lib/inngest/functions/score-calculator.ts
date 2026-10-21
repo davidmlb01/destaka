@@ -212,6 +212,59 @@ export const scoreCalculator = inngest.createFunction(
           console.error('[score-calculator] surpass plan update error:', err instanceof Error ? err.message : err)
         }
 
+        // Phase 8: Detectar melhoria de visibilidade e disparar pedido de indicacao
+        // Score subiu 5+ pontos vs media dos ultimos 7 dias OU impressoes subiram 20%+
+        try {
+          const prevAvg = previousScores.length > 0
+            ? previousScores.reduce((a: number, b: number) => a + b, 0) / previousScores.length
+            : 0
+
+          const scoreGain = breakdown.total - prevAvg
+
+          // Buscar semana anterior de keyword_snapshots para comparar
+          const prevWeekCandidates = kwList.filter(
+            (k: { week_start: string }) => k.week_start !== currentWeek
+          )
+          const prevWeekStart = prevWeekCandidates[0]?.week_start ?? null
+          const prevWeekImpressions = prevWeekStart
+            ? prevWeekCandidates
+                .filter((k: { week_start: string }) => k.week_start === prevWeekStart)
+                .reduce((sum: number, k: { impressions: number }) => sum + (k.impressions ?? 0), 0)
+            : 0
+
+          const kwGrowthPct = prevWeekImpressions > 0
+            ? ((totalImpressions - prevWeekImpressions) / prevWeekImpressions) * 100
+            : 0
+
+          const shouldTriggerReferral =
+            (scoreGain >= 5 && prevAvg > 0) ||
+            (kwGrowthPct >= 20 && prevWeekImpressions > 0 && totalImpressions >= 10)
+
+          if (shouldTriggerReferral) {
+            let detail = ''
+            if (scoreGain >= 5) {
+              detail = `seu score Destaka subiu de ${Math.round(prevAvg)} para ${breakdown.total}`
+            } else {
+              detail = `suas buscas no Google subiram ${Math.round(kwGrowthPct)}% esta semana`
+            }
+
+            await inngest.send({
+              name: 'destaka/rank.improved',
+              data: {
+                organization_id: orgId,
+                improvement_type: scoreGain >= 5 ? 'score_gain' : 'impressions_gain',
+                detail,
+                total_searches: totalImpressions,
+              },
+            })
+
+            console.log(`[score-calculator] rank.improved disparado para org ${orgId}: ${detail}`)
+          }
+        } catch (err) {
+          // Nao bloquear o score calculator por falha no referral trigger
+          console.error('[score-calculator] referral trigger check error:', err instanceof Error ? err.message : err)
+        }
+
         return {
           org_id: orgId,
           score: breakdown.total,

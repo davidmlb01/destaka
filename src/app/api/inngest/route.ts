@@ -18,6 +18,7 @@ import { geoCollector } from '@/lib/inngest/functions/geo-collector'
 import { keywordSnapshot } from '@/lib/inngest/functions/keyword-snapshot'
 import { performanceCollector } from '@/lib/inngest/functions/performance-collector'
 import { geoExpansionEngine } from '@/lib/inngest/functions/geo-expansion-engine'
+import { referralTrigger } from '@/lib/inngest/functions/referral-trigger'
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -36,5 +37,6 @@ export const { GET, POST, PUT } = serve({
     keywordSnapshot,
     performanceCollector,
     geoExpansionEngine,
+    referralTrigger,
   ],
 })
