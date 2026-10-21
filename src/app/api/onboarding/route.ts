@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { inngest } from '@/lib/inngest/client'
+import { createClientReferralCode } from '@/lib/referral/generate-code'
 import { z } from 'zod'
 
 const OnboardingSchema = z.object({
@@ -106,6 +107,21 @@ export async function POST(request: NextRequest) {
   if (updateError) {
     console.error('[onboarding] Falha ao atualizar organização:', updateError.message)
     return NextResponse.json({ error: 'Falha ao salvar dados. Tente novamente.' }, { status: 500 })
+  }
+
+  // Gerar codigo de indicacao automaticamente
+  try {
+    const { data: orgData } = await admin
+      .from('organizations')
+      .select('name')
+      .eq('id', orgId)
+      .maybeSingle()
+
+    const displayName = orgData?.name ?? user.email ?? 'USER'
+    await createClientReferralCode(user.id, displayName)
+  } catch (refErr) {
+    console.error('[referral] Erro ao gerar codigo no onboarding:', refErr)
+    // Nao bloqueia o onboarding se falhar
   }
 
   // Dispara TODOS os jobs em background apos onboarding completo
