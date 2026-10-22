@@ -73,27 +73,35 @@ async function recalculateIndicadorCoupon(
     return
   }
 
-  const { data: org } = await admin
-    .from('organizations')
-    .select('stripe_customer_id')
-    .eq('id', orgMember.organization_id)
+  // Buscar email do profissional para encontrar customer no Stripe
+  const { data: userData } = await admin
+    .from('users')
+    .select('email')
+    .eq('id', userId)
     .maybeSingle()
 
-  if (!org?.stripe_customer_id) {
-    console.warn('[referral] Organizacao sem stripe_customer_id:', orgMember.organization_id)
+  if (!userData?.email) {
+    console.warn('[referral] Usuario sem email:', userId)
+    return
+  }
+
+  // Buscar customer no Stripe pelo email
+  const customers = await stripe.customers.list({ email: userData.email, limit: 1 })
+  if (customers.data.length === 0) {
+    console.warn('[referral] Nenhum customer Stripe para:', userData.email)
     return
   }
 
   // Buscar subscription ativa do customer
   const subscriptions = await stripe.subscriptions.list({
-    customer: org.stripe_customer_id,
+    customer: customers.data[0].id,
     status: 'active',
     limit: 1,
   })
 
   const sub = subscriptions.data[0]
   if (!sub) {
-    console.warn('[referral] Nenhuma subscription ativa para customer:', org.stripe_customer_id)
+    console.warn('[referral] Nenhuma subscription ativa para:', userData.email)
     return
   }
 
@@ -160,10 +168,7 @@ export async function POST(request: NextRequest) {
       // Persiste status ativo no banco (evita chamar Stripe API no SSR)
       await admin
         .from('organizations')
-        .update({
-          subscription_status: 'active',
-          stripe_customer_id: session.customer,
-        })
+        .update({ subscription_status: 'active' })
         .eq('id', organizationId)
 
       // Invalida cache de subscription

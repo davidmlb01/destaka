@@ -23,27 +23,25 @@ export async function POST(request: NextRequest) {
   const admin = createServiceClient()
   const stripe = getStripe()
 
-  // Buscar ou criar customer no Stripe
+  // Buscar nome da org
   const { data: org } = await admin
     .from('organizations')
-    .select('stripe_customer_id, name')
+    .select('name')
     .eq('id', orgId)
     .maybeSingle()
 
-  let customerId = (org as Record<string, unknown>)?.stripe_customer_id as string | null
-
-  if (!customerId) {
+  // Buscar customer existente no Stripe por email, ou criar novo
+  let customerId: string | null = null
+  const existingCustomers = await stripe.customers.list({ email: user.email!, limit: 1 })
+  if (existingCustomers.data.length > 0) {
+    customerId = existingCustomers.data[0].id
+  } else {
     const customer = await stripe.customers.create({
       email: user.email!,
       name: (org as Record<string, unknown>)?.name as string ?? user.email!,
       metadata: { organization_id: orgId },
     })
     customerId = customer.id
-
-    await admin
-      .from('organizations')
-      .update({ stripe_customer_id: customerId })
-      .eq('id', orgId)
   }
 
   // --- Referral: verificar cookie de indicacao ---

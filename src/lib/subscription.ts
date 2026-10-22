@@ -33,7 +33,7 @@ export async function isActiveSubscriber(orgId: string): Promise<boolean> {
   // L2: Banco de dados (subscription_status salvo pelo webhook)
   const { data: org } = await supabase
     .from('organizations')
-    .select('subscription_status, stripe_customer_id')
+    .select('subscription_status')
     .eq('id', orgId)
     .maybeSingle()
 
@@ -44,38 +44,7 @@ export async function isActiveSubscriber(orgId: string): Promise<boolean> {
     return true
   }
 
-  if (dbStatus === 'cancelled') {
-    await cacheSet(`sub:${orgId}`, false, CACHE_TTL)
-    return false
-  }
-
-  // L3: Fallback Stripe API (para orgs que assinaram antes do campo subscription_status)
-  const customerId = (org as Record<string, unknown>)?.stripe_customer_id as string | null
-  if (!customerId) {
-    await cacheSet(`sub:${orgId}`, false, CACHE_TTL)
-    return false
-  }
-
-  try {
-    const stripe = getStripe()
-    const subscriptions = await stripe.subscriptions.list({
-      customer: customerId,
-      status: 'active',
-      limit: 1,
-    })
-    const active = subscriptions.data.length > 0
-    await cacheSet(`sub:${orgId}`, active, CACHE_TTL)
-
-    // Atualiza banco para próxima vez não precisar do Stripe
-    if (active) {
-      await supabase
-        .from('organizations')
-        .update({ subscription_status: 'active' })
-        .eq('id', orgId)
-    }
-
-    return active
-  } catch {
-    return false
-  }
+  // Qualquer outro status (cancelled, null, etc.) = nao ativo
+  await cacheSet(`sub:${orgId}`, false, CACHE_TTL)
+  return false
 }
