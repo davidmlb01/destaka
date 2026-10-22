@@ -109,16 +109,25 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Falha ao salvar dados. Tente novamente.' }, { status: 500 })
   }
 
-  // Gerar codigo de indicacao automaticamente
+  // Gerar codigo de indicacao automaticamente (se ainda nao tem)
   try {
-    const { data: orgData } = await admin
-      .from('organizations')
-      .select('name')
-      .eq('id', orgId)
+    const { data: existingCode } = await admin
+      .from('referral_codes')
+      .select('code')
+      .eq('owner_user_id', user.id)
+      .eq('owner_type', 'client')
       .maybeSingle()
 
-    const displayName = orgData?.name ?? user.email ?? 'USER'
-    await createClientReferralCode(user.id, displayName)
+    if (!existingCode) {
+      const { data: orgData } = await admin
+        .from('organizations')
+        .select('name')
+        .eq('id', orgId)
+        .maybeSingle()
+
+      const displayName = orgData?.name ?? user.email ?? 'USER'
+      await createClientReferralCode(user.id, displayName)
+    }
   } catch (refErr) {
     console.error('[referral] Erro ao gerar codigo no onboarding:', refErr)
     // Nao bloqueia o onboarding se falhar

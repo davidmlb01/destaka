@@ -755,7 +755,7 @@ export default function OnboardingPage() {
                     {autoCount} delas são automáticas.
                   </p>
                   <button
-                    onClick={() => router.push('/dashboard')}
+                    onClick={() => router.push('/dashboard?checkout=success')}
                     className="w-full rounded-xl px-6 py-3.5 font-medium transition-colors cursor-pointer"
                     style={{ background: 'var(--accent)', color: '#fff' }}
                   >
