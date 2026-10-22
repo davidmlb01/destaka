@@ -63,10 +63,9 @@ async function recalculateIndicadorCoupon(
 
   // Buscar subscription ativa do indicador
   const { data: orgMember } = await admin
-    .from('organization_members')
+    .from('professionals')
     .select('organization_id')
     .eq('user_id', userId)
-    .eq('role', 'owner')
     .maybeSingle()
 
   if (!orgMember) {
@@ -199,12 +198,11 @@ export async function POST(request: NextRequest) {
             .maybeSingle()
 
           if (codeRecord) {
-            // Buscar o user_id do comprador via organization
+            // Buscar o user_id do comprador via professionals
             const { data: members } = await admin
-              .from('organization_members')
+              .from('professionals')
               .select('user_id')
               .eq('organization_id', organizationId)
-              .eq('role', 'owner')
               .limit(1)
 
             const referredUserId = members?.[0]?.user_id

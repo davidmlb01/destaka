@@ -109,7 +109,7 @@ export async function POST(request: NextRequest) {
     customer: customerId,
     mode: 'subscription' as const,
     line_items: [{ price: PLAN.priceId, quantity: 1 }],
-    success_url: `${origin}/onboarding`,
+    success_url: `${origin}/onboarding?checkout=success`,
     cancel_url: `${origin}/diagnostico`,
     metadata: sessionMetadata,
     subscription_data: {

@@ -126,12 +126,15 @@ export default function OnboardingPage() {
         const res = await fetch('/api/onboarding/prefill')
         if (res.ok) {
           const data = await res.json()
-          if (data.completed) {
+          // Se veio do checkout, sempre mostra onboarding (mesmo que ja tenha feito antes)
+          const fromCheckout = new URLSearchParams(window.location.search).get('checkout') === 'success'
+          if (data.completed && !fromCheckout) {
             router.replace('/dashboard')
             return
           }
           if (data.org) {
             setPrefill(data.org)
+            if (data.org.phone) setPhone(data.org.phone)
           }
           // Pre-fill serviços do GBP
           if (data.gbpServices && data.gbpServices.length > 0) {

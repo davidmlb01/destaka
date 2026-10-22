@@ -39,7 +39,8 @@ export default async function DashboardPage({
   const profileName = org?.name ?? 'Meu Perfil'
 
   // Nao-assinantes veem o diagnostico, nao o dashboard
-  if (!isSubscriber) {
+  // Excecao: se veio do checkout (pagamento acabou de ser feito), aguardar webhook processar
+  if (!isSubscriber && checkoutStatus !== 'success') {
     redirect('/diagnostico')
   }
 

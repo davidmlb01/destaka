@@ -39,9 +39,7 @@ export async function GET() {
     return NextResponse.json({ org: null })
   }
 
-  if (org.lgpd_ai_consent !== null) {
-    return NextResponse.json({ completed: true, org: null })
-  }
+  const isCompleted = org.lgpd_ai_consent !== null
 
   // Busca servicos do GBP profile (ja coletados pelo callback)
   const admin = createServiceClient()
@@ -86,6 +84,7 @@ export async function GET() {
   }
 
   return NextResponse.json({
+    completed: isCompleted,
     org: {
       name: org.name ?? '',
       phone: org.phone ?? '',
