@@ -121,11 +121,13 @@ Gere um relatório de otimização completo com este JSON:
 }
 
 REGRAS:
-- Descrições entre 250 e 750 caracteres
-- Sem travessão (—)
-- Sem promessa de resultado clínico
-- Keywords de localização (${city}) inseridas naturalmente
-- Máximo 5 sugestões de categoria, 5 de atributo, 5 de otimização de serviço
+- Se ja existe descricao, OTIMIZE a existente inserindo keywords naturalmente. NAO reescreva do zero. Mantenha o tom e a essencia do texto original. Apenas enriqueca com termos de busca relevantes.
+- Descricoes entre 250 e 750 caracteres
+- Sem travessao (use virgula, ponto ou dois-pontos em vez de travessao)
+- Sem promessa de resultado clinico
+- Keywords de localizacao (${city}) inseridas naturalmente
+- Maximo 5 sugestoes de categoria, 5 de atributo, 5 de otimizacao de servico
+- ACENTUACAO PERFEITA: todos os textos devem ter acentos corretos em portugues brasileiro. Zero erros gramaticais.
 
 Retorne APENAS o JSON, sem texto adicional.`
 

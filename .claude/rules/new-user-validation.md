@@ -53,6 +53,14 @@ gbp-audit cascata automatica:
 - Checklist: auto-detect itens feitos via dados do gbp_profiles (photo_count, reviews)
 - Optimization wizard: mostrar erro real da API, nao mensagem generica
 
+## Regras de Copy (INEGOCIAVEL)
+
+- **Acentuacao perfeita** em 100% dos textos gerados (descricoes, posts, reviews, emails)
+- **Zero erros gramaticais** em portugues brasileiro
+- **Sem travessao (—)** em nenhum texto (regra global do CLAUDE.md)
+- **Descricao: otimizar a existente**, nao substituir. Manter tom e essencia, enriquecer com keywords.
+- **Modo manual** afeta apenas posts e review responses. Otimizacoes basicas (categorias, atributos, descricao) sao aplicadas automaticamente.
+
 ## Origem
 
 Regra criada apos emergencia com Paula Bacellar (1a cliente paga, 2026-10-22/23).
