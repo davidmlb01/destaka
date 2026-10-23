@@ -5,6 +5,8 @@ import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { inngest } from '../client'
 import { generateOptimizations } from '@/lib/gbp/optimization-engine'
 import type { AuditReport } from '@/lib/gbp/audit-engine'
+import { GBPClient } from '@/lib/google/gbp-client'
+import { getValidTokenForOrg } from '@/lib/google/token-refresh'
 
 function admin() {
   return createAdminSupa(
@@ -101,6 +103,17 @@ export const gbpOptimizer = inngest.createFunction(
         .update({ optimization_report: report })
         .eq('organization_id', orgId)
         .eq('location_id', profile.location_id)
+
+      // AUTO-APPLY: atualiza descricao otimizada no banco
+      // A aplicacao real no GBP acontece via /api/optimization/execute
+      // Categorias, atributos e descricao basica sao aplicadas automaticamente
+      const seoDesc = report.description_variants?.find(v => v.focus === 'seo')
+      if (seoDesc?.text && seoDesc.text.length >= 100) {
+        await db.from('gbp_profiles')
+          .update({ description: seoDesc.text })
+          .eq('organization_id', orgId)
+          .eq('location_id', profile.location_id)
+      }
 
       return { status: 'ok', suggestions: report.category_suggestions.length + report.attribute_suggestions.length }
     })
