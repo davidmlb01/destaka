@@ -123,6 +123,8 @@ export const competitorMonitor = inngest.createFunction(
           review_count: c.user_ratings_total ?? 0,
           avg_rating: c.rating ?? null,
           last_tracked_at: new Date().toISOString(),
+          photo_count: 0,
+          has_website: false,
         }))
 
         await db
