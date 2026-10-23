@@ -106,10 +106,10 @@ export const competitorMonitor = inngest.createFunction(
           return { org_id: orgId, status: 'skip', error: 'nenhum concorrente encontrado' }
         }
 
-        // Persiste ou atualiza concorrentes na tabela (usa profile_id, nao organization_id)
-        const profileId = profile.location_id ? (
-          await db.from('gbp_profiles').select('id').eq('organization_id', orgId).maybeSingle()
-        ).data?.id : null
+        // Persiste ou atualiza concorrentes na tabela
+        // competitors.profile_id referencia gmb_profiles.id (legado), nao gbp_profiles.id
+        const { data: gmbProf } = await db.from('gmb_profiles').select('id').eq('name', org.name).maybeSingle()
+        const profileId = gmbProf?.id ?? null
 
         if (!profileId) {
           return { org_id: orgId, status: 'skip', error: 'profile_id nao encontrado' }
