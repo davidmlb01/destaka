@@ -8,6 +8,8 @@ import type { ReviewTone } from '@/lib/gbp/review-response-engine'
 import { GBPClient } from '@/lib/google/gbp-client'
 import { getValidTokenForOrg } from '@/lib/google/token-refresh'
 import { getLatestAnalysis } from '@/lib/gmb/competitive-analyzer'
+import { resend, FROM } from '@/lib/email/index'
+import { getBrandName } from '@/lib/vertical-vocab'
 
 function admin() {
   return createAdminSupa(
@@ -232,6 +234,33 @@ export const postGenerator = inngest.createFunction(
             status: 'pending',
             photo_suggestion: generated.photo_suggestion,
           })
+
+          // Notifica profissional por email sobre post pendente
+          try {
+            const { data: prof } = await db
+              .from('professionals')
+              .select('email, name')
+              .eq('organization_id', orgId)
+              .eq('role', 'owner')
+              .maybeSingle()
+
+            if (prof?.email) {
+              const brand = getBrandName(org.specialty as string ?? null)
+              const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://destaka.com.br'
+              await resend.emails.send({
+                from: `${brand} <${FROM}>`,
+                to: prof.email,
+                subject: `Novo post pronto para aprovacao no seu perfil`,
+                html: `<p>Olá ${(prof.name ?? '').split(' ')[0]},</p>
+<p>O ${brand} criou um novo post para o seu perfil no Google. Como você escolheu o modo com aprovação, o post está aguardando sua revisão.</p>
+<p><a href="${appUrl}/dashboard/posts" style="display:inline-block;background:#0f766e;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;">Ver e aprovar post</a></p>
+<p style="color:#6b7280;font-size:13px;">Se não aprovar em 7 dias, o post será descartado automaticamente.</p>`,
+              })
+            }
+          } catch {
+            // Notificacao nao bloqueia o fluxo
+          }
+
           return { org_id: orgId, status: 'pending', post_type: postType }
         }
       })
