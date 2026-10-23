@@ -5,6 +5,7 @@
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { inngest } from '../client'
 import { getValidTokenForOrg } from '@/lib/google/token-refresh'
+import { GBPClient } from '@/lib/google/gbp-client'
 
 function admin() {
   return createAdminSupa(
@@ -67,9 +68,30 @@ export const performanceCollector = inngest.createFunction(
             .eq('id', orgId)
             .maybeSingle()
 
-          const locationName = org?.gbp_location_id
+          let locationName: string = (org?.gbp_location_id as string) ?? ''
           if (!locationName) {
             return { org_id: orgId, status: 'skip', error: 'sem gbp_location_id' }
+          }
+
+          // Performance API precisa do formato accounts/{id}/locations/{id}
+          // Se so tem locations/{id}, busca o account via GBP API
+          if (!locationName.startsWith('accounts/')) {
+            try {
+              const gbp = new GBPClient(accessToken)
+              const accounts = await gbp.listAccounts()
+              if (accounts.length > 0) {
+                const accountName = accounts[0].name
+                const locations = await gbp.listLocations(accountName)
+                const match = locations.find(l => l.name?.includes(locationName.replace('locations/', '')))
+                if (match?.name) {
+                  locationName = match.name
+                  // Atualiza gbp_location_id para o formato completo
+                  await db.from('organizations').update({ gbp_location_id: locationName }).eq('id', orgId)
+                }
+              }
+            } catch {
+              // Se falhar, tenta com o formato que tem
+            }
           }
 
           // Datas: ultimos 7 dias
