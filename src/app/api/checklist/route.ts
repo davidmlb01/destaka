@@ -8,39 +8,43 @@ export async function GET() {
   if (auth.error) return auth.error
   const { orgId, supabase } = auth
 
-  // Busca itens marcados manualmente pelo usuario
-  const { data: doneItems } = await supabase
-    .from('checklist_progress')
-    .select('item_key, done_at')
+  // Busca gbp_profile para o profile_id (checklist_progress usa profile_id)
+  const { data: gbpProfile } = await supabase
+    .from('gbp_profiles')
+    .select('id, photo_count, description, categories, services, attributes')
     .eq('organization_id', orgId)
+    .maybeSingle()
+
+  const profileId = gbpProfile?.id ?? ''
+
+  // Busca itens marcados manualmente pelo usuario
+  const doneResult = profileId
+    ? await supabase
+        .from('checklist_progress')
+        .select('item_key, done_at')
+        .eq('profile_id', profileId)
+    : { data: [] as Array<{ item_key: string; done_at: string }> }
+  const doneItems = doneResult.data
 
   const doneMap = new Map(
     (doneItems ?? []).map((d: { item_key: string; done_at: string }) => [d.item_key, d.done_at])
   )
 
-  // Busca dados reais do GBP para auto-detectar itens feitos
-  const { data: gbpProfile } = await supabase
-    .from('gbp_profiles')
-    .select('photo_count, description, categories, services, attributes')
-    .eq('organization_id', orgId)
-    .maybeSingle()
+  // Auto-detect itens feitos a partir de dados reais do GBP
+  const photoCount = (gbpProfile?.photo_count as number) ?? 0
 
-  // Busca contagem de reviews
+  // Busca reviews
   const { count: reviewCount } = await supabase
     .from('reviews')
     .select('id', { count: 'exact', head: true })
     .eq('organization_id', orgId)
 
-  // Busca reviews respondidas
   const { count: repliedCount } = await supabase
     .from('reviews')
     .select('id', { count: 'exact', head: true })
     .eq('organization_id', orgId)
     .not('response_text', 'is', null)
 
-  const photoCount = (gbpProfile?.photo_count as number) ?? 0
-
-  // Auto-detect: marca como done se dados reais confirmam
   const autoDetected = new Map<string, boolean>()
   if (photoCount >= 1) autoDetected.set('logo_photo', true)
   if (photoCount >= 5) autoDetected.set('space_photos', true)

@@ -108,7 +108,18 @@ export const gbpAudit = inngest.createFunction(
         const reviewList = reviews.status === 'fulfilled' ? reviews.value : []
         const mediaList = media.status === 'fulfilled' ? media.value : []
 
+        // Busca dados existentes para nao sobrescrever dados do onboarding com arrays vazios
+        const { data: existingProfile } = await db
+          .from('gbp_profiles')
+          .select('attributes, services, photo_count')
+          .eq('organization_id', orgId)
+          .maybeSingle()
+
+        const gbpAttributes = location.attributes ?? []
+        const gbpServices = location.serviceItems ?? []
+
         // Persiste perfil GBP na tabela gbp_profiles
+        // Merge inteligente: se GBP API retorna vazio, preserva dados do onboarding
         const profilePayload = {
           organization_id: orgId,
           location_id: locationName,
@@ -117,13 +128,13 @@ export const gbpAudit = inngest.createFunction(
             location.categories?.primaryCategory?.displayName,
             ...(location.categories?.additionalCategories?.map(c => c.displayName) ?? []),
           ].filter(Boolean) as string[],
-          attributes: location.attributes ?? [],
-          services: location.serviceItems ?? [],
+          attributes: gbpAttributes.length > 0 ? gbpAttributes : (existingProfile?.attributes ?? []),
+          services: gbpServices.length > 0 ? gbpServices : (existingProfile?.services ?? []),
           description: location.profile?.description ?? null,
           phone: location.phoneNumbers?.primaryPhone ?? null,
           address: location.storefrontAddress ?? null,
           hours: location.regularHours ?? null,
-          photo_count: mediaList.length,
+          photo_count: mediaList.length > 0 ? mediaList.length : (existingProfile?.photo_count ?? 0),
           last_synced_at: new Date().toISOString(),
         }
 

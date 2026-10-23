@@ -316,7 +316,11 @@ export function buildScoreInput(params: {
   return {
     hasDescription: !!(profile.description?.trim()),
     categoryCount: profile.categories?.length ?? 0,
-    attributeCount: Array.isArray(profile.attributes) ? profile.attributes.length : 0,
+    attributeCount: Array.isArray(profile.attributes)
+      ? profile.attributes.length
+      : (profile.attributes && typeof profile.attributes === 'object' && !Array.isArray(profile.attributes))
+        ? Object.keys(profile.attributes as unknown as Record<string, unknown>).filter(k => (profile.attributes as unknown as Record<string, unknown>)[k]).length
+        : 0,
     photoCount: profile.photo_count ?? 0,
     hasHours: !!profile.hours,
     hasWebsite: !!(profile.website?.trim()),
