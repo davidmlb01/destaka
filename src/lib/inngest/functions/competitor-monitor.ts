@@ -106,9 +106,17 @@ export const competitorMonitor = inngest.createFunction(
           return { org_id: orgId, status: 'skip', error: 'nenhum concorrente encontrado' }
         }
 
-        // Persiste ou atualiza concorrentes na tabela
+        // Persiste ou atualiza concorrentes na tabela (usa profile_id, nao organization_id)
+        const profileId = profile.location_id ? (
+          await db.from('gbp_profiles').select('id').eq('organization_id', orgId).maybeSingle()
+        ).data?.id : null
+
+        if (!profileId) {
+          return { org_id: orgId, status: 'skip', error: 'profile_id nao encontrado' }
+        }
+
         const competitorPayloads = top3.map(c => ({
-          organization_id: orgId,
+          profile_id: profileId,
           name: c.name,
           place_id: c.place_id,
           categories: c.types ?? [],
@@ -119,7 +127,7 @@ export const competitorMonitor = inngest.createFunction(
 
         await db
           .from('competitors')
-          .upsert(competitorPayloads, { onConflict: 'organization_id,place_id' })
+          .upsert(competitorPayloads, { onConflict: 'profile_id,place_id' })
 
         // Monta snapshots para análise
         const competitorSnapshots: CompetitorSnapshot[] = top3.map(c => ({
@@ -158,6 +166,23 @@ export const competitorMonitor = inngest.createFunction(
             .eq('organization_id', orgId)
             .eq('location_id', profile.location_id)
         }
+
+        // Persiste analise competitiva para uso no dashboard e optimizer
+        const gaps = (benchmark.teardown?.strengths_vs_you ?? []).map((s: string) => ({
+          type: 'competitive',
+          priority: 'medium' as const,
+          gap_description: s,
+          missing: [] as string[],
+          suggested_action: null,
+        }))
+
+        await db.from('competitive_analyses').insert({
+          organization_id: orgId,
+          gaps,
+          keyword_opportunities: benchmark.teardown?.keyword_gaps ?? [],
+          summary: benchmark.opportunities?.join('. ') ?? '',
+          analyzed_at: new Date().toISOString(),
+        })
 
         return { org_id: orgId, status: 'ok', competitors: top3.length }
       })
