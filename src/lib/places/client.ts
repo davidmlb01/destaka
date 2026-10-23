@@ -21,6 +21,7 @@ export interface PlaceDetails {
   types: string[]
   business_status: string | null
   place_id: string
+  geometry?: { location: { lat: number; lng: number } }
 }
 
 interface TextSearchResponse {
@@ -236,6 +237,7 @@ export async function getPlaceDetails(placeId: string): Promise<PlaceDetails | n
     'name', 'formatted_address', 'formatted_phone_number',
     'website', 'rating', 'user_ratings_total', 'opening_hours',
     'photos', 'types', 'business_status', 'place_id', 'reviews',
+    'geometry',
   ].join(',')
 
   const url = `${PLACES_BASE}/details/json?place_id=${placeId}&fields=${fields}&language=pt-BR&key=${API_KEY}`

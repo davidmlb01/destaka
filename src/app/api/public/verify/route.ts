@@ -74,6 +74,7 @@ export async function POST(req: NextRequest) {
 
     const { score, profileData } = scoreFromPlaceDetails(placeDetails)
 
+    const geo = placeDetails.geometry?.location
     return NextResponse.json({
       place: {
         name: placeDetails.name,
@@ -83,6 +84,8 @@ export async function POST(req: NextRequest) {
         rating: placeDetails.rating,
         reviewsTotal: placeDetails.user_ratings_total,
         types: placeDetails.types,
+        lat: geo?.lat ?? null,
+        lng: geo?.lng ?? null,
       },
       score: {
         total: score.total,

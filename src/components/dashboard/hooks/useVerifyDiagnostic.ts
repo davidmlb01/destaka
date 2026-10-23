@@ -9,6 +9,8 @@ interface PlaceInfo {
   rating: number | null
   reviewsTotal: number | null
   types: string[]
+  lat: number | null
+  lng: number | null
 }
 
 interface VerifyResult {

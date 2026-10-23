@@ -24,7 +24,7 @@ export interface ChecklistItem {
 export const CHECKLIST_ITEMS: ChecklistItem[] = [
   {
     key: 'logo_photo',
-    title: 'Adicionar foto de perfil da clínica',
+    title: 'Adicionar foto de perfil do negócio',
     description: 'A foto de perfil é a primeira impressão do seu estabelecimento no Google. Use a logo ou uma foto profissional da fachada.',
     impact: 5,
     priority: 'P0',
@@ -40,7 +40,7 @@ export const CHECKLIST_ITEMS: ChecklistItem[] = [
   {
     key: 'space_photos',
     title: 'Adicionar 5+ fotos do espaço físico',
-    description: 'Fotos do interior do consultório aumentam a confiança do paciente. Fotografe a recepção, sala de atendimento e área de espera.',
+    description: 'Fotos do interior aumentam a confiança. Fotografe a recepção, sala de atendimento e área de espera.',
     impact: 5,
     priority: 'P0',
     category: 'photos',
@@ -83,7 +83,7 @@ export const CHECKLIST_ITEMS: ChecklistItem[] = [
   },
   {
     key: 'request_reviews',
-    title: 'Pedir avaliações a pacientes recentes',
+    title: 'Pedir avaliações a clientes recentes',
     description: 'Avaliações são o principal fator de ranking local. Um pedido simples por WhatsApp aumenta muito a taxa de resposta.',
     impact: 10,
     priority: 'P0',
@@ -91,9 +91,9 @@ export const CHECKLIST_ITEMS: ChecklistItem[] = [
     steps: [
       'Acesse o Google Meu Negócio e clique em "Receber mais avaliações".',
       'Copie o link gerado (é o link direto para avaliação).',
-      'Envie por WhatsApp para pacientes dos últimos 30 dias com mensagem simples: "Olá [nome], ficamos felizes em ter te atendido. Se puder, deixar uma avaliação no Google nos ajuda muito: [link]".',
-      'Envie para no mínimo 10 pacientes para começar.',
-      'Evite pedir para múltiplos pacientes ao mesmo tempo para não parecer spam.',
+      'Envie por WhatsApp para clientes dos últimos 30 dias com mensagem simples: "Olá [nome], ficamos felizes em ter te atendido. Se puder, deixar uma avaliação no Google nos ajuda muito: [link]".',
+      'Envie para no mínimo 10 clientes para começar.',
+      'Evite pedir para muitos de uma vez para não parecer spam.',
     ],
   },
   {

@@ -19,6 +19,7 @@ import { keywordSnapshot } from '@/lib/inngest/functions/keyword-snapshot'
 import { performanceCollector } from '@/lib/inngest/functions/performance-collector'
 import { geoExpansionEngine } from '@/lib/inngest/functions/geo-expansion-engine'
 import { referralTrigger } from '@/lib/inngest/functions/referral-trigger'
+import { onboardingDataBootstrap } from '@/lib/inngest/functions/onboarding-data-bootstrap'
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -38,5 +39,6 @@ export const { GET, POST, PUT } = serve({
     performanceCollector,
     geoExpansionEngine,
     referralTrigger,
+    onboardingDataBootstrap,
   ],
 })

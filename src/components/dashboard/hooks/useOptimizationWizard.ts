@@ -26,7 +26,8 @@ export function useOptimizationWizard(
     try {
       const res = await fetch('/api/optimization/plan')
       if (!res.ok) {
-        setErrorMsg('Não foi possível gerar o plano. Execute um diagnóstico primeiro.')
+        const body = await res.json().catch(() => ({})) as { error?: string }
+        setErrorMsg(body.error ?? 'Não foi possível gerar o plano. Tente sincronizar seu perfil primeiro.')
         setStep('error')
         return
       }

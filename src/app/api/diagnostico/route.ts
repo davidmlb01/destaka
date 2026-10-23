@@ -23,20 +23,11 @@ export async function GET() {
     return privateJson(cached)
   }
 
-  // Buscar user_id via professionals (gmb_profiles usa user_id, nao organization_id)
-  const { data: prof } = await supabase
-    .from('professionals')
-    .select('user_id')
-    .eq('organization_id', orgId)
-    .maybeSingle()
-
-  const userId = prof?.user_id ?? user.id
-
-  // Buscar profile_id (necessario para FK de competitors)
+  // Buscar profile_id do gbp_profiles (keyed por organization_id)
   const { data: gbpProfileRef } = await supabase
-    .from('gmb_profiles')
+    .from('gbp_profiles')
     .select('id')
-    .eq('user_id', userId)
+    .eq('organization_id', orgId)
     .maybeSingle()
 
   const profileId = gbpProfileRef?.id ?? ''
@@ -67,7 +58,7 @@ export async function GET() {
     supabase
       .from('gbp_profiles')
       .select('id, name, address, google_place_id, latitude, longitude, audit_report, description, categories, photo_count')
-      .eq('user_id', userId)
+      .eq('organization_id', orgId)
       .maybeSingle(),
     profileId
       ? supabase
@@ -147,7 +138,7 @@ export async function GET() {
     review_count: c.review_count,
   }))
 
-  // Mapa (geo_snapshots)
+  // Mapa (geo_snapshots com fallback para coordenadas do perfil)
   const mapa = geoSnapshot ? {
     center: { lat: geoSnapshot.center_lat, lng: geoSnapshot.center_lng },
     radius_km: geoSnapshot.radius_km ?? 5,
@@ -159,6 +150,12 @@ export async function GET() {
       status: string
     }>) ?? [],
     week_start: geoSnapshot.week_start,
+  } : (gbpProfile?.latitude && gbpProfile?.longitude) ? {
+    center: { lat: gbpProfile.latitude as number, lng: gbpProfile.longitude as number },
+    radius_km: 0,
+    zonas: [{ lat: gbpProfile.latitude as number, lng: gbpProfile.longitude as number, label: (gbpProfile.name as string) ?? org?.name ?? 'Seu negócio', count: 0, status: 'strong' }],
+    week_start: null,
+    pending: true,
   } : null
 
   // Keywords top 10
