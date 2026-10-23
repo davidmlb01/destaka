@@ -42,9 +42,24 @@ export const gbpOptimizer = inngest.createFunction(
       const address = profile.address as { locality?: string } | null
       const city = address?.locality ?? 'Brasil'
 
-      const auditReport = profile.audit_report as AuditReport | null
-      if (!auditReport) {
+      const rawAudit = profile.audit_report as Record<string, unknown> | null
+      if (!rawAudit) {
         return { status: 'skip', error: 'auditoria não disponível ainda' }
+      }
+
+      // Normaliza formato: score-calculator usa {issues}, audit-engine usa {gaps}
+      const auditReport: AuditReport = {
+        location_name: '',
+        audited_at: (rawAudit.generated_at as string) ?? new Date().toISOString(),
+        summary: (rawAudit.summary as string) ?? '',
+        gaps: ((rawAudit.gaps ?? rawAudit.issues) as AuditReport['gaps']) ?? [],
+        photo_count: 0,
+        avg_rating: 0,
+        review_count: 0,
+        has_description: true,
+        category_count: 0,
+        attribute_count: 0,
+        service_count: 0,
       }
 
       const competitorCategories = (competitors ?? []).map(

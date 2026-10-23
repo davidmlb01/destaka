@@ -55,8 +55,9 @@ export async function generateOptimizations(params: {
     keywordOpportunities = [],
   } = params
 
-  const criticalGaps = auditReport.gaps.filter((g: AuditGap) => g.severity === 'critico')
-  const importantGaps = auditReport.gaps.filter((g: AuditGap) => g.severity === 'importante')
+  const sev = (g: AuditGap) => g.severity as string
+  const criticalGaps = auditReport.gaps.filter((g: AuditGap) => sev(g) === 'critico' || sev(g) === 'critical' || sev(g) === 'high')
+  const importantGaps = auditReport.gaps.filter((g: AuditGap) => sev(g) === 'importante' || sev(g) === 'medium' || sev(g) === 'warning')
 
   const allCompetitorCats = [...new Set(competitorCategories.flat())]
   const missingFromCompetitors = allCompetitorCats.filter(
