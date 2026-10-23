@@ -149,8 +149,10 @@ export const gbpAudit = inngest.createFunction(
             .upsert(reviewPayloads, { onConflict: 'review_id', ignoreDuplicates: true })
         }
 
-        // Atualiza gbp_location_id na organização (so se nao estava definido)
-        if (!existingLocationId) {
+        // Atualiza gbp_location_id na organização
+        // Corrige tambem quando o valor existente e um Place ID (ChIJ...) ao inves de location name (accounts/...)
+        const isValidLocationName = existingLocationId?.startsWith('accounts/')
+        if (!existingLocationId || !isValidLocationName) {
           await db
             .from('organizations')
             .update({ gbp_location_id: locationName })
