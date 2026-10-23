@@ -42,6 +42,8 @@ export async function generateOptimizations(params: {
   specialty: string
   professionalName: string
   city: string
+  neighborhood?: string
+  fullAddress?: string
   currentDescription: string | null
   currentCategories: string[]
   currentServices: string[]
@@ -50,6 +52,7 @@ export async function generateOptimizations(params: {
 }): Promise<OptimizationReport> {
   const {
     auditReport, specialty, professionalName, city,
+    neighborhood, fullAddress,
     currentDescription, currentCategories, currentServices,
     competitorCategories = [],
     keywordOpportunities = [],
@@ -69,7 +72,7 @@ export async function generateOptimizations(params: {
 PERFIL ATUAL:
 - Nome: ${professionalName}
 - Especialidade: ${specialty}
-- Cidade: ${city}
+- Cidade: ${city}${neighborhood ? `, bairro: ${neighborhood}` : ''}${fullAddress ? `\n- Endereço completo: ${fullAddress}` : ''}
 - Descrição atual: ${currentDescription ?? '(vazia)'}
 - Categorias atuais (${currentCategories.length}): ${currentCategories.join(', ') || '(nenhuma)'}
 - Serviços atuais (${currentServices.length}): ${currentServices.slice(0, 10).join(', ') || '(nenhum)'}
@@ -125,7 +128,7 @@ REGRAS:
 - Descricoes entre 250 e 750 caracteres
 - Sem travessao (use virgula, ponto ou dois-pontos em vez de travessao)
 - Sem promessa de resultado clinico
-- Keywords de localizacao (${city}) inseridas naturalmente
+- Keywords de localizacao (${city}${neighborhood ? `, ${neighborhood}` : ''}) inseridas naturalmente. INCLUA o bairro na descricao para SEO local.
 - Maximo 5 sugestoes de categoria, 5 de atributo, 5 de otimizacao de servico
 - ACENTUACAO PERFEITA: todos os textos devem ter acentos corretos em portugues brasileiro. Zero erros gramaticais.
 

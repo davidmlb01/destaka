@@ -41,8 +41,12 @@ export const gbpOptimizer = inngest.createFunction(
         return { status: 'skip', error: 'organização ou perfil não encontrado' }
       }
 
-      const address = profile.address as { locality?: string } | null
+      const address = profile.address as { locality?: string; addressLines?: string[]; formattedAddress?: string } | null
       const city = address?.locality ?? 'Brasil'
+      // Extrair bairro do endereco formatado (ex: "Copacabana" de "Av. Nossa Sra. de Copacabana, 1066 - Copacabana")
+      const fullAddress = address?.formattedAddress ?? address?.addressLines?.join(', ') ?? ''
+      const neighborhoodMatch = fullAddress.match(/[-–]\s*([^,]+),\s*(?:Rio|São|Belo|Salvador|Curitiba|Porto|Recife|Fortaleza|Brasília)/i)
+      const neighborhood = neighborhoodMatch?.[1]?.trim() ?? ''
 
       const rawAudit = profile.audit_report as Record<string, unknown> | null
       if (!rawAudit) {
@@ -90,6 +94,8 @@ export const gbpOptimizer = inngest.createFunction(
         specialty: org.specialty,
         professionalName: org.name,
         city,
+        neighborhood,
+        fullAddress,
         currentDescription: profile.description ?? null,
         currentCategories: profile.categories ?? [],
         currentServices,

@@ -95,9 +95,12 @@ export const gbpAudit = inngest.createFunction(
         // Se a org ja tem gbp_location_id, buscar a location correspondente
         // Se nao, usar a primeira (onboarding)
         const location = existingLocationId
-          ? locations.find(l => l.name === existingLocationId) ?? locations[0]
+          ? locations.find(l => l.name === existingLocationId || existingLocationId.endsWith(l.name)) ?? locations[0]
           : locations[0]
-        const locationName = location.name
+        // Salvar com accounts/ prefix para Performance API
+        const locationName = location.name?.startsWith('accounts/')
+          ? location.name
+          : `${accountName}/${location.name}`
 
         // Busca reviews e mídias em paralelo
         const [reviews, media] = await Promise.allSettled([
