@@ -39,7 +39,7 @@ export const scoreCalculator = inngest.createFunction(
     for (const orgId of orgIds) {
       const result = await step.run(`calc-score-${orgId}`, async () => {
         // Busca perfil GBP (gbp_profiles não tem coluna 'website', buscar separado)
-        let profile: { description?: string | null; categories?: string[]; attributes?: unknown[]; photo_count?: number; hours?: unknown; website?: string | null } | null = null
+        let profile: { description?: string | null; categories?: string[]; attributes?: unknown; photo_count?: number; hours?: unknown; website?: string | null } | null = null
 
         const { data: gbpProfile } = await db
           .from('gbp_profiles')

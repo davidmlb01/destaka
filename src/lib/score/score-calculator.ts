@@ -292,12 +292,22 @@ export function toLegacyBreakdown(b: ScoreBreakdown): ScoreBreakdownLegacy {
   }
 }
 
+function countAttributes(attrs: unknown): number {
+  if (!attrs) return 0
+  if (Array.isArray(attrs)) return attrs.length
+  if (typeof attrs === 'object') {
+    const obj = attrs as Record<string, unknown>
+    return Object.keys(obj).filter(k => obj[k]).length
+  }
+  return 0
+}
+
 // Monta ScoreInput a partir dos dados do banco
 export function buildScoreInput(params: {
   profile: {
     description?: string | null
     categories?: string[]
-    attributes?: unknown[]
+    attributes?: unknown
     photo_count?: number
     hours?: unknown
     website?: string | null
@@ -316,11 +326,7 @@ export function buildScoreInput(params: {
   return {
     hasDescription: !!(profile.description?.trim()),
     categoryCount: profile.categories?.length ?? 0,
-    attributeCount: Array.isArray(profile.attributes)
-      ? profile.attributes.length
-      : (profile.attributes && typeof profile.attributes === 'object' && !Array.isArray(profile.attributes))
-        ? Object.keys(profile.attributes as unknown as Record<string, unknown>).filter(k => (profile.attributes as unknown as Record<string, unknown>)[k]).length
-        : 0,
+    attributeCount: countAttributes(profile.attributes),
     photoCount: profile.photo_count ?? 0,
     hasHours: !!profile.hours,
     hasWebsite: !!(profile.website?.trim()),
