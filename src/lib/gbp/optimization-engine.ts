@@ -128,7 +128,7 @@ REGRAS:
 - Descricoes entre 250 e 750 caracteres
 - Sem travessao (use virgula, ponto ou dois-pontos em vez de travessao)
 - Sem promessa de resultado clinico
-- Keywords de localizacao (${city}${neighborhood ? `, ${neighborhood}` : ''}) inseridas naturalmente. INCLUA o bairro na descricao para SEO local.
+- Keywords de localizacao: mencione "${city}" e "${neighborhood || 'bairro'}" na descricao. Para bairros VIZINHOS use "perto de [bairro]", NUNCA "em [bairro vizinho]". Exemplo correto: "Fisioterapia em Copacabana, perto de Ipanema e Botafogo". Exemplo ERRADO: "Fisioterapia em Ipanema".
 - Maximo 5 sugestoes de categoria, 5 de atributo, 5 de otimizacao de servico
 - ACENTUACAO PERFEITA: todos os textos devem ter acentos corretos em portugues brasileiro. Zero erros gramaticais.
 

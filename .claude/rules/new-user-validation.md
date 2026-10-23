@@ -59,6 +59,7 @@ gbp-audit cascata automatica:
 - **Zero erros gramaticais** em portugues brasileiro
 - **Sem travessao (—)** em nenhum texto (regra global do CLAUDE.md)
 - **Descricao: otimizar a existente**, nao substituir. Manter tom e essencia, enriquecer com keywords.
+- **Geo-copy: "em [bairro proprio]" + "perto de [bairro vizinho]"**. NUNCA dizer que o profissional esta EM um bairro onde nao esta. Exemplo correto: "Fisioterapia em Copacabana, perto de Ipanema". Exemplo ERRADO: "Fisioterapia em Ipanema".
 - **Modo manual** afeta apenas posts e review responses. Otimizacoes basicas (categorias, atributos, descricao) sao aplicadas automaticamente.
 
 ## Origem
