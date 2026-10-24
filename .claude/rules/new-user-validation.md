@@ -61,6 +61,7 @@ gbp-audit cascata automatica:
 - **Descricao: otimizar a existente**, nao substituir. Manter tom e essencia, enriquecer com keywords.
 - **Geo-copy: "em [bairro proprio]" + "perto de [bairro vizinho]"**. NUNCA dizer que o profissional esta EM um bairro onde nao esta. Exemplo correto: "Fisioterapia em Copacabana, perto de Ipanema". Exemplo ERRADO: "Fisioterapia em Ipanema".
 - **Modo manual** afeta apenas posts e review responses. Otimizacoes basicas (categorias, atributos, descricao) sao aplicadas automaticamente.
+- **NUNCA inventar servicos ou categorias** que o profissional nao oferece. Otimizar = melhorar nomes com keywords do que JA EXISTE. Nao adicionar "Reabilitacao Infantil" se o profissional nao faz isso. Nao sugerir "Studio de Pilates" se e uma clinica de fisioterapia.
 
 ## Origem
 
