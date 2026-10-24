@@ -85,13 +85,17 @@ export const gbpOptimizer = inngest.createFunction(
 
       const keywordOpportunities = (competitiveData?.keyword_opportunities as string[] | null) ?? []
 
-      const currentServices = Array.isArray(profile.services)
-        ? (profile.services as Array<{ freeFormServiceItem?: { label?: { displayName?: string } }; structuredServiceItem?: { serviceTypeId?: string } }>)
-            .map(s => s.freeFormServiceItem?.label?.displayName ?? s.structuredServiceItem?.serviceTypeId ?? '')
-            .filter(Boolean)
-        : []
+      // Services podem ser strings (onboarding) ou objects (GBP API)
+      const rawServices = Array.isArray(profile.services) ? profile.services : []
+      const currentServices = rawServices.map((s: unknown) => {
+        if (typeof s === 'string') return s
+        const obj = s as { freeFormServiceItem?: { label?: { displayName?: string } }; structuredServiceItem?: { serviceTypeId?: string } }
+        return obj.freeFormServiceItem?.label?.displayName ?? obj.structuredServiceItem?.serviceTypeId ?? ''
+      }).filter(Boolean) as string[]
 
-      const report = await generateOptimizations({
+      let report: Awaited<ReturnType<typeof generateOptimizations>>
+      try {
+        report = await generateOptimizations({
         auditReport,
         specialty: org.specialty,
         professionalName: org.name,
@@ -104,6 +108,10 @@ export const gbpOptimizer = inngest.createFunction(
         competitorCategories,
         keywordOpportunities,
       })
+      } catch (err) {
+        console.error(`[gbp-optimizer] Erro ao gerar otimizacoes para org ${orgId}:`, err instanceof Error ? err.message : err)
+        return { status: 'error', error: `falha ao gerar: ${err instanceof Error ? err.message : 'unknown'}` }
+      }
 
       // Persiste no perfil GBP
       await db
