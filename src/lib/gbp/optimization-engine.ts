@@ -131,6 +131,8 @@ REGRAS:
 - Keywords de localizacao: mencione "${city}" e "${neighborhood || 'bairro'}" na descricao. Para bairros VIZINHOS use "perto de [bairro]", NUNCA "em [bairro vizinho]". Exemplo correto: "Fisioterapia em Copacabana, perto de Ipanema e Botafogo". Exemplo ERRADO: "Fisioterapia em Ipanema".
 - Maximo 5 sugestoes de categoria, 5 de atributo, 5 de otimizacao de servico
 - ACENTUACAO PERFEITA: todos os textos devem ter acentos corretos em portugues brasileiro. Zero erros gramaticais.
+- CATEGORIAS: sugerir APENAS categorias que descrevam o que o negocio REALMENTE e. NUNCA sugerir categorias de negocio diferente so porque concorrentes usam. Exemplo: se e fisioterapia, NAO sugerir "Studio de Pilates" ou "Academia". Sugerir apenas variantes do que ja faz (Clinica de Fisioterapia, Centro de Reabilitacao, etc).
+- SERVICOS: sugerir APENAS otimizacoes de servicos que o profissional JA OFERECE (listados em "Servicos atuais"). NUNCA inventar servicos novos que ele nao faz. Otimizar = melhorar o nome com keywords, nao adicionar servicos inexistentes. Se o profissional faz Quiropraxia, otimize para "Quiropraxia Especializada em [cidade]". Mas NAO invente "Reabilitacao Infantil" se ele nao oferece isso.
 
 Retorne APENAS o JSON, sem texto adicional.`
 
