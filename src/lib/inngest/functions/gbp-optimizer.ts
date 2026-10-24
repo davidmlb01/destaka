@@ -25,6 +25,7 @@ export const gbpOptimizer = inngest.createFunction(
     const db = admin()
 
     return await step.run(`optimize-${orgId}`, async () => {
+      console.log(`[gbp-optimizer] Iniciando otimizacao para org ${orgId}`);
       // Busca org + perfil GBP + concorrentes
       const [{ data: org }, { data: profile }, { data: competitors }] = await Promise.all([
         db.from('organizations').select('name, specialty').eq('id', orgId).single(),
@@ -109,8 +110,9 @@ export const gbpOptimizer = inngest.createFunction(
         keywordOpportunities,
       })
       } catch (err) {
-        console.error(`[gbp-optimizer] Erro ao gerar otimizacoes para org ${orgId}:`, err instanceof Error ? err.message : err)
-        return { status: 'error', error: `falha ao gerar: ${err instanceof Error ? err.message : 'unknown'}` }
+        const errMsg = err instanceof Error ? `${err.message}\n${err.stack}` : String(err)
+        console.error(`[gbp-optimizer] ERRO generateOptimizations org ${orgId}:`, errMsg)
+        return { status: 'error', error: errMsg.slice(0, 500) }
       }
 
       // Persiste no perfil GBP

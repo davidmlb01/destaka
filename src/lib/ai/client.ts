@@ -13,15 +13,24 @@ function getClient(): Anthropic {
 }
 
 export async function generateContent(prompt: string, systemPrompt: string): Promise<string> {
+  console.log(`[ai-client] Chamando Claude ${MODEL} (prompt: ${prompt.length} chars)`)
   const client = getClient()
-  const response = await client.messages.create({
-    model: MODEL,
-    max_tokens: 4096,
-    system: systemPrompt,
-    messages: [{ role: 'user', content: prompt }],
-  })
+  try {
+    const response = await client.messages.create({
+      model: MODEL,
+      max_tokens: 4096,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: prompt }],
+    })
 
-  const block = response.content[0]
-  if (block.type === 'text') return block.text
-  throw new Error('Claude retornou conteudo nao-texto')
+    const block = response.content[0]
+    if (block.type === 'text') {
+      console.log(`[ai-client] Claude respondeu: ${block.text.length} chars`)
+      return block.text
+    }
+    throw new Error('Claude retornou conteudo nao-texto')
+  } catch (err) {
+    console.error(`[ai-client] ERRO Claude:`, err instanceof Error ? err.message : err)
+    throw err
+  }
 }
