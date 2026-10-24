@@ -1,25 +1,27 @@
-import { anthropic } from '@ai-sdk/anthropic'
-import { generateText } from 'ai'
+// Claude client via SDK direta (@anthropic-ai/sdk)
+// AI SDK (@ai-sdk/anthropic) tinha bug de dependencia (lazySchema crash)
+// SDK direta funciona e e mais estavel
 
-const MODELS = [
-  'claude-haiku-4-5-20251001',
-] as const
+import Anthropic from '@anthropic-ai/sdk'
 
-export async function generateContent(prompt: string, systemPrompt: string): Promise<string> {
-  for (const model of MODELS) {
-    try {
-      const { text } = await generateText({
-        model: anthropic(model),
-        system: systemPrompt,
-        prompt,
-      })
-      return text
-    } catch {
-      continue
-    }
-  }
-  throw new Error('Nenhum modelo Claude disponivel')
+const MODEL = 'claude-haiku-4-5-20251001'
+
+let _client: Anthropic | null = null
+function getClient(): Anthropic {
+  if (!_client) _client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
+  return _client
 }
 
-export { anthropic }
-// redeploy 1792861133
+export async function generateContent(prompt: string, systemPrompt: string): Promise<string> {
+  const client = getClient()
+  const response = await client.messages.create({
+    model: MODEL,
+    max_tokens: 4096,
+    system: systemPrompt,
+    messages: [{ role: 'user', content: prompt }],
+  })
+
+  const block = response.content[0]
+  if (block.type === 'text') return block.text
+  throw new Error('Claude retornou conteudo nao-texto')
+}
