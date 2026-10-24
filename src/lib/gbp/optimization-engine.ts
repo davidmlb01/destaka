@@ -17,6 +17,13 @@ export interface ServiceOptimization {
   keywords_added: string[]
 }
 
+export interface CompetitorGap {
+  type: 'servico' | 'atributo'
+  item: string
+  offered_by: string
+  question: string
+}
+
 export interface OptimizationReport {
   generated_at: string
   category_suggestions: Array<{
@@ -28,6 +35,7 @@ export interface OptimizationReport {
     attribute: string
     justification: string
   }>
+  competitor_gaps: CompetitorGap[]
   description_variants: DescriptionVariant[]
   service_optimizations: ServiceOptimization[]
   photo_naming: {
@@ -91,10 +99,18 @@ Incorpore essas keywords naturalmente nas descricoes e servicos otimizados.
 Gere um relatório de otimização completo com este JSON:
 {
   "category_suggestions": [
-    { "category": "nome da categoria GBP", "justification": "por que adicionar", "used_by_competitors": true/false }
+    { "category": "nome da categoria GBP que o negocio REALMENTE e", "justification": "por que adicionar", "used_by_competitors": true/false }
   ],
   "attribute_suggestions": [
-    { "attribute": "nome do atributo", "justification": "impacto esperado" }
+    { "attribute": "atributo que o negocio REALMENTE tem mas nao ativou no Google", "justification": "impacto esperado" }
+  ],
+  "competitor_gaps": [
+    {
+      "type": "servico" | "atributo",
+      "item": "nome do servico ou atributo que concorrentes oferecem",
+      "offered_by": "nome(s) do(s) concorrente(s) que oferecem",
+      "question": "pergunta direta ao profissional: 'Voce tambem oferece [item]?'"
+    }
   ],
   "description_variants": [
     {
@@ -154,6 +170,7 @@ Retorne APENAS o JSON, sem texto adicional.`
         generated_at: new Date().toISOString(),
         category_suggestions: parsed.category_suggestions ?? [],
         attribute_suggestions: parsed.attribute_suggestions ?? [],
+        competitor_gaps: parsed.competitor_gaps ?? [],
         description_variants: variants,
         service_optimizations: parsed.service_optimizations ?? [],
         photo_naming: parsed.photo_naming ?? {
@@ -183,6 +200,7 @@ function getFallbackReport(
 
   return {
     generated_at: new Date().toISOString(),
+    competitor_gaps: [],
     category_suggestions: missingCategories.slice(0, 3).map(c => ({
       category: c,
       justification: 'Categoria usada por concorrentes na mesma região.',
