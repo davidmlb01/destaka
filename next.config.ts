@@ -11,8 +11,16 @@ const nextConfig: NextConfig = {
       },
     ]
   },
-  // Security headers are set in proxy.ts (single source of truth)
-  // Only X-Frame-Options kept here as fallback for static assets not processed by proxy
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          { key: 'Access-Control-Allow-Origin', value: 'https://destaka.com.br' },
+        ],
+      },
+    ]
+  },
 };
 
 export default nextConfig;
