@@ -1,7 +1,6 @@
 export const dynamic = 'force-dynamic'
 
 // API de dados do dashboard, retorna o shape esperado por useDashboard
-import { NextResponse } from 'next/server'
 import { getAuthOrg, privateJson } from '@/lib/api/with-auth'
 import { GBPClient } from '@/lib/google/gbp-client'
 import { getValidGmbToken } from '@/lib/gmb/auth'

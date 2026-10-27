@@ -2,40 +2,6 @@ export const dynamic = 'force-dynamic'
 
 import { getAuthOrg, privateJson } from '@/lib/api/with-auth'
 
-interface WeekMetrics {
-  week_start: string
-  impressions_direct: number
-  impressions_indirect: number
-  views_maps: number
-  views_search: number
-  actions_phone: number
-  actions_directions: number
-  actions_website: number
-}
-
-function sumMetrics(rows: WeekMetrics[]): Omit<WeekMetrics, 'week_start'> {
-  return rows.reduce(
-    (acc, r) => ({
-      impressions_direct: acc.impressions_direct + (r.impressions_direct ?? 0),
-      impressions_indirect: acc.impressions_indirect + (r.impressions_indirect ?? 0),
-      views_maps: acc.views_maps + (r.views_maps ?? 0),
-      views_search: acc.views_search + (r.views_search ?? 0),
-      actions_phone: acc.actions_phone + (r.actions_phone ?? 0),
-      actions_directions: acc.actions_directions + (r.actions_directions ?? 0),
-      actions_website: acc.actions_website + (r.actions_website ?? 0),
-    }),
-    {
-      impressions_direct: 0,
-      impressions_indirect: 0,
-      views_maps: 0,
-      views_search: 0,
-      actions_phone: 0,
-      actions_directions: 0,
-      actions_website: 0,
-    }
-  )
-}
-
 export async function GET() {
   const auth = await getAuthOrg()
   if (auth.error) return auth.error

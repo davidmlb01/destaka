@@ -34,7 +34,6 @@ export async function updateSession(request: NextRequest, requestHeaders?: Heade
   const { data: { user } } = await supabase.auth.getUser()
 
   const isAuthRoute = request.nextUrl.pathname.startsWith('/login')
-  const isApiRoute = request.nextUrl.pathname.startsWith('/api')
   const isDashboardRoute = request.nextUrl.pathname.startsWith('/dashboard') ||
     request.nextUrl.pathname.startsWith('/admin') ||
     request.nextUrl.pathname === '/diagnostico'

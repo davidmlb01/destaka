@@ -5,8 +5,6 @@ import { redirect } from 'next/navigation'
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 import { DashboardContent } from '@/components/dashboard/DashboardContent'
 import { OptimizationConfirmCard } from './components/OptimizationConfirmCard'
-import { ManualTasksCard } from './components/ManualTasksCard'
-import { FreeDashboard } from './components/FreeDashboard'
 import { CheckoutBanner } from './components/CheckoutBanner'
 import { isActiveSubscriber } from '@/lib/subscription'
 
@@ -49,7 +47,7 @@ export default async function DashboardPage({
     redirect('/onboarding')
   }
 
-  const [{ data: profile }, { count: unrepliedReviewCount }] = await Promise.all([
+  const [{ data: profile }] = await Promise.all([
     supabase.from('gbp_profiles').select('optimization_report, description, photo_count').eq('organization_id', orgId).maybeSingle(),
     supabase.from('reviews').select('id', { count: 'exact', head: true }).eq('organization_id', orgId).is('response_text', null),
   ])

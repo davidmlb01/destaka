@@ -15,7 +15,7 @@ class StubWhatsAppClient implements WhatsAppClient {
   async sendMessage(
     phone: string,
     templateName: string,
-    params: Record<string, string>
+    _params: Record<string, string>
   ): Promise<void> {
     const masked = phone.length > 4 ? phone.slice(0, -4).replace(/\d/g, '*') + phone.slice(-4) : '****'
     console.log(`[whatsapp:stub] Enviaria template "${templateName}" para ${masked}`)

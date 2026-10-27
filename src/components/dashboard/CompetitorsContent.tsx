@@ -258,7 +258,6 @@ function OpportunitiesSection({ specialty }: { specialty?: string | null }) {
 }
 
 export function CompetitorsContent({ specialty }: { specialty?: string | null }) {
-  const vocab = getVocab(specialty)
   const {
     data,
     error,

@@ -5,8 +5,6 @@ import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { inngest } from '../client'
 import { generateOptimizations } from '@/lib/gbp/optimization-engine'
 import type { AuditReport } from '@/lib/gbp/audit-engine'
-import { GBPClient } from '@/lib/google/gbp-client'
-import { getValidTokenForOrg } from '@/lib/google/token-refresh'
 
 function admin() {
   return createAdminSupa(

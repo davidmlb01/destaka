@@ -177,7 +177,7 @@ export default async function PlanPage() {
 
             {/* Itens do stack */}
             <div className="flex flex-col gap-2.5">
-              {VALUE_STACK.map((item, i) => (
+              {VALUE_STACK.map((item) => (
                 <div
                   key={item.label}
                   className="rounded-xl px-4 py-3.5 flex items-center justify-between gap-4 transition-all"

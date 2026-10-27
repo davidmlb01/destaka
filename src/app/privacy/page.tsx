@@ -21,7 +21,6 @@ export const metadata = {
 
 const teal = '#14B8A6'
 const bg = '#071a19'
-const bgCard = '#0d2b29'
 const bgCardBorder = '#1a3d3a'
 
 export default function PrivacyPage() {

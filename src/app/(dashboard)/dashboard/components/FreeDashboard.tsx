@@ -23,7 +23,7 @@ function getLostPatientsRange(score: number): [number, number] {
   return [lostMin, lostMax]
 }
 
-export function FreeDashboard({ score, profileName, specialty, isNewUser }: FreeDashboardProps) {
+export function FreeDashboard({ score, profileName, isNewUser }: FreeDashboardProps) {
   const hasData = score > 0 && !isNewUser
 
   async function handleCheckout() {

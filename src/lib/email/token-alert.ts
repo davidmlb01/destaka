@@ -1,6 +1,6 @@
 import { resend, FROM } from './index'
 import { escapeHtml } from '@/lib/utils/escape-html'
-import { getVocab, getBrandName } from '@/lib/vertical-vocab'
+import { getVocab } from '@/lib/vertical-vocab'
 
 interface TokenDisconnectedParams {
   to: string
@@ -12,7 +12,6 @@ interface TokenDisconnectedParams {
 export async function sendTokenDisconnectedAlert(params: TokenDisconnectedParams) {
   const { to, orgName, dashboardUrl, specialty } = params
   const vocab = getVocab(specialty)
-  const brand = getBrandName(specialty)
   const brandSuffix = vocab.brandLabel ? `<span style="font-size:18px;font-weight:300;color:rgba(255,255,255,0.5);letter-spacing:-0.015em;line-height:1;margin-left:4px;">${vocab.brandLabel}</span>` : ''
 
   const html = `

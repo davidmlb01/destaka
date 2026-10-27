@@ -13,14 +13,6 @@ export interface InstagramPost {
   type: 'Image' | 'Sidecar' | 'Video'
 }
 
-interface ApifyRunResponse {
-  data: {
-    id: string
-    defaultDatasetId: string
-    status: string
-  }
-}
-
 interface ApifyPostRaw {
   id?: string
   shortCode?: string

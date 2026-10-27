@@ -2,10 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import dynamic from 'next/dynamic'
 import { Logo } from '@/components/ui/Logo'
-
-const DiagMapContent = dynamic(() => import('@/components/diagnostico/DiagMapContent'), { ssr: false })
 
 interface PublicDiagData {
   score: { atual: number; projetado: number; faixa: string; snapshot_date: string | null }
@@ -21,12 +18,6 @@ function getScoreColor(score: number): string {
   return 'var(--error)'
 }
 
-function getCtaText(score: number): string {
-  if (score < 30) return 'Corrigir meu perfil agora'
-  if (score < 50) return 'Quero mais clientes'
-  if (score <= 70) return 'Liderar minha região'
-  return 'Manter minha liderança'
-}
 
 export default function PublicDiagnosticoPage() {
   const params = useParams()

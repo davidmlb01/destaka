@@ -13,7 +13,6 @@ function getClient(): Anthropic {
 }
 
 export async function generateContent(prompt: string, systemPrompt: string): Promise<string> {
-  console.log(`[ai-client] Chamando Claude ${MODEL} (prompt: ${prompt.length} chars)`)
   const client = getClient()
   try {
     const response = await client.messages.create({
@@ -25,7 +24,6 @@ export async function generateContent(prompt: string, systemPrompt: string): Pro
 
     const block = response.content[0]
     if (block.type === 'text') {
-      console.log(`[ai-client] Claude respondeu: ${block.text.length} chars`)
       return block.text
     }
     throw new Error('Claude retornou conteudo nao-texto')

@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { inngest } from '@/lib/inngest/client'
 import { populateFromPlaces } from '@/lib/places/populate'
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 

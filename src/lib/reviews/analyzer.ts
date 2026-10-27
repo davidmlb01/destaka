@@ -17,7 +17,7 @@ const SYSTEM_PROMPT =
 function buildAnalysisPrompt(reviews: Array<{ comment: string | null; rating: number }>): string {
   const textsBlock = reviews
     .filter((r) => r.comment)
-    .map((r, i) => `[${r.rating}★] ${r.comment}`)
+    .map((r) => `[${r.rating}★] ${r.comment}`)
     .join('\n')
 
   return (

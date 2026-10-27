@@ -4,7 +4,6 @@
 
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { isPlacesAvailable, searchPlace, getPlaceDetails, extractQueryFromUrl } from './client'
-import { placeDetailsToProfileData } from './scorer'
 import { buildScoreInput, calculateScore, toLegacyBreakdown } from '@/lib/score/score-calculator'
 import type { PlaceDetails } from './client'
 

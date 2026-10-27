@@ -28,7 +28,7 @@ const STATUS_LABELS: Record<string, { label: string; color: string; bg: string }
   cancelled: { label: 'Cancelado', color: '#F87171', bg: 'rgba(248,113,113,0.1)' },
 }
 
-export function IndicarContent({ userId, specialty }: { userId: string; specialty?: string | null }) {
+export function IndicarContent({ specialty }: { userId: string; specialty?: string | null }) {
   const vocab = getVocab(specialty)
   const [copied, setCopied] = useState(false)
   const { data, isLoading } = useSWR<ReferralData>('/api/referral', fetcher)

@@ -29,11 +29,6 @@ interface TextSearchResponse {
   status: string
 }
 
-interface FindPlaceResponse {
-  candidates: Array<{ place_id: string; name: string; formatted_address: string }>
-  status: string
-}
-
 interface DetailsResponse {
   result: PlaceDetails
   status: string
@@ -175,9 +170,7 @@ export async function resolveInput(input: string): Promise<ParsedMapsInput> {
   let url = input.trim()
 
   if (isShortUrl(url)) {
-    console.log('[places] Resolving short URL:', url)
     url = await followRedirects(url)
-    console.log('[places] Resolved to:', url)
   }
 
   return parseGoogleMapsUrl(url, input)
@@ -193,16 +186,11 @@ export async function extractQueryFromUrl(input: string): Promise<string> {
 export async function searchPlace(query: string, lat?: number | null, lng?: number | null): Promise<string | null> {
   if (!API_KEY) return null
 
-  console.log('[places] searchPlace:', { query, lat, lng })
-
   if (lat != null && lng != null) {
     // Nearby Search: keyword + location + radius (restringe geograficamente, nao apenas bias)
     const nearbyUrl = `${PLACES_BASE}/nearbysearch/json?keyword=${encodeURIComponent(query)}&location=${lat},${lng}&radius=50000&language=pt-BR&key=${API_KEY}`
     const nearbyRes = await fetch(nearbyUrl)
     const nearbyData = await nearbyRes.json() as TextSearchResponse
-
-    console.log('[places] nearbySearch:', nearbyData.status, nearbyData.results?.length,
-      nearbyData.results?.[0]?.name, nearbyData.results?.[0]?.formatted_address)
 
     if (nearbyData.status === 'OK' && nearbyData.results?.length) {
       return nearbyData.results[0].place_id
@@ -212,9 +200,6 @@ export async function searchPlace(query: string, lat?: number | null, lng?: numb
     const tsUrl = `${PLACES_BASE}/textsearch/json?query=${encodeURIComponent(query)}&language=pt-BR&location=${lat},${lng}&radius=50000&key=${API_KEY}`
     const tsRes = await fetch(tsUrl)
     const tsData = await tsRes.json() as TextSearchResponse
-
-    console.log('[places] textSearch biased:', tsData.status, tsData.results?.length,
-      tsData.results?.[0]?.name, tsData.results?.[0]?.formatted_address)
 
     if (tsData.status === 'OK' && tsData.results?.length) {
       return tsData.results[0].place_id

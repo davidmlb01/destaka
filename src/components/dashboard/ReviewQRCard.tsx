@@ -30,7 +30,6 @@ export function ReviewQRCard({ specialty }: { specialty?: string | null }) {
   const vocab = getVocab(specialty)
   const [data, setData] = useState<QRData | null>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const svgContainerRef = useRef<HTMLDivElement>(null)
 

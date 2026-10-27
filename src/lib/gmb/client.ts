@@ -124,16 +124,6 @@ export interface GmbMetrics {
   period: string
 }
 
-interface DailyMetricTimeSeries {
-  dailyMetric: string
-  timeSeries: {
-    datedValues?: Array<{
-      date: { year: number; month: number; day: number }
-      value?: string
-    }>
-  }
-}
-
 interface MultiDailyMetricsResponse {
   multiDailyMetricTimeSeries?: Array<{
     dailyMetrics: string[]
@@ -147,9 +137,6 @@ interface MultiDailyMetricsResponse {
   }>
 }
 
-function sumTimeSeries(series: DailyMetricTimeSeries['timeSeries']): number {
-  return (series.datedValues ?? []).reduce((acc, d) => acc + (parseInt(d.value ?? '0', 10) || 0), 0)
-}
 
 export async function getGmbMetrics(
   accessToken: string,

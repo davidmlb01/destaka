@@ -5,7 +5,6 @@
 
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { inngest } from '../client'
-import { getValidTokenForOrg } from '@/lib/google/token-refresh'
 
 function admin() {
   return createAdminSupa(
@@ -112,7 +111,7 @@ export const geoCollector = inngest.createFunction(
                     .eq('id', profile.id)
                   console.log(`[geo-collector] Coordenadas salvas: ${centerLat}, ${centerLng}`)
                 }
-              } catch (e) {
+              } catch {
                 console.log(`[geo-collector] Falha coordenadas org ${orgId}`)
               }
             }

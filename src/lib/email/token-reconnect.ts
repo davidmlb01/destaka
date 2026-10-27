@@ -1,6 +1,6 @@
 import { resend, FROM } from './index'
 import { escapeHtml } from '@/lib/utils/escape-html'
-import { getVocab, getBrandName } from '@/lib/vertical-vocab'
+import { getVocab } from '@/lib/vertical-vocab'
 
 interface TokenReconnectParams {
   to: string

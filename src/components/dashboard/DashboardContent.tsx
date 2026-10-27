@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { Card } from '@/components/ui/Card'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { ScoreGauge } from './ScoreGauge'
@@ -18,10 +17,7 @@ import { DashboardSkeleton } from './Skeletons'
 import { PinIcon } from '@/components/ui/PinIcon'
 import { useDashboard, type DashboardData } from './hooks/useDashboard'
 import MapCard from './MapCard'
-import KeywordInsightCard from './KeywordInsightCard'
 import { PatientFunnelCard } from './PatientFunnelCard'
-import { GeoExpansionCard } from './GeoExpansionCard'
-import { getVocab } from '@/lib/vertical-vocab'
 
 const CATEGORY_LABELS: Record<string, string> = {
   'Informações Básicas': 'Seu perfil está completo?',
@@ -89,7 +85,6 @@ interface DashboardContentProps {
 }
 
 export function DashboardContent({ isSubscriber = true, onCheckout, impactText, initialData }: DashboardContentProps) {
-  const [categoriesOpen, setCategoriesOpen] = useState(false)
   const {
     data,
     error,
@@ -125,7 +120,6 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
   )
 
   const { profile, diagnostic, scoreHistory, metrics, nextActions, weeklySummary, specialty } = data
-  const vocab = getVocab(specialty)
 
   return (
     <ErrorBoundary>

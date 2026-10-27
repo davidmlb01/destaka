@@ -209,8 +209,8 @@ export class GBPClient {
     const end = options?.endDate ?? now.toISOString().split('T')[0]
     const start = options?.startDate ?? new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
 
-    const [startYear, startMonth, startDay] = start.split('-').map(Number)
-    const [endYear, endMonth, endDay] = end.split('-').map(Number)
+    const [startYear, startMonth] = start.split('-').map(Number)
+    const [endYear, endMonth] = end.split('-').map(Number)
 
     const data = await this.fetch<{
       searchKeywordsCounts?: Array<{
