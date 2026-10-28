@@ -105,10 +105,9 @@ function Nav() {
         <div className="hidden md:flex items-center gap-6 text-[13px] font-medium" style={{ color: 'rgba(255,255,255,0.68)' }}>
           <a href="#como-funciona" className="hover:text-white transition-colors">Como funciona</a>
           <a href="#recursos" className="hover:text-white transition-colors">Recursos</a>
-          <a href="/login" className="hover:text-white transition-colors">Entrar</a>
         </div>
         <Button variant="primary" size="sm" href="/login">
-          Diagnóstico gratuito
+          Entrar
         </Button>
       </nav>
     </div>
