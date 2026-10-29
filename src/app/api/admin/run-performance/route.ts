@@ -47,7 +47,8 @@ export async function POST(req: NextRequest) {
           headers: { 'Content-Type': 'application/json', 'x-admin-key': process.env.ADMIN_SECRET_KEY! },
           body: JSON.stringify({ organization_id: oid }),
         })
-        results.push({ org_id: oid, status: res.ok ? 'ok' : 'error' })
+        const resBody = await res.json().catch(() => ({})) as Record<string, unknown>
+        results.push({ org_id: oid, status: res.ok ? 'ok' : 'error', detail: res.ok ? undefined : resBody })
       } catch {
         results.push({ org_id: oid, status: 'error' })
       }

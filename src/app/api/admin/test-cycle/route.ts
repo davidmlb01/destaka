@@ -14,26 +14,44 @@ export async function POST(req: Request) {
   if (count === null) return NextResponse.json({ error: 'Service unavailable' }, { status: 503 })
   if (count >= 3) return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
 
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user?.email) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
+  const adminKey = req.headers.get('x-admin-key')
+  const adminSecretKey = process.env.ADMIN_SECRET_KEY
+  const isAdminKey = !!adminKey && !!adminSecretKey && adminKey === adminSecretKey
 
-  const vipEmails = (process.env.VIP_BYPASS_EMAILS ?? '').split(',').filter(Boolean)
-  if (!vipEmails.includes(user.email)) {
-    return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
-  }
+  let orgId: string | undefined
 
-  const body = await req.json().catch(() => ({})) as { organization_id?: string }
+  if (isAdminKey) {
+    const body = await req.json().catch(() => ({})) as { organization_id?: string }
+    orgId = body.organization_id
+    // Sem org_id com admin key: busca todas as orgs com token
+    if (!orgId) {
+      const { createClient: createAdmin } = await import('@supabase/supabase-js')
+      const db = createAdmin(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
+      const { data: tokens } = await db.from('google_tokens').select('organization_id')
+      const orgIds = (tokens ?? []).map((t: { organization_id: string }) => t.organization_id)
+      if (orgIds.length === 0) return NextResponse.json({ error: 'Nenhuma org com token' }, { status: 404 })
+      orgId = orgIds[0]
+    }
+  } else {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user?.email) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
 
-  // Se nao passou org_id, busca a org do usuario
-  let orgId = body.organization_id
-  if (!orgId) {
-    const { data: prof } = await supabase
-      .from('professionals')
-      .select('organization_id')
-      .eq('user_id', user.id)
-      .maybeSingle()
-    orgId = prof?.organization_id
+    const vipEmails = (process.env.VIP_BYPASS_EMAILS ?? '').split(',').filter(Boolean)
+    if (!vipEmails.includes(user.email)) {
+      return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
+    }
+
+    const body = await req.json().catch(() => ({})) as { organization_id?: string }
+    orgId = body.organization_id
+    if (!orgId) {
+      const { data: prof } = await supabase
+        .from('professionals')
+        .select('organization_id')
+        .eq('user_id', user.id)
+        .maybeSingle()
+      orgId = prof?.organization_id
+    }
   }
 
   if (!orgId) {
