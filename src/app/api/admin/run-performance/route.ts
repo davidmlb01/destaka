@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
   if (!body.organization_id) {
     const { data: tokens } = await db.from('google_tokens').select('organization_id')
     const orgIds = (tokens ?? []).map((t: { organization_id: string }) => t.organization_id)
-    const results: Array<{ org_id: string; status: string }> = []
+    const results: Array<{ org_id: string; status: string; detail?: unknown }> = []
     for (const oid of orgIds) {
       try {
         const res = await fetch(req.url, {
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
           headers: { 'Content-Type': 'application/json', 'x-admin-key': process.env.ADMIN_SECRET_KEY! },
           body: JSON.stringify({ organization_id: oid }),
         })
-        const resBody = await res.json().catch(() => ({})) as Record<string, unknown>
+        const resBody = await res.json().catch(() => ({}))
         results.push({ org_id: oid, status: res.ok ? 'ok' : 'error', detail: res.ok ? undefined : resBody })
       } catch {
         results.push({ org_id: oid, status: 'error' })
