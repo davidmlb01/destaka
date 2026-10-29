@@ -33,10 +33,29 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json().catch(() => ({})) as { organization_id?: string }
-  const orgId = body.organization_id
-  if (!orgId) return NextResponse.json({ error: 'organization_id required' }, { status: 400 })
-
   const db = admin()
+
+  // Se nao passou org_id, busca todas as orgs com token
+  if (!body.organization_id) {
+    const { data: tokens } = await db.from('google_tokens').select('organization_id')
+    const orgIds = (tokens ?? []).map((t: { organization_id: string }) => t.organization_id)
+    const results: Array<{ org_id: string; status: string }> = []
+    for (const oid of orgIds) {
+      try {
+        const res = await fetch(req.url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-admin-key': process.env.ADMIN_SECRET_KEY! },
+          body: JSON.stringify({ organization_id: oid }),
+        })
+        results.push({ org_id: oid, status: res.ok ? 'ok' : 'error' })
+      } catch {
+        results.push({ org_id: oid, status: 'error' })
+      }
+    }
+    return NextResponse.json({ ok: true, results })
+  }
+
+  const orgId = body.organization_id
 
   const accessToken = await getValidTokenForOrg(db, orgId)
   if (!accessToken) {
