@@ -6,20 +6,18 @@ import { getAuthOrg, privateJson } from '@/lib/api/with-auth'
 export async function POST() {
   const auth = await getAuthOrg()
   if (auth.error) return auth.error
-  const { orgId, supabase } = auth
+  const { user, orgId, supabase } = auth
 
   const { data: gmbProfile } = await supabase
     .from('gmb_profiles')
     .select('id')
-    .eq('organization_id', orgId)
+    .eq('user_id', user.id)
     .maybeSingle()
 
   if (!gmbProfile?.id) {
-    return NextResponse.json({ discovered: 0, errors: ['Perfil GMB não encontrado. Configure seu Google Meu Negocio primeiro.'] })
+    return NextResponse.json({ discovered: 0, errors: ['Perfil GMB não encontrado. Configure seu Google Meu Negócio primeiro.'] })
   }
 
-  // Por enquanto, retorna os concorrentes existentes como "descobertos"
-  // Quando a GBP API for aprovada, aqui chamara a Places API para descobrir novos
   const { data: existing } = await supabase
     .from('competitors')
     .select('id')
@@ -34,13 +32,13 @@ export async function POST() {
 export async function GET() {
   const auth = await getAuthOrg()
   if (auth.error) return auth.error
-  const { orgId, supabase } = auth
+  const { user, orgId, supabase } = auth
 
-  // Buscar gmb_profile da org para FK de competitors
+  // Buscar gmb_profile pelo user_id (FK de competitors)
   const { data: gmbProfile } = await supabase
     .from('gmb_profiles')
     .select('id')
-    .eq('organization_id', orgId)
+    .eq('user_id', user.id)
     .maybeSingle()
 
   const gmbProfileId = gmbProfile?.id
