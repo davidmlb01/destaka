@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { inngest } from '@/lib/inngest/client'
 import { rateLimit } from '@/lib/redis'
 
@@ -25,8 +26,7 @@ export async function POST(req: Request) {
     orgId = body.organization_id
     // Sem org_id com admin key: busca todas as orgs com token
     if (!orgId) {
-      const { createClient: createAdmin } = await import('@supabase/supabase-js')
-      const db = createAdmin(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
+      const db = createAdminSupa(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
       const { data: tokens } = await db.from('google_tokens').select('organization_id')
       const orgIds = (tokens ?? []).map((t: { organization_id: string }) => t.organization_id)
       if (orgIds.length === 0) return NextResponse.json({ error: 'Nenhuma org com token' }, { status: 404 })
