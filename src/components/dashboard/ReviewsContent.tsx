@@ -120,7 +120,7 @@ export function ReviewsContent() {
               className="rounded-2xl p-5"
               style={{
                 background: 'rgba(0,0,0,0.25)',
-                border: `1px solid ${review.reply_status === 'pending' && review.rating <= 2
+                border: `1px solid ${(review.reply_status === 'pending' || review.reply_status === 'no_response') && review.rating <= 2
                   ? 'rgba(239,68,68,0.2)'
                   : 'rgba(255,255,255,0.08)'}`,
               }}
@@ -160,7 +160,7 @@ export function ReviewsContent() {
               )}
 
               {/* Ações */}
-              {review.reply_status === 'pending' && (
+              {(review.reply_status === 'pending' || review.reply_status === 'no_response') && (
                 <div className="flex gap-2">
                   <button
                     onClick={() => openReplyModal(review)}
@@ -338,7 +338,8 @@ export function ReviewsContent() {
 
 function StatusBadge({ status }: { status: string }) {
   const config = {
-    pending: { label: 'Aguardando', color: '#FBBF24', dot: '#FBBF24' },
+    no_response: { label: 'Sem resposta', color: '#FBBF24', dot: '#FBBF24' },
+    pending: { label: 'Aguardando aprovação', color: 'var(--accent-bright)', dot: 'var(--accent-bright)' },
     replied: { label: 'Respondida', color: 'var(--success)', dot: 'var(--success)' },
     ignored: { label: 'Ignorada', color: 'rgba(255,255,255,0.3)', dot: 'rgba(255,255,255,0.3)' },
   }[status] ?? { label: status, color: 'rgba(255,255,255,0.3)', dot: 'rgba(255,255,255,0.3)' }

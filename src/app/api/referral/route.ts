@@ -12,6 +12,15 @@ function createServiceClient() {
   )
 }
 
+function mapSpecialtyToPath(specialty: string | null | undefined): string {
+  if (!specialty) return ''
+  const s = specialty.toLowerCase()
+  if (s.includes('medic') || s.includes('médic') || s.includes('saude') || s.includes('saúde') || s.includes('fisio') || s.includes('dentist') || s.includes('odonto') || s.includes('clinic') || s.includes('clínic') || s.includes('nutri') || s.includes('psicol') || s.includes('fono') || s.includes('dermat')) return '/saude'
+  if (s.includes('pet') || s.includes('vet') || s.includes('animal')) return '/pet'
+  if (s.includes('advog') || s.includes('jurid') || s.includes('direito')) return '/juridico'
+  return ''
+}
+
 export async function GET() {
   const auth = await getAuthOrg()
   if (auth.error) return auth.error
@@ -73,9 +82,18 @@ export async function GET() {
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://destaka.com.br'
 
+  // Detect vertical from org specialty to build correct landing URL
+  const { data: orgData } = await admin
+    .from('organizations')
+    .select('specialty')
+    .eq('id', auth.orgId)
+    .maybeSingle()
+
+  const verticalPath = mapSpecialtyToPath(orgData?.specialty)
+
   return NextResponse.json({
     code: codeRecord.code,
-    link: `${appUrl}/?ref=${codeRecord.code}`,
+    link: `${appUrl}${verticalPath}?ref=${codeRecord.code}`,
     activeCount,
     discountPercent,
     referrals: (referrals ?? []).map(r => ({

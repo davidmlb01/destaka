@@ -13,7 +13,7 @@ export function useReplyModal(onSuccess: () => void) {
   const [modal, setModal] = useState<ReplyModalState | null>(null)
 
   function openReplyModal(review: Review) {
-    setModal({ review, draft: review.reply ?? '', generating: false, publishing: false })
+    setModal({ review, draft: review.ai_reply_draft ?? review.reply ?? '', generating: false, publishing: false })
   }
 
   function closeModal() {

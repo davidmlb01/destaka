@@ -103,7 +103,7 @@ export async function GET(request: NextRequest) {
     const resp = responseMap.get(r.id) as { generated_text: string; status: string } | undefined
     const replyStatus = resp
       ? (resp.status === 'published' ? 'replied' : resp.status as string)
-      : 'pending'
+      : 'no_response'
 
     return {
       id: r.id,

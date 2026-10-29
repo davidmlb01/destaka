@@ -191,56 +191,32 @@ export function OptimizationConfirmCard({
       attribute_suggestions.length +
       service_optimizations.length
 
+    if (totalSuggestions === 0) return null
+
     return (
       <div
         className="rounded-2xl overflow-hidden"
         style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}
       >
-        <div className="px-5 py-4 flex items-center justify-between" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-          <h2 className="font-display font-bold text-white text-sm">Melhorias encontradas</h2>
-          <span
-            className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-            style={{ background: 'rgba(20,184,166,0.15)', color: '#14B8A6' }}
-          >
-            {totalSuggestions} {totalSuggestions === 1 ? 'sugestão' : 'sugestões'}
-          </span>
-        </div>
-
-        <div className="px-5 py-4 space-y-1.5">
-          {description_variants.length > 0 && (
-            <p className="text-[13px]" style={{ color: 'var(--text-secondary)' }}>
-              {description_variants.length} {description_variants.length === 1 ? 'versão de descrição' : 'versões de descrição'}
+        <div className="px-5 py-4 flex items-center justify-between">
+          <div className="flex-1">
+            <p className="text-sm text-white">
+              <span className="font-semibold">{totalSuggestions} {totalSuggestions === 1 ? 'sugestão de melhoria' : 'sugestões de melhoria'}.</span>
+              {' '}
+              <span style={{ color: 'rgba(255,255,255,0.6)' }}>Veja na aba Otimizações</span>
             </p>
-          )}
-          {category_suggestions.length > 0 && (
-            <p className="text-[13px]" style={{ color: 'var(--text-secondary)' }}>
-              {category_suggestions.length} {category_suggestions.length === 1 ? 'categoria sugerida' : 'categorias sugeridas'}
-            </p>
-          )}
-          {attribute_suggestions.length > 0 && (
-            <p className="text-[13px]" style={{ color: 'var(--text-secondary)' }}>
-              {attribute_suggestions.length} {attribute_suggestions.length === 1 ? 'atributo sugerido' : 'atributos sugeridos'}
-            </p>
-          )}
-          {service_optimizations.length > 0 && (
-            <p className="text-[13px]" style={{ color: 'var(--text-secondary)' }}>
-              {service_optimizations.length} {service_optimizations.length === 1 ? 'serviço otimizado' : 'serviços otimizados'}
-            </p>
-          )}
-
-          <div className="pt-3">
-            <button
-              onClick={handleReviewChanges}
-              className="w-full text-sm font-bold px-5 py-2.5 rounded-xl transition-all"
-              style={{
-                background: 'rgba(20,184,166,0.15)',
-                border: '1px solid rgba(20,184,166,0.25)',
-                color: '#14B8A6',
-              }}
-            >
-              Revisar antes de aplicar
-            </button>
           </div>
+          <button
+            onClick={handleReviewChanges}
+            className="text-sm font-bold px-4 py-2 rounded-xl transition-all shrink-0 ml-4"
+            style={{
+              background: 'rgba(20,184,166,0.15)',
+              border: '1px solid rgba(20,184,166,0.25)',
+              color: '#14B8A6',
+            }}
+          >
+            Ver sugestões
+          </button>
         </div>
       </div>
     )

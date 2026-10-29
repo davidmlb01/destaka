@@ -128,11 +128,9 @@ export function ChecklistContent() {
                     {item.title}
                   </p>
                 </div>
-                {item.done_at && (
-                  <span className="text-xs shrink-0" style={{ color: 'rgba(255,255,255,0.2)' }}>
-                    {formatDate(item.done_at)}
-                  </span>
-                )}
+                <span className="text-xs shrink-0" style={{ color: 'rgba(255,255,255,0.2)' }}>
+                  {item.done_at && item.done_at !== 'auto' ? formatDate(item.done_at) : ''}
+                </span>
               </div>
             ))}
           </div>

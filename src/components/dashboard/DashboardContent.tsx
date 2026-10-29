@@ -8,7 +8,6 @@ import { MetricCard } from './MetricCard'
 import { NextActionsPanel } from './NextActionsPanel'
 import dynamic from 'next/dynamic'
 const ScoreChart = dynamic(() => import('./ScoreChart').then(m => m.ScoreChart), { ssr: false, loading: () => <div className="h-[200px]" /> })
-import { OptimizationWizard } from './OptimizationWizard'
 import { ProfileAlerts } from './ProfileAlerts'
 import { PendingDescriptionBanner } from './PendingDescriptionBanner'
 import { TokenInvalidBanner } from './TokenInvalidBanner'
@@ -145,12 +144,6 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
 
           {isSubscriber ? (
             <div className="w-full flex flex-col gap-3">
-              <OptimizationWizard
-                profileId={profile.id}
-                diagnosticId={diagnosticId}
-                onComplete={() => mutate()}
-                specialty={specialty}
-              />
               <div className="flex items-center justify-between">
                 {syncError && (
                   <p className="text-xs font-medium" style={{ color: '#F87171' }}>{syncError}</p>

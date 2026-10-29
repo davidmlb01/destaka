@@ -43,7 +43,7 @@ export function IndicarContent({ specialty }: { userId: string; specialty?: stri
 
   function handleWhatsApp() {
     if (!data?.link) return
-    const text = `Conhea o Destaka, que cuida do seu Google automaticamente. Use meu link e ganhe desconto: ${data.link}`
+    const text = `Conheça o Destaka, que cuida do seu Google automaticamente. Use meu link e ganhe desconto: ${data.link}`
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
   }
 
@@ -62,7 +62,7 @@ export function IndicarContent({ specialty }: { userId: string; specialty?: stri
         style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
       >
         <p className="text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>
-          Seu codigo de indicacao sera gerado automaticamente. Volte em instantes.
+          Seu código de indicação será gerado automaticamente. Volte em instantes.
         </p>
       </div>
     )
@@ -97,7 +97,7 @@ export function IndicarContent({ specialty }: { userId: string; specialty?: stri
           </p>
           <p className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
             {data.discountPercent >= 100
-              ? 'Voce nao paga nada!'
+              ? 'Você não paga nada!'
               : `Faltam ${freeSlots} para pagar zero`}
           </p>
         </div>
@@ -109,7 +109,7 @@ export function IndicarContent({ specialty }: { userId: string; specialty?: stri
         style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
       >
         <div className="flex items-center justify-between mb-3">
-          <p className="font-display font-bold text-white text-sm">Seu codigo</p>
+          <p className="font-display font-bold text-white text-sm">Seu código</p>
           <span
             className="rounded-lg px-3 py-1 text-xs font-bold"
             style={{ background: 'rgba(14,165,233,0.15)', color: 'var(--accent-bright)', letterSpacing: '1px' }}
@@ -119,7 +119,7 @@ export function IndicarContent({ specialty }: { userId: string; specialty?: stri
         </div>
 
         <p className="text-xs mb-3" style={{ color: 'rgba(255,255,255,0.4)' }}>
-          Seu link de indicacao
+          Seu link de indicação
         </p>
         <div className="flex gap-2">
           <div
@@ -164,8 +164,8 @@ export function IndicarContent({ specialty }: { userId: string; specialty?: stri
           {[
             { n: '1', text: `Envie seu link para um colega ${vocab.profissional}.` },
             { n: '2', text: 'Ele se cadastra pelo link e assina o Destaka.' },
-            { n: '3', text: 'Quando ele pagar a 2a mensalidade, voce ganha 20% de desconto permanente.' },
-            { n: '4', text: 'Com 5 indicados ativos, voce nao paga mais nada.' },
+            { n: '3', text: 'Quando ele pagar a 2a mensalidade, você ganha 20% de desconto permanente.' },
+            { n: '4', text: 'Com 5 indicados ativos, você não paga mais nada.' },
           ].map(step => (
             <div key={step.n} className="flex items-start gap-3">
               <span
@@ -188,7 +188,7 @@ export function IndicarContent({ specialty }: { userId: string; specialty?: stri
           className="rounded-2xl p-5"
           style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
         >
-          <p className="font-display font-bold text-white text-sm mb-4">Suas indicacoes</p>
+          <p className="font-display font-bold text-white text-sm mb-4">Suas indicações</p>
           <div className="flex flex-col gap-2">
             {data.referrals.map(ref => {
               const st = STATUS_LABELS[ref.status] ?? STATUS_LABELS.pending

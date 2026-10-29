@@ -21,7 +21,7 @@ export interface Review {
   text: string | null
   reply: string | null
   ai_reply_draft: string | null
-  reply_status: 'pending' | 'replied' | 'ignored' | 'auto_published' | 'pending_approval' | 'approved' | 'rejected'
+  reply_status: 'no_response' | 'pending' | 'replied' | 'ignored' | 'auto_published' | 'pending_approval' | 'approved' | 'rejected'
   review_date: string
   created_at: string
 }

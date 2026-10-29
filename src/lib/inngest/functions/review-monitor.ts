@@ -128,7 +128,7 @@ export const reviewMonitor = inngest.createFunction(
             rating,
             comment: review.comment ?? null,
             published_at: review.createTime,
-          }, { onConflict: 'review_id', ignoreDuplicates: true })
+          }, { onConflict: 'review_id', ignoreDuplicates: false })
 
           // Reviews negativos (1-3 estrelas): enviar alerta por email, sem gerar resposta IA
           if (rating <= 3) {

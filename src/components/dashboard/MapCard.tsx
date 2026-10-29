@@ -107,26 +107,46 @@ export default function MapCard({ isSubscriber }: { isSubscriber: boolean }) {
             <MapContent center={data.center} zones={data.zones} />
           </div>
 
-          {(
-            <div className="mt-3 space-y-1">
-              <p className="text-sm text-zinc-300">
-                Seu negócio aparece em <span className="font-semibold text-zinc-100">{data.total_neighborhoods} {data.total_neighborhoods === 1 ? 'bairro' : 'bairros'}</span>
-                {data.radius_km > 0 && (
-                  <span className="text-zinc-400"> (raio de {data.radius_km} km)</span>
-                )}
-              </p>
-              {weakCount > 0 && (
-                <p className="text-sm text-amber-400">
-                  Destaka está otimizando seu perfil para expandir seu alcance
-                </p>
-              )}
-              {weakCount === 0 && strongCount > 0 && (
-                <p className="text-sm text-emerald-400">
-                  Você está bem posicionado na sua região
-                </p>
-              )}
+          {/* Legenda */}
+          <div className="flex items-center gap-4 mt-2 px-1">
+            <div className="flex items-center gap-1.5">
+              <span className="rounded-full" style={{ width: 8, height: 8, background: '#22c55e' }} />
+              <span className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>Forte</span>
             </div>
-          )}
+            <div className="flex items-center gap-1.5">
+              <span className="rounded-full" style={{ width: 8, height: 8, background: '#eab308' }} />
+              <span className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>Médio</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="rounded-full" style={{ width: 8, height: 8, background: '#ef4444' }} />
+              <span className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>Fraco</span>
+            </div>
+          </div>
+
+          <div className="mt-3 space-y-1">
+            <p className="text-sm text-zinc-300">
+              Seu negócio aparece em <span className="font-semibold text-zinc-100">{data.total_neighborhoods} {data.total_neighborhoods === 1 ? 'bairro' : 'bairros'}</span>
+              {data.radius_km > 0 && (
+                <span className="text-zinc-400"> (raio de {data.radius_km} km)</span>
+              )}
+            </p>
+            {strongCount > 0 && (
+              <p className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                {strongCount} {strongCount === 1 ? 'bairro com boa visibilidade' : 'bairros com boa visibilidade'}
+                {weakCount > 0 && `, ${weakCount} ${weakCount === 1 ? 'precisa melhorar' : 'precisam melhorar'}`}
+              </p>
+            )}
+            {weakCount > 0 && (
+              <p className="text-sm text-amber-400">
+                O Destaka está trabalhando para expandir seu alcance
+              </p>
+            )}
+            {weakCount === 0 && strongCount > 0 && (
+              <p className="text-sm text-emerald-400">
+                Você está bem posicionado na sua região
+              </p>
+            )}
+          </div>
         </div>
       )}
     </div>

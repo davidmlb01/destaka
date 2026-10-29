@@ -124,7 +124,7 @@ export function DashboardLayout({ children, activeHref, profileName, userEmail, 
               className="text-xs transition-colors"
               style={{ color: 'var(--text-muted)' }}
             >
-              Configuracoes
+              Configurações
             </Link>
             <span style={{ color: 'var(--border-subtle)' }}>·</span>
             <a
