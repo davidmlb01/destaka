@@ -10,6 +10,7 @@ import { getValidTokenForOrg } from '@/lib/google/token-refresh'
 import { getLatestAnalysis } from '@/lib/gmb/competitive-analyzer'
 import { resend, FROM } from '@/lib/email/index'
 import { getBrandName } from '@/lib/vertical-vocab'
+import { publishPost as zernioPublishPost } from '@/lib/zernio/client'
 
 function admin() {
   return createAdminSupa(
@@ -18,7 +19,32 @@ function admin() {
   )
 }
 
-async function publishGbpPost(
+async function publishViaZernio(
+  orgId: string,
+  content: string,
+  imageUrl?: string
+): Promise<string | null> {
+  try {
+    const db = admin()
+    const { data: org } = await db
+      .from('organizations')
+      .select('zernio_account_id')
+      .eq('id', orgId)
+      .maybeSingle()
+
+    if (!org?.zernio_account_id) {
+      console.log(`[post-generator] Org ${orgId} sem zernio_account_id, tentando GBP v4`)
+      return null
+    }
+
+    return await zernioPublishPost(org.zernio_account_id, content, imageUrl)
+  } catch (err) {
+    console.error('[post-generator] Zernio publish failed:', err)
+    return null
+  }
+}
+
+async function publishGbpPostLegacy(
   accessToken: string,
   locationName: string,
   content: string,
@@ -29,7 +55,7 @@ async function publishGbpPost(
     const post = await client.createPost(locationName, { summary: content, imageUrl })
     return post.name ?? null
   } catch (err) {
-    console.error('[post-generator] Falha ao publicar no GBP:', err)
+    console.error('[post-generator] Falha ao publicar no GBP (legacy):', err)
     return null
   }
 }
@@ -80,34 +106,38 @@ export const postGenerator = inngest.createFunction(
           const isAutomatic = org.automation_preference === 'automatico'
 
           if (isAutomatic) {
-            const validToken = await getValidTokenForOrg(db, orgId)
-            if (validToken) {
-              const gbpPostId = await publishGbpPost(validToken, org.gbp_location_id, igPost.rewritten_caption, igPost.image_url)
-
-              await db.from('instagram_posts')
-                .update({
-                  status: gbpPostId ? 'published' : 'failed',
-                  gbp_post_id: gbpPostId,
-                  published_to_gbp_at: gbpPostId ? new Date().toISOString() : null,
-                  ...(gbpPostId ? {} : { skip_reason: 'Publicacao GBP falhou' }),
-                })
-                .eq('id', igPost.id)
-
-              if (gbpPostId) {
-                await db.from('posts').insert({
-                  organization_id: orgId,
-                  content: igPost.rewritten_caption,
-                  post_type: 'instagram_adapted',
-                  status: 'published',
-                  published_at: new Date().toISOString(),
-                  gbp_post_id: gbpPostId,
-                  photo_suggestion: 'Foto original do Instagram',
-                  source: 'instagram',
-                })
+            // Try Zernio first, then GBP v4 legacy
+            let gbpPostId = await publishViaZernio(orgId, igPost.rewritten_caption, igPost.image_url)
+            if (!gbpPostId) {
+              const validToken = await getValidTokenForOrg(db, orgId)
+              if (validToken) {
+                gbpPostId = await publishGbpPostLegacy(validToken, org.gbp_location_id, igPost.rewritten_caption, igPost.image_url)
               }
-
-              return { org_id: orgId, status: gbpPostId ? 'published' : 'failed', post_type: 'instagram_adapted' }
             }
+
+            await db.from('instagram_posts')
+              .update({
+                status: gbpPostId ? 'published' : 'failed',
+                gbp_post_id: gbpPostId,
+                published_to_gbp_at: gbpPostId ? new Date().toISOString() : null,
+                ...(gbpPostId ? {} : { skip_reason: 'Publicacao GBP falhou' }),
+              })
+              .eq('id', igPost.id)
+
+            if (gbpPostId) {
+              await db.from('posts').insert({
+                organization_id: orgId,
+                content: igPost.rewritten_caption,
+                post_type: 'instagram_adapted',
+                status: 'published',
+                published_at: new Date().toISOString(),
+                gbp_post_id: gbpPostId,
+                photo_suggestion: 'Foto original do Instagram',
+                source: 'instagram',
+              })
+            }
+
+            return { org_id: orgId, status: gbpPostId ? 'published' : 'failed', post_type: 'instagram_adapted' }
           }
 
           // Se nao e automatico, marca como pending para aprovacao
@@ -124,10 +154,8 @@ export const postGenerator = inngest.createFunction(
         }
 
         const validToken = await getValidTokenForOrg(db, orgId)
-
-        if (!validToken) {
-          return { org_id: orgId, status: 'skip', error: 'sem token Google' }
-        }
+        // Token is optional now: Zernio handles publishing auth
+        // Only skip if no token AND no Zernio account (checked at publish time)
 
         // Busca city do endereço GBP
         const { data: profile } = await db
@@ -207,12 +235,11 @@ export const postGenerator = inngest.createFunction(
         const isAutomatic = org.automation_preference === 'automatico'
 
         if (isAutomatic) {
-          // Publica direto no GBP
-          const gbpPostId = await publishGbpPost(
-            validToken,
-            org.gbp_location_id,
-            generated.content
-          )
+          // Try Zernio first, then GBP v4 legacy
+          let gbpPostId = await publishViaZernio(orgId, generated.content)
+          if (!gbpPostId && validToken) {
+            gbpPostId = await publishGbpPostLegacy(validToken, org.gbp_location_id, generated.content)
+          }
 
           await db.from('posts').insert({
             organization_id: orgId,
