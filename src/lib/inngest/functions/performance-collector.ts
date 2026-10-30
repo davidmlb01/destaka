@@ -120,24 +120,49 @@ export const performanceCollector = inngest.createFunction(
             },
           }
 
-          const res = await fetch(
-            `https://businessprofileperformance.googleapis.com/v1/${locationName}:fetchMultiDailyMetricsTimeSeries`,
-            {
-              method: 'POST',
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(body),
-              signal: AbortSignal.timeout(30000),
-            }
-          )
+          // Tenta ambos os formatos: locations/ID e accounts/X/locations/Y
+          const locationId = locationName.includes('/locations/')
+            ? locationName.split('/locations/')[1]
+            : locationName.replace('locations/', '')
+          const formats = [
+            `locations/${locationId}`,
+            locationName,
+          ]
 
-          if (!res.ok) {
-            const errText = await res.text().catch(() => 'unknown')
-            console.log(`[performance-collector] API ${res.status} org ${orgId}: ${errText}`)
-            return { org_id: orgId, status: 'error', error: `API ${res.status}` }
+          let res: Response | null = null
+          let usedFormat = ''
+          for (const fmt of formats) {
+            const attempt = await fetch(
+              `https://businessprofileperformance.googleapis.com/v1/${fmt}:fetchMultiDailyMetricsTimeSeries`,
+              {
+                method: 'POST',
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(body),
+                signal: AbortSignal.timeout(30000),
+              }
+            )
+            if (attempt.ok) {
+              res = attempt
+              usedFormat = fmt
+              break
+            }
+            // Se 404, tenta próximo formato. Se outro erro, para.
+            if (attempt.status !== 404) {
+              const errText = await attempt.text().catch(() => 'unknown')
+              console.log(`[performance-collector] API ${attempt.status} org ${orgId}: ${errText}`)
+              return { org_id: orgId, status: 'error', error: `API ${attempt.status}` }
+            }
           }
+
+          if (!res) {
+            console.log(`[performance-collector] 404 em ambos os formatos para org ${orgId}`)
+            return { org_id: orgId, status: 'error', error: 'API 404 em ambos os formatos de location' }
+          }
+
+          console.log(`[performance-collector] OK com formato ${usedFormat} para org ${orgId}`)
 
           const data = await res.json() as PerformanceResponse
           const series = data.multiDailyMetricTimeSeries ?? []

@@ -120,26 +120,48 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const res = await fetch(
-      `https://businessprofileperformance.googleapis.com/v1/${locationName}:fetchMultiDailyMetricsTimeSeries`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(apiBody),
-        signal: AbortSignal.timeout(30000),
-      }
-    )
+    // Tenta ambos os formatos: locations/ID e accounts/X/locations/Y
+    const locationId = locationName.includes('/locations/')
+      ? locationName.split('/locations/')[1]
+      : locationName.replace('locations/', '')
+    const formats = [`locations/${locationId}`, locationName]
 
-    if (!res.ok) {
-      const errText = await res.text().catch(() => 'unknown')
+    let res: Response | null = null
+    let usedFormat = ''
+    for (const fmt of formats) {
+      const attempt = await fetch(
+        `https://businessprofileperformance.googleapis.com/v1/${fmt}:fetchMultiDailyMetricsTimeSeries`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(apiBody),
+          signal: AbortSignal.timeout(30000),
+        }
+      )
+      if (attempt.ok) {
+        res = attempt
+        usedFormat = fmt
+        break
+      }
+      if (attempt.status !== 404) {
+        const errText = await attempt.text().catch(() => 'unknown')
+        return NextResponse.json({
+          error: `GBP Performance API ${attempt.status}`,
+          detail: errText,
+          locationName: fmt,
+        }, { status: attempt.status })
+      }
+    }
+
+    if (!res) {
       return NextResponse.json({
-        error: `GBP Performance API ${res.status}`,
-        detail: errText,
+        error: 'GBP Performance API 404 em ambos os formatos',
+        formats,
         locationName,
-      }, { status: res.status })
+      }, { status: 404 })
     }
 
     const data = await res.json() as PerformanceResponse
