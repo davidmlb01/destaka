@@ -133,43 +133,57 @@ export class GBPClient {
     const apiKey = process.env.GOOGLE_PLACES_API_KEY
     if (!apiKey) return []
 
-    const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${encodeURIComponent(placeId)}&fields=reviews&language=pt-BR&key=${apiKey}&reviews_sort=newest`
-    const res = await globalThis.fetch(url)
-    if (!res.ok) return []
-
-    const data = await res.json() as {
-      status: string
-      result?: {
-        reviews?: Array<{
-          author_name: string
-          rating: number
-          text: string
-          time: number
-          profile_photo_url?: string
-          relative_time_description?: string
-        }>
-      }
-    }
-
-    if (data.status !== 'OK' || !data.result?.reviews) return []
-
     const ratingMap: Record<number, GBPReview['starRating']> = {
       1: 'ONE', 2: 'TWO', 3: 'THREE', 4: 'FOUR', 5: 'FIVE',
     }
 
-    return data.result.reviews.map((r, i) => ({
-      name: `places/${placeId}/reviews/${i}`,
-      reviewId: `places_${placeId}_${r.time}`,
-      reviewer: {
-        displayName: r.author_name,
-        profilePhotoUrl: r.profile_photo_url,
-        isAnonymous: !r.author_name,
-      },
-      starRating: ratingMap[r.rating] ?? 'FIVE',
-      comment: r.text ?? undefined,
-      createTime: new Date(r.time * 1000).toISOString(),
-      updateTime: new Date(r.time * 1000).toISOString(),
-    }))
+    // Busca com dois sorts para maximizar cobertura (5 newest + 5 most_relevant)
+    const sorts = ['newest', 'most_relevant'] as const
+    const allReviews: GBPReview[] = []
+    const seenTimes = new Set<number>()
+
+    for (const sort of sorts) {
+      const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${encodeURIComponent(placeId)}&fields=reviews&language=pt-BR&key=${apiKey}&reviews_sort=${sort}`
+      try {
+        const res = await globalThis.fetch(url)
+        if (!res.ok) continue
+        const data = await res.json() as {
+          status: string
+          result?: {
+            reviews?: Array<{
+              author_name: string
+              rating: number
+              text: string
+              time: number
+              profile_photo_url?: string
+            }>
+          }
+        }
+        if (data.status !== 'OK' || !data.result?.reviews) continue
+
+        for (const r of data.result.reviews) {
+          if (seenTimes.has(r.time)) continue
+          seenTimes.add(r.time)
+          allReviews.push({
+            name: `places/${placeId}/reviews/${r.time}`,
+            reviewId: `places_${placeId}_${r.time}`,
+            reviewer: {
+              displayName: r.author_name,
+              profilePhotoUrl: r.profile_photo_url,
+              isAnonymous: !r.author_name,
+            },
+            starRating: ratingMap[r.rating] ?? 'FIVE',
+            comment: r.text ?? undefined,
+            createTime: new Date(r.time * 1000).toISOString(),
+            updateTime: new Date(r.time * 1000).toISOString(),
+          })
+        }
+      } catch {
+        continue
+      }
+    }
+
+    return allReviews
   }
 
   async listMedia(locationName: string): Promise<GBPMediaItem[]> {
