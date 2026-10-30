@@ -7,6 +7,7 @@ import { encrypt } from '@/lib/crypto'
 import { listGmbLocations } from '@/lib/gmb/client'
 import { detectSegment } from '@/lib/gmb/segment'
 import { isActiveSubscriber } from '@/lib/subscription'
+import { ensureZernioProfile } from '@/lib/zernio/connect'
 
 function createServiceClient() {
   return createAdminSupa(
@@ -64,6 +65,12 @@ export async function GET(request: NextRequest) {
         }
 
         populateFromPlaces(existingProfessional.organization_id).catch(() => {})
+
+        ensureZernioProfile(
+          existingProfessional.organization_id,
+          '',
+          admin
+        ).catch(() => {})
 
         // Verifica se onboarding foi completado
         const { data: orgCheck } = await admin
@@ -193,6 +200,8 @@ export async function GET(request: NextRequest) {
       ]).catch(() => {})
 
       populateFromPlaces(org.id).catch(() => {})
+
+      ensureZernioProfile(org.id, orgName, admin).catch(() => {})
 
       // Novo usuario vai pro diagnostico (free), Stripe gate antes do dashboard
       return NextResponse.redirect(`${origin}/diagnostico`)
