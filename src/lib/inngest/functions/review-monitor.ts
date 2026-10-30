@@ -10,6 +10,7 @@ import { getValidTokenForOrg } from '@/lib/google/token-refresh'
 import { sendReviewApprovalEmail } from '@/lib/email/review-approval'
 import { sendNegativeReviewAlert } from '@/lib/email/review-alert'
 import { handleTokenFailure } from '@/lib/alerts/token-alert-helper'
+import { listReviews as zernioListReviews, replyToReview as zernioReplyToReview } from '@/lib/zernio/client'
 
 function admin() {
   return createAdminSupa(
@@ -69,12 +70,19 @@ export const reviewMonitor = inngest.createFunction(
           return { org_id: orgId, new_reviews: 0, responses_queued: 0, error: 'sem consentimento LGPD para uso de IA' }
         }
 
+        // Busca Zernio account (se conectado)
+        const { data: orgZernio } = await db
+          .from('organizations')
+          .select('zernio_account_id')
+          .eq('id', orgId)
+          .maybeSingle()
+
         // Busca token com refresh automatico
         const validToken = await getValidTokenForOrg(db, orgId)
 
-        if (!validToken) {
+        if (!validToken && !orgZernio?.zernio_account_id) {
           await handleTokenFailure(orgId)
-          return { org_id: orgId, new_reviews: 0, responses_queued: 0, error: 'sem token Google' }
+          return { org_id: orgId, new_reviews: 0, responses_queued: 0, error: 'sem token Google e sem Zernio' }
         }
 
         // Busca city do endereço GBP
@@ -87,32 +95,55 @@ export const reviewMonitor = inngest.createFunction(
         const address = profile?.address as { locality?: string } | null
         const city = address?.locality ?? 'Brasil'
 
-        // Busca reviews: tenta GBP API v4, fallback para Places API
-        const gbp = new GBPClient(validToken)
+        // Busca reviews: Zernio (primario) > GBP API v4 > Places API (fallback)
         let reviews: Awaited<ReturnType<GBPClient['listReviews']>> = []
-        try {
-          reviews = await gbp.listReviews(org.gbp_location_id)
-        } catch {
-          // GBP v4 falhou, ignora
+
+        // Tenta Zernio primeiro (retorna todas as reviews, paginadas)
+        if (orgZernio?.zernio_account_id) {
+          try {
+            const zReviews = await zernioListReviews(orgZernio.zernio_account_id)
+            reviews = zReviews.map(r => ({
+              name: `zernio/${r.id}`,
+              reviewId: r.id,
+              reviewer: { displayName: r.author, isAnonymous: !r.author },
+              starRating: (['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE'] as const)[Math.min(Math.max(r.rating - 1, 0), 4)],
+              comment: r.comment ?? undefined,
+              createTime: r.createdAt,
+              updateTime: r.createdAt,
+              reviewReply: r.reply ? { comment: r.reply, updateTime: r.createdAt } : undefined,
+            }))
+          } catch (err) {
+            console.log('[review-monitor] Zernio listReviews falhou, tentando fallback:', err)
+          }
         }
 
-        // Se GBP v4 retornou vazio, usa Places API como fallback
-        if (reviews.length === 0) {
-          // google_place_id está em gmb_profiles (tabela antiga)
-          const { data: gmbProfile } = await db
-            .from('gmb_profiles')
-            .select('google_place_id')
-            .eq('user_id', (await db.from('professionals').select('user_id').eq('organization_id', orgId).maybeSingle()).data?.user_id)
-            .maybeSingle()
+        // Fallback: GBP API v4 + Places API para orgs sem Zernio ou quando Zernio falha
+        if (reviews.length === 0 && validToken) {
+          const gbp = new GBPClient(validToken)
+          try {
+            reviews = await gbp.listReviews(org.gbp_location_id)
+          } catch {
+            // GBP v4 falhou, ignora
+          }
 
-          const placeId = (gmbProfile as { google_place_id?: string } | null)?.google_place_id
-          if (placeId) {
-            reviews = await GBPClient.listReviewsViaPlaces(placeId)
+          // Se GBP v4 retornou vazio, usa Places API como fallback
+          if (reviews.length === 0) {
+            // google_place_id esta em gmb_profiles (tabela antiga)
+            const { data: gmbProfile } = await db
+              .from('gmb_profiles')
+              .select('google_place_id')
+              .eq('user_id', (await db.from('professionals').select('user_id').eq('organization_id', orgId).maybeSingle()).data?.user_id)
+              .maybeSingle()
+
+            const placeId = (gmbProfile as { google_place_id?: string } | null)?.google_place_id
+            if (placeId) {
+              reviews = await GBPClient.listReviewsViaPlaces(placeId)
+            }
           }
         }
 
         if (reviews.length === 0) {
-          return { org_id: orgId, new_reviews: 0, responses_queued: 0, error: 'sem reviews encontradas (GBP + Places)' }
+          return { org_id: orgId, new_reviews: 0, responses_queued: 0, error: 'sem reviews encontradas (Zernio + GBP + Places)' }
         }
 
         // Detecta reviews novos (sem resposta já publicada e sem resposta pendente no banco)
@@ -233,12 +264,17 @@ export const reviewMonitor = inngest.createFunction(
           const isAutomatic = org.automation_preference === 'automatico'
 
           if (isAutomatic) {
-            // Publica direto via GBP API
-            const published = await publishReviewReply(
-              validToken,
-              review.name,
-              responseText
-            )
+            let published = false
+
+            // Tenta Zernio primeiro
+            if (orgZernio?.zernio_account_id) {
+              published = await zernioReplyToReview(orgZernio.zernio_account_id, review.reviewId, responseText)
+            }
+
+            // Fallback para GBP v4
+            if (!published && validToken) {
+              published = await publishReviewReply(validToken, review.name, responseText)
+            }
 
             await db.from('review_responses').insert({
               review_id: reviewRow.id,
