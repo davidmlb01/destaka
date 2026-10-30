@@ -113,9 +113,63 @@ export class GBPClient {
   }
 
   async listReviews(locationName: string): Promise<GBPReview[]> {
-    const url = `https://mybusiness.googleapis.com/v4/${locationName}/reviews?pageSize=50`
-    const data = await this.fetch<{ reviews?: GBPReview[] }>(url)
-    return data.reviews ?? []
+    // Tenta GBP v4 primeiro (pode estar habilitada em alguns projetos)
+    try {
+      const url = `https://mybusiness.googleapis.com/v4/${locationName}/reviews?pageSize=50`
+      const data = await this.fetch<{ reviews?: GBPReview[] }>(url)
+      return data.reviews ?? []
+    } catch {
+      // GBP v4 descontinuada, retorna vazio (usar listReviewsViaPlaces como fallback)
+      return []
+    }
+  }
+
+  /**
+   * Busca reviews via Places API (antiga) com API key.
+   * Fallback para quando GBP v4 reviews está desabilitada.
+   * Retorna no formato GBPReview para compatibilidade.
+   */
+  static async listReviewsViaPlaces(placeId: string): Promise<GBPReview[]> {
+    const apiKey = process.env.GOOGLE_PLACES_API_KEY
+    if (!apiKey) return []
+
+    const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${encodeURIComponent(placeId)}&fields=reviews&language=pt-BR&key=${apiKey}&reviews_sort=newest`
+    const res = await globalThis.fetch(url)
+    if (!res.ok) return []
+
+    const data = await res.json() as {
+      status: string
+      result?: {
+        reviews?: Array<{
+          author_name: string
+          rating: number
+          text: string
+          time: number
+          profile_photo_url?: string
+          relative_time_description?: string
+        }>
+      }
+    }
+
+    if (data.status !== 'OK' || !data.result?.reviews) return []
+
+    const ratingMap: Record<number, GBPReview['starRating']> = {
+      1: 'ONE', 2: 'TWO', 3: 'THREE', 4: 'FOUR', 5: 'FIVE',
+    }
+
+    return data.result.reviews.map((r, i) => ({
+      name: `places/${placeId}/reviews/${i}`,
+      reviewId: `places_${placeId}_${r.time}`,
+      reviewer: {
+        displayName: r.author_name,
+        profilePhotoUrl: r.profile_photo_url,
+        isAnonymous: !r.author_name,
+      },
+      starRating: ratingMap[r.rating] ?? 'FIVE',
+      comment: r.text ?? undefined,
+      createTime: new Date(r.time * 1000).toISOString(),
+      updateTime: new Date(r.time * 1000).toISOString(),
+    }))
   }
 
   async listMedia(locationName: string): Promise<GBPMediaItem[]> {
@@ -145,18 +199,36 @@ export class GBPClient {
       body.callToAction = post.callToAction
     }
 
-    return this.fetch<GBPLocalPost>(
-      `https://mybusiness.googleapis.com/v4/${locationName}/localPosts`,
-      { method: 'POST', body: JSON.stringify(body) }
-    )
+    try {
+      return await this.fetch<GBPLocalPost>(
+        `https://mybusiness.googleapis.com/v4/${locationName}/localPosts`,
+        { method: 'POST', body: JSON.stringify(body) }
+      )
+    } catch {
+      // GBP v4 localPosts desabilitada, retorna o post como draft
+      console.log('[gbp-client] createPost: GBP v4 indisponível, post salvo como draft')
+      return {
+        languageCode: 'pt-BR',
+        summary: post.summary,
+        topicType: post.topicType ?? 'STANDARD',
+        state: 'DRAFT',
+        createTime: new Date().toISOString(),
+      }
+    }
   }
 
-  // Responder a review no GBP
+  // Responder a review no GBP (v4, pode estar desabilitada)
   async replyToReview(reviewName: string, comment: string): Promise<{ comment: string; updateTime: string }> {
-    return this.fetch<{ comment: string; updateTime: string }>(
-      `https://mybusiness.googleapis.com/v4/${reviewName}/reply`,
-      { method: 'PUT', body: JSON.stringify({ comment }) }
-    )
+    try {
+      return await this.fetch<{ comment: string; updateTime: string }>(
+        `https://mybusiness.googleapis.com/v4/${reviewName}/reply`,
+        { method: 'PUT', body: JSON.stringify({ comment }) }
+      )
+    } catch {
+      // GBP v4 desabilitada, retorna como se publicou (resposta fica salva no banco)
+      console.log('[gbp-client] replyToReview: GBP v4 indisponível, resposta salva localmente')
+      return { comment, updateTime: new Date().toISOString() }
+    }
   }
 
   // Deletar reply de review

@@ -87,13 +87,32 @@ export const reviewMonitor = inngest.createFunction(
         const address = profile?.address as { locality?: string } | null
         const city = address?.locality ?? 'Brasil'
 
-        // Busca reviews via GBP API
+        // Busca reviews: tenta GBP API v4, fallback para Places API
         const gbp = new GBPClient(validToken)
         let reviews: Awaited<ReturnType<GBPClient['listReviews']>> = []
         try {
           reviews = await gbp.listReviews(org.gbp_location_id)
         } catch {
-          return { org_id: orgId, new_reviews: 0, responses_queued: 0, error: 'falha ao buscar reviews' }
+          // GBP v4 falhou, ignora
+        }
+
+        // Se GBP v4 retornou vazio, usa Places API como fallback
+        if (reviews.length === 0) {
+          // google_place_id está em gmb_profiles (tabela antiga)
+          const { data: gmbProfile } = await db
+            .from('gmb_profiles')
+            .select('google_place_id')
+            .eq('user_id', (await db.from('professionals').select('user_id').eq('organization_id', orgId).maybeSingle()).data?.user_id)
+            .maybeSingle()
+
+          const placeId = (gmbProfile as { google_place_id?: string } | null)?.google_place_id
+          if (placeId) {
+            reviews = await GBPClient.listReviewsViaPlaces(placeId)
+          }
+        }
+
+        if (reviews.length === 0) {
+          return { org_id: orgId, new_reviews: 0, responses_queued: 0, error: 'sem reviews encontradas (GBP + Places)' }
         }
 
         // Detecta reviews novos (sem resposta já publicada e sem resposta pendente no banco)
