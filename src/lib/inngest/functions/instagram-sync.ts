@@ -9,6 +9,7 @@ import { rewriteCaption } from '@/lib/instagram/rewriter'
 import { GBPClient } from '@/lib/google/gbp-client'
 import { getValidTokenForOrg } from '@/lib/google/token-refresh'
 import { publishPost as zernioPublishPost } from '@/lib/zernio/client'
+import { geotagAndUpload } from '@/lib/media/geotag'
 
 const MAX_POSTS_PER_WEEK = 3
 const MAX_GBP_PUBLISHES_PER_WEEK = 2
@@ -254,8 +255,10 @@ export const instagramSync = inngest.createFunction(
 
         for (const post of readyPosts) {
           try {
+            // Geotag na imagem com coordenadas do perfil GBP
+            const geotaggedUrl = post.image_url ? await geotagAndUpload(org.id, post.image_url) : undefined
             // Zernio primeiro, GBP v4 legacy como fallback
-            let gbpPostId = await publishViaZernio(org.id, post.rewritten_caption, post.image_url || undefined)
+            let gbpPostId = await publishViaZernio(org.id, post.rewritten_caption, geotaggedUrl)
 
             if (!gbpPostId) {
               const validToken = await getValidTokenForOrg(db, org.id)
@@ -263,7 +266,7 @@ export const instagramSync = inngest.createFunction(
                 const client = new GBPClient(validToken)
                 const gbpPost = await client.createPost(orgData.gbp_location_id, {
                   summary: post.rewritten_caption,
-                  imageUrl: post.image_url || undefined,
+                  imageUrl: geotaggedUrl,
                 })
                 gbpPostId = gbpPost.name ?? null
               }

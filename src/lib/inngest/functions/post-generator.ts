@@ -11,6 +11,7 @@ import { getLatestAnalysis } from '@/lib/gmb/competitive-analyzer'
 import { resend, FROM } from '@/lib/email/index'
 import { getBrandName } from '@/lib/vertical-vocab'
 import { publishPost as zernioPublishPost } from '@/lib/zernio/client'
+import { geotagAndUpload } from '@/lib/media/geotag'
 
 function admin() {
   return createAdminSupa(
@@ -106,12 +107,14 @@ export const postGenerator = inngest.createFunction(
           const isAutomatic = org.automation_preference === 'automatico'
 
           if (isAutomatic) {
+            // Geotag na imagem com coordenadas do perfil GBP
+            const geotaggedUrl = igPost.image_url ? await geotagAndUpload(orgId, igPost.image_url) : undefined
             // Try Zernio first, then GBP v4 legacy
-            let gbpPostId = await publishViaZernio(orgId, igPost.rewritten_caption, igPost.image_url)
+            let gbpPostId = await publishViaZernio(orgId, igPost.rewritten_caption, geotaggedUrl)
             if (!gbpPostId) {
               const validToken = await getValidTokenForOrg(db, orgId)
               if (validToken) {
-                gbpPostId = await publishGbpPostLegacy(validToken, org.gbp_location_id, igPost.rewritten_caption, igPost.image_url)
+                gbpPostId = await publishGbpPostLegacy(validToken, org.gbp_location_id, igPost.rewritten_caption, geotaggedUrl)
               }
             }
 
