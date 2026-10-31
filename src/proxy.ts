@@ -2,11 +2,11 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 import { REFERRAL_COOKIE_NAME, REFERRAL_COOKIE_MAX_AGE } from '@/lib/referral/constants'
 
-function buildCsp(): string {
+function buildCsp(nonce: string): string {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
   return [
     `default-src 'self'`,
-    `script-src 'self' 'unsafe-inline' https://js.stripe.com https://accounts.google.com https://www.googletagmanager.com https://connect.facebook.net`,
+    `script-src 'self' 'nonce-${nonce}' https://js.stripe.com https://accounts.google.com https://www.googletagmanager.com https://connect.facebook.net`,
     `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
     `font-src 'self' https://fonts.gstatic.com`,
     `img-src 'self' data: blob: https://*.googleusercontent.com https://*.googleapis.com https://*.stripe.com https://*.basemaps.cartocdn.com https://*.tile.openstreetmap.org`,
@@ -36,8 +36,10 @@ export async function proxy(request: NextRequest) {
     return redirect
   }
 
+  const nonce = crypto.randomUUID()
   const response = await updateSession(request)
-  response.headers.set('Content-Security-Policy', buildCsp())
+  response.headers.set('Content-Security-Policy', buildCsp(nonce))
+  response.headers.set('x-csp-nonce', nonce)
   response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload')
   response.headers.set('X-Content-Type-Options', 'nosniff')
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')

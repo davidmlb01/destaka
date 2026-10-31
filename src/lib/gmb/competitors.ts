@@ -88,15 +88,15 @@ export async function discoverCompetitors(
   const placeIds = new Set<string>()
 
   for (const q of searches) {
-    if (placeIds.size >= 5) break
+    if (placeIds.size >= 8) break
     const placeId = await searchPlace(q)
     if (placeId && !placeIds.has(placeId)) {
       placeIds.add(placeId)
     }
   }
 
-  for (const placeId of Array.from(placeIds).slice(0, 5)) {
-    if (results.length >= 3) break
+  for (const placeId of Array.from(placeIds).slice(0, 8)) {
+    if (results.length >= 5) break
     // Ignora o proprio perfil
     if (profile.google_location_id && placeId === profile.google_location_id) continue
 
@@ -106,7 +106,7 @@ export async function discoverCompetitors(
 
   let discovered = 0
 
-  for (const { placeId, details } of results.slice(0, 3)) {
+  for (const { placeId, details } of results.slice(0, 5)) {
     if (!details) continue
 
     const { error: upsertError } = await db

@@ -116,7 +116,29 @@ export async function GET() {
     }
   }
 
-  // Fallback: dados do banco (gmb_metrics)
+  // Fallback 1: performance_metrics (coletado pelo performance-collector cron)
+  if (metrics.source === 'none') {
+    const { data: perfRows } = await supabase
+      .from('performance_metrics')
+      .select('views_search, views_maps, actions_website, actions_phone, actions_directions, week_start')
+      .eq('organization_id', orgId)
+      .order('week_start', { ascending: false })
+      .limit(4)
+
+    if (perfRows?.length) {
+      metrics = {
+        viewsSearch: perfRows.reduce((sum, r) => sum + ((r as Record<string, number>).views_search ?? 0), 0),
+        viewsMaps: perfRows.reduce((sum, r) => sum + ((r as Record<string, number>).views_maps ?? 0), 0),
+        clicksWebsite: perfRows.reduce((sum, r) => sum + ((r as Record<string, number>).actions_website ?? 0), 0),
+        clicksCall: perfRows.reduce((sum, r) => sum + ((r as Record<string, number>).actions_phone ?? 0), 0),
+        clicksDirections: perfRows.reduce((sum, r) => sum + ((r as Record<string, number>).actions_directions ?? 0), 0),
+        period: `Ultimas ${perfRows.length} semanas`,
+        source: 'database',
+      }
+    }
+  }
+
+  // Fallback 2: gmb_metrics (dados historicos legados)
   if (metrics.source === 'none') {
     const thirtyDaysAgo = new Date()
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)

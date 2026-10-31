@@ -7,9 +7,10 @@ interface MetricCardProps {
   value: number
   icon: ReactNode
   hint: string
+  lastKnownDate?: string | null
 }
 
-export const MetricCard = memo(function MetricCard({ label, value, icon, hint }: MetricCardProps) {
+export const MetricCard = memo(function MetricCard({ label, value, icon, hint, lastKnownDate }: MetricCardProps) {
   return (
     <div
       className="rounded-2xl p-5 relative overflow-hidden"
@@ -66,7 +67,7 @@ export const MetricCard = memo(function MetricCard({ label, value, icon, hint }:
             {label}
           </p>
           <p className="text-[10px] mt-0.5" style={{ color: 'rgba(255,255,255,0.25)' }}>
-            (coletando)
+            {lastKnownDate ? `Sem dados desde ${lastKnownDate}` : 'Disponivel em breve'}
           </p>
         </>
       )}

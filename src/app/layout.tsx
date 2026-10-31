@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Outfit } from "next/font/google";
+import { headers } from "next/headers";
 import "./globals.css";
 import CookieBanner from "@/components/CookieBanner";
 import TrackingScripts from "@/components/TrackingScripts";
@@ -34,18 +35,19 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const nonce = (await headers()).get('x-csp-nonce') ?? ''
   return (
     <html
       lang="pt-BR"
       className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <Suspense><TrackingScripts /></Suspense>
+        <Suspense><TrackingScripts nonce={nonce} /></Suspense>
         {children}
         <CookieBanner />
       </body>

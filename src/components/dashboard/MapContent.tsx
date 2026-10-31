@@ -16,6 +16,7 @@ interface MapZone {
 interface MapContentProps {
   center: { lat: number; lng: number }
   zones: MapZone[]
+  radiusKm?: number
 }
 
 const statusColors: Record<string, string> = {
@@ -30,7 +31,40 @@ const statusOpacity: Record<string, number> = {
   weak: 0.2,
 }
 
-export default function MapContent({ center, zones }: MapContentProps) {
+const compassLabels = ['Norte', 'Nordeste', 'Leste', 'Sudeste', 'Sul', 'Sudoeste', 'Oeste', 'Noroeste']
+
+function buildGridPoints(
+  center: { lat: number; lng: number },
+  radiusKm: number,
+  zones: MapZone[],
+): MapZone[] {
+  if (zones.length >= 6) return zones
+  const offsetDeg = (radiusKm * 0.65) / 111
+  const lngCorrection = Math.cos((center.lat * Math.PI) / 180)
+  const directions = [
+    { dLat: 1, dLng: 0 }, { dLat: 0.7, dLng: 0.7 },
+    { dLat: 0, dLng: 1 }, { dLat: -0.7, dLng: 0.7 },
+    { dLat: -1, dLng: 0 }, { dLat: -0.7, dLng: -0.7 },
+    { dLat: 0, dLng: -1 }, { dLat: 0.7, dLng: -0.7 },
+  ]
+  return directions.map((dir, i) => {
+    const ptLat = center.lat + dir.dLat * offsetDeg
+    const ptLng = center.lng + (dir.dLng * offsetDeg) / lngCorrection
+    let bestZone: MapZone | null = null
+    let bestDist = Infinity
+    for (const z of zones) {
+      const dist = Math.sqrt(Math.pow(z.lat - ptLat, 2) + Math.pow(z.lng - ptLng, 2))
+      if (dist < bestDist) { bestDist = dist; bestZone = z }
+    }
+    const tolerance = offsetDeg * 0.8
+    const status = bestZone && bestDist < tolerance ? bestZone.status : 'weak'
+    const label = bestZone && bestDist < tolerance ? bestZone.label : compassLabels[i]
+    const count = bestZone && bestDist < tolerance ? bestZone.count : 0
+    return { lat: ptLat, lng: ptLng, label, status, count }
+  })
+}
+
+export default function MapContent({ center, zones, radiusKm = 5 }: MapContentProps) {
   const centerIcon = useMemo(() => L.divIcon({
     html: '<div style="width:14px;height:14px;background:#3b82f6;border:2px solid white;border-radius:50%;box-shadow:0 0 6px rgba(59,130,246,0.6);"></div>',
     iconSize: [14, 14],
@@ -56,7 +90,7 @@ export default function MapContent({ center, zones }: MapContentProps) {
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-      {zones.map((zone, i) => (
+      {buildGridPoints(center, radiusKm, zones).map((zone, i) => (
         <CircleMarker
           key={i}
           center={[zone.lat, zone.lng]}

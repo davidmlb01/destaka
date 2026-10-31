@@ -33,7 +33,7 @@ async function publishViaZernio(
       .maybeSingle()
 
     if (!org?.zernio_account_id) {
-      console.log(`[post-generator] Org ${orgId} sem zernio_account_id, tentando GBP v4`)
+      console.warn(`[post-generator] Org ${orgId} sem zernio_account_id. GBP v4 bloqueado pelo Google. Conectar Zernio e obrigatorio.`)
       return null
     }
 
@@ -241,17 +241,22 @@ export const postGenerator = inngest.createFunction(
             gbpPostId = await publishGbpPostLegacy(validToken, org.gbp_location_id, generated.content)
           }
 
+          const postStatus = gbpPostId ? 'published' : 'failed'
+          if (!gbpPostId) {
+            console.error(`[post-generator] Org ${orgId}: Zernio e GBP v4 falharam. Post salvo como failed.`)
+          }
           await db.from('posts').insert({
             organization_id: orgId,
             content: generated.content,
             post_type: postType,
-            status: gbpPostId ? 'published' : 'pending',
+            status: postStatus,
             published_at: gbpPostId ? new Date().toISOString() : null,
             gbp_post_id: gbpPostId,
             photo_suggestion: generated.photo_suggestion,
+            error_detail: gbpPostId ? null : 'Publicacao falhou: Zernio e GBP v4 indisponiveis',
           })
 
-          return { org_id: orgId, status: gbpPostId ? 'published' : 'pending', post_type: postType }
+          return { org_id: orgId, status: postStatus, post_type: postType }
         } else {
           // Enfileira para aprovação manual
           await db.from('posts').insert({
@@ -284,8 +289,8 @@ export const postGenerator = inngest.createFunction(
 <p style="color:#6b7280;font-size:13px;">Se não aprovar em 7 dias, o post será descartado automaticamente.</p>`,
               })
             }
-          } catch {
-            // Notificacao nao bloqueia o fluxo
+          } catch (emailErr) {
+            console.error(`[post-generator] Falha ao enviar email de notificacao para org ${orgId}:`, emailErr)
           }
 
           return { org_id: orgId, status: 'pending', post_type: postType }

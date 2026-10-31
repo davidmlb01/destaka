@@ -101,10 +101,10 @@ export default function MapCard({ isSubscriber }: { isSubscriber: boolean }) {
         </div>
       )}
 
-      {!loading && isSubscriber && data && !data.empty && data.zones.length > 1 && (
+      {!loading && isSubscriber && data && !data.empty && data.zones.length >= 1 && (
         <div className="relative">
           <div className="h-[240px] sm:h-[280px] rounded-lg overflow-hidden">
-            <MapContent center={data.center} zones={data.zones} />
+            <MapContent center={data.center} zones={data.zones} radiusKm={data.radius_km} />
           </div>
 
           {/* Legenda */}

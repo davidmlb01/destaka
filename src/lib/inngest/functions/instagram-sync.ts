@@ -8,6 +8,7 @@ import { scrapeInstagramPosts } from '@/lib/instagram/scraper'
 import { rewriteCaption } from '@/lib/instagram/rewriter'
 import { GBPClient } from '@/lib/google/gbp-client'
 import { getValidTokenForOrg } from '@/lib/google/token-refresh'
+import { publishPost as zernioPublishPost } from '@/lib/zernio/client'
 
 const MAX_POSTS_PER_WEEK = 3
 const MAX_GBP_PUBLISHES_PER_WEEK = 2
@@ -17,6 +18,31 @@ function admin() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
+}
+
+async function publishViaZernio(
+  orgId: string,
+  content: string,
+  imageUrl?: string
+): Promise<string | null> {
+  try {
+    const db = admin()
+    const { data: org } = await db
+      .from('organizations')
+      .select('zernio_account_id')
+      .eq('id', orgId)
+      .maybeSingle()
+
+    if (!org?.zernio_account_id) {
+      console.warn(`[instagram-sync] Org ${orgId} sem zernio_account_id, tentando GBP v4 legacy`)
+      return null
+    }
+
+    return await zernioPublishPost(org.zernio_account_id, content, imageUrl)
+  } catch (err) {
+    console.error('[instagram-sync] Zernio publish failed:', err)
+    return null
+  }
 }
 
 export const instagramSync = inngest.createFunction(
@@ -223,53 +249,62 @@ export const instagramSync = inngest.createFunction(
           return { org_id: org.id, published: 0, skipped: 0 }
         }
 
-        const validToken = await getValidTokenForOrg(db, org.id)
-        if (!validToken) {
-          return { org_id: org.id, published: 0, skipped: readyPosts.length }
-        }
-
-        const client = new GBPClient(validToken)
         let published = 0
         let skipped = 0
 
         for (const post of readyPosts) {
           try {
-            // Publicar no GBP com imagem se disponivel
-            const gbpPost = await client.createPost(orgData.gbp_location_id, {
-              summary: post.rewritten_caption,
-              imageUrl: post.image_url || undefined,
-            })
+            // Zernio primeiro, GBP v4 legacy como fallback
+            let gbpPostId = await publishViaZernio(org.id, post.rewritten_caption, post.image_url || undefined)
 
-            const gbpPostId = gbpPost.name ?? null
+            if (!gbpPostId) {
+              const validToken = await getValidTokenForOrg(db, org.id)
+              if (validToken) {
+                const client = new GBPClient(validToken)
+                const gbpPost = await client.createPost(orgData.gbp_location_id, {
+                  summary: post.rewritten_caption,
+                  imageUrl: post.image_url || undefined,
+                })
+                gbpPostId = gbpPost.name ?? null
+              }
+            }
 
-            // Atualizar status no instagram_posts
-            await db.from('instagram_posts')
-              .update({
-                status: 'published_gbp',
+            if (gbpPostId) {
+              await db.from('instagram_posts')
+                .update({
+                  status: 'published_gbp',
+                  gbp_post_id: gbpPostId,
+                  published_to_gbp_at: new Date().toISOString(),
+                })
+                .eq('id', post.id)
+
+              await db.from('posts').insert({
+                organization_id: org.id,
+                content: post.rewritten_caption,
+                post_type: 'instagram_adapted',
+                status: 'published',
+                published_at: new Date().toISOString(),
                 gbp_post_id: gbpPostId,
-                published_to_gbp_at: new Date().toISOString(),
+                photo_suggestion: 'Foto original do Instagram',
+                source: 'instagram',
               })
-              .eq('id', post.id)
-
-            // Inserir na tabela posts para tracking unificado
-            await db.from('posts').insert({
-              organization_id: org.id,
-              content: post.rewritten_caption,
-              post_type: 'instagram_adapted',
-              status: 'published',
-              published_at: new Date().toISOString(),
-              gbp_post_id: gbpPostId,
-              photo_suggestion: 'Foto original do Instagram',
-              source: 'instagram',
-            })
-
-            published++
+              published++
+            } else {
+              console.error(`[instagram-sync] Post ${post.id}: Zernio e GBP v4 falharam`)
+              await db.from('instagram_posts')
+                .update({
+                  status: 'failed',
+                  skip_reason: 'Zernio e GBP v4 falharam na publicacao',
+                })
+                .eq('id', post.id)
+              skipped++
+            }
           } catch (err) {
-            console.error(`[instagram-sync] Falha ao publicar post ${post.id} no GBP:`, err)
+            console.error(`[instagram-sync] Falha ao publicar post ${post.id}:`, err)
             await db.from('instagram_posts')
               .update({
                 status: 'failed',
-                skip_reason: err instanceof Error ? err.message : 'Publicacao GBP falhou',
+                skip_reason: err instanceof Error ? err.message : 'Publicacao falhou',
               })
               .eq('id', post.id)
             skipped++

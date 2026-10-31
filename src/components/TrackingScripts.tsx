@@ -37,7 +37,7 @@ export function getStoredUtms(): Record<string, string> | null {
   }
 }
 
-export default function TrackingScripts() {
+export default function TrackingScripts({ nonce }: { nonce?: string }) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
@@ -62,8 +62,9 @@ export default function TrackingScripts() {
           <Script
             src={`https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`}
             strategy="afterInteractive"
+            nonce={nonce}
           />
-          <Script id="ga4-init" strategy="afterInteractive">
+          <Script id="ga4-init" strategy="afterInteractive" nonce={nonce}>
             {`
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
@@ -76,7 +77,7 @@ export default function TrackingScripts() {
 
       {/* Meta Pixel */}
       {META_PIXEL_ID && (
-        <Script id="meta-pixel-init" strategy="afterInteractive">
+        <Script id="meta-pixel-init" strategy="afterInteractive" nonce={nonce}>
           {`
             !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
             n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
