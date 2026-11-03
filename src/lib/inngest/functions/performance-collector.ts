@@ -5,7 +5,6 @@
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { inngest } from '../client'
 import { getValidTokenForOrg } from '@/lib/google/token-refresh'
-import { GBPClient } from '@/lib/google/gbp-client'
 
 function admin() {
   return createAdminSupa(
@@ -68,30 +67,9 @@ export const performanceCollector = inngest.createFunction(
             .eq('id', orgId)
             .maybeSingle()
 
-          let locationName: string = (org?.gbp_location_id as string) ?? ''
+          const locationName: string = (org?.gbp_location_id as string) ?? ''
           if (!locationName) {
             return { org_id: orgId, status: 'skip', error: 'sem gbp_location_id' }
-          }
-
-          // Performance API precisa do formato accounts/{id}/locations/{id}
-          // Se so tem locations/{id}, busca o account via GBP API
-          if (!locationName.startsWith('accounts/')) {
-            try {
-              const gbp = new GBPClient(accessToken)
-              const accounts = await gbp.listAccounts()
-              if (accounts.length > 0) {
-                const accountName = accounts[0].name
-                const locations = await gbp.listLocations(accountName)
-                const match = locations.find(l => l.name?.includes(locationName.replace('locations/', '')))
-                if (match?.name) {
-                  locationName = match.name
-                  // Atualiza gbp_location_id para o formato completo
-                  await db.from('organizations').update({ gbp_location_id: locationName }).eq('id', orgId)
-                }
-              }
-            } catch {
-              // Se falhar, tenta com o formato que tem
-            }
           }
 
           // Datas: ultimos 7 dias
@@ -104,65 +82,44 @@ export const performanceCollector = inngest.createFunction(
           const [startYear, startMonth, startDay] = startDate.toISOString().split('T')[0].split('-').map(Number)
           const [endYear, endMonth, endDay] = endDate.toISOString().split('T')[0].split('-').map(Number)
 
-          const body = {
-            dailyMetrics: [
-              'BUSINESS_IMPRESSIONS_DESKTOP_MAPS',
-              'BUSINESS_IMPRESSIONS_DESKTOP_SEARCH',
-              'BUSINESS_IMPRESSIONS_MOBILE_MAPS',
-              'BUSINESS_IMPRESSIONS_MOBILE_SEARCH',
-              'CALL_CLICKS',
-              'WEBSITE_CLICKS',
-              'BUSINESS_DIRECTION_REQUESTS',
-            ],
-            dailyRange: {
-              startDate: { year: startYear, month: startMonth, day: startDay },
-              endDate: { year: endYear, month: endMonth, day: endDay },
-            },
-          }
+          const dailyMetrics = [
+            'BUSINESS_IMPRESSIONS_DESKTOP_MAPS',
+            'BUSINESS_IMPRESSIONS_DESKTOP_SEARCH',
+            'BUSINESS_IMPRESSIONS_MOBILE_MAPS',
+            'BUSINESS_IMPRESSIONS_MOBILE_SEARCH',
+            'CALL_CLICKS',
+            'WEBSITE_CLICKS',
+            'BUSINESS_DIRECTION_REQUESTS',
+          ]
 
-          // Tenta ambos os formatos: locations/ID e accounts/X/locations/Y
+          // Extrair location ID numerico
           const locationId = locationName.includes('/locations/')
             ? locationName.split('/locations/')[1]
             : locationName.replace('locations/', '')
-          const formats = [
-            `locations/${locationId}`,
-            locationName,
-          ]
 
-          let res: Response | null = null
-          let usedFormat = ''
-          for (const fmt of formats) {
-            const attempt = await fetch(
-              `https://businessprofileperformance.googleapis.com/v1/${fmt}:fetchMultiDailyMetricsTimeSeries`,
-              {
-                method: 'POST',
-                headers: {
-                  Authorization: `Bearer ${accessToken}`,
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(body),
-                signal: AbortSignal.timeout(30000),
-              }
-            )
-            if (attempt.ok) {
-              res = attempt
-              usedFormat = fmt
-              break
-            }
-            // Se 404, tenta próximo formato. Se outro erro, para.
-            if (attempt.status !== 404) {
-              const errText = await attempt.text().catch(() => 'unknown')
-              console.log(`[performance-collector] API ${attempt.status} org ${orgId}: ${errText}`)
-              return { org_id: orgId, status: 'error', error: `API ${attempt.status}` }
-            }
+          // A API aceita GET com query params (POST retorna 404)
+          const params = new URLSearchParams()
+          for (const m of dailyMetrics) params.append('dailyMetrics', m)
+          params.set('dailyRange.start_date.year', String(startYear))
+          params.set('dailyRange.start_date.month', String(startMonth))
+          params.set('dailyRange.start_date.day', String(startDay))
+          params.set('dailyRange.end_date.year', String(endYear))
+          params.set('dailyRange.end_date.month', String(endMonth))
+          params.set('dailyRange.end_date.day', String(endDay))
+
+          const apiUrl = `https://businessprofileperformance.googleapis.com/v1/locations/${locationId}:fetchMultiDailyMetricsTimeSeries?${params.toString()}`
+          const res = await fetch(apiUrl, {
+            headers: { Authorization: `Bearer ${accessToken}` },
+            signal: AbortSignal.timeout(30000),
+          })
+
+          if (!res.ok) {
+            const errText = await res.text().catch(() => 'unknown')
+            console.log(`[performance-collector] API ${res.status} org ${orgId}: ${errText.slice(0, 300)}`)
+            return { org_id: orgId, status: 'error', error: `API ${res.status}` }
           }
 
-          if (!res) {
-            console.log(`[performance-collector] 404 em ambos os formatos para org ${orgId}`)
-            return { org_id: orgId, status: 'error', error: 'API 404 em ambos os formatos de location' }
-          }
-
-          console.log(`[performance-collector] OK com formato ${usedFormat} para org ${orgId}`)
+          console.log(`[performance-collector] OK locations/${locationId} para org ${orgId}`)
 
           const data = await res.json() as PerformanceResponse
           const series = data.multiDailyMetricTimeSeries ?? []
