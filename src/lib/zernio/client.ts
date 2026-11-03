@@ -1,14 +1,9 @@
 import { Zernio } from '@zernio/node'
 
-let _client: InstanceType<typeof Zernio> | null = null
-
 export function getZernioClient(): InstanceType<typeof Zernio> {
-  if (!_client) {
-    const apiKey = process.env.ZERNIO_API_KEY
-    if (!apiKey) throw new Error('ZERNIO_API_KEY not configured')
-    _client = new Zernio({ apiKey })
-  }
-  return _client
+  const apiKey = process.env.ZERNIO_API_KEY
+  if (!apiKey) throw new Error('ZERNIO_API_KEY not configured')
+  return new Zernio({ apiKey })
 }
 
 export async function getOrCreateProfile(orgId: string, orgName: string): Promise<string> {
@@ -19,8 +14,10 @@ export async function getOrCreateProfile(orgId: string, orgName: string): Promis
     })
     if (!data?.profile?._id) throw new Error('No profile ID in response')
     return data.profile._id
-  } catch {
-    // Profile may already exist (409 conflict), try to find it
+  } catch (err: unknown) {
+    // Only retry on 409 conflict (profile already exists)
+    const status = (err as { status?: number })?.status
+    if (status !== 409) throw err
     const { data } = await zernio.profiles.listProfiles({
       query: { externalId: orgId },
     })
@@ -49,22 +46,27 @@ export async function generateConnectUrl(profileId: string, redirectUrl: string)
 }
 
 export async function publishPost(accountId: string, content: string, imageUrl?: string): Promise<string | null> {
-  const zernio = getZernioClient()
-  const body: {
-    content: string
-    platforms: Array<{ accountId: string }>
-    publishNow: boolean
-    mediaItems?: Array<{ url: string; type: 'image' }>
-  } = {
-    content,
-    platforms: [{ accountId }],
-    publishNow: true,
+  try {
+    const zernio = getZernioClient()
+    const body: {
+      content: string
+      platforms: Array<{ accountId: string }>
+      publishNow: boolean
+      mediaItems?: Array<{ url: string; type: 'image' }>
+    } = {
+      content,
+      platforms: [{ accountId }],
+      publishNow: true,
+    }
+    if (imageUrl) {
+      body.mediaItems = [{ url: imageUrl, type: 'image' }]
+    }
+    const { data } = await zernio.posts.createPost({ body })
+    return data?.post?._id ?? null
+  } catch (err) {
+    console.error('[zernio] publishPost failed:', err)
+    throw err
   }
-  if (imageUrl) {
-    body.mediaItems = [{ url: imageUrl, type: 'image' }]
-  }
-  const { data } = await zernio.posts.createPost({ body })
-  return data?.post?._id ?? null
 }
 
 export async function replyToReview(accountId: string, reviewId: string, comment: string): Promise<boolean> {
@@ -143,10 +145,13 @@ export async function getPerformanceViaZernio(accountId: string): Promise<{
     if (!data) return null
 
     // Mapear resposta do Zernio para formato do dashboard
-    // Estrutura exata depende do que o Zernio retorna (probe vai revelar)
     const raw = data as Record<string, unknown>
     const asList = raw?.posts ?? raw?.analytics ?? raw?.data
-    if (Array.isArray(asList)) {
+    if (!Array.isArray(asList)) {
+      console.warn('[zernio-analytics] Estrutura inesperada. Keys:', Object.keys(raw).join(', '), 'Amostra:', JSON.stringify(raw).slice(0, 300))
+      return null
+    }
+    if (asList.length > 0) {
       let impressions = 0, clicks = 0, reach = 0
       for (const item of asList) {
         const r = item as Record<string, number>
@@ -164,7 +169,8 @@ export async function getPerformanceViaZernio(accountId: string): Promise<{
     }
 
     return null
-  } catch {
+  } catch (err) {
+    console.error('[zernio-analytics] getPerformanceViaZernio failed:', err)
     return null
   }
 }

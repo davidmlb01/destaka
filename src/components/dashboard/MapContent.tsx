@@ -90,9 +90,9 @@ export default function MapContent({ center, zones, radiusKm = 5 }: MapContentPr
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-      {buildGridPoints(center, radiusKm, zones).map((zone, i) => (
+      {buildGridPoints(center, radiusKm, zones).map((zone) => (
         <CircleMarker
-          key={i}
+          key={`${zone.lat}-${zone.lng}`}
           center={[zone.lat, zone.lng]}
           radius={Math.max(8, Math.min(25, zone.count / 2))}
           pathOptions={{

@@ -184,7 +184,7 @@ export const postGenerator = inngest.createFunction(
 
         const { count: postCount } = await db
           .from('posts')
-          .select('*', { count: 'exact', head: true })
+          .select('id', { count: 'exact', head: true })
           .eq('organization_id', orgId)
 
         const recentTypes = (recentPosts ?? []).map((p: { post_type: string }) => p.post_type as PostType)

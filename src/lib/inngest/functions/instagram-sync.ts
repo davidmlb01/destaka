@@ -52,15 +52,14 @@ export const instagramSync = inngest.createFunction(
     concurrency: [{ limit: 1 }],
     triggers: [{ event: 'destaka/instagram.sync.requested' }, { cron: '0 7 * * 1' }],
   },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- inngest step typing
-  async ({ step }: { step: any }) => {
+  async ({ step }) => {
     const db = admin()
 
     // Step 1: buscar orgs com instagram_handle configurado
     const orgs = await step.run('resolve-instagram-orgs', async () => {
       const { data } = await db
         .from('organizations')
-        .select('id, name, specialty, instagram_handle, tone, gbp_location_id, service_areas')
+        .select('id, name, specialty, instagram_handle, tone, gbp_location_id, service_areas, automation_preference, zernio_account_id')
         .not('instagram_handle', 'is', null)
 
       return (data ?? []).filter(
@@ -209,14 +208,8 @@ export const instagramSync = inngest.createFunction(
 
     for (const org of orgs) {
       const pubResult = await step.run(`publish-gbp-${org.id}`, async () => {
-        // Verificar se org usa modo automatico
-        const { data: orgData } = await db
-          .from('organizations')
-          .select('automation_preference, gbp_location_id')
-          .eq('id', org.id)
-          .single()
-
-        if (!orgData?.gbp_location_id || orgData.automation_preference !== 'automatico') {
+        // Dados ja carregados no resolve-instagram-orgs (evita N+1 query)
+        if (!org.gbp_location_id || org.automation_preference !== 'automatico') {
           return { org_id: org.id, published: 0, skipped: 0 }
         }
 
@@ -226,7 +219,7 @@ export const instagramSync = inngest.createFunction(
 
         const { count: publishedThisWeek } = await db
           .from('instagram_posts')
-          .select('*', { count: 'exact', head: true })
+          .select('id', { count: 'exact', head: true })
           .eq('organization_id', org.id)
           .eq('status', 'published_gbp')
           .gte('published_to_gbp_at', weekAgo.toISOString())
@@ -264,7 +257,7 @@ export const instagramSync = inngest.createFunction(
               const validToken = await getValidTokenForOrg(db, org.id)
               if (validToken) {
                 const client = new GBPClient(validToken)
-                const gbpPost = await client.createPost(orgData.gbp_location_id, {
+                const gbpPost = await client.createPost(org.gbp_location_id, {
                   summary: post.rewritten_caption,
                   imageUrl: geotaggedUrl,
                 })
