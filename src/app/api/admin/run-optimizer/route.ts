@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { generateOptimizations } from '@/lib/gbp/optimization-engine'
 import type { AuditReport } from '@/lib/gbp/audit-engine'
+import { verifyAdminKey } from '@/lib/api/admin-auth'
 
 function admin() {
   return createAdminSupa(
@@ -14,9 +15,7 @@ function admin() {
 }
 
 export async function POST(req: NextRequest) {
-  // Proteger com admin secret
-  const authHeader = req.headers.get('x-admin-key')
-  if (authHeader !== process.env.ADMIN_SECRET_KEY) {
+  if (!verifyAdminKey(req.headers.get('x-admin-key'))) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
   }
 

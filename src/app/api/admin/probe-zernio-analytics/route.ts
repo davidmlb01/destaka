@@ -3,13 +3,13 @@ export const dynamic = 'force-dynamic'
 import { NextResponse } from 'next/server'
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { probeAnalytics } from '@/lib/zernio/client'
+import { verifyAdminKey } from '@/lib/api/admin-auth'
 
 // GET /api/admin/probe-zernio-analytics?org_id=xxx
 // Testa se Zernio retorna analytics para uma org com account conectado.
-// Protegido por x-admin-key.
+// Protegido por x-admin-key (timing-safe).
 export async function GET(req: Request) {
-  const adminKey = req.headers.get('x-admin-key')
-  if (!adminKey || adminKey !== process.env.ADMIN_SECRET_KEY) {
+  if (!verifyAdminKey(req.headers.get('x-admin-key'))) {
     return NextResponse.json({ error: 'Nao autorizado' }, { status: 401 })
   }
 
@@ -51,9 +51,8 @@ export async function GET(req: Request) {
     const probe = await probeAnalytics(org.zernio_account_id)
     results.push({
       org_id: org.id,
-      zernio_account_id: org.zernio_account_id,
       analytics_available: probe.available,
-      raw_response: probe.raw,
+      metrics_summary: probe.metrics,
     })
   }
 

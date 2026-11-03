@@ -22,7 +22,8 @@ function captureUtms(searchParams: URLSearchParams) {
   }
 
   if (hasUtm) {
-    document.cookie = `destaka_utm=${encodeURIComponent(JSON.stringify(utms))};path=/;max-age=2592000;SameSite=Lax`
+    const secureFlag = location.protocol === 'https:' ? ';Secure' : ''
+    document.cookie = `destaka_utm=${encodeURIComponent(JSON.stringify(utms))};path=/;max-age=2592000;SameSite=Lax${secureFlag}`
   }
 }
 

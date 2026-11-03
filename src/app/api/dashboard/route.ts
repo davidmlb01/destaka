@@ -21,7 +21,7 @@ export async function GET() {
     { data: recentPosts },
     { data: recentResponses },
   ] = await Promise.all([
-    supabase.from('organizations').select('name, specialty').eq('id', orgId).maybeSingle(),
+    supabase.from('organizations').select('name, specialty, gbp_location_id').eq('id', orgId).maybeSingle(),
     supabase.from('scores').select('*').eq('organization_id', orgId).order('snapshot_date', { ascending: false }).limit(1).maybeSingle(),
     supabase.from('scores').select('total, snapshot_date, faixa').eq('organization_id', orgId).order('snapshot_date', { ascending: false }).limit(30),
     supabase.from('gbp_profiles').select('id, description, categories, photo_count, audit_report, benchmark_report, optimization_report, last_synced_at').eq('organization_id', orgId).maybeSingle(),
@@ -55,7 +55,7 @@ export async function GET() {
     id: (s?.id as string) ?? '',
     score_total: (s?.total as number) ?? 0,
     score_info_basica: (s?.gmb_completude as number) ?? 0,
-    score_fotos: Math.round(((s?.gmb_completude as number) ?? 0) * 0.8),
+    score_fotos: Math.min((gbpProfile?.photo_count ?? 0) * 2, 20),
     score_avaliacoes: (s?.reputacao as number) ?? 0,
     score_posts: (s?.visibilidade as number) ?? 0,
     score_servicos: (s?.retencao as number) ?? 0,
@@ -80,14 +80,7 @@ export async function GET() {
     source: 'none' as 'api' | 'database' | 'none',
   }
 
-  // Buscar gbp_location_id da org
-  const { data: orgForLocation } = await supabase
-    .from('organizations')
-    .select('gbp_location_id')
-    .eq('id', orgId)
-    .maybeSingle()
-
-  const locationName = orgForLocation?.gbp_location_id
+  const locationName = (org as Record<string, unknown>)?.gbp_location_id as string | undefined
 
   // Tentar API real primeiro
   if (locationName) {

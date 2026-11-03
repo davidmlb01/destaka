@@ -29,6 +29,21 @@ function decimalToExifRational(decimal: number): [[number, number], [number, num
   return [[degrees, 1], [minutes, 1], [Math.round(seconds * 100), 100]]
 }
 
+const ALLOWED_IMAGE_HOSTS = [
+  'instagram.com', 'cdninstagram.com', 'fbcdn.net',
+  'scontent.cdninstagram.com', 'scontent-', // scontent-gru1-1.cdninstagram.com
+  'googleusercontent.com', 'googleapis.com',
+  'supabase.co', // Supabase Storage
+]
+
+function validateImageUrl(url: string): void {
+  const parsed = new URL(url)
+  const allowed = ALLOWED_IMAGE_HOSTS.some(h => parsed.hostname.endsWith(h) || parsed.hostname.includes(h))
+  if (!allowed) {
+    throw new Error(`[geotag] Blocked fetch to untrusted host: ${parsed.hostname}`)
+  }
+}
+
 /**
  * Injeta metadados EXIF com coordenadas GPS reais (GPSLatitude, GPSLongitude)
  * e informacoes do negocio na imagem. O Google le esses metadados para
@@ -40,6 +55,7 @@ export async function geotagImage(
 ): Promise<Buffer> {
   const { lat, lng, businessName, keywords } = options
 
+  validateImageUrl(imageUrl)
   const res = await fetch(imageUrl)
   if (!res.ok) throw new Error(`Failed to download image: ${res.status}`)
   const imageBuffer = Buffer.from(await res.arrayBuffer())
