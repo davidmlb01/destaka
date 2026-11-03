@@ -23,7 +23,9 @@ interface DailyMetricTimeSeries {
 }
 
 interface PerformanceResponse {
-  multiDailyMetricTimeSeries?: DailyMetricTimeSeries[]
+  multiDailyMetricTimeSeries?: Array<{
+    dailyMetricTimeSeries?: DailyMetricTimeSeries[]
+  }>
 }
 
 export async function POST(req: NextRequest) {
@@ -125,7 +127,6 @@ export async function POST(req: NextRequest) {
     }
 
     const data = await res.json() as PerformanceResponse
-    const series = data.multiDailyMetricTimeSeries ?? []
 
     let impressionsMaps = 0
     let impressionsSearch = 0
@@ -133,21 +134,23 @@ export async function POST(req: NextRequest) {
     let actionsWebsite = 0
     let actionsDirections = 0
 
-    for (const s of series) {
-      const metric = s.dailyMetric ?? ''
-      const total = (s.timeSeries?.datedValues ?? [])
-        .reduce((sum, dv) => sum + (parseInt(dv.value ?? '0', 10) || 0), 0)
+    for (const group of data.multiDailyMetricTimeSeries ?? []) {
+      for (const ts of group.dailyMetricTimeSeries ?? []) {
+        const metric = ts.dailyMetric ?? ''
+        const total = (ts.timeSeries?.datedValues ?? [])
+          .reduce((sum, dv) => sum + (parseInt(dv.value ?? '0', 10) || 0), 0)
 
-      if (metric === 'BUSINESS_IMPRESSIONS_DESKTOP_MAPS' || metric === 'BUSINESS_IMPRESSIONS_MOBILE_MAPS') {
-        impressionsMaps += total
-      } else if (metric === 'BUSINESS_IMPRESSIONS_DESKTOP_SEARCH' || metric === 'BUSINESS_IMPRESSIONS_MOBILE_SEARCH') {
-        impressionsSearch += total
-      } else if (metric === 'CALL_CLICKS') {
-        actionsPhone = total
-      } else if (metric === 'WEBSITE_CLICKS') {
-        actionsWebsite = total
-      } else if (metric === 'BUSINESS_DIRECTION_REQUESTS') {
-        actionsDirections = total
+        if (metric === 'BUSINESS_IMPRESSIONS_DESKTOP_MAPS' || metric === 'BUSINESS_IMPRESSIONS_MOBILE_MAPS') {
+          impressionsMaps += total
+        } else if (metric === 'BUSINESS_IMPRESSIONS_DESKTOP_SEARCH' || metric === 'BUSINESS_IMPRESSIONS_MOBILE_SEARCH') {
+          impressionsSearch += total
+        } else if (metric === 'CALL_CLICKS') {
+          actionsPhone = total
+        } else if (metric === 'WEBSITE_CLICKS') {
+          actionsWebsite = total
+        } else if (metric === 'BUSINESS_DIRECTION_REQUESTS') {
+          actionsDirections = total
+        }
       }
     }
 
