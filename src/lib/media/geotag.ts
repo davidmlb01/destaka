@@ -1,4 +1,5 @@
 import sharp from 'sharp'
+import piexif from 'piexifjs'
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 
 interface GeotagOptions {
@@ -16,13 +17,22 @@ function adminDb() {
 }
 
 /**
- * Injeta metadados EXIF com coordenadas GPS e informacoes do negocio na imagem.
- * O Google le esses metadados para reforcar a geolocalizacao do perfil.
- *
- * Nota: sharp.withExifMerge suporta IFD0 (description, artist, copyright).
- * Para injecao completa de GPS EXIF (GPSLatitude, GPSLongitude), pode ser
- * necessario usar piexifjs como alternativa. Os metadados IFD0 ja agregam
- * valor significativo para SEO local.
+ * Converte coordenada decimal para formato EXIF GPS (rational array).
+ * Formato: [[degrees, 1], [minutes, 1], [seconds*100, 100]]
+ */
+function decimalToExifRational(decimal: number): [[number, number], [number, number], [number, number]] {
+  const abs = Math.abs(decimal)
+  const degrees = Math.floor(abs)
+  const minutesDecimal = (abs - degrees) * 60
+  const minutes = Math.floor(minutesDecimal)
+  const seconds = (minutesDecimal - minutes) * 60
+  return [[degrees, 1], [minutes, 1], [Math.round(seconds * 100), 100]]
+}
+
+/**
+ * Injeta metadados EXIF com coordenadas GPS reais (GPSLatitude, GPSLongitude)
+ * e informacoes do negocio na imagem. O Google le esses metadados para
+ * reforcar a geolocalizacao do perfil no ranking local.
  */
 export async function geotagImage(
   imageUrl: string,
@@ -30,7 +40,6 @@ export async function geotagImage(
 ): Promise<Buffer> {
   const { lat, lng, businessName, keywords } = options
 
-  // Download da imagem
   const res = await fetch(imageUrl)
   if (!res.ok) throw new Error(`Failed to download image: ${res.status}`)
   const imageBuffer = Buffer.from(await res.arrayBuffer())
@@ -39,33 +48,40 @@ export async function geotagImage(
     ? `${businessName} - ${keywords.join(', ')}`
     : businessName
 
-  // Coordenadas incluidas na descricao como fallback
-  // ate que GPS IFD seja suportado via piexifjs
-  const fullDescription = `${description} [${lat.toFixed(6)}, ${lng.toFixed(6)}]`
-
-  return sharp(imageBuffer)
-    .withExifMerge({
-      IFD0: {
-        ImageDescription: fullDescription,
-        Artist: businessName,
-        Copyright: businessName,
-      },
-    })
+  // Converte para JPEG via sharp (garante formato compativel com piexif)
+  const jpegBuffer = await sharp(imageBuffer)
     .jpeg({ quality: 90 })
     .toBuffer()
-}
 
-/**
- * Converte coordenada decimal para formato EXIF GPS (graus, minutos, segundos).
- * Utilidade preparada para quando GPS IFD for implementado via piexifjs.
- */
-export function decimalToExifGps(decimal: number): string {
-  const abs = Math.abs(decimal)
-  const degrees = Math.floor(abs)
-  const minutesDecimal = (abs - degrees) * 60
-  const minutes = Math.floor(minutesDecimal)
-  const seconds = Math.round((minutesDecimal - minutes) * 60 * 100) / 100
-  return `${degrees}/1 ${minutes}/1 ${Math.round(seconds * 100)}/100`
+  // Converte buffer para binary string para piexifjs
+  const jpegBinary = jpegBuffer.toString('binary')
+
+  // Carrega EXIF existente ou cria novo
+  let exifObj: Record<string, Record<string, unknown>>
+  try {
+    exifObj = piexif.load(jpegBinary)
+  } catch {
+    exifObj = { '0th': {}, 'Exif': {}, 'GPS': {}, '1st': {} }
+  }
+
+  // IFD0: descricao, artista, copyright
+  exifObj['0th'] = exifObj['0th'] || {}
+  exifObj['0th'][piexif.ImageIFD.ImageDescription] = description
+  exifObj['0th'][piexif.ImageIFD.Artist] = businessName
+  exifObj['0th'][piexif.ImageIFD.Copyright] = businessName
+
+  // GPS IFD: coordenadas reais
+  exifObj['GPS'] = exifObj['GPS'] || {}
+  exifObj['GPS'][piexif.GPSIFD.GPSLatitude] = decimalToExifRational(lat)
+  exifObj['GPS'][piexif.GPSIFD.GPSLatitudeRef] = lat >= 0 ? 'N' : 'S'
+  exifObj['GPS'][piexif.GPSIFD.GPSLongitude] = decimalToExifRational(lng)
+  exifObj['GPS'][piexif.GPSIFD.GPSLongitudeRef] = lng >= 0 ? 'E' : 'W'
+
+  // Serializa e injeta EXIF no JPEG
+  const exifBytes = piexif.dump(exifObj)
+  const geotaggedBinary = piexif.insert(exifBytes, jpegBinary)
+
+  return Buffer.from(geotaggedBinary, 'binary')
 }
 
 /**
