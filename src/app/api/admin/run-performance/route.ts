@@ -69,28 +69,9 @@ export async function POST(req: NextRequest) {
     .eq('id', orgId)
     .maybeSingle()
 
-  let locationName: string = (org?.gbp_location_id as string) ?? ''
+  const locationName: string = (org?.gbp_location_id as string) ?? ''
   if (!locationName) {
     return NextResponse.json({ error: 'sem gbp_location_id' }, { status: 404 })
-  }
-
-  // Performance API precisa do formato accounts/{id}/locations/{id}
-  if (!locationName.startsWith('accounts/')) {
-    try {
-      const { GBPClient } = await import('@/lib/google/gbp-client')
-      const gbp = new GBPClient(accessToken)
-      const accounts = await gbp.listAccounts()
-      if (accounts.length > 0) {
-        const locations = await gbp.listLocations(accounts[0].name)
-        const match = locations.find(l => l.name?.includes(locationName.replace('locations/', '')))
-        if (match?.name) {
-          locationName = match.name
-          await db.from('organizations').update({ gbp_location_id: locationName }).eq('id', orgId)
-        }
-      }
-    } catch {
-      // Tenta com o formato existente
-    }
   }
 
   // Ultimos 7 dias (ontem como fim, dados de hoje podem nao estar prontos)
@@ -103,65 +84,44 @@ export async function POST(req: NextRequest) {
   const [startYear, startMonth, startDay] = startDate.toISOString().split('T')[0].split('-').map(Number)
   const [endYear, endMonth, endDay] = endDate.toISOString().split('T')[0].split('-').map(Number)
 
-  const apiBody = {
-    dailyMetrics: [
-      'BUSINESS_IMPRESSIONS_DESKTOP_MAPS',
-      'BUSINESS_IMPRESSIONS_DESKTOP_SEARCH',
-      'BUSINESS_IMPRESSIONS_MOBILE_MAPS',
-      'BUSINESS_IMPRESSIONS_MOBILE_SEARCH',
-      'CALL_CLICKS',
-      'WEBSITE_CLICKS',
-      'BUSINESS_DIRECTION_REQUESTS',
-    ],
-    dailyRange: {
-      startDate: { year: startYear, month: startMonth, day: startDay },
-      endDate: { year: endYear, month: endMonth, day: endDay },
-    },
-  }
+  const dailyMetrics = [
+    'BUSINESS_IMPRESSIONS_DESKTOP_MAPS',
+    'BUSINESS_IMPRESSIONS_DESKTOP_SEARCH',
+    'BUSINESS_IMPRESSIONS_MOBILE_MAPS',
+    'BUSINESS_IMPRESSIONS_MOBILE_SEARCH',
+    'CALL_CLICKS',
+    'WEBSITE_CLICKS',
+    'BUSINESS_DIRECTION_REQUESTS',
+  ]
 
   try {
-    // Tenta ambos os formatos: locations/ID e accounts/X/locations/Y
     const locationId = locationName.includes('/locations/')
       ? locationName.split('/locations/')[1]
       : locationName.replace('locations/', '')
-    const formats = [`locations/${locationId}`, locationName]
 
-    let res: Response | null = null
-    let usedFormat = ''
-    for (const fmt of formats) {
-      const attempt = await fetch(
-        `https://businessprofileperformance.googleapis.com/v1/${fmt}:fetchMultiDailyMetricsTimeSeries`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(apiBody),
-          signal: AbortSignal.timeout(30000),
-        }
-      )
-      if (attempt.ok) {
-        res = attempt
-        usedFormat = fmt
-        break
-      }
-      if (attempt.status !== 404) {
-        const errText = await attempt.text().catch(() => 'unknown')
-        return NextResponse.json({
-          error: `GBP Performance API ${attempt.status}`,
-          detail: errText,
-          locationName: fmt,
-        }, { status: attempt.status })
-      }
-    }
+    // A API aceita GET com query params (POST retorna 404)
+    const params = new URLSearchParams()
+    for (const m of dailyMetrics) params.append('dailyMetrics', m)
+    params.set('dailyRange.start_date.year', String(startYear))
+    params.set('dailyRange.start_date.month', String(startMonth))
+    params.set('dailyRange.start_date.day', String(startDay))
+    params.set('dailyRange.end_date.year', String(endYear))
+    params.set('dailyRange.end_date.month', String(endMonth))
+    params.set('dailyRange.end_date.day', String(endDay))
 
-    if (!res) {
+    const apiUrl = `https://businessprofileperformance.googleapis.com/v1/locations/${locationId}:fetchMultiDailyMetricsTimeSeries?${params.toString()}`
+    const res = await fetch(apiUrl, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+      signal: AbortSignal.timeout(30000),
+    })
+
+    if (!res.ok) {
+      const errText = await res.text().catch(() => 'unknown')
       return NextResponse.json({
-        error: 'GBP Performance API 404 em ambos os formatos',
-        formats,
-        locationName,
-      }, { status: 404 })
+        error: `GBP Performance API ${res.status}`,
+        detail: errText.slice(0, 500),
+        locationId,
+      }, { status: res.status })
     }
 
     const data = await res.json() as PerformanceResponse
