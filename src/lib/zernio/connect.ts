@@ -1,4 +1,4 @@
-import { getOrCreateProfile, getZernioAccountId } from './client'
+import { getOrCreateProfile, getZernioAccountId, probeAnalytics } from './client'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnySupabaseClient = { from: (...args: any[]) => any }
@@ -24,6 +24,18 @@ export async function ensureZernioProfile(
       zernio_profile_id: profileId,
       ...(accountId ? { zernio_account_id: accountId } : {}),
     }).eq('id', orgId)
+
+    // Probe automatico: testa se Zernio retorna analytics apos conexao
+    if (accountId) {
+      console.log(`[zernio] Account conectado para org ${orgId}. Testando analytics...`)
+      const probe = await probeAnalytics(accountId)
+      console.log(`[zernio-analytics-probe] Org ${orgId}: available=${probe.available}`)
+      if (probe.available) {
+        console.log(`[zernio-analytics-probe] SUCESSO: Zernio retorna analytics para org ${orgId}. Dados:`, JSON.stringify(probe.raw).slice(0, 1000))
+      } else {
+        console.warn(`[zernio-analytics-probe] Zernio NAO retorna analytics para org ${orgId}. Investigar alternativas de performance metrics.`)
+      }
+    }
   } catch (err) {
     console.error('[zernio] ensureZernioProfile failed:', err)
   }

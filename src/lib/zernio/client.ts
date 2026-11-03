@@ -80,6 +80,95 @@ export async function replyToReview(accountId: string, reviewId: string, comment
   }
 }
 
+/**
+ * Testa se Zernio retorna metricas agregadas de performance para a conta GBP.
+ * Chamado automaticamente apos conexao para avaliar se podemos usar como fonte de dados.
+ */
+export async function probeAnalytics(accountId: string): Promise<{
+  available: boolean
+  metrics: Record<string, number> | null
+  raw: unknown
+}> {
+  try {
+    const zernio = getZernioClient()
+    const sevenDaysAgo = new Date()
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+
+    const { data } = await zernio.analytics.getAnalytics({
+      query: {
+        accountId,
+        fromDate: sevenDaysAgo.toISOString().split('T')[0],
+        platform: 'googlebusiness',
+      },
+    })
+
+    const hasData = !!data && typeof data === 'object'
+    console.log(`[zernio-analytics] Probe result for account ${accountId}:`, JSON.stringify(data).slice(0, 500))
+
+    return {
+      available: hasData,
+      metrics: hasData ? (data as Record<string, number>) : null,
+      raw: data,
+    }
+  } catch (err) {
+    console.error('[zernio-analytics] Probe failed:', err)
+    return { available: false, metrics: null, raw: null }
+  }
+}
+
+/**
+ * Busca analytics agregadas da conta GBP via Zernio.
+ * Retorna metricas no formato esperado pelo dashboard, ou null se indisponivel.
+ */
+export async function getPerformanceViaZernio(accountId: string): Promise<{
+  viewsSearch: number
+  viewsMaps: number
+  clicksWebsite: number
+  clicksCall: number
+  impressions: number
+} | null> {
+  try {
+    const zernio = getZernioClient()
+    const thirtyDaysAgo = new Date()
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+
+    const { data } = await zernio.analytics.getAnalytics({
+      query: {
+        accountId,
+        fromDate: thirtyDaysAgo.toISOString().split('T')[0],
+        platform: 'googlebusiness',
+      },
+    })
+
+    if (!data) return null
+
+    // Mapear resposta do Zernio para formato do dashboard
+    // Estrutura exata depende do que o Zernio retorna (probe vai revelar)
+    const raw = data as Record<string, unknown>
+    const asList = raw?.posts ?? raw?.analytics ?? raw?.data
+    if (Array.isArray(asList)) {
+      let impressions = 0, clicks = 0, reach = 0
+      for (const item of asList) {
+        const r = item as Record<string, number>
+        impressions += r.impressions ?? 0
+        clicks += r.clicks ?? r.website_clicks ?? 0
+        reach += r.reach ?? 0
+      }
+      return {
+        viewsSearch: impressions,
+        viewsMaps: reach,
+        clicksWebsite: clicks,
+        clicksCall: 0,
+        impressions,
+      }
+    }
+
+    return null
+  } catch {
+    return null
+  }
+}
+
 export async function listReviews(accountId: string): Promise<Array<{
   id: string
   author: string
