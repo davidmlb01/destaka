@@ -98,42 +98,42 @@ export const reviewSolicitation = inngest.createFunction(
 
           // Email com contexto de ranking
           const subject = position && position > 1
-            ? `${profName}, cada avaliacao te aproxima do 1o lugar no Google`
-            : `${profName}, suas avaliacoes fortalecem seu perfil no Google`
+            ? `${profName}, cada avaliação te aproxima do 1º lugar no Google`
+            : `${profName}, suas avaliações fortalecem seu perfil no Google`
 
           const positionContext = position
-            ? `<p style="margin:0 0 12px;font-size:14px;color:#4B5563;">Hoje voce esta na <strong>${position}a posicao</strong> quando alguem busca no Google.${topCompetitor && position > 1 ? ` O 1o lugar e ${topCompetitor}.` : ''}</p>`
+            ? `<p style="margin:0 0 12px;font-size:14px;color:#4B5563;">Hoje você está na <strong>${position}ª posição</strong> quando alguém busca no Google.${topCompetitor && position > 1 ? ` O 1º lugar é ${topCompetitor}.` : ''}</p>`
             : ''
 
           const gapContext = position && position > 1
-            ? `<p style="margin:0 0 12px;font-size:14px;color:#4B5563;">O ${brandName} esta trabalhando para subir sua posicao: publicando posts, respondendo avaliacoes e otimizando seu perfil. Avaliacoes de pacientes reais sao o complemento mais forte que voce pode adicionar.</p>`
+            ? `<p style="margin:0 0 12px;font-size:14px;color:#4B5563;">O ${brandName} está trabalhando para subir sua posição: publicando posts, respondendo avaliações e otimizando seu perfil. Avaliações de pacientes reais são o complemento mais forte que você pode adicionar.</p>`
             : ''
 
           const html = `
 <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;">
-  <p style="margin:0 0 20px;font-size:16px;color:#111827;">Ola, ${profName}!</p>
+  <p style="margin:0 0 20px;font-size:16px;color:#111827;">Olá, ${profName}!</p>
 
   ${positionContext}
   ${gapContext}
 
-  <p style="margin:0 0 12px;font-size:14px;color:#4B5563;">A melhor forma de subir no Google e pedir avaliacoes aos seus pacientes. Uma mensagem simples no WhatsApp funciona:</p>
+  <p style="margin:0 0 12px;font-size:14px;color:#4B5563;">A melhor forma de subir no Google é pedir avaliações aos seus pacientes. Uma mensagem simples no WhatsApp funciona:</p>
 
   <div style="background:#F3F4F6;border-radius:12px;padding:16px;margin:16px 0;">
     <p style="margin:0;font-size:14px;color:#374151;font-style:italic;">
-      "Ola! Obrigado(a) por confiar no meu trabalho. Se puder, deixar uma avaliacao no Google me ajuda muito a ajudar mais pessoas como voce: ${reviewLink}"
+      "Olá! Obrigado(a) por confiar no meu trabalho. Se puder, deixar uma avaliação no Google me ajuda muito a ajudar mais pessoas como você: ${reviewLink}"
     </p>
   </div>
 
-  <p style="margin:0 0 8px;font-size:14px;color:#4B5563;">Envie para 3 a 5 pacientes recentes. Leva 30 segundos e faz diferenca real.</p>
+  <p style="margin:0 0 8px;font-size:14px;color:#4B5563;">Envie para 3 a 5 pacientes recentes. Leva 30 segundos e faz diferença real.</p>
 
   <div style="text-align:center;margin:24px 0;">
     <a href="${reviewLink}" style="display:inline-block;background:#14B8A6;color:#fff;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">
-      Testar o link de avaliacao
+      Testar o link de avaliação
     </a>
   </div>
 
   <p style="margin:24px 0 0;font-size:12px;color:#9CA3AF;">
-    Voce tem ${reviewCount ?? 0} avaliacoes. ${brandName} cuida do resto no piloto automatico.
+    Você tem ${reviewCount ?? 0} avaliações. ${brandName} cuida do resto no piloto automático.
   </p>
 </div>`
 

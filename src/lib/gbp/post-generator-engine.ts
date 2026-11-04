@@ -69,8 +69,9 @@ export async function generatePost(params: {
   serviceAreas?: string[]
   postSequence?: number  // contador sequencial por org para seed de diversidade
   keywordOpportunities?: string[]  // keywords da inteligencia competitiva (uso interno, nunca exibidas ao usuario)
+  styleExamples?: string[]  // posts publicados anteriores para aprender tom e estilo
 }): Promise<GeneratedPost> {
-  const { postType, specialty, professionalName, city, neighborhood, tone, recentReview, serviceAreas, postSequence, keywordOpportunities } = params
+  const { postType, specialty, professionalName, city, neighborhood, tone, recentReview, serviceAreas, postSequence, keywordOpportunities, styleExamples } = params
 
   const toneInstructions: Record<ReviewTone, string> = {
     formal: 'Tom formal e profissional. Linguagem cuidada e respeitosa.',
@@ -94,7 +95,11 @@ export async function generatePost(params: {
       : ''
 
   const keywordContext = keywordOpportunities && keywordOpportunities.length > 0
-    ? `\nPALAVRAS-CHAVE DE OPORTUNIDADE (incorpore 1-2 naturalmente no texto, sem forcar): ${keywordOpportunities.join(', ')}`
+    ? `\nPALAVRAS-CHAVE DE OPORTUNIDADE (incorpore 1-2 naturalmente no texto, sem forçar): ${keywordOpportunities.join(', ')}`
+    : ''
+
+  const styleContext = styleExamples && styleExamples.length > 0
+    ? `\nESTILO DE REFERÊNCIA: Estes são posts anteriores deste profissional. Mantenha o mesmo tom, vocabulário e forma de se expressar. Não copie, apenas absorva o estilo:\n${styleExamples.map((s, i) => `${i + 1}. "${s}"`).join('\n')}`
     : ''
 
   const diversityContext = getDiversityContext(postSequence)
@@ -111,6 +116,7 @@ CONTEXTO:
 
 TOM: ${toneInstructions[tone]}
 ${keywordContext}
+${styleContext}
 
 ${diversityContext}
 

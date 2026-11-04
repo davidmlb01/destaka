@@ -229,6 +229,20 @@ export const postGenerator = inngest.createFunction(
           }
         }
 
+        // Buscar posts publicados anteriores para aprender tom e estilo do profissional
+        const { data: publishedPosts } = await db
+          .from('posts')
+          .select('content')
+          .eq('organization_id', orgId)
+          .eq('status', 'published')
+          .not('content', 'is', null)
+          .order('published_at', { ascending: false })
+          .limit(5)
+
+        const styleExamples = (publishedPosts ?? [])
+          .map((p: { content: string }) => p.content)
+          .filter(Boolean)
+
         // Gera o post via Claude (com seed de diversidade para evitar duplicação entre clientes)
         const generated = await generatePost({
           postType,
@@ -239,6 +253,7 @@ export const postGenerator = inngest.createFunction(
           tone: org.tone as ReviewTone,
           recentReview,
           serviceAreas: org.service_areas ?? [],
+          styleExamples,
           postSequence,
           keywordOpportunities,
         })
