@@ -111,7 +111,7 @@ export const competitorMonitor = inngest.createFunction(
         // Busca concorrentes próximos
         const nearby = await places.nearbySearch({ lat, lng, specialty: effectiveSpecialty })
         const filtered = PlacesClient.excludeSelf(nearby, org.name)
-        const top3 = filtered.slice(0, 3)
+        const top3 = filtered.slice(0, 5)
 
         if (top3.length === 0) {
           return { org_id: orgId, status: 'skip', error: 'nenhum concorrente encontrado' }
