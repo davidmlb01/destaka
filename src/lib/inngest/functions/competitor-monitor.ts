@@ -97,8 +97,19 @@ export const competitorMonitor = inngest.createFunction(
 
         const { lat, lng } = geoData.results[0].geometry.location
 
+        // Infere especialidade real do nome do negocio quando specialty e generica
+        let effectiveSpecialty = org.specialty ?? 'outro'
+        const nameLower = (org.name ?? '').toLowerCase()
+        if (nameLower.includes('quiropraxia') || nameLower.includes('quiroprat')) {
+          effectiveSpecialty = 'quiropraxia'
+        } else if (nameLower.includes('osteopatia')) {
+          effectiveSpecialty = 'osteopatia'
+        } else if (nameLower.includes('pilates')) {
+          effectiveSpecialty = 'pilates'
+        }
+
         // Busca concorrentes próximos
-        const nearby = await places.nearbySearch({ lat, lng, specialty: org.specialty })
+        const nearby = await places.nearbySearch({ lat, lng, specialty: effectiveSpecialty })
         const filtered = PlacesClient.excludeSelf(nearby, org.name)
         const top3 = filtered.slice(0, 3)
 
