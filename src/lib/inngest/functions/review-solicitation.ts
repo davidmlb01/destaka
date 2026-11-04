@@ -98,15 +98,15 @@ export const reviewSolicitation = inngest.createFunction(
 
           // Email com contexto de ranking
           const subject = position && position > 1
-            ? `${profName}, faltam ${gap > 0 ? gap : 'poucas'} avaliacoes para subir no Google`
-            : `${profName}, suas avaliacoes fazem a diferenca no Google`
+            ? `${profName}, cada avaliacao te aproxima do 1o lugar no Google`
+            : `${profName}, suas avaliacoes fortalecem seu perfil no Google`
 
           const positionContext = position
-            ? `<p style="margin:0 0 12px;font-size:14px;color:#4B5563;">Hoje voce esta na <strong>${position}a posicao</strong> quando alguem busca no Google.${topCompetitor && position > 1 ? ` O 1o lugar (${topCompetitor}) tem ${topCompetitorReviews} avaliacoes.` : ''}</p>`
+            ? `<p style="margin:0 0 12px;font-size:14px;color:#4B5563;">Hoje voce esta na <strong>${position}a posicao</strong> quando alguem busca no Google.${topCompetitor && position > 1 ? ` O 1o lugar e ${topCompetitor}.` : ''}</p>`
             : ''
 
-          const gapContext = gap > 0
-            ? `<p style="margin:0 0 12px;font-size:14px;color:#4B5563;">Com mais <strong>${Math.min(gap, 20)} avaliacoes</strong>, voce pode subir de posicao. Cada avaliacao conta.</p>`
+          const gapContext = position && position > 1
+            ? `<p style="margin:0 0 12px;font-size:14px;color:#4B5563;">O ${brandName} esta trabalhando para subir sua posicao: publicando posts, respondendo avaliacoes e otimizando seu perfil. Avaliacoes de pacientes reais sao o complemento mais forte que voce pode adicionar.</p>`
             : ''
 
           const html = `
@@ -124,7 +124,7 @@ export const reviewSolicitation = inngest.createFunction(
     </p>
   </div>
 
-  <p style="margin:0 0 8px;font-size:14px;color:#4B5563;">Copie e envie para 5 pacientes recentes. Leva 30 segundos.</p>
+  <p style="margin:0 0 8px;font-size:14px;color:#4B5563;">Envie para 3 a 5 pacientes recentes. Leva 30 segundos e faz diferenca real.</p>
 
   <div style="text-align:center;margin:24px 0;">
     <a href="${reviewLink}" style="display:inline-block;background:#14B8A6;color:#fff;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">
