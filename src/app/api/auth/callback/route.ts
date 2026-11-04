@@ -8,6 +8,52 @@ import { listGmbLocations } from '@/lib/gmb/client'
 import { detectSegment } from '@/lib/gmb/segment'
 import { isActiveSubscriber } from '@/lib/subscription'
 import { ensureZernioProfile } from '@/lib/zernio/connect'
+import { getOrCreateProfile, getZernioAccountId, generateConnectUrl } from '@/lib/zernio/client'
+
+// Redireciona para Zernio OAuth se account nao existe, senao para o destino final.
+// Isso garante que login Google + autorizacao Zernio acontecem em sequencia,
+// sem o usuario precisar de um segundo clique separado.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function redirectWithZernio(
+  orgId: string,
+  orgName: string,
+  finalUrl: string,
+  db: { from: (...args: any[]) => any }
+): Promise<NextResponse> {
+  try {
+    const { data: org } = await db
+      .from('organizations')
+      .select('zernio_profile_id, zernio_account_id')
+      .eq('id', orgId)
+      .maybeSingle() as { data: { zernio_profile_id?: string; zernio_account_id?: string } | null }
+
+    // Ja tem account conectado, vai direto
+    if (org?.zernio_account_id) {
+      return NextResponse.redirect(finalUrl)
+    }
+
+    const profileId = org?.zernio_profile_id ?? await getOrCreateProfile(orgId, orgName)
+
+    // Salvar profile_id se ainda nao existe
+    if (!org?.zernio_profile_id) {
+      await db.from('organizations').update({ zernio_profile_id: profileId }).eq('id', orgId)
+    }
+
+    // Checar se account ja existe no Zernio (criado entre sessoes)
+    const existingAccountId = await getZernioAccountId(profileId)
+    if (existingAccountId) {
+      await db.from('organizations').update({ zernio_account_id: existingAccountId }).eq('id', orgId)
+      return NextResponse.redirect(finalUrl)
+    }
+
+    // Gerar URL de conexao e redirecionar (usuario ve tela Google "Permitir")
+    const connectUrl = await generateConnectUrl(profileId, 'https://destaka.com.br/api/zernio/callback')
+    return NextResponse.redirect(connectUrl)
+  } catch (e) {
+    console.error('[callback] Zernio redirect falhou, indo para destino final:', e)
+    return NextResponse.redirect(finalUrl)
+  }
+}
 
 function createServiceClient() {
   return createAdminSupa(
@@ -66,27 +112,22 @@ export async function GET(request: NextRequest) {
 
         populateFromPlaces(existingProfessional.organization_id).catch(() => {})
 
-        ensureZernioProfile(
-          existingProfessional.organization_id,
-          '',
-          admin
-        ).catch(() => {})
-
         // Verifica se onboarding foi completado
         const { data: orgCheck } = await admin
           .from('organizations')
-          .select('lgpd_ai_consent')
+          .select('lgpd_ai_consent, name')
           .eq('id', existingProfessional.organization_id)
           .maybeSingle()
 
         const isSubscriber = await isActiveSubscriber(existingProfessional.organization_id)
+        const orgName = (orgCheck?.name as string) ?? ''
 
-        // Assinante com onboarding completo vai pro dashboard
-        // Todos os outros veem o diagnostico primeiro
+        // Assinante com onboarding completo: conectar Zernio em sequencia, depois dashboard
         if (isSubscriber && orgCheck?.lgpd_ai_consent === true) {
-          return NextResponse.redirect(`${origin}/dashboard`)
+          return redirectWithZernio(existingProfessional.organization_id, orgName, `${origin}/dashboard`, admin)
         }
-        return NextResponse.redirect(`${origin}/diagnostico`)
+        // Nao-assinante ou onboarding incompleto: Zernio em sequencia, depois diagnostico
+        return redirectWithZernio(existingProfessional.organization_id, orgName, `${origin}/diagnostico`, admin)
       }
 
       // Busca dados do GBP para criar org
@@ -201,10 +242,8 @@ export async function GET(request: NextRequest) {
 
       populateFromPlaces(org.id).catch(() => {})
 
-      ensureZernioProfile(org.id, orgName, admin).catch(() => {})
-
-      // Novo usuario vai pro diagnostico (free), Stripe gate antes do dashboard
-      return NextResponse.redirect(`${origin}/diagnostico`)
+      // Novo usuario: conectar Zernio em sequencia, depois diagnostico
+      return redirectWithZernio(org.id, orgName, `${origin}/diagnostico`, admin)
     }
   }
 

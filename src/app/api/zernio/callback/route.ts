@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
       .is('zernio_account_id', null)
 
     if (!orgs?.length) {
-      return NextResponse.redirect(`${origin}/dashboard`)
+      return NextResponse.redirect(`${origin}/dashboard?zernio=skip`)
     }
 
     for (const org of orgs) {
@@ -44,18 +44,20 @@ export async function GET(req: NextRequest) {
         const probe = await probeAnalytics(accountId)
         console.log(`[zernio-callback] Analytics probe org ${org.id}: available=${probe.available}`)
 
-        // Disparar collectors agora que Zernio esta conectado
+        // Disparar collectors + posts + reviews agora que Zernio esta conectado
         inngest.send([
           { name: 'destaka/performance.collect.requested', data: { organization_id: org.id } },
           { name: 'destaka/gbp.audit.requested', data: { organization_id: org.id } },
           { name: 'destaka/score.calculate.requested', data: { organization_id: org.id } },
+          { name: 'destaka/post.generate.requested', data: { organization_id: org.id } },
+          { name: 'destaka/reviews.monitor.requested', data: { organization_id: org.id } },
         ]).catch(() => {})
       }
     }
 
-    return NextResponse.redirect(`${origin}/dashboard`)
+    return NextResponse.redirect(`${origin}/dashboard?zernio=skip`)
   } catch (err) {
     console.error('[zernio-callback] Error:', err)
-    return NextResponse.redirect(`${origin}/dashboard`)
+    return NextResponse.redirect(`${origin}/dashboard?zernio=skip`)
   }
 }

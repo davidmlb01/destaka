@@ -21,7 +21,6 @@ export default async function DashboardPage({
     redirect('/diagnostico')
   }
 
-  // Verificar lgpd_ai_consent (especifico do dashboard principal)
   const supabase = await createClient()
   const { data: org } = await supabase
     .from('organizations')
