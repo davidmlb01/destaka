@@ -136,6 +136,21 @@ async function persistProfileData(
     .from('organizations')
     .update({ gbp_location_id: place.place_id })
     .eq('id', orgId)
+
+  // Salva website na gmb_profiles (tabela legado, usada pelo score-calculator)
+  if (place.website) {
+    const { data: prof } = await db
+      .from('professionals')
+      .select('user_id')
+      .eq('organization_id', orgId)
+      .maybeSingle()
+    if (prof?.user_id) {
+      await db
+        .from('gmb_profiles')
+        .update({ website: place.website })
+        .eq('user_id', prof.user_id)
+    }
+  }
 }
 
 async function persistScoreData(
