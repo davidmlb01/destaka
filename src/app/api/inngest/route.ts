@@ -20,6 +20,7 @@ import { performanceCollector } from '@/lib/inngest/functions/performance-collec
 import { geoExpansionEngine } from '@/lib/inngest/functions/geo-expansion-engine'
 import { referralTrigger } from '@/lib/inngest/functions/referral-trigger'
 import { onboardingDataBootstrap } from '@/lib/inngest/functions/onboarding-data-bootstrap'
+import { rankingTracker } from '@/lib/inngest/functions/ranking-tracker'
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -40,5 +41,6 @@ export const { GET, POST, PUT } = serve({
     geoExpansionEngine,
     referralTrigger,
     onboardingDataBootstrap,
+    rankingTracker,
   ],
 })

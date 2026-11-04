@@ -51,6 +51,7 @@ export async function POST(req: Request) {
     { name: 'destaka/gbp.audit.requested' as const, data: body.organization_id ? { organization_id: body.organization_id } : {} },
     { name: 'destaka/score.calculate.requested' as const, data: body.organization_id ? { organization_id: body.organization_id } : {} },
     { name: 'destaka/competitors.discover.requested' as const, data: body.organization_id ? { organization_id: body.organization_id } : {} },
+    { name: 'destaka/ranking.track.requested' as const, data: body.organization_id ? { organization_id: body.organization_id } : {} },
   ]
 
   await inngest.send(events)
