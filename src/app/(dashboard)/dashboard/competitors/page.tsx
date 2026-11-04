@@ -1,31 +1,17 @@
 export const dynamic = 'force-dynamic'
 
-import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { isActiveSubscriber } from '@/lib/subscription'
+import { getDashboardContext } from '@/lib/dashboard/get-dashboard-context'
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 import { CompetitorsContent } from '@/components/dashboard/CompetitorsContent'
 import { Badge } from '@/components/ui/Badge'
 
 export default async function CompetitorsPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
-
-  const { data: professional } = await supabase
-    .from('professionals').select('id, name, organization_id').eq('user_id', user.id).maybeSingle()
-
-  if (!professional?.organization_id) redirect('/login')
-  if (!await isActiveSubscriber(professional.organization_id)) redirect('/dashboard/upgrade?feature=competitors')
-
-  const { data: org } = await supabase
-    .from('organizations').select('name, specialty').eq('id', professional.organization_id).maybeSingle()
-
-  const profileName = org?.name ?? 'Meu Perfil'
-  const specialty = (org?.specialty as string) ?? null
+  const ctx = await getDashboardContext()
+  if (!ctx.isSubscriber) redirect('/dashboard/upgrade?feature=competitors')
 
   return (
-    <DashboardLayout activeHref="/dashboard/competitors" profileName={profileName} userEmail={user.email ?? ''}>
+    <DashboardLayout activeHref="/dashboard/competitors" profileName={ctx.profileName} userEmail={ctx.user.email}>
       <div className="px-6 py-8 max-w-5xl">
         <div className="mb-8">
           <Badge className="mb-3">Concorrentes</Badge>
@@ -36,7 +22,7 @@ export default async function CompetitorsPage() {
             Compare seu perfil com os concorrentes que aparecem nas buscas da sua região. Veja onde você está na frente e onde ainda pode melhorar.
           </p>
         </div>
-        <CompetitorsContent specialty={specialty} />
+        <CompetitorsContent specialty={ctx.specialty} />
       </div>
     </DashboardLayout>
   )

@@ -2,61 +2,47 @@ export const dynamic = 'force-dynamic'
 
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { getDashboardContext } from '@/lib/dashboard/get-dashboard-context'
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 import { DashboardContent } from '@/components/dashboard/DashboardContent'
 import { OptimizationConfirmCard } from './components/OptimizationConfirmCard'
 import { CheckoutBanner } from './components/CheckoutBanner'
-import { isActiveSubscriber } from '@/lib/subscription'
 
 export default async function DashboardPage({
   searchParams,
 }: {
   searchParams: Promise<{ checkout?: string }>
 }) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
-
-  const { data: professional } = await supabase
-    .from('professionals')
-    .select('id, name, organization_id')
-    .eq('user_id', user.id)
-    .maybeSingle()
-
-  if (!professional?.organization_id) redirect('/login')
-
-  const orgId = professional.organization_id
+  const ctx = await getDashboardContext()
   const params = await searchParams
   const checkoutStatus = params.checkout ?? null
 
-  const [{ data: org }, isSubscriber] = await Promise.all([
-    supabase.from('organizations').select('name, specialty, lgpd_ai_consent').eq('id', orgId).maybeSingle(),
-    isActiveSubscriber(orgId),
-  ])
-
-  const profileName = org?.name ?? 'Meu Perfil'
-
-  // Nao-assinantes veem o diagnostico, nao o dashboard
-  // Excecao: se veio do checkout (pagamento acabou de ser feito), aguardar webhook processar
-  if (!isSubscriber && checkoutStatus !== 'success') {
+  if (!ctx.isSubscriber && checkoutStatus !== 'success') {
     redirect('/diagnostico')
   }
 
-  // Assinante que nao completou onboarding vai configurar o perfil
+  // Verificar lgpd_ai_consent (especifico do dashboard principal)
+  const supabase = await createClient()
+  const { data: org } = await supabase
+    .from('organizations')
+    .select('lgpd_ai_consent')
+    .eq('id', ctx.orgId)
+    .maybeSingle()
+
   if (org?.lgpd_ai_consent !== true) {
     redirect('/onboarding')
   }
 
   const [{ data: profile }] = await Promise.all([
-    supabase.from('gbp_profiles').select('optimization_report, description, photo_count').eq('organization_id', orgId).maybeSingle(),
-    supabase.from('reviews').select('id', { count: 'exact', head: true }).eq('organization_id', orgId).is('response_text', null),
+    supabase.from('gbp_profiles').select('optimization_report, description, photo_count').eq('organization_id', ctx.orgId).maybeSingle(),
+    supabase.from('reviews').select('id', { count: 'exact', head: true }).eq('organization_id', ctx.orgId).is('response_text', null),
   ])
 
   return (
     <DashboardLayout
       activeHref="/dashboard"
-      profileName={profileName}
-      userEmail={user.email ?? ''}
+      profileName={ctx.profileName}
+      userEmail={ctx.user.email}
       isSubscriber={true}
     >
       <div className="max-w-5xl mx-auto px-6 py-10 space-y-8">

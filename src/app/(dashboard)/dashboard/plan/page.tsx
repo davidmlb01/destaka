@@ -2,8 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import { Badge } from '@/components/ui/Badge'
 import { PinIcon } from '@/components/ui/PinIcon'
-import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
+import { getDashboardContext } from '@/lib/dashboard/get-dashboard-context'
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 import { CheckoutButton } from './CheckoutButton'
 
@@ -27,22 +26,10 @@ const FEATURES = [
 ]
 
 export default async function PlanPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
-
-  const { data: professional } = await supabase
-    .from('professionals').select('id, name, organization_id').eq('user_id', user.id).maybeSingle()
-
-  if (!professional?.organization_id) redirect('/login')
-
-  const { data: org } = await supabase
-    .from('organizations').select('name').eq('id', professional.organization_id).maybeSingle()
-
-  const profileName = org?.name ?? 'Meu Perfil'
+  const ctx = await getDashboardContext()
 
   return (
-    <DashboardLayout activeHref="/dashboard/plan" profileName={profileName} userEmail={user.email ?? ''}>
+    <DashboardLayout activeHref="/dashboard/plan" profileName={ctx.profileName} userEmail={ctx.user.email}>
       <div className="px-6 py-10 max-w-5xl">
 
         {/* Header */}

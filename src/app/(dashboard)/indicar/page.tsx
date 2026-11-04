@@ -1,34 +1,14 @@
 export const dynamic = 'force-dynamic'
 
-import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
+import { getDashboardContext } from '@/lib/dashboard/get-dashboard-context'
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 import { IndicarContent } from '@/components/dashboard/IndicarContent'
 
 export default async function IndicarPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
-
-  const { data: professional } = await supabase
-    .from('professionals')
-    .select('id, name, organization_id')
-    .eq('user_id', user.id)
-    .maybeSingle()
-
-  if (!professional?.organization_id) redirect('/login')
-
-  const { data: org } = await supabase
-    .from('organizations')
-    .select('name, specialty')
-    .eq('id', professional.organization_id)
-    .maybeSingle()
-
-  const profileName = org?.name ?? 'Meu Perfil'
-  const specialty = (org?.specialty as string) ?? null
+  const ctx = await getDashboardContext()
 
   return (
-    <DashboardLayout activeHref="/indicar" profileName={profileName} userEmail={user.email ?? ''}>
+    <DashboardLayout activeHref="/indicar" profileName={ctx.profileName} userEmail={ctx.user.email}>
       <div className="px-6 py-8 max-w-2xl">
         <div className="mb-8">
           <h1 className="font-display font-extrabold text-white" style={{ fontSize: 28, letterSpacing: '-0.5px' }}>
@@ -38,7 +18,7 @@ export default async function IndicarPage() {
             Indique 5 colegas e nunca mais pague. Cada indicado ativo vale 20% de desconto permanente.
           </p>
         </div>
-        <IndicarContent userId={user.id} specialty={specialty} />
+        <IndicarContent userId={ctx.user.id} specialty={ctx.specialty} />
       </div>
     </DashboardLayout>
   )

@@ -1,30 +1,17 @@
 export const dynamic = 'force-dynamic'
 
-import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { isActiveSubscriber } from '@/lib/subscription'
+import { getDashboardContext } from '@/lib/dashboard/get-dashboard-context'
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 import { ChecklistContent } from '@/components/dashboard/ChecklistContent'
 import { Badge } from '@/components/ui/Badge'
 
 export default async function OptimizationsPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
-
-  const { data: professional } = await supabase
-    .from('professionals').select('id, name, organization_id').eq('user_id', user.id).maybeSingle()
-
-  if (!professional?.organization_id) redirect('/login')
-  if (!await isActiveSubscriber(professional.organization_id)) redirect('/dashboard/upgrade?feature=optimizations')
-
-  const { data: org } = await supabase
-    .from('organizations').select('name').eq('id', professional.organization_id).maybeSingle()
-
-  const profileName = org?.name ?? 'Meu Perfil'
+  const ctx = await getDashboardContext()
+  if (!ctx.isSubscriber) redirect('/dashboard/upgrade?feature=optimizations')
 
   return (
-    <DashboardLayout activeHref="/dashboard/optimizations" profileName={profileName} userEmail={user.email ?? ''}>
+    <DashboardLayout activeHref="/dashboard/optimizations" profileName={ctx.profileName} userEmail={ctx.user.email}>
       <div className="px-6 py-8 max-w-3xl">
         <div className="mb-8">
           <Badge className="mb-3">Otimizações</Badge>
