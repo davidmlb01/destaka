@@ -167,12 +167,31 @@ export const postGenerator = inngest.createFunction(
           .eq('organization_id', orgId)
           .single()
 
-        const address = profile?.address as { locality?: string; addressLines?: string[] } | null
+        const address = profile?.address as { locality?: string; formattedAddress?: string; addressLines?: string[] } | null
         const city = address?.locality ?? 'Brasil'
+        // Extrair bairro do endereco para contexto local nos posts
+        const formattedAddr = address?.formattedAddress ?? ''
+        const addrParts = formattedAddr.split(',')
+        const neighborhood = addrParts.length >= 2
+          ? addrParts[addrParts.length - 2].trim().split('-').pop()?.trim()
+          : undefined
 
-        // Buscar keyword_opportunities da analise competitiva (inteligencia interna)
-        const competitiveAnalysis = await getLatestAnalysis(db, orgId)
-        const keywordOpportunities = (competitiveAnalysis?.keyword_opportunities ?? []).slice(0, 3)
+        // Buscar keywords de ranking (prioridade) + analise competitiva (fallback)
+        const { data: rankingKws } = await db
+          .from('ranking_keywords')
+          .select('keyword')
+          .eq('organization_id', orgId)
+          .order('is_primary', { ascending: false })
+          .limit(4)
+
+        let keywordOpportunities: string[] = []
+        if (rankingKws?.length) {
+          // Extrair o servico da keyword (remover bairro): "quiropraxia Copacabana" -> "quiropraxia"
+          keywordOpportunities = rankingKws.map(k => k.keyword.split(' ')[0]).slice(0, 3)
+        } else {
+          const competitiveAnalysis = await getLatestAnalysis(db, orgId)
+          keywordOpportunities = (competitiveAnalysis?.keyword_opportunities ?? []).slice(0, 3)
+        }
 
         // Determina próximo tipo de post (rotação) + sequência para seed de diversidade (Correção C)
         const { data: recentPosts } = await db
@@ -216,6 +235,7 @@ export const postGenerator = inngest.createFunction(
           specialty: org.specialty,
           professionalName: org.name,
           city,
+          neighborhood: neighborhood || undefined,
           tone: org.tone as ReviewTone,
           recentReview,
           serviceAreas: org.service_areas ?? [],
