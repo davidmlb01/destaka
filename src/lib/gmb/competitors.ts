@@ -34,28 +34,63 @@ export interface BenchmarkData {
   generated_at: string
 }
 
-// Extrai cidade do endereço formatado: "Rua X, 10 - Bairro, Cidade - UF"
-function extractCity(address: string): string {
+// Extrai bairro do endereço formatado: "Av. X, 1066 - Sl 910 - Copacabana, Rio de Janeiro - RJ"
+function extractNeighborhood(address: string): string {
+  // Formato comum: "Rua X, N - Complemento - Bairro, Cidade - UF"
   const parts = address.split(',')
   if (parts.length >= 2) {
-    const cityPart = parts[parts.length - 1].trim().split('-')[0].trim()
-    return cityPart || address
+    // Penultima parte geralmente tem "Bairro" ou "Complemento - Bairro"
+    const beforeCity = parts[parts.length - 2].trim()
+    // Se tem hifen, o ultimo segmento e o bairro
+    const segments = beforeCity.split('-').map(s => s.trim())
+    const bairro = segments[segments.length - 1]
+    if (bairro && bairro.length > 2) return bairro
   }
-  return address
+  // Fallback: cidade
+  const cityPart = parts[parts.length - 1]?.trim().split('-')[0].trim()
+  return cityPart || address
 }
 
-// Constrói query de busca para concorrentes
-function buildCompetitorQuery(category: string, address: string): string {
-  const city = extractCity(address)
+// Infere especialidade do nome do negocio quando category e null
+function inferSpecialtyFromName(name: string): string {
+  const lower = name.toLowerCase()
+  const specialtyMap: Array<[string, string]> = [
+    ['quiropraxia', 'quiropraxia'],
+    ['quiroprat', 'quiropraxia'],
+    ['osteopatia', 'osteopatia'],
+    ['fisioterapia', 'fisioterapia'],
+    ['pilates', 'pilates'],
+    ['acupuntura', 'acupuntura'],
+    ['dentist', 'dentista'],
+    ['odonto', 'dentista'],
+    ['psicolog', 'psicologo'],
+    ['nutri', 'nutricionista'],
+    ['dermatolog', 'dermatologista'],
+    ['pediatr', 'pediatra'],
+    ['ortoped', 'ortopedista'],
+  ]
+  for (const [pattern, specialty] of specialtyMap) {
+    if (lower.includes(pattern)) return specialty
+  }
+  return 'saude'
+}
+
+// Constroi query de busca para concorrentes
+function buildCompetitorQuery(category: string | null, address: string, name: string): string {
+  const neighborhood = extractNeighborhood(address)
   const categoryMap: Record<string, string> = {
     dentist: 'dentista',
     physiotherapist: 'fisioterapeuta',
+    chiropractor: 'quiropraxia',
     psychologist: 'psicologo',
     nutritionist: 'nutricionista',
     doctor: 'medico',
   }
-  const localCategory = categoryMap[category.toLowerCase()] ?? category
-  return `${localCategory} ${city}`
+  // Prioridade: category do GBP > inferencia do nome > fallback "saude"
+  const localCategory = category
+    ? (categoryMap[category.toLowerCase()] ?? category)
+    : inferSpecialtyFromName(name)
+  return `${localCategory} ${neighborhood}`
 }
 
 // Descobre os top 3 concorrentes e salva no banco
@@ -67,7 +102,7 @@ export async function discoverCompetitors(
 
   const { data: profile, error: profileError } = await db
     .from('gmb_profiles')
-    .select('id, name, address, category, google_location_id')
+    .select('id, name, address, category, google_location_id, latitude, longitude')
     .eq('id', profileId)
     .single()
 
@@ -75,10 +110,12 @@ export async function discoverCompetitors(
     return { discovered: 0, errors: ['Perfil nao encontrado'] }
   }
 
-  const query = buildCompetitorQuery(profile.category ?? 'saude', profile.address ?? '')
+  const query = buildCompetitorQuery(profile.category, profile.address ?? '', profile.name ?? '')
+  const lat = profile.latitude as number | null
+  const lng = profile.longitude as number | null
   const results: Array<{ placeId: string; details: Awaited<ReturnType<typeof getPlaceDetails>> }> = []
 
-  // Busca por texto: retorna varios resultados, pegamos os primeiros 5 para filtrar
+  // Busca por texto com coordenadas para restringir por proximidade
   const searches = [
     query,
     `${query} consultorio`,
@@ -89,7 +126,7 @@ export async function discoverCompetitors(
 
   for (const q of searches) {
     if (placeIds.size >= 8) break
-    const placeId = await searchPlace(q)
+    const placeId = await searchPlace(q, lat, lng)
     if (placeId && !placeIds.has(placeId)) {
       placeIds.add(placeId)
     }
