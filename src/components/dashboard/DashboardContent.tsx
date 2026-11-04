@@ -18,6 +18,7 @@ import { useDashboard, type DashboardData } from './hooks/useDashboard'
 import MapCard from './MapCard'
 import { PatientFunnelCard } from './PatientFunnelCard'
 import { RankingCard } from './RankingCard'
+import { GapAnalysisCard } from './GapAnalysisCard'
 
 const CATEGORY_LABELS: Record<string, string> = {
   'Informações Básicas': 'Seu perfil está completo?',
@@ -242,11 +243,14 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
         </div>
       )}
 
-      {/* ===== RANKING: Posicao no Google ===== */}
+      {/* ===== RANKING: Posição no Google ===== */}
       {isSubscriber && (
         <div className="animate-fade-in-up stagger-1">
           <SectionTitle>Seu ranking no Google</SectionTitle>
-          <RankingCard />
+          <div className="flex flex-col gap-4">
+            <RankingCard />
+            <GapAnalysisCard />
+          </div>
         </div>
       )}
 

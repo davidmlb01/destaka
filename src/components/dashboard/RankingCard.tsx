@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { RankingChart } from './RankingChart'
 
 interface RankingKeyword {
   keyword: string
@@ -132,6 +133,11 @@ export function RankingCard() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Gráfico de evolução da keyword primária */}
+      {primary && primary.history.length >= 2 && (
+        <RankingChart data={primary.history} keyword={primary.keyword} />
       )}
 
       {/* Outras keywords */}
