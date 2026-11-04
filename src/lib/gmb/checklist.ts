@@ -69,16 +69,15 @@ export const CHECKLIST_ITEMS: ChecklistItem[] = [
   {
     key: 'verify_profile',
     title: 'Verificar o perfil no Google',
-    description: 'Perfis verificados aparecem com mais destaque e têm mais confiança nos resultados. A verificação é feita por SMS, e-mail ou carta.',
+    description: 'Perfis verificados aparecem com mais destaque nos resultados. Clique no link abaixo para iniciar a verificação.',
     impact: 10,
     priority: 'P0',
     category: 'verification',
     steps: [
-      'Acesse business.google.com e clique em "Verificar agora" no seu perfil.',
-      'Escolha o método: SMS (mais rápido) ou carta (5 a 14 dias).',
-      'Para SMS: insira o código recebido no campo indicado.',
-      'Para carta: aguarde a correspondência e insira o código quando chegar.',
-      'Após verificação, seu perfil ganha o selo de verificado.',
+      'Clique aqui para verificar: https://business.google.com/locations',
+      'No painel, clique em "Verificar agora" ao lado do seu perfil.',
+      'Escolha SMS (mais rápido) ou carta (5 a 14 dias).',
+      'Insira o código recebido para concluir.',
     ],
   },
   {
@@ -99,15 +98,14 @@ export const CHECKLIST_ITEMS: ChecklistItem[] = [
   {
     key: 'reply_reviews',
     title: 'Respostas às avaliações',
-    description: 'O Destaka gera respostas personalizadas para suas avaliações. Acesse a aba Avaliações para revisar e aprovar.',
+    description: 'O Destaka responde suas avaliações automaticamente com respostas personalizadas. Novas avaliações são respondidas em até 48h.',
     impact: 5,
     priority: 'P1',
     category: 'reviews',
     steps: [
-      'Acesse a aba "Avaliações" no menu lateral.',
-      'Revise as respostas sugeridas pelo Destaka.',
-      'Clique em "Publicar" para enviar a resposta ao Google.',
-      'Meta: 100% das avaliações respondidas em até 48h.',
+      'O Destaka monitora novas avaliações automaticamente.',
+      'Respostas personalizadas são geradas e publicadas.',
+      'Você pode acompanhar na aba "Avaliações" se quiser.',
     ],
   },
 ]
