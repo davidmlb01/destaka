@@ -13,12 +13,15 @@ import { inngest } from '@/lib/inngest/client'
 export async function GET(req: NextRequest) {
   const origin = 'https://destaka.com.br'
   const url = new URL(req.url)
+  const nextUrl = url.searchParams.get('next') ?? `${origin}/dashboard`
+  // Validar que nextUrl aponta para destaka.com.br (prevenir open redirect)
+  const finalRedirect = nextUrl.startsWith('https://destaka.com.br') ? nextUrl : `${origin}/dashboard`
 
   // Se Google retornou erro (prompt=none rejeitado), seguir pro dashboard sem bloquear
   const googleError = url.searchParams.get('error')
   if (googleError) {
     console.warn(`[zernio-callback] Google OAuth retornou error=${googleError}. Seguindo para dashboard.`)
-    return NextResponse.redirect(`${origin}/dashboard?zernio=pending`)
+    return NextResponse.redirect(`${finalRedirect}${finalRedirect.includes('?') ? '&' : '?'}zernio=pending`)
   }
 
   try {
@@ -35,7 +38,7 @@ export async function GET(req: NextRequest) {
       .is('zernio_account_id', null)
 
     if (!orgs?.length) {
-      return NextResponse.redirect(`${origin}/dashboard?zernio=skip`)
+      return NextResponse.redirect(`${finalRedirect}${finalRedirect.includes('?') ? '&' : '?'}zernio=skip`)
     }
 
     for (const org of orgs) {
@@ -63,9 +66,9 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    return NextResponse.redirect(`${origin}/dashboard?zernio=connected`)
+    return NextResponse.redirect(`${finalRedirect}${finalRedirect.includes('?') ? '&' : '?'}zernio=connected`)
   } catch (err) {
     console.error('[zernio-callback] Error:', err)
-    return NextResponse.redirect(`${origin}/dashboard?zernio=error`)
+    return NextResponse.redirect(`${finalRedirect}${finalRedirect.includes('?') ? '&' : '?'}zernio=error`)
   }
 }

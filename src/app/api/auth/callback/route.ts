@@ -56,7 +56,10 @@ async function connectZernioSilently(
     }
 
     // Gerar connect URL do Zernio para extrair o state assinado
-    const zernioConnectUrl = await generateConnectUrl(profileId, finalUrl)
+    // redirect_url aponta para nosso callback (que salva account_id no banco)
+    // O finalUrl vai como query param para o callback redirecionar depois
+    const callbackWithFinal = `https://destaka.com.br/api/zernio/callback?next=${encodeURIComponent(finalUrl)}`
+    const zernioConnectUrl = await generateConnectUrl(profileId, callbackWithFinal)
     const zernioUrl = new URL(zernioConnectUrl)
     const state = zernioUrl.searchParams.get('state')
 
