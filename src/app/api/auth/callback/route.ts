@@ -7,16 +7,25 @@ import { encrypt } from '@/lib/crypto'
 import { listGmbLocations } from '@/lib/gmb/client'
 import { detectSegment } from '@/lib/gmb/segment'
 import { isActiveSubscriber } from '@/lib/subscription'
-import { ensureZernioProfile } from '@/lib/zernio/connect'
 import { getOrCreateProfile, getZernioAccountId, generateConnectUrl } from '@/lib/zernio/client'
 
-// Redireciona para Zernio OAuth se account nao existe, senao para o destino final.
-// Isso garante que login Google + autorizacao Zernio acontecem em sequencia,
-// sem o usuario precisar de um segundo clique separado.
+// Zernio redirect URI fixa (registrada no Google Cloud Console)
+const ZERNIO_REDIRECT_URI = 'https://zernio.com/api/v1/connect/googlebusiness/callback'
+
+// Conecta Zernio automaticamente sem clique extra.
+// Estrategia:
+// 1. Se ja tem account_id, vai direto pro destino
+// 2. Checa se account ja existe no Zernio (criado entre sessoes)
+// 3. Constroi URL Google OAuth com nosso client_id + redirect do Zernio + prompt=none
+//    Como o usuario ACABOU de autorizar nosso client_id no login Supabase,
+//    o Google auto-redireciona sem mostrar tela de consentimento (zero cliques extras)
+// 4. O Zernio recebe o code, troca por tokens usando nosso client_id/secret
+//    (registrado via createOAuthApp), e cria o account
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function redirectWithZernio(
+async function connectZernioSilently(
   orgId: string,
   orgName: string,
+  userEmail: string,
   finalUrl: string,
   db: { from: (...args: any[]) => any }
 ): Promise<NextResponse> {
@@ -46,11 +55,32 @@ async function redirectWithZernio(
       return NextResponse.redirect(finalUrl)
     }
 
-    // Gerar URL de conexao e redirecionar (usuario ve tela Google "Permitir")
-    const connectUrl = await generateConnectUrl(profileId, 'https://destaka.com.br/api/zernio/callback')
-    return NextResponse.redirect(connectUrl)
+    // Gerar connect URL do Zernio para extrair o state assinado
+    const zernioConnectUrl = await generateConnectUrl(profileId, finalUrl)
+    const zernioUrl = new URL(zernioConnectUrl)
+    const state = zernioUrl.searchParams.get('state')
+
+    if (!state) {
+      console.error('[callback] Zernio nao retornou state na connect URL')
+      return NextResponse.redirect(finalUrl)
+    }
+
+    // Construir URL Google OAuth com NOSSO client_id + redirect do Zernio
+    // prompt=none faz o Google auto-redirecionar sem tela de consentimento
+    // (funciona porque o usuario acabou de autorizar nosso client_id)
+    const googleAuthUrl = new URL('https://accounts.google.com/o/oauth2/auth')
+    googleAuthUrl.searchParams.set('client_id', process.env.GOOGLE_CLIENT_ID!)
+    googleAuthUrl.searchParams.set('redirect_uri', ZERNIO_REDIRECT_URI)
+    googleAuthUrl.searchParams.set('scope', 'https://www.googleapis.com/auth/business.manage https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email')
+    googleAuthUrl.searchParams.set('response_type', 'code')
+    googleAuthUrl.searchParams.set('access_type', 'offline')
+    googleAuthUrl.searchParams.set('prompt', 'none')
+    googleAuthUrl.searchParams.set('login_hint', userEmail)
+    googleAuthUrl.searchParams.set('state', state)
+
+    return NextResponse.redirect(googleAuthUrl.toString())
   } catch (e) {
-    console.error('[callback] Zernio redirect falhou, indo para destino final:', e)
+    console.error('[callback] Zernio silent connect falhou, indo para destino final:', e)
     return NextResponse.redirect(finalUrl)
   }
 }
@@ -122,12 +152,14 @@ export async function GET(request: NextRequest) {
         const isSubscriber = await isActiveSubscriber(existingProfessional.organization_id)
         const orgName = (orgCheck?.name as string) ?? ''
 
-        // Assinante com onboarding completo: conectar Zernio em sequencia, depois dashboard
+        const userEmail = user.email ?? ''
+
+        // Assinante com onboarding completo: conectar Zernio silenciosamente, depois dashboard
         if (isSubscriber && orgCheck?.lgpd_ai_consent === true) {
-          return redirectWithZernio(existingProfessional.organization_id, orgName, `${origin}/dashboard`, admin)
+          return connectZernioSilently(existingProfessional.organization_id, orgName, userEmail, `${origin}/dashboard`, admin)
         }
-        // Nao-assinante ou onboarding incompleto: Zernio em sequencia, depois diagnostico
-        return redirectWithZernio(existingProfessional.organization_id, orgName, `${origin}/diagnostico`, admin)
+        // Nao-assinante ou onboarding incompleto: conectar Zernio silenciosamente, depois diagnostico
+        return connectZernioSilently(existingProfessional.organization_id, orgName, userEmail, `${origin}/diagnostico`, admin)
       }
 
       // Busca dados do GBP para criar org
@@ -242,8 +274,8 @@ export async function GET(request: NextRequest) {
 
       populateFromPlaces(org.id).catch(() => {})
 
-      // Novo usuario: conectar Zernio em sequencia, depois diagnostico
-      return redirectWithZernio(org.id, orgName, `${origin}/diagnostico`, admin)
+      // Novo usuario: conectar Zernio silenciosamente, depois diagnostico
+      return connectZernioSilently(org.id, orgName, user.email ?? '', `${origin}/diagnostico`, admin)
     }
   }
 
