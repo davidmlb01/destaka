@@ -1,6 +1,14 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import type { User } from '@supabase/supabase-js'
+
+function adminClient() {
+  return createAdminSupa(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
 
 interface AuthOrgSuccess {
   user: User
@@ -30,7 +38,8 @@ export async function getAuthOrg(): Promise<AuthOrgResult> {
     return { error: NextResponse.json({ error: 'Não autorizado' }, { status: 401 }) }
   }
 
-  const { data: professional } = await supabase
+  // Admin client para bypass RLS na tabela professionals
+  const { data: professional } = await adminClient()
     .from('professionals')
     .select('organization_id')
     .eq('user_id', user.id)
