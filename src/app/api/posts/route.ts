@@ -1,13 +1,22 @@
 export const dynamic = 'force-dynamic'
 
 import { getAuthOrg, privateJson } from '@/lib/api/with-auth'
+import { createClient as createAdminSupa } from '@supabase/supabase-js'
 
 const PAGE_SIZE = 20
+
+function adminDb() {
+  return createAdminSupa(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
 
 export async function GET() {
   const auth = await getAuthOrg()
   if (auth.error) return auth.error
   const { orgId, supabase } = auth
+  const admin = adminDb()
 
   // Fetch posts, org info, and scheduled next post in parallel
   const [
@@ -16,7 +25,7 @@ export async function GET() {
     { data: gbp },
     { data: scheduledPost },
   ] = await Promise.all([
-    supabase
+    admin
       .from('posts')
       .select('id, content, post_type, status, scheduled_for, published_at, created_at', { count: 'exact' })
       .eq('organization_id', orgId)
@@ -33,7 +42,7 @@ export async function GET() {
       .select('id')
       .eq('organization_id', orgId)
       .maybeSingle(),
-    supabase
+    admin
       .from('posts')
       .select('id, content, post_type, status, scheduled_for, published_at, created_at')
       .eq('organization_id', orgId)
