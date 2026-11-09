@@ -84,6 +84,8 @@ export async function GET() {
     created_at: scheduledPost.created_at,
   } : null
 
+  console.log(`[posts-api] orgId=${orgId} posts=${mappedPosts.length} statuses=${mappedPosts.map(p => p.status).join(',')}`)
+
   return privateJson({
     posts: mappedPosts,
     total: count ?? 0,
