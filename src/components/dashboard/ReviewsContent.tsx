@@ -159,19 +159,53 @@ export function ReviewsContent() {
                 </div>
               )}
 
+              {/* Resposta sugerida (draft inline) */}
+              {(review.reply_status === 'pending' || review.reply_status === 'no_response') && review.ai_reply_draft && (
+                <div
+                  className="rounded-xl px-4 py-3 mb-3"
+                  style={{ background: 'rgba(14,165,233,0.06)', border: '1px solid rgba(14,165,233,0.12)' }}
+                >
+                  <p className="text-xs mb-1 font-medium" style={{ color: 'var(--accent-bright)' }}>Resposta sugerida</p>
+                  <p className="text-sm" style={{ color: 'rgba(255,255,255,0.6)', lineHeight: 1.5 }}>
+                    {review.ai_reply_draft}
+                  </p>
+                </div>
+              )}
+
               {/* Ações */}
               {(review.reply_status === 'pending' || review.reply_status === 'no_response') && (
                 <div className="flex gap-2">
+                  {review.ai_reply_draft ? (
+                    <button
+                      onClick={() => openReplyModal(review)}
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold transition-all"
+                      style={{
+                        background: 'rgba(74,222,128,0.15)',
+                        border: '1px solid rgba(74,222,128,0.25)',
+                        color: 'var(--success)',
+                      }}
+                    >
+                      Aprovar e publicar
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => openReplyModal(review)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                      style={{
+                        background: 'rgba(14,165,233,0.15)',
+                        border: '1px solid rgba(14,165,233,0.25)',
+                        color: 'var(--accent-bright)',
+                      }}
+                    >
+                      <PinIcon size={12} color="var(--accent-bright)" bg="transparent" /> Responder
+                    </button>
+                  )}
                   <button
                     onClick={() => openReplyModal(review)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
-                    style={{
-                      background: 'rgba(14,165,233,0.15)',
-                      border: '1px solid rgba(14,165,233,0.25)',
-                      color: 'var(--accent-bright)',
-                    }}
+                    className="px-3 py-1.5 rounded-lg text-xs font-medium"
+                    style={{ background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.5)' }}
                   >
-                    <PinIcon size={12} color="var(--accent-bright)" bg="transparent" /> Responder
+                    Editar
                   </button>
                   <button
                     onClick={() => ignoreReview(review.id)}

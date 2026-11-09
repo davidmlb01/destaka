@@ -84,7 +84,7 @@ export function PatientFunnelCard() {
       >
         <div className="flex flex-col items-center py-8 text-center">
           <p className="text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>
-            Dados sendo coletados. O primeiro relatório aparece na próxima segunda-feira.
+            Dados sendo coletados. O primeiro relatório chega por e-mail no dia 1º do próximo mês.
           </p>
         </div>
       </div>
@@ -167,7 +167,7 @@ export function PatientFunnelCard() {
             {formatNumber(current.actions_total)}
           </p>
           <p className="text-sm mt-1 mb-3" style={{ color: 'rgba(255,255,255,0.6)' }}>
-            tomaram uma acao
+            tomaram uma ação
           </p>
 
           {/* Detalhamento das acoes */}
@@ -214,8 +214,8 @@ export function PatientFunnelCard() {
         <div className="mt-4 pt-3 flex items-center gap-3" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
           <span className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>vs semana passada:</span>
           <div className="flex items-center gap-3">
-            <DeltaBadge label="impressoes" value={deltas.impressions_pct} unit="pct" />
-            <DeltaBadge label="acoes" value={deltas.actions_abs} unit="abs" />
+            <DeltaBadge label="impressões" value={deltas.impressions_pct} unit="pct" />
+            <DeltaBadge label="ações" value={deltas.actions_abs} unit="abs" />
           </div>
         </div>
       )}

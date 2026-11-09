@@ -192,7 +192,7 @@ export async function listReviews(accountId: string): Promise<Array<{
     type GBReview = { id?: string; reviewer?: { displayName?: string }; rating?: number; comment?: string; createTime?: string; reviewReply?: { comment?: string } }
     return (data?.reviews ?? []).map((r: GBReview) => ({
       id: r.id ?? '',
-      author: r.reviewer?.displayName ?? 'Anonimo',
+      author: r.reviewer?.displayName ?? 'Anônimo',
       rating: r.rating ?? 5,
       comment: r.comment ?? null,
       createdAt: r.createTime ?? new Date().toISOString(),

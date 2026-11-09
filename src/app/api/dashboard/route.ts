@@ -76,7 +76,7 @@ export async function GET() {
     clicksWebsite: 0,
     clicksCall: 0,
     clicksDirections: 0,
-    period: 'Ultimos 30 dias',
+    period: 'Últimos 30 dias',
     source: 'none' as 'api' | 'database' | 'none',
   }
 
@@ -102,7 +102,11 @@ export async function GET() {
           else if (metric.includes('CALL')) metrics.clicksCall = total
           else if (metric.includes('DIRECTION')) metrics.clicksDirections = total
         }
-        metrics.source = 'api'
+        // Só marca como 'api' se extraiu algum valor real; senão cai no fallback do banco
+        const apiTotal = metrics.viewsSearch + metrics.viewsMaps + metrics.clicksWebsite + metrics.clicksCall + metrics.clicksDirections
+        if (apiTotal > 0) {
+          metrics.source = 'api'
+        }
       }
     } catch {
       // API falhou, cai no fallback abaixo
@@ -125,7 +129,7 @@ export async function GET() {
         clicksWebsite: perfRows.reduce((sum, r) => sum + ((r as Record<string, number>).actions_website ?? 0), 0),
         clicksCall: perfRows.reduce((sum, r) => sum + ((r as Record<string, number>).actions_phone ?? 0), 0),
         clicksDirections: perfRows.reduce((sum, r) => sum + ((r as Record<string, number>).actions_directions ?? 0), 0),
-        period: `Ultimas ${perfRows.length} semanas`,
+        period: `Últimas ${perfRows.length} semanas`,
         source: 'database',
       }
     }
@@ -156,35 +160,24 @@ export async function GET() {
           clicksWebsite: metricRows.reduce((sum, r) => sum + ((r as Record<string, number>).clicks_website ?? 0), 0),
           clicksCall: metricRows.reduce((sum, r) => sum + ((r as Record<string, number>).clicks_call ?? 0), 0),
           clicksDirections: metricRows.reduce((sum, r) => sum + ((r as Record<string, number>).clicks_directions ?? 0), 0),
-          period: 'Ultimos 30 dias',
+          period: 'Últimos 30 dias',
           source: 'database',
         }
       }
     }
   }
 
-  // Next actions: issues do audit_report + fallback de gaps reais do perfil
-  const coveredFields = new Set(issues.map(i => i.field))
-
+  // Next actions: apenas issues reais do audit_report (dados verificados do perfil GBP)
+  // Fallbacks baseados em score removidos porque mostram itens já feitos pelo usuário
   const fallbackActions: Array<{ field: string; severity: string; message: string; impact: number }> = []
 
-  if (!coveredFields.has('description') && (!gbpProfile?.description || (gbpProfile.description as string).length < 10)) {
+  // Apenas fallback para descrição vazia (verificável sem score)
+  if (!issues.some(i => i.field === 'description') && (!gbpProfile?.description || (gbpProfile.description as string).length < 10)) {
     fallbackActions.push({ field: 'description', severity: 'critical', message: 'Seu perfil não tem descrição. Isso reduz sua visibilidade nas buscas.', impact: 8 })
   }
-  if (!coveredFields.has('services') && ((s?.retencao as number) ?? 0) < 5) {
-    fallbackActions.push({ field: 'services', severity: 'warning', message: 'Cadastre seus serviços com descrição para facilitar o agendamento.', impact: 7 })
-  }
-  if (!coveredFields.has('photos') && (gbpProfile?.photo_count ?? 0) < 5) {
+  // Apenas fallback para fotos insuficientes (verificável sem score)
+  if (!issues.some(i => i.field === 'photos') && (gbpProfile?.photo_count ?? 0) < 5) {
     fallbackActions.push({ field: 'photos', severity: 'warning', message: 'Adicione pelo menos 5 fotos reais do seu espaço para aumentar a confiança.', impact: 6 })
-  }
-  if (!coveredFields.has('reviews') && ((s?.reputacao as number) ?? 0) < 10) {
-    fallbackActions.push({ field: 'reviews', severity: 'warning', message: 'Responda todas as avaliações para melhorar sua reputação.', impact: 5 })
-  }
-  if (!coveredFields.has('posts') && ((s?.visibilidade as number) ?? 0) < 5) {
-    fallbackActions.push({ field: 'posts', severity: 'warning', message: 'Publique conteúdo regularmente para manter seu perfil ativo.', impact: 4 })
-  }
-  if (!coveredFields.has('attributes') && ((s?.conversao as number) ?? 0) < 5) {
-    fallbackActions.push({ field: 'attributes', severity: 'warning', message: 'Configure atributos como Wi-Fi, estacionamento e acessibilidade.', impact: 3 })
   }
 
   const nextActions = [...issues, ...fallbackActions]

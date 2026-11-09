@@ -17,8 +17,8 @@ function scoreColor(score: number) {
 
 function scoreLabel(total: number) {
   if (total >= 70) return 'Perfil bem otimizado'
-  if (total >= 40) return 'Tem espaco para melhorar'
-  return 'Precisa de atencao urgente'
+  if (total >= 40) return 'Tem espaço para melhorar'
+  return 'Precisa de atenção urgente'
 }
 
 export function VerifyTool() {
@@ -145,17 +145,17 @@ export function VerifyTool() {
               </p>
 
               <div className="grid grid-cols-2 gap-2.5">
-                <InfoRow label="Telefone" value={result.place.phone ?? 'Nao cadastrado'} missing={!result.place.phone} />
-                <InfoRow label="Website" value={result.place.website ? 'Vinculado' : 'Nao vinculado'} missing={!result.place.website} />
+                <InfoRow label="Telefone" value={result.place.phone ?? 'Não cadastrado'} missing={!result.place.phone} />
+                <InfoRow label="Website" value={result.place.website ? 'Vinculado' : 'Não vinculado'} missing={!result.place.website} />
                 <InfoRow
-                  label="Nota media"
-                  value={result.place.rating ? `${result.place.rating.toFixed(1)} / 5.0` : 'Sem avaliacoes'}
+                  label="Nota média"
+                  value={result.place.rating ? `${result.place.rating.toFixed(1)} / 5.0` : 'Sem avaliações'}
                   missing={!result.place.rating}
                 />
                 <InfoRow
-                  label="Avaliacoes"
+                  label="Avaliações"
                   value={result.place.reviewsTotal
-                    ? `${result.place.reviewsTotal} ${result.place.reviewsTotal === 1 ? 'avaliacao' : 'avaliacoes'}`
+                    ? `${result.place.reviewsTotal} ${result.place.reviewsTotal === 1 ? 'avaliação' : 'avaliações'}`
                     : 'Nenhuma ainda'}
                   missing={!result.place.reviewsTotal}
                 />

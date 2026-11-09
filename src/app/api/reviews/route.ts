@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
 
   if (error) {
     console.error('[reviews] query error:', error.message)
-    return NextResponse.json({ error: 'Erro ao buscar avaliacoes' }, { status: 500 })
+    return NextResponse.json({ error: 'Erro ao buscar avaliações' }, { status: 500 })
   }
 
   // Get review_responses for these reviews to attach reply info

@@ -83,15 +83,28 @@ export function generateKeywords(input: KeywordInput): Array<{ keyword: string; 
   if (allServices.size === 0) return []
 
   // Gerar keywords: "servico + bairro"
+  // Primary é definido pelo nome do negócio (keyword mais relevante)
   const keywords: Array<{ keyword: string; isPrimary: boolean }> = []
-  let isFirst = true
+  const businessNameLower = (input.orgName ?? '').toLowerCase()
 
   for (const service of allServices) {
-    keywords.push({
-      keyword: `${service} ${neighborhood}`,
-      isPrimary: isFirst,
-    })
-    isFirst = false
+    const kw = `${service} ${neighborhood}`
+    // Primary: keyword cujo serviço aparece no nome do negócio (mais relevante)
+    const isPrimary = businessNameLower.includes(service.toLowerCase())
+    keywords.push({ keyword: kw, isPrimary })
+  }
+
+  // Se nenhuma keyword matchou o nome do negócio, a primeira fica como primary
+  if (keywords.length > 0 && !keywords.some(k => k.isPrimary)) {
+    keywords[0].isPrimary = true
+  }
+  // Se mais de uma matchou, manter só a primeira como primary
+  let foundPrimary = false
+  for (const kw of keywords) {
+    if (kw.isPrimary) {
+      if (foundPrimary) kw.isPrimary = false
+      foundPrimary = true
+    }
   }
 
   return keywords

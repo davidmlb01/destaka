@@ -19,7 +19,7 @@ export function CompetitorsCard({ competitors }: { competitors: Competitor[] }) 
           <div key={i} className="px-6 py-4 flex items-center justify-between" style={i > 0 ? { borderTop: '1px solid var(--border-subtle)' } : undefined}>
             <div>
               <p className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>{c.name}</p>
-              <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{c.review_count} avaliacoes</p>
+              <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{c.review_count} avaliações</p>
             </div>
             <div className="text-right">
               <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>{c.avg_rating.toFixed(1)}</p>

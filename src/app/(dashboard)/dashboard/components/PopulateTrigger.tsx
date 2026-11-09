@@ -37,7 +37,7 @@ export function PopulateTrigger({ orgName, hasScore, hasProfile }: PopulateTrigg
       router.refresh()
     } catch {
       setStatus('error')
-      setErrorMsg('Falha na conexao. Tente novamente.')
+      setErrorMsg('Falha na conexão. Tente novamente.')
     }
   }, [status, router])
 
@@ -100,7 +100,7 @@ export function PopulateTrigger({ orgName, hasScore, hasProfile }: PopulateTrigg
       {status === 'idle' && needsPopulate && (
         <div className="space-y-3">
           <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-            Seu dashboard ainda nao tem dados. Clique para buscar as informacoes do seu perfil no Google.
+            Seu dashboard ainda não tem dados. Clique para buscar as informações do seu perfil no Google.
           </p>
           <button
             onClick={populate}

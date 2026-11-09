@@ -55,33 +55,13 @@ async function connectZernioSilently(
       return NextResponse.redirect(finalUrl)
     }
 
-    // Gerar connect URL do Zernio para extrair o state assinado
-    // redirect_url aponta para nosso callback (que salva account_id no banco)
-    // O finalUrl vai como query param para o callback redirecionar depois
+    // Redirecionar direto para a URL de connect do Zernio
+    // O Zernio mostra a tela Google OAuth (mesma conta, mesmo momento do login)
+    // Depois redireciona para nosso callback que salva account_id
     const callbackWithFinal = `https://destaka.com.br/api/zernio/callback?next=${encodeURIComponent(finalUrl)}`
     const zernioConnectUrl = await generateConnectUrl(profileId, callbackWithFinal)
-    const zernioUrl = new URL(zernioConnectUrl)
-    const state = zernioUrl.searchParams.get('state')
 
-    if (!state) {
-      console.error('[callback] Zernio nao retornou state na connect URL')
-      return NextResponse.redirect(finalUrl)
-    }
-
-    // Construir URL Google OAuth com NOSSO client_id + redirect do Zernio
-    // prompt=none faz o Google auto-redirecionar sem tela de consentimento
-    // (funciona porque o usuario acabou de autorizar nosso client_id)
-    const googleAuthUrl = new URL('https://accounts.google.com/o/oauth2/auth')
-    googleAuthUrl.searchParams.set('client_id', process.env.GOOGLE_CLIENT_ID!)
-    googleAuthUrl.searchParams.set('redirect_uri', ZERNIO_REDIRECT_URI)
-    googleAuthUrl.searchParams.set('scope', 'https://www.googleapis.com/auth/business.manage https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email')
-    googleAuthUrl.searchParams.set('response_type', 'code')
-    googleAuthUrl.searchParams.set('access_type', 'offline')
-    googleAuthUrl.searchParams.set('prompt', 'none')
-    googleAuthUrl.searchParams.set('login_hint', userEmail)
-    googleAuthUrl.searchParams.set('state', state)
-
-    return NextResponse.redirect(googleAuthUrl.toString())
+    return NextResponse.redirect(zernioConnectUrl)
   } catch (e) {
     console.error('[callback] Zernio silent connect falhou, indo para destino final:', e)
     return NextResponse.redirect(finalUrl)

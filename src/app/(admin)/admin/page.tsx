@@ -519,7 +519,7 @@ export default async function AdminPage() {
           <section className="rounded-2xl overflow-hidden" style={{ background: 'var(--card-subtle)', border: '1px solid var(--error-border)' }}>
             <div className="px-6 py-4" style={{ borderBottom: '1px solid var(--error-border)' }}>
               <h2 className="font-semibold" style={{ color: 'var(--error)' }}>Tokens com problema ({brokenTokens.length})</h2>
-              <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>Clientes com entrega parada. Automacoes nao estao funcionando.</p>
+              <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>Clientes com entrega parada. Automações não estão funcionando.</p>
             </div>
             <div>
               {brokenTokens.map((org, i) => {

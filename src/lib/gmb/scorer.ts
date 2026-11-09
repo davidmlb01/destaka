@@ -87,15 +87,15 @@ function scoreInfo(p: GmbProfileData): CategoryScore {
   else issues.push({ field: 'address', severity: 'critical', message: 'Endereco nao configurado, nao aparece no Maps', impact: 5 })
 
   if (p.hasHours) score += 5
-  else issues.push({ field: 'hours', severity: 'warning', message: 'Horario de funcionamento nao definido', impact: 5 })
+  else issues.push({ field: 'hours', severity: 'warning', message: 'Horário de funcionamento não definido', impact: 5 })
 
   if (p.hasWebsite) score += 3
-  else issues.push({ field: 'website', severity: 'info', message: 'Website nao vinculado', impact: 3 })
+  else issues.push({ field: 'website', severity: 'info', message: 'Website não vinculado', impact: 3 })
 
   if (p.hasCategory) score += 2
-  else issues.push({ field: 'category', severity: 'warning', message: 'Categoria principal nao definida', impact: 2 })
+  else issues.push({ field: 'category', severity: 'warning', message: 'Categoria principal não definida', impact: 2 })
 
-  return makeCategory('info', 'Informacoes Basicas', score, 25, issues)
+  return makeCategory('info', 'Informações Básicas', score, 25, issues)
 }
 
 function scorePhotos(p: GmbProfileData): CategoryScore {
@@ -106,7 +106,7 @@ function scorePhotos(p: GmbProfileData): CategoryScore {
   else issues.push({ field: 'logo', severity: 'warning', message: 'Sem foto de logotipo, passa menos credibilidade', impact: 5 })
 
   if (p.spacePhotosCount >= 3) score += 5
-  else issues.push({ field: 'space_photos', severity: 'warning', message: `So ${p.spacePhotosCount} ${p.spacePhotosCount === 1 ? 'foto' : 'fotos'} do espaco, ideal: 3+`, impact: 5 })
+  else issues.push({ field: 'space_photos', severity: 'warning', message: `Só ${p.spacePhotosCount} ${p.spacePhotosCount === 1 ? 'foto' : 'fotos'} do espaço, ideal: 3+`, impact: 5 })
 
   if (p.totalPhotosCount >= 5) score += 5
   else issues.push({ field: 'total_photos', severity: 'warning', message: `Apenas ${p.totalPhotosCount} ${p.totalPhotosCount === 1 ? 'foto' : 'fotos'} no total, ideal: 5+`, impact: 5 })
@@ -122,16 +122,16 @@ function scoreReviews(p: GmbProfileData): CategoryScore {
   let score = 0
 
   if (p.reviewsCount >= 10) score += 10
-  else issues.push({ field: 'reviews_count', severity: 'critical', message: `Apenas ${p.reviewsCount} ${p.reviewsCount === 1 ? 'avaliacao' : 'avaliacoes'}, ideal: 10+`, impact: 10 })
+  else issues.push({ field: 'reviews_count', severity: 'critical', message: `Apenas ${p.reviewsCount} ${p.reviewsCount === 1 ? 'avaliação' : 'avaliações'}, ideal: 10+`, impact: 10 })
 
   if (p.reviewsAvgRating >= 4.0) score += 10
-  else issues.push({ field: 'rating', severity: 'critical', message: `Nota media ${p.reviewsAvgRating.toFixed(1)}, meta: 4.0+`, impact: 10 })
+  else issues.push({ field: 'rating', severity: 'critical', message: `Nota média ${p.reviewsAvgRating.toFixed(1)}, meta: 4.0+`, impact: 10 })
 
   const replyRate = p.reviewsCount > 0 ? p.reviewsRepliedCount / p.reviewsCount : 0
   if (replyRate >= 0.8) score += 5
-  else issues.push({ field: 'reply_rate', severity: 'warning', message: `So ${Math.round(replyRate * 100)}% das avaliacoes respondidas, ideal: 80%+`, impact: 5 })
+  else issues.push({ field: 'reply_rate', severity: 'warning', message: `Só ${Math.round(replyRate * 100)}% das avaliações respondidas, ideal: 80%+`, impact: 5 })
 
-  return makeCategory('reviews', 'Avaliacoes', score, 25, issues)
+  return makeCategory('reviews', 'Avaliações', score, 25, issues)
 }
 
 function scorePosts(p: GmbProfileData): CategoryScore {

@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     }
     if (count >= MAX_VERIFY_PER_IP_PER_DAY) {
       return NextResponse.json(
-        { error: 'Limite de verificacoes diarias atingido. Tente novamente amanha.' },
+        { error: 'Limite de verificações diárias atingido. Tente novamente amanhã.' },
         { status: 429 }
       )
     }

@@ -96,7 +96,7 @@ export function useOptimizationWizard(
       })
 
       if (!res.ok) {
-        setErrorMsg('Erro durante execucao. Tente novamente.')
+        setErrorMsg('Erro durante execução. Tente novamente.')
         setStep('error')
         return
       }
@@ -105,7 +105,7 @@ export function useOptimizationWizard(
       setExecution(data)
       setStep('done')
     } catch {
-      setErrorMsg('Erro de conexao durante execucao. Tente novamente.')
+      setErrorMsg('Erro de conexão durante execução. Tente novamente.')
       setStep('error')
     }
   }

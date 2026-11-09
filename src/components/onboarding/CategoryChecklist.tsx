@@ -145,7 +145,7 @@ export default function CategoryChecklist({ onComplete, onSkip }: CategoryCheckl
 
       <div className="mb-4">
         <p className="text-xs font-medium mb-2" style={{ color: 'var(--accent)' }}>
-          Sugestoes baseadas nos concorrentes
+          Sugestões baseadas nos concorrentes
         </p>
         <div className="space-y-2">
           {suggested.map(cat => (

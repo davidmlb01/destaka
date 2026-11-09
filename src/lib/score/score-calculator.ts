@@ -264,13 +264,13 @@ function buildAutoGaps(
   // Destaka responde reviews automaticamente
   if (input.reviewResponseRate < 0.8) {
     const currentPts = rep.details.taxa_resposta ?? 0
-    gaps.push({ field: 'respostas_reviews', impact: Math.max(0, 4 - currentPts), message: 'Respostas automaticas para avaliacoes' })
+    gaps.push({ field: 'respostas_reviews', impact: Math.max(0, 4 - currentPts), message: 'Respostas automáticas para avaliações' })
   }
 
   // Destaka sugere atributos faltantes
   if (input.attributeCount < 5) {
     const currentPts = gmb.details.atributos ?? 0
-    gaps.push({ field: 'atributos', impact: Math.max(0, 6 - currentPts), message: 'Sugestao automatica de atributos relevantes' })
+    gaps.push({ field: 'atributos', impact: Math.max(0, 6 - currentPts), message: 'Sugestão automática de atributos relevantes' })
   }
 
   return gaps.filter(g => g.impact > 0)

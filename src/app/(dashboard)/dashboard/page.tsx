@@ -32,6 +32,7 @@ export default async function DashboardPage({
     redirect('/onboarding')
   }
 
+
   const [{ data: profile }] = await Promise.all([
     supabase.from('gbp_profiles').select('optimization_report, description, photo_count').eq('organization_id', ctx.orgId).maybeSingle(),
     supabase.from('reviews').select('id', { count: 'exact', head: true }).eq('organization_id', ctx.orgId).is('response_text', null),
@@ -50,8 +51,16 @@ export default async function DashboardPage({
         <DashboardContent />
 
         <OptimizationConfirmCard
-          optimizationReport={profile?.optimization_report ?? null}
-          currentDescription={profile?.description ?? null}
+          totalSuggestions={(() => {
+            const r = profile?.optimization_report
+            if (!r) return 0
+            return (
+              (r.description_variants?.length ?? 0) +
+              (r.category_suggestions?.length ?? 0) +
+              (r.attribute_suggestions?.length ?? 0) +
+              (r.service_optimizations?.length ?? 0)
+            )
+          })()}
         />
       </div>
     </DashboardLayout>
