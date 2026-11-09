@@ -1,11 +1,10 @@
 export const dynamic = 'force-dynamic'
 
-// Aprova e publica uma resposta de review pendente (modo manual)
+// Aprova e publica uma resposta de review via Zernio (modo manual)
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
-import { GBPClient } from '@/lib/google/gbp-client'
-import { getValidGmbToken } from '@/lib/gmb/auth'
+import { replyToReview as zernioReplyToReview } from '@/lib/zernio/client'
 import { z } from 'zod'
 
 const ResponseIdSchema = z.object({ response_id: z.string().uuid() })
@@ -52,7 +51,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Resposta não encontrada ou já processada' }, { status: 404 })
   }
 
-  // Busca o review_id original do GBP
+  // Busca o review_id original e o zernio_account_id
   const { data: review } = await admin
     .from('reviews')
     .select('review_id')
@@ -63,19 +62,24 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Review não encontrado' }, { status: 500 })
   }
 
-  // Publica via GBP API com token refresh automatico
-  let accessToken: string
-  try {
-    accessToken = await getValidGmbToken(user.id)
-  } catch {
-    return NextResponse.json({ error: 'Token Google expirado. Reconecte sua conta.' }, { status: 401 })
+  const { data: org } = await admin
+    .from('organizations')
+    .select('zernio_account_id')
+    .eq('id', professional.organization_id)
+    .maybeSingle()
+
+  if (!org?.zernio_account_id) {
+    return NextResponse.json({ error: 'Conta Zernio não conectada. Faça login novamente.' }, { status: 400 })
   }
 
+  // Publica via Zernio
   try {
-    const gbpClient = new GBPClient(accessToken)
-    await gbpClient.replyToReview(review.review_id, reviewResponse.generated_text)
+    const success = await zernioReplyToReview(org.zernio_account_id, review.review_id, reviewResponse.generated_text)
+    if (!success) {
+      return NextResponse.json({ error: 'Zernio não conseguiu publicar a resposta. Tente novamente.' }, { status: 502 })
+    }
   } catch (err) {
-    console.error('[reviews/approve] GBP API error:', err instanceof Error ? err.message : err)
+    console.error('[reviews/approve] Zernio reply error:', err instanceof Error ? err.message : err)
     return NextResponse.json({ error: 'Falha ao publicar resposta no Google. Tente novamente.' }, { status: 502 })
   }
 

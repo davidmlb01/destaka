@@ -1,11 +1,10 @@
 export const dynamic = 'force-dynamic'
 
-// Aprova e publica um post pendente (modo manual) ou rejeita
+// Aprova e publica um post pendente via Zernio (modo manual) ou rejeita
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
-import { GBPClient } from '@/lib/google/gbp-client'
-import { getValidGmbToken } from '@/lib/gmb/auth'
+import { publishPost as zernioPublishPost } from '@/lib/zernio/client'
 import { z } from 'zod'
 
 const PostIdSchema = z.object({ post_id: z.string().uuid() })
@@ -40,7 +39,7 @@ export async function POST(request: NextRequest) {
 
   const { data: post } = await admin
     .from('posts')
-    .select('id, content, organization_id')
+    .select('id, content, image_url, organization_id')
     .eq('id', post_id)
     .eq('organization_id', professional.organization_id)
     .eq('status', 'pending')
@@ -48,32 +47,27 @@ export async function POST(request: NextRequest) {
 
   if (!post) return NextResponse.json({ error: 'Post não encontrado ou já processado' }, { status: 404 })
 
-  // Busca location_id
+  // Busca zernio_account_id
   const { data: org } = await admin
     .from('organizations')
-    .select('gbp_location_id')
+    .select('zernio_account_id')
     .eq('id', professional.organization_id)
     .maybeSingle()
 
-  if (!org?.gbp_location_id) {
-    return NextResponse.json({ error: 'Location GBP não configurado' }, { status: 500 })
+  if (!org?.zernio_account_id) {
+    return NextResponse.json({ error: 'Conta Zernio não conectada. Faça login novamente.' }, { status: 400 })
   }
 
-  // Token com refresh automatico
-  let accessToken: string
+  // Publica via Zernio
+  let zernioPostId: string | null
   try {
-    accessToken = await getValidGmbToken(user.id)
-  } catch {
-    return NextResponse.json({ error: 'Token Google expirado. Reconecte sua conta.' }, { status: 401 })
-  }
-
-  // Publica no GBP
-  let gbpData: { name?: string }
-  try {
-    const gbpClient = new GBPClient(accessToken)
-    gbpData = await gbpClient.createPost(org.gbp_location_id, { summary: post.content })
+    zernioPostId = await zernioPublishPost(
+      org.zernio_account_id,
+      post.content,
+      (post as Record<string, string>).image_url ?? undefined
+    )
   } catch (err) {
-    console.error('[posts/approve] GBP API error:', err instanceof Error ? err.message : err)
+    console.error('[posts/approve] Zernio publish error:', err instanceof Error ? err.message : err)
     return NextResponse.json({ error: 'Falha ao publicar post no Google. Tente novamente.' }, { status: 502 })
   }
 
@@ -82,11 +76,11 @@ export async function POST(request: NextRequest) {
     .update({
       status: 'published',
       published_at: new Date().toISOString(),
-      gbp_post_id: gbpData.name ?? null,
+      gbp_post_id: zernioPostId ?? null,
     })
     .eq('id', post_id)
 
-  return NextResponse.json({ status: 'published', gbp_post_id: gbpData.name })
+  return NextResponse.json({ status: 'published', gbp_post_id: zernioPostId })
 }
 
 export async function DELETE(request: NextRequest) {
