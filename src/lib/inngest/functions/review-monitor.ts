@@ -251,7 +251,7 @@ export const reviewMonitor = inngest.createFunction(
               reviewComment: review.comment ?? '',
               starRating: rating,
               professionalName: org.name,
-              reviewerName: review.author ?? '',
+              reviewerName: review.reviewer?.displayName ?? '',
               specialty: org.specialty,
               city,
               tone: org.tone as ReviewTone,
