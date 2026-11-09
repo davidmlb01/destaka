@@ -213,6 +213,8 @@ export async function GET() {
     ? { posts_published: postsPublished, reviews_replied: reviewsReplied, score_delta: scoreDelta }
     : null
 
+  console.log(`[dashboard] metrics source=${metrics.source} viewsSearch=${metrics.viewsSearch} viewsMaps=${metrics.viewsMaps} clicksWebsite=${metrics.clicksWebsite}`)
+
   return privateJson({
     profile: profileData,
     diagnostic,
