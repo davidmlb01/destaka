@@ -6,6 +6,13 @@ import Link from 'next/link'
 import { Logo } from '@/components/ui/Logo'
 import { PinIcon } from '@/components/ui/PinIcon'
 import { NAV_ITEMS } from './DashboardLayout'
+import { useBadges } from './hooks/useBadges'
+
+const BADGE_MAP: Record<string, 'reviews' | 'posts' | 'optimizations'> = {
+  '/dashboard/reviews': 'reviews',
+  '/dashboard/posts': 'posts',
+  '/dashboard/optimizations': 'optimizations',
+}
 
 interface MobileNavProps {
   profileName: string
@@ -16,6 +23,7 @@ interface MobileNavProps {
 export function MobileNav({ profileName, userEmail, activeHref }: MobileNavProps) {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
+  const badges = useBadges()
 
   function isActive(href: string) {
     return activeHref ? href === activeHref : pathname === href
@@ -109,6 +117,19 @@ export function MobileNav({ profileName, userEmail, activeHref }: MobileNavProps
               >
                 <PinIcon size={15} color={active ? 'var(--accent)' : 'var(--text-tertiary)'} bg="transparent" />
                 {item.label}
+                {(() => {
+                  const badgeKey = BADGE_MAP[item.href]
+                  const count = badgeKey ? badges[badgeKey] : 0
+                  if (!count) return null
+                  return (
+                    <span
+                      className="ml-auto flex items-center justify-center text-[10px] font-bold text-white rounded-full shrink-0"
+                      style={{ minWidth: 18, height: 18, padding: '0 5px', background: '#EF4444' }}
+                    >
+                      {count}
+                    </span>
+                  )
+                })()}
               </Link>
             )
           })}

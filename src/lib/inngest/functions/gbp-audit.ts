@@ -221,15 +221,30 @@ export const gbpAudit = inngest.createFunction(
                 review_keywords: (c.review_keywords as string[]) ?? [],
               }))
 
+              // Se GBP API nao retornou reviews (bloqueada), buscar count real do banco
+              let ownReviewCount = reviewList.length
+              let ownAvgRating: number | null = reviewList.length > 0
+                ? reviewList.reduce((sum: number, r: { starRating: string }) => sum + GBPClient.starRatingToNumber(r.starRating), 0) / reviewList.length
+                : null
+              if (ownReviewCount === 0) {
+                const { count, data: dbReviews } = await db
+                  .from('reviews')
+                  .select('rating', { count: 'exact' })
+                  .eq('organization_id', orgId)
+                if (count && count > 0) {
+                  ownReviewCount = count
+                  const ratings = (dbReviews ?? []).map((r: { rating: number }) => r.rating)
+                  ownAvgRating = ratings.length > 0 ? ratings.reduce((a: number, b: number) => a + b, 0) / ratings.length : null
+                }
+              }
+
               const analysisResult = await analyzeCompetitivePosition(
                 {
                   categories: (gmbProfile.categories as string[]) ?? [],
                   description: gmbProfile.description as string | null,
                   photo_count: (gmbProfile.photo_count as number) ?? 0,
-                  review_count: reviewList.length,
-                  avg_rating: reviewList.length > 0
-                    ? reviewList.reduce((sum: number, r: { starRating: string }) => sum + GBPClient.starRatingToNumber(r.starRating), 0) / reviewList.length
-                    : null,
+                  review_count: ownReviewCount,
+                  avg_rating: ownAvgRating,
                   services: (gmbProfile.services as Array<{ displayName?: string }>) ?? [],
                 },
                 compProfiles

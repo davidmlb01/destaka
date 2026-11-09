@@ -36,11 +36,12 @@ export async function generateReviewResponse(params: {
   reviewComment: string
   starRating: number
   professionalName: string
+  reviewerName?: string
   specialty: string
   city: string
   tone: ReviewTone
 }): Promise<string> {
-  const { reviewComment, starRating, professionalName, specialty, city, tone } = params
+  const { reviewComment, starRating, professionalName, reviewerName, specialty, city, tone } = params
 
   const stars = Math.max(1, Math.min(5, Math.round(starRating)))
   const strategy = STAR_STRATEGY[stars] ?? STAR_STRATEGY[3]
@@ -49,10 +50,21 @@ export async function generateReviewResponse(params: {
   // LGPD Art. 11: remove dados pessoais do paciente antes de enviar ao LLM (Correção B)
   const sanitizedComment = sanitizePatientData(reviewComment)
 
+  // Detectar genero provavel pelo primeiro nome do reviewer
+  const firstName = reviewerName?.split(' ')[0] ?? ''
+  const feminineSuffixes = ['a', 'ia', 'na', 'la', 'ra', 'sa', 'za', 'ta', 'da', 'ce', 'ne', 'le', 'ine', 'ene']
+  const masculineNames = new Set(['luca', 'josua', 'nikita'])
+  const isFeminine = firstName.length > 1
+    && !masculineNames.has(firstName.toLowerCase())
+    && feminineSuffixes.some(s => firstName.toLowerCase().endsWith(s))
+  const genderHint = firstName
+    ? `\nNOME DO PACIENTE: ${firstName} (provavel genero ${isFeminine ? 'feminino' : 'masculino'}). Use concordancia de genero adequada (ex: ${isFeminine ? '"acolhida", "satisfeita", "bem-vinda"' : '"acolhido", "satisfeito", "bem-vindo"'}).`
+    : ''
+
   const prompt = `Você é ${professionalName}, ${specialty} em ${city}.
 
 AVALIAÇÃO DO PACIENTE (${stars} estrela${stars > 1 ? 's' : ''}):
-"${sanitizedComment || '(sem comentário — apenas nota)'}"
+"${sanitizedComment || '(sem comentario, apenas nota)'}"${genderHint}
 
 ESTRATÉGIA PARA ESTA RESPOSTA:
 ${strategy}
@@ -61,7 +73,7 @@ TOM: ${toneDesc}
 
 ${COMPLIANCE_RULES}
 
-Escreva a resposta em português brasileiro. Não use travessão (—). Retorne APENAS o texto da resposta, sem aspas, sem prefixos.`
+Escreva a resposta em português brasileiro. Não use travessão. Retorne APENAS o texto da resposta, sem aspas, sem prefixos.`
 
   const systemPrompt = `Você é um especialista em reputação online para profissionais de saúde no Brasil. Escreve respostas a reviews do Google que soam humanas, empáticas e completamente dentro das normas do CFM/CRO. Nunca use travessão (—).`
 
