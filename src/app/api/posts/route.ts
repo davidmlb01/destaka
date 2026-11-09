@@ -84,7 +84,8 @@ export async function GET() {
     created_at: scheduledPost.created_at,
   } : null
 
-  console.log(`[posts-api] orgId=${orgId} count=${mappedPosts.length} raw=${posts?.length ?? 'null'} statuses=${JSON.stringify(mappedPosts.map(p => p.status))}`)
+  console.log('[posts-api] raw=' + (posts?.length ?? 'null') + ' mapped=' + mappedPosts.length)
+  if (!posts?.length) console.log('[posts-api] EMPTY posts query returned null/empty')
 
   return privateJson({
     posts: mappedPosts,
