@@ -160,9 +160,14 @@ function OpportunitiesSection({ specialty }: { specialty?: string | null }) {
         </span>
       </div>
 
-      <p className="text-xs mb-4" style={{ color: 'var(--text-tertiary)', lineHeight: 1.6 }}>
-        {analysis.summary}
-      </p>
+      <ul className="text-xs mb-4 flex flex-col gap-1.5 list-none" style={{ color: 'var(--text-tertiary)', lineHeight: 1.6 }}>
+        {analysis.summary.split(/\.\s+/).filter((s: string) => s.trim().length > 10).map((sentence: string, i: number) => (
+          <li key={i} className="flex items-start gap-2">
+            <span className="shrink-0 mt-0.5" style={{ color: 'var(--accent-bright)' }}>&#8226;</span>
+            <span>{sentence.trim().replace(/\.$/, '')}</span>
+          </li>
+        ))}
+      </ul>
 
       <div className="flex flex-col gap-3">
         {analysis.gaps.map((gap: {

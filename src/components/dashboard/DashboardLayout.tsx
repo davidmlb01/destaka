@@ -6,6 +6,7 @@ import { useRouter, usePathname } from 'next/navigation'
 import { Logo } from '@/components/ui/Logo'
 import { PinIcon } from '@/components/ui/PinIcon'
 import { MobileNav } from './MobileNav'
+import { useBadges } from './hooks/useBadges'
 
 const FREE_ITEMS = [
   { label: 'Dashboard', href: '/dashboard', locked: false },
@@ -35,11 +36,18 @@ interface Props {
   isSubscriber?: boolean
 }
 
+const BADGE_MAP: Record<string, keyof ReturnType<typeof useBadges>> = {
+  '/dashboard/reviews': 'reviews',
+  '/dashboard/posts': 'posts',
+  '/dashboard/optimizations': 'optimizations',
+}
+
 export function DashboardLayout({ children, activeHref, profileName, userEmail, isSubscriber = true }: Props) {
   const router = useRouter()
   const pathname = usePathname()
   const resolvedHref = activeHref ?? pathname
   const items = isSubscriber ? PAID_ITEMS : FREE_ITEMS
+  const badges = useBadges()
 
   function handleNavClick(e: React.MouseEvent, item: { href: string; locked: boolean }) {
     if (item.locked) {
@@ -112,6 +120,24 @@ export function DashboardLayout({ children, activeHref, profileName, userEmail, 
                   <PinIcon size={15} color={isActive ? 'var(--accent)' : 'var(--text-tertiary)'} bg="transparent" />
                 )}
                 {item.label}
+                {(() => {
+                  const badgeKey = BADGE_MAP[item.href]
+                  const count = badgeKey ? badges[badgeKey] : 0
+                  if (!count || item.locked) return null
+                  return (
+                    <span
+                      className="ml-auto flex items-center justify-center text-[10px] font-bold text-white rounded-full shrink-0"
+                      style={{
+                        minWidth: 18,
+                        height: 18,
+                        padding: '0 5px',
+                        background: '#EF4444',
+                      }}
+                    >
+                      {count}
+                    </span>
+                  )
+                })()}
               </Link>
             )
           })}

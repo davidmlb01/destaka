@@ -1,26 +1,22 @@
 export const dynamic = 'force-dynamic'
 
 import { NextResponse } from 'next/server'
-import { privateJson } from '@/lib/api/with-auth'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthOrg, privateJson } from '@/lib/api/with-auth'
+import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { getLatestAnalysis } from '@/lib/gmb/competitive-analyzer'
 
+function adminDb() {
+  return createAdminSupa(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
+
 export async function GET() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const auth = await getAuthOrg()
+  if (auth.error) return auth.error
 
-  const { data: professional } = await supabase
-    .from('professionals')
-    .select('organization_id')
-    .eq('user_id', user.id)
-    .maybeSingle()
-
-  if (!professional?.organization_id) {
-    return NextResponse.json({ error: 'Organização não encontrada' }, { status: 404 })
-  }
-
-  const analysis = await getLatestAnalysis(supabase, professional.organization_id)
+  const analysis = await getLatestAnalysis(adminDb(), auth.orgId)
 
   if (!analysis) {
     return NextResponse.json({
