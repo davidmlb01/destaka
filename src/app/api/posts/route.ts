@@ -32,12 +32,12 @@ export async function GET() {
       .in('status', ['draft', 'pending', 'published', 'scheduled', 'failed'])
       .order('created_at', { ascending: false })
       .limit(PAGE_SIZE),
-    supabase
+    admin
       .from('organizations')
       .select('name, specialty, automation_preference')
       .eq('id', orgId)
       .maybeSingle(),
-    supabase
+    admin
       .from('gbp_profiles')
       .select('id')
       .eq('organization_id', orgId)
