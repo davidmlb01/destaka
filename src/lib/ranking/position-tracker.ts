@@ -49,13 +49,25 @@ export async function trackPosition(
   }
 
   const results = data.results
-  const nameLower = businessName.toLowerCase()
+
+  // Matching fuzzy: extrai palavras significativas do nome (ignora conectores)
+  const stopWords = new Set(['e', 'de', 'do', 'da', 'em', 'no', 'na', 'a', 'o', '|', '&', '-', ','])
+  const extractWords = (name: string) =>
+    name.toLowerCase().replace(/[|&\-,]/g, ' ').split(/\s+/).filter(w => w.length > 2 && !stopWords.has(w))
+
+  const businessWords = extractWords(businessName)
+
+  function isMatch(resultName: string): boolean {
+    const resultWords = extractWords(resultName)
+    // Match se pelo menos 2 palavras significativas coincidem
+    const matchCount = businessWords.filter(w => resultWords.some(rw => rw.includes(w) || w.includes(rw))).length
+    return matchCount >= 2
+  }
 
   // Encontrar posicao do negocio nos resultados
   let position: number | null = null
   for (let i = 0; i < results.length; i++) {
-    if (results[i].name.toLowerCase().includes(nameLower) ||
-        nameLower.includes(results[i].name.toLowerCase())) {
+    if (isMatch(results[i].name)) {
       position = i + 1
       break
     }
@@ -64,8 +76,7 @@ export async function trackPosition(
   // Top competitor (primeiro resultado que nao e o proprio negocio)
   let topCompetitor: { name: string; reviews: number } | null = null
   for (const r of results) {
-    if (!r.name.toLowerCase().includes(nameLower) &&
-        !nameLower.includes(r.name.toLowerCase())) {
+    if (!isMatch(r.name)) {
       topCompetitor = {
         name: r.name,
         reviews: r.user_ratings_total ?? 0,
