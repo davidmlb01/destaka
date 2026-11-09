@@ -2,8 +2,16 @@ export const dynamic = 'force-dynamic'
 
 // API de dados do dashboard, retorna o shape esperado por useDashboard
 import { getAuthOrg, privateJson } from '@/lib/api/with-auth'
+import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { GBPClient } from '@/lib/google/gbp-client'
 import { getValidGmbToken } from '@/lib/gmb/auth'
+
+function adminClient() {
+  return createAdminSupa(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
 
 export async function GET() {
   const auth = await getAuthOrg()
@@ -114,8 +122,9 @@ export async function GET() {
   }
 
   // Fallback 1: performance_metrics (coletado pelo performance-collector cron)
+  // Usa admin client porque performance_metrics pode nao ter RLS para user
   if (metrics.source === 'none') {
-    const { data: perfRows } = await supabase
+    const { data: perfRows } = await adminClient()
       .from('performance_metrics')
       .select('views_search, views_maps, actions_website, actions_phone, actions_directions, week_start')
       .eq('organization_id', orgId)

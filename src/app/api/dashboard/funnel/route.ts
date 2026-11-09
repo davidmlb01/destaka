@@ -1,14 +1,20 @@
 export const dynamic = 'force-dynamic'
 
 import { getAuthOrg, privateJson } from '@/lib/api/with-auth'
+import { createClient as createAdminSupa } from '@supabase/supabase-js'
 
 export async function GET() {
   const auth = await getAuthOrg()
   if (auth.error) return auth.error
-  const { orgId, supabase } = auth
+  const { orgId } = auth
 
-  // Ultimas 8 semanas de performance_metrics
-  const { data: rows } = await supabase
+  const admin = createAdminSupa(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+
+  // Ultimas 8 semanas de performance_metrics (admin bypassa RLS)
+  const { data: rows } = await admin
     .from('performance_metrics')
     .select('week_start, impressions_direct, impressions_indirect, views_maps, views_search, actions_phone, actions_directions, actions_website')
     .eq('organization_id', orgId)
