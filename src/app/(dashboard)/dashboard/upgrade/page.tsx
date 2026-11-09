@@ -1,7 +1,6 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
-import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 import { Suspense } from 'react'
 
 const FEATURE_INFO: Record<string, { title: string; description: string; benefit: string }> = {
@@ -62,7 +61,6 @@ function UpgradeContent() {
           border: '1px solid rgba(255,255,255,0.08)',
         }}
       >
-        {/* Lock icon */}
         <div
           className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-6"
           style={{ background: 'rgba(255,255,255,0.06)' }}
@@ -110,15 +108,8 @@ function UpgradeContent() {
 
 export default function UpgradePage() {
   return (
-    <DashboardLayout
-      activeHref=""
-      profileName=""
-      userEmail=""
-      isSubscriber={false}
-    >
-      <Suspense>
-        <UpgradeContent />
-      </Suspense>
-    </DashboardLayout>
+    <Suspense>
+      <UpgradeContent />
+    </Suspense>
   )
 }

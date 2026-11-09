@@ -3,7 +3,6 @@ export const dynamic = 'force-dynamic'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getDashboardContext } from '@/lib/dashboard/get-dashboard-context'
-import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 import { OptimizationsPage } from '@/components/dashboard/OptimizationsPage'
 
 export default async function OptimizationsRoute() {
@@ -33,11 +32,6 @@ export default async function OptimizationsRoute() {
   ])
 
   return (
-    <DashboardLayout
-      activeHref="/dashboard/optimizations"
-      profileName={ctx.profileName}
-      userEmail={ctx.user.email}
-    >
       <OptimizationsPage
         optimizationReport={profile?.optimization_report ?? null}
         currentDescription={profile?.description ?? null}
@@ -47,6 +41,5 @@ export default async function OptimizationsRoute() {
         automationPreference={(org?.automation_preference as string) ?? 'manual'}
         currentScore={score?.total ?? null}
       />
-    </DashboardLayout>
   )
 }

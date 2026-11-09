@@ -1,15 +1,20 @@
-import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
+import { getDashboardContext } from '@/lib/dashboard/get-dashboard-context'
+import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 
-export default async function DashboardLayout({
+export default async function DashboardRootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const ctx = await getDashboardContext()
 
-  if (!user) redirect('/login')
-
-  return <>{children}</>
+  return (
+    <DashboardLayout
+      profileName={ctx.profileName}
+      userEmail={ctx.user.email}
+      isSubscriber={ctx.isSubscriber}
+    >
+      {children}
+    </DashboardLayout>
+  )
 }

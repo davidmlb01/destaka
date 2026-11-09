@@ -3,7 +3,6 @@ export const dynamic = 'force-dynamic'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { getDashboardContext } from '@/lib/dashboard/get-dashboard-context'
-import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 import { DashboardContent } from '@/components/dashboard/DashboardContent'
 import { OptimizationConfirmCard } from './components/OptimizationConfirmCard'
 import { CheckoutBanner } from './components/CheckoutBanner'
@@ -32,37 +31,29 @@ export default async function DashboardPage({
     redirect('/onboarding')
   }
 
-
   const [{ data: profile }] = await Promise.all([
     supabase.from('gbp_profiles').select('optimization_report, description, photo_count').eq('organization_id', ctx.orgId).maybeSingle(),
     supabase.from('reviews').select('id', { count: 'exact', head: true }).eq('organization_id', ctx.orgId).is('response_text', null),
   ])
 
   return (
-    <DashboardLayout
-      activeHref="/dashboard"
-      profileName={ctx.profileName}
-      userEmail={ctx.user.email}
-      isSubscriber={true}
-    >
-      <div className="max-w-5xl mx-auto px-6 py-10 space-y-8">
-        {checkoutStatus && <CheckoutBanner status={checkoutStatus} />}
+    <div className="max-w-5xl mx-auto px-6 py-10 space-y-8">
+      {checkoutStatus && <CheckoutBanner status={checkoutStatus} />}
 
-        <DashboardContent />
+      <DashboardContent />
 
-        <OptimizationConfirmCard
-          totalSuggestions={(() => {
-            const r = profile?.optimization_report
-            if (!r) return 0
-            return (
-              (r.description_variants?.length ?? 0) +
-              (r.category_suggestions?.length ?? 0) +
-              (r.attribute_suggestions?.length ?? 0) +
-              (r.service_optimizations?.length ?? 0)
-            )
-          })()}
-        />
-      </div>
-    </DashboardLayout>
+      <OptimizationConfirmCard
+        totalSuggestions={(() => {
+          const r = profile?.optimization_report
+          if (!r) return 0
+          return (
+            (r.description_variants?.length ?? 0) +
+            (r.category_suggestions?.length ?? 0) +
+            (r.attribute_suggestions?.length ?? 0) +
+            (r.service_optimizations?.length ?? 0)
+          )
+        })()}
+      />
+    </div>
   )
 }

@@ -3,7 +3,6 @@ export const dynamic = 'force-dynamic'
 import { Badge } from '@/components/ui/Badge'
 import { PinIcon } from '@/components/ui/PinIcon'
 import { getDashboardContext } from '@/lib/dashboard/get-dashboard-context'
-import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 import { CheckoutButton } from './CheckoutButton'
 
 const VALUE_STACK = [
@@ -29,7 +28,6 @@ export default async function PlanPage() {
   const ctx = await getDashboardContext()
 
   return (
-    <DashboardLayout activeHref="/dashboard/plan" profileName={ctx.profileName} userEmail={ctx.user.email}>
       <div className="px-6 py-10 max-w-5xl">
 
         {/* Header */}
@@ -268,6 +266,5 @@ export default async function PlanPage() {
           </div>
         </div>
       </div>
-    </DashboardLayout>
   )
 }

@@ -2,7 +2,7 @@
 
 import { ReactNode } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { Logo } from '@/components/ui/Logo'
 import { PinIcon } from '@/components/ui/PinIcon'
 import { MobileNav } from './MobileNav'
@@ -29,7 +29,7 @@ export const NAV_ITEMS = PAID_ITEMS.map(i => ({ label: i.label, href: i.href }))
 
 interface Props {
   children: ReactNode
-  activeHref: string
+  activeHref?: string
   profileName: string
   userEmail: string
   isSubscriber?: boolean
@@ -37,6 +37,8 @@ interface Props {
 
 export function DashboardLayout({ children, activeHref, profileName, userEmail, isSubscriber = true }: Props) {
   const router = useRouter()
+  const pathname = usePathname()
+  const resolvedHref = activeHref ?? pathname
   const items = isSubscriber ? PAID_ITEMS : FREE_ITEMS
 
   function handleNavClick(e: React.MouseEvent, item: { href: string; locked: boolean }) {
@@ -79,7 +81,7 @@ export function DashboardLayout({ children, activeHref, profileName, userEmail, 
         {/* Nav */}
         <nav className="flex flex-col gap-1 flex-1">
           {items.map(item => {
-            const isActive = item.href === activeHref
+            const isActive = item.href === resolvedHref
             return (
               <Link
                 key={item.href}
