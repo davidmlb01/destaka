@@ -1,9 +1,9 @@
 'use client'
 
 function scoreTheme(score: number) {
-  if (score >= 70) return { statusColor: 'var(--success)', label: 'Excelente! Seu perfil está otimizado.' }
-  if (score >= 40) return { statusColor: 'var(--warning)', label: 'Bom, mas tem espaço para crescer.' }
-  return { statusColor: 'var(--error)', label: 'Precisa de atenção urgente.' }
+  if (score >= 70) return { statusColor: 'var(--success)', label: 'Perfil otimizado' }
+  if (score >= 40) return { statusColor: 'var(--warning)', label: 'Espaço para crescer' }
+  return { statusColor: 'var(--error)', label: 'Precisa de atenção' }
 }
 
 function scoreDescription(score: number): string {
@@ -15,7 +15,6 @@ function scoreDescription(score: number): string {
 const ARC_COLOR = 'var(--accent)'
 const ARC_GLOW = 'rgba(14,165,233,0.6)'
 
-// Gauge estilo speedometer: arco de 270 de 225 a 135 (sentido horario)
 const START_DEG = 225
 const TOTAL_DEG = 270
 
@@ -54,15 +53,15 @@ export function ScoreGauge({ score, size = 160, showGlow = true }: ScoreGaugePro
   const svgHeight = (size / 160) * 145
   const fillSweep = (score / 100) * TOTAL_DEG
   const glowId = `gauge-glow-${score}-${size}`
-  const fontSize = (size / 160) * 34
+  const fontSize = (size / 160) * 38
   const subFontSize = (size / 160) * 11
 
   return (
-    <div className="flex flex-col items-center gap-2 w-full">
+    <div className="flex flex-col items-center w-full">
       {showGlow && (
         <p
-          className="text-xs font-bold tracking-[0.15em] uppercase"
-          style={{ color: 'rgba(255,255,255,0.5)' }}
+          className="text-[10px] font-medium tracking-[0.08em] uppercase mb-3"
+          style={{ color: 'rgba(255,255,255,0.35)' }}
         >
           Score Destaka
         </p>
@@ -90,7 +89,7 @@ export function ScoreGauge({ score, size = 160, showGlow = true }: ScoreGaugePro
           strokeLinecap="round"
         />
 
-        {/* Fill com glow */}
+        {/* Fill */}
         {fillSweep > 0 && (
           <path
             d={arcPath(CX, CY, R, START_DEG, fillSweep)}
@@ -103,10 +102,10 @@ export function ScoreGauge({ score, size = 160, showGlow = true }: ScoreGaugePro
           />
         )}
 
-        {/* Score numero */}
+        {/* Score numero (hero) */}
         <text
           x={CX}
-          y={CY + 8}
+          y={CY + 10}
           textAnchor="middle"
           fill="white"
           fontSize={fontSize}
@@ -119,10 +118,11 @@ export function ScoreGauge({ score, size = 160, showGlow = true }: ScoreGaugePro
         {/* "de 100" */}
         <text
           x={CX}
-          y={CY + 27}
+          y={CY + 28}
           textAnchor="middle"
-          fill="rgba(255,255,255,0.3)"
+          fill="rgba(255,255,255,0.35)"
           fontSize={subFontSize}
+          fontWeight="500"
           fontFamily="var(--font-body, sans-serif)"
         >
           de 100
@@ -130,17 +130,20 @@ export function ScoreGauge({ score, size = 160, showGlow = true }: ScoreGaugePro
       </svg>
 
       {showGlow && (
-        <>
+        <div className="flex flex-col items-center gap-2 mt-1">
           <p
-            className="font-display font-semibold text-sm text-center -mt-2"
-            style={{ color: statusColor }}
+            className="font-display font-medium text-[13px] text-center"
+            style={{ color: statusColor, opacity: 0.85 }}
           >
             {label}
           </p>
-          <p className="text-[13px] text-center mt-2" style={{ color: 'rgba(255,255,255,0.7)', maxWidth: 240, lineHeight: 1.5 }}>
+          <p
+            className="text-[13px] text-center"
+            style={{ color: 'rgba(255,255,255,0.55)', maxWidth: 220, lineHeight: 1.5 }}
+          >
             {scoreDescription(score)}
           </p>
-        </>
+        </div>
       )}
     </div>
   )
