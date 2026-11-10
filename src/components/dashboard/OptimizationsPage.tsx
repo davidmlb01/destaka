@@ -107,10 +107,11 @@ export function OptimizationsPage({
   const [appliedOpen, setAppliedOpen] = useState(false)
 
   const report = optimizationReport
-  const descVariants = report?.description_variants ?? []
-  const catSuggestions = report?.category_suggestions ?? []
-  const attrSuggestions = report?.attribute_suggestions ?? []
-  const svcOptimizations = report?.service_optimizations ?? []
+  const appliedSections = (report as Record<string, unknown>)?.applied_sections as string[] | undefined ?? []
+  const descVariants = appliedSections.includes('description') ? [] : (report?.description_variants ?? [])
+  const catSuggestions = appliedSections.includes('categories') ? [] : (report?.category_suggestions ?? [])
+  const attrSuggestions = appliedSections.includes('attributes') ? [] : (report?.attribute_suggestions ?? [])
+  const svcOptimizations = appliedSections.includes('services') ? [] : (report?.service_optimizations ?? [])
   const boost = estimateScoreBoost(report)
 
   /* ─── Autopilot toggle ─── */

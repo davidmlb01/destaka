@@ -83,6 +83,7 @@ export const scoreCalculator = inngest.createFunction(
           { data: previousSnapshots },
           { data: geoSnapshot },
           { data: keywordRows },
+          { data: orgData },
         ] = await Promise.all([
           db.from('reviews').select('rating, published_at').eq('organization_id', orgId),
           db.from('review_responses').select('review_id').eq('organization_id', orgId).eq('status', 'published'),
@@ -90,12 +91,14 @@ export const scoreCalculator = inngest.createFunction(
           db.from('scores').select('total').eq('organization_id', orgId).order('snapshot_date', { ascending: false }).limit(7),
           db.from('geo_snapshots').select('regions').eq('org_id', orgId).order('week_start', { ascending: false }).limit(1).maybeSingle(),
           db.from('keyword_snapshots').select('impressions, week_start').eq('org_id', orgId).order('week_start', { ascending: false }).limit(50),
+          db.from('organizations').select('google_review_count').eq('id', orgId).maybeSingle(),
         ])
 
         const reviewList = reviews ?? []
-        const reviewCount = reviewList.length
-        const avgRating = reviewCount > 0
-          ? reviewList.reduce((sum: number, r: { rating: number }) => sum + r.rating, 0) / reviewCount
+        const googleCount = (orgData as Record<string, unknown> | null)?.google_review_count as number | null
+        const reviewCount = Math.max(reviewList.length, googleCount ?? 0)
+        const avgRating = reviewList.length > 0
+          ? reviewList.reduce((sum: number, r: { rating: number }) => sum + r.rating, 0) / reviewList.length
           : 0
 
         const reviewsLast30Days = reviewList.filter((r: { published_at: string }) => {

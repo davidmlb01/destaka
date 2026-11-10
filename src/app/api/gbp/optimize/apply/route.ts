@@ -115,6 +115,21 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  // Persistir seção aplicada no optimization_report
+  const { data: currentProfile } = await db
+    .from('gbp_profiles')
+    .select('optimization_report')
+    .eq('organization_id', orgId)
+    .maybeSingle()
+  const report = (currentProfile?.optimization_report as Record<string, unknown>) ?? {}
+  const appliedSections = (report.applied_sections as string[]) ?? []
+  if (!appliedSections.includes(type)) {
+    appliedSections.push(type)
+    await db.from('gbp_profiles').update({
+      optimization_report: { ...report, applied_sections: appliedSections },
+    }).eq('organization_id', orgId)
+  }
+
   return NextResponse.json({
     status: 'done',
     type,
