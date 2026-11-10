@@ -332,7 +332,7 @@ export function OptimizationsPage({
       )}
 
       {/* ── Section: Descrição ── */}
-      {descVariants.length > 0 && (
+      {descVariants.length > 0 && descStatus !== 'done' && (
         <section>
           <SectionHeader title="Descrição" />
           <div
@@ -438,7 +438,7 @@ export function OptimizationsPage({
       )}
 
       {/* ── Section: Atributos (Informações do local) ── */}
-      {attrSuggestions.length > 0 && (
+      {attrSuggestions.length > 0 && attrStatus !== 'done' && (
         <section>
           <SectionHeader title="Informações do local" />
           <div
@@ -504,7 +504,7 @@ export function OptimizationsPage({
       )}
 
       {/* ── Section: Categorias ── */}
-      {catSuggestions.length > 0 && (
+      {catSuggestions.length > 0 && catStatus !== 'done' && (
         <section>
           <SectionHeader title="Categorias" />
           <div
@@ -590,7 +590,7 @@ export function OptimizationsPage({
       )}
 
       {/* ── Section: Serviços ── */}
-      {svcOptimizations.length > 0 && (
+      {svcOptimizations.length > 0 && svcStatus !== 'done' && (
         <section>
           <SectionHeader title="Serviços" />
           <div
