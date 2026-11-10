@@ -1,13 +1,11 @@
 /**
- * Utilitarios compartilhados para cores e labels de score.
- * Breakpoints unificados: >= 70 verde, >= 40 amarelo, < 40 vermelho/laranja.
+ * Cores e labels de score. 3 niveis: verde, amarelo, vermelho.
  */
 
 export function getScoreColor(score: number): string {
-  if (score >= 90) return '#3b82f6'
-  if (score >= 70) return '#22c55e'
-  if (score >= 40) return '#f59e0b'
-  return '#ef4444'
+  if (score >= 70) return '#4ADE80'
+  if (score >= 40) return '#FBBF24'
+  return '#F87171'
 }
 
 export function getScoreLabel(score: number): string {
