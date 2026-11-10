@@ -11,6 +11,7 @@ export interface InstagramPost {
   timestamp: string
   likesCount: number
   type: 'Image' | 'Sidecar' | 'Video'
+
 }
 
 interface ApifyPostRaw {
@@ -59,10 +60,10 @@ export async function scrapeInstagramPosts(
   const rawPosts = (await runRes.json()) as ApifyPostRaw[]
 
   return rawPosts
+    // Aceitar Image, Sidecar e Video (usa thumbnail como imagem do post)
     .filter((p) => {
-      // Apenas Image e Sidecar (carrossel). Ignorar Video/Reel.
       const type = p.type ?? 'Image'
-      return type === 'Image' || type === 'Sidecar'
+      return type === 'Image' || type === 'Sidecar' || type === 'Video'
     })
     .filter((p) => {
       // Apenas posts dos ultimos 30 dias
@@ -79,7 +80,7 @@ export async function scrapeInstagramPosts(
       imageUrl: p.displayUrl ?? p.url ?? '',
       timestamp: p.timestamp ?? new Date().toISOString(),
       likesCount: p.likesCount ?? 0,
-      type: (p.type ?? 'Image') as 'Image' | 'Sidecar',
+      type: (p.type ?? 'Image') as 'Image' | 'Sidecar' | 'Video',
     }))
     .filter((p) => p.id && p.imageUrl)
 }
