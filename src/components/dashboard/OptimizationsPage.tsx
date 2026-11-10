@@ -107,7 +107,7 @@ export function OptimizationsPage({
   const [appliedOpen, setAppliedOpen] = useState(false)
 
   const report = optimizationReport
-  const appliedSections = (report as Record<string, unknown>)?.applied_sections as string[] | undefined ?? []
+  const appliedSections = (report as unknown as Record<string, unknown>)?.applied_sections as string[] ?? []
   const descVariants = appliedSections.includes('description') ? [] : (report?.description_variants ?? [])
   const catSuggestions = appliedSections.includes('categories') ? [] : (report?.category_suggestions ?? [])
   const attrSuggestions = appliedSections.includes('attributes') ? [] : (report?.attribute_suggestions ?? [])
