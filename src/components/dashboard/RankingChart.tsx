@@ -40,11 +40,9 @@ export function RankingChart({ data, keyword }: RankingChartProps) {
 
   const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')
 
-  // Cor baseada na tendência
-  const first = validPoints[0].position
-  const last = validPoints[validPoints.length - 1].position
-  const trend = first - last // positivo = subiu (posição diminuiu)
-  const lineColor = trend > 0 ? '#34d399' : trend < 0 ? '#f87171' : '#0ea5e9'
+  // Cor neutra (accent) para não dar impressão negativa
+  // O eixo Y já comunica a direção (1o no topo, 20o embaixo)
+  const lineColor = 'var(--accent-bright, #5EEAD4)'
 
   // Labels de posição no eixo Y
   const yLabels = [1, Math.ceil(maxPos / 2), maxPos]
