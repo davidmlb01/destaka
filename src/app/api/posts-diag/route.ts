@@ -23,7 +23,7 @@ export async function GET() {
   // Test 2: full query (same as /api/posts)
   const { data: posts, error: queryErr } = await db
     .from('posts')
-    .select('id, content, post_type, status, scheduled_for, published_at, created_at', { count: 'exact' })
+    .select('id, content, post_type, status, scheduled_at, published_at, created_at', { count: 'exact' })
     .eq('organization_id', ORG_ID)
     .limit(20)
 
