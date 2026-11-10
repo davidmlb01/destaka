@@ -142,33 +142,16 @@ export default function MapCard({ isSubscriber }: { isSubscriber: boolean }) {
             ))}
           </div>
 
-          <div className="mt-3 space-y-1.5">
-            <p className="text-[13px]" style={{ color: 'rgba(255,255,255,0.65)' }}>
-              Seu negócio aparece em{' '}
-              <span className="font-medium text-white">
-                {data.total_neighborhoods} {data.total_neighborhoods === 1 ? 'bairro' : 'bairros'}
-              </span>
-              {data.radius_km > 0 && (
-                <span style={{ color: 'rgba(255,255,255,0.45)' }}> (raio de {data.radius_km} km)</span>
-              )}
-            </p>
-            {strongCount > 0 && (
-              <p className="text-[12px]" style={{ color: 'rgba(255,255,255,0.4)' }}>
-                {strongCount} {strongCount === 1 ? 'bairro com boa visibilidade' : 'bairros com boa visibilidade'}
-                {weakCount > 0 && `, ${weakCount} ${weakCount === 1 ? 'precisa melhorar' : 'precisam melhorar'}`}
-              </p>
+          <p className="text-[13px] mt-3" style={{ color: 'rgba(255,255,255,0.55)' }}>
+            Aparece em{' '}
+            <span className="font-medium text-white">{data.total_neighborhoods} {data.total_neighborhoods === 1 ? 'bairro' : 'bairros'}</span>
+            {strongCount > 0 && weakCount > 0 && (
+              <span> ({strongCount} {strongCount === 1 ? 'forte' : 'fortes'}, {weakCount} a melhorar)</span>
             )}
-            {weakCount > 0 && (
-              <p className="text-[12px] font-medium" style={{ color: 'var(--warning)' }}>
-                O Destaka está trabalhando para expandir seu alcance
-              </p>
+            {data.radius_km > 0 && (
+              <span style={{ color: 'rgba(255,255,255,0.35)' }}> · {data.radius_km} km</span>
             )}
-            {weakCount === 0 && strongCount > 0 && (
-              <p className="text-[12px] font-medium" style={{ color: 'var(--success)' }}>
-                Você está bem posicionado na sua região
-              </p>
-            )}
-          </div>
+          </p>
         </div>
       )}
     </div>

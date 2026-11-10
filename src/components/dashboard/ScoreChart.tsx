@@ -40,7 +40,8 @@ export function ScoreChart({ data }: { data: DataPoint[] }) {
     )
   }
 
-  const chartData = data.map(d => ({
+  // Inverter: mais antigo (esquerda) -> mais recente (direita)
+  const chartData = [...data].reverse().map(d => ({
     date: formatDate(d.created_at),
     score: d.score_total,
   }))

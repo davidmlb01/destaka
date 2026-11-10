@@ -44,7 +44,7 @@ interface ScoreGaugeProps {
   showGlow?: boolean
 }
 
-export function ScoreGauge({ score, size = 160, showGlow = true }: ScoreGaugeProps) {
+export function ScoreGauge({ score, size = 180, showGlow = true }: ScoreGaugeProps) {
   const { statusColor, label } = scoreTheme(score)
 
   const R = (size / 160) * 60

@@ -34,7 +34,7 @@ function specialtyToVertical(specialty?: string | null): string | undefined {
   const health = ['fisioterapeuta', 'quiropraxia', 'medico', 'dentista', 'psicologo', 'nutricionista']
   const pet = ['veterinario', 'petshop']
   const legal = ['advogado', 'contador']
-  if (health.includes(s)) return 'Saude'
+  if (health.includes(s)) return 'Saúde'
   if (pet.includes(s)) return 'Pet'
   if (legal.includes(s)) return 'Juridico'
   return undefined
