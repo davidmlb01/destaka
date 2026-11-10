@@ -43,10 +43,11 @@ export async function GET() {
   let optimizations = 0
   const report = optimizationResult.data?.optimization_report as Record<string, unknown> | null
   if (report) {
-    const cats = Array.isArray(report.category_suggestions) ? report.category_suggestions.length : 0
-    const attrs = Array.isArray(report.attribute_suggestions) ? report.attribute_suggestions.length : 0
-    const descs = Array.isArray(report.description_variants) ? report.description_variants.length : 0
-    const svcs = Array.isArray(report.service_optimizations) ? report.service_optimizations.length : 0
+    const applied = Array.isArray(report.applied_sections) ? report.applied_sections as string[] : []
+    const cats = !applied.includes('categories') && Array.isArray(report.category_suggestions) ? report.category_suggestions.length : 0
+    const attrs = !applied.includes('attributes') && Array.isArray(report.attribute_suggestions) ? report.attribute_suggestions.length : 0
+    const descs = !applied.includes('description') && Array.isArray(report.description_variants) ? report.description_variants.length : 0
+    const svcs = !applied.includes('services') && Array.isArray(report.service_optimizations) ? report.service_optimizations.length : 0
     optimizations = cats + attrs + descs + svcs
   }
 
