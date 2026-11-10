@@ -64,6 +64,11 @@ export function PostsContent() {
     </div>
   )
 
+  // DEBUG: remover apos confirmar que posts aparecem
+  if (typeof window !== 'undefined') {
+    console.log('[PostsContent] data:', JSON.stringify({ postsCount: data?.posts?.length, statuses: data?.posts?.map(p => p.status), total: data?.total }))
+  }
+
   return (
     <div className="flex flex-col gap-6">
 
