@@ -34,7 +34,7 @@ export async function GET() {
     supabase.from('scores').select('total, snapshot_date, faixa').eq('organization_id', orgId).order('snapshot_date', { ascending: false }).limit(30),
     supabase.from('gbp_profiles').select('id, description, categories, photo_count, audit_report, benchmark_report, optimization_report, last_synced_at').eq('organization_id', orgId).maybeSingle(),
     supabase.from('posts').select('id, published_at').eq('organization_id', orgId).eq('status', 'published').gte('published_at', sevenDaysAgo.toISOString()),
-    supabase.from('review_responses').select('id, created_at').eq('organization_id', orgId).eq('status', 'published').gte('created_at', sevenDaysAgo.toISOString()),
+    adminClient().from('review_responses').select('id, published_at').eq('organization_id', orgId).eq('status', 'published').gte('published_at', sevenDaysAgo.toISOString()),
   ])
 
   // Construir o profile no formato esperado pelo useDashboard
@@ -62,7 +62,7 @@ export async function GET() {
   const diagnostic = latestScore ? {
     id: (s?.id as string) ?? '',
     score_total: (s?.total as number) ?? 0,
-    score_info_basica: (s?.gmb_completude as number) ?? 0,
+    score_info_basica: Math.min((s?.gmb_completude as number) ?? 0, 25),
     score_fotos: Math.min((gbpProfile?.photo_count ?? 0) * 2, 20),
     score_avaliacoes: (s?.reputacao as number) ?? 0,
     score_posts: (s?.visibilidade as number) ?? 0,

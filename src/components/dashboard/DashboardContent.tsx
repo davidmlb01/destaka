@@ -139,9 +139,8 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
           className="rounded-2xl p-7 flex flex-col items-center justify-between gap-4"
           style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', minHeight: 340 }}
         >
-          <div className="flex-1 flex flex-col items-center justify-center gap-4 w-full">
+          <div className="flex-1 flex flex-col items-center justify-center w-full">
             <ScoreGauge score={diagnostic?.score_total ?? 0} />
-            <p className={`text-[15px] leading-relaxed text-center ${isSubscriber ? 'text-zinc-400' : 'text-amber-400 font-medium'}`}>{getScoreMessage(diagnostic?.score_total ?? 0, isSubscriber)}</p>
           </div>
 
           {isSubscriber ? (
