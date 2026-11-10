@@ -132,12 +132,12 @@ export function ScoreGauge({ score, size = 160, showGlow = true }: ScoreGaugePro
       {showGlow && (
         <>
           <p
-            className="font-display font-bold text-sm text-center -mt-2"
+            className="font-display font-semibold text-sm text-center -mt-2"
             style={{ color: statusColor }}
           >
             {label}
           </p>
-          <p className="text-xs text-center mt-1" style={{ color: 'rgba(255,255,255,0.4)', maxWidth: 220 }}>
+          <p className="text-[13px] text-center mt-2" style={{ color: 'rgba(255,255,255,0.7)', maxWidth: 240, lineHeight: 1.5 }}>
             {scoreDescription(score)}
           </p>
         </>

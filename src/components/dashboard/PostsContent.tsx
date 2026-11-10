@@ -152,13 +152,13 @@ export function PostsContent() {
       </div>
 
       {/* Posts aguardando aprovação */}
-      {data?.posts.some(p => p.status === 'draft') && (
+      {data?.posts.some(p => p.status === 'draft' || p.status === 'pending') && (
         <div>
           <p className="font-display font-bold text-white text-sm mb-3" style={{ opacity: 0.7 }}>
             Aguardando aprovação
           </p>
           <div className="flex flex-col gap-3">
-            {data.posts.filter(p => p.status === 'draft').map(post => (
+            {data.posts.filter(p => p.status === 'draft' || p.status === 'pending').map(post => (
               <div
                 key={post.id}
                 className="rounded-2xl p-5"

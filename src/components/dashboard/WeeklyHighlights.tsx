@@ -23,7 +23,7 @@ export function WeeklyHighlights({ data }: WeeklyHighlightsProps) {
     parts.push(`${posts_published} post${posts_published > 1 ? 's' : ''} publicado${posts_published > 1 ? 's' : ''}`)
   }
   if (reviews_replied > 0) {
-    parts.push(`${reviews_replied} avaliação${reviews_replied > 1 ? 'ões' : ''} respondida${reviews_replied > 1 ? 's' : ''}`)
+    parts.push(`${reviews_replied} ${reviews_replied > 1 ? 'avaliações respondidas' : 'avaliação respondida'}`)
   }
   if (score_delta > 0) {
     parts.push(`Score +${score_delta} pontos`)

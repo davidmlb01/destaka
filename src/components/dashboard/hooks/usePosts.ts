@@ -8,7 +8,7 @@ interface Post {
   id: string
   content: string
   type: string
-  status: 'draft' | 'published' | 'scheduled' | 'failed'
+  status: 'draft' | 'pending' | 'published' | 'scheduled' | 'failed'
   scheduled_for: string | null
   published_at: string | null
   created_at: string
