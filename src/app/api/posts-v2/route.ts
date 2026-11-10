@@ -1,31 +1,68 @@
 export const dynamic = 'force-dynamic'
 
-import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
+import { cookies } from 'next/headers'
 
 const PAGE_SIZE = 20
 
-export async function GET() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
-  }
-
+export async function GET(_req: NextRequest) {
   const db = createAdminSupa(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
 
+  // Auth via admin: extrair token do cookie e validar
+  const cookieStore = await cookies()
+  const allCookies = cookieStore.getAll()
+  const accessToken = allCookies.find(c => c.name.includes('auth-token'))?.value
+    ?? allCookies.find(c => c.name.includes('access-token'))?.value
+
+  let userId: string | null = null
+
+  if (accessToken) {
+    try {
+      const parsed = JSON.parse(Buffer.from(accessToken.split('.')[1], 'base64').toString())
+      userId = parsed.sub ?? null
+    } catch { /* ignore */ }
+  }
+
+  // Fallback: tentar via Supabase admin getUser com todos os cookies
+  if (!userId) {
+    // Reconstruir o token do cookie Supabase (pode estar em chunks)
+    const sbCookies = allCookies
+      .filter(c => c.name.startsWith('sb-') && c.name.includes('auth-token'))
+      .sort((a, b) => a.name.localeCompare(b.name))
+
+    let fullToken = ''
+    if (sbCookies.length === 1) {
+      fullToken = sbCookies[0].value
+    } else if (sbCookies.length > 1) {
+      fullToken = sbCookies.map(c => c.value).join('')
+    }
+
+    if (fullToken) {
+      try {
+        const { data } = await db.auth.getUser(fullToken)
+        userId = data.user?.id ?? null
+      } catch { /* ignore */ }
+    }
+  }
+
+  if (!userId) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+  }
+
+  // Resolver orgId
   const { data: prof } = await db
     .from('professionals')
     .select('organization_id')
-    .eq('user_id', user.id)
+    .eq('user_id', userId)
     .maybeSingle()
 
   const orgId = prof?.organization_id ?? 'f6c6416f-3c34-4bea-b75e-bb8c1056369e'
 
+  // Queries
   const { data: posts, count } = await db
     .from('posts')
     .select('id, content, post_type, status, scheduled_for, published_at, created_at', { count: 'exact' })
