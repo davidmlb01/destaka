@@ -12,6 +12,7 @@ import { postGenerator } from '@/lib/inngest/functions/post-generator'
 import { scoreCalculator } from '@/lib/inngest/functions/score-calculator'
 import { monthlyReport } from '@/lib/inngest/functions/monthly-report'
 import { instagramSync } from '@/lib/inngest/functions/instagram-sync'
+import { instagramRewriter } from '@/lib/inngest/functions/instagram-rewriter'
 import { onboardingWhatsappSequence } from '@/lib/inngest/functions/onboarding-whatsapp-sequence'
 import { onboardingEmailSequence } from '@/lib/inngest/functions/onboarding-email-sequence'
 import { geoCollector } from '@/lib/inngest/functions/geo-collector'
@@ -34,6 +35,7 @@ export const { GET, POST, PUT } = serve({
     scoreCalculator,
     monthlyReport,
     instagramSync,
+    instagramRewriter,
     onboardingWhatsappSequence,
     onboardingEmailSequence,
     geoCollector,
