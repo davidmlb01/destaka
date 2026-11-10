@@ -243,6 +243,14 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
         </div>
       )}
 
+      {/* ===== FUNIL: Pacientes (logo apos performance) ===== */}
+      {isSubscriber && (
+        <div className="animate-fade-in-up stagger-1">
+          <SectionTitle>Seus clientes</SectionTitle>
+          <PatientFunnelCard />
+        </div>
+      )}
+
       {/* ===== RANKING: Posição no Google ===== */}
       {isSubscriber && (
         <div className="animate-fade-in-up stagger-1">
@@ -251,14 +259,6 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
             <RankingCard />
             <GapAnalysisCard />
           </div>
-        </div>
-      )}
-
-      {/* ===== FUNIL: Pacientes ===== */}
-      {isSubscriber && (
-        <div className="animate-fade-in-up stagger-1">
-          <SectionTitle>Seus clientes</SectionTitle>
-          <PatientFunnelCard />
         </div>
       )}
 

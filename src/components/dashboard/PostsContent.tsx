@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { Card } from '@/components/ui/Card'
 import { PostsSkeleton } from './Skeletons'
 import { formatDateShort } from '@/lib/utils/format-date'
@@ -50,6 +51,9 @@ export function PostsContent() {
     handleDiscard,
     handleModeChange,
   } = usePosts()
+
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editText, setEditText] = useState('')
 
   if (isLoading) {
     return <PostsSkeleton />
@@ -180,12 +184,31 @@ export function PostsContent() {
                     {formatDate(post.created_at)}
                   </span>
                 </div>
-                <p className="text-sm mb-4" style={{ color: 'rgba(255,255,255,0.8)', lineHeight: 1.6 }}>
-                  {post.content}
-                </p>
+                {editingId === post.id ? (
+                  <textarea
+                    value={editText}
+                    onChange={e => setEditText(e.target.value)}
+                    className="w-full text-sm mb-3 p-3 rounded-xl resize-none"
+                    style={{
+                      background: 'rgba(255,255,255,0.05)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      color: 'rgba(255,255,255,0.9)',
+                      lineHeight: 1.6,
+                      minHeight: 120,
+                    }}
+                  />
+                ) : (
+                  <p className="text-sm mb-4" style={{ color: 'rgba(255,255,255,0.8)', lineHeight: 1.6 }}>
+                    {post.content}
+                  </p>
+                )}
                 <div className="flex gap-2">
                   <button
-                    onClick={() => handlePublish(post.id)}
+                    onClick={() => {
+                      const text = editingId === post.id ? editText : post.content
+                      handlePublish(post.id, text)
+                      setEditingId(null)
+                    }}
                     disabled={publishingId === post.id}
                     className="flex-1 py-2 rounded-xl text-xs font-bold"
                     style={{
@@ -196,6 +219,23 @@ export function PostsContent() {
                   >
                     {publishingId === post.id ? 'Publicando...' : '✓ Publicar'}
                   </button>
+                  {editingId === post.id ? (
+                    <button
+                      onClick={() => setEditingId(null)}
+                      className="px-4 py-2 rounded-xl text-xs font-medium"
+                      style={{ background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.5)' }}
+                    >
+                      Cancelar
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => { setEditingId(post.id); setEditText(post.content) }}
+                      className="px-4 py-2 rounded-xl text-xs font-medium"
+                      style={{ background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.5)' }}
+                    >
+                      Editar
+                    </button>
+                  )}
                   <button
                     onClick={() => handleDiscard(post.id)}
                     disabled={deletingId === post.id}

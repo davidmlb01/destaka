@@ -45,10 +45,14 @@ export function usePosts() {
     }
   }
 
-  async function handlePublish(postId: string) {
+  async function handlePublish(postId: string, editedContent?: string) {
     setPublishingId(postId)
     try {
-      const { error } = await apiFetch(`/api/posts/${postId}/publish`, { method: 'POST' })
+      const { error } = await apiFetch(`/api/posts/${postId}/publish`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: editedContent ? JSON.stringify({ content: editedContent }) : undefined,
+      })
       if (error) {
         toast.error(error)
         return

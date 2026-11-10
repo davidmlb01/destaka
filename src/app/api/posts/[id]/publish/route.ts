@@ -15,10 +15,12 @@ function adminDb() {
 // POST /api/posts/[id]/publish
 // Publica um post pendente via Zernio
 export async function POST(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id: postId } = await params
+  const body = await request.json().catch(() => ({})) as { content?: string }
+  const editedContent = body.content?.trim() || null
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -61,12 +63,18 @@ export async function POST(
     return NextResponse.json({ error: 'Conta Google Business não conectada. Faça login novamente.' }, { status: 400 })
   }
 
+  // Se texto foi editado, atualizar no banco antes de publicar
+  const finalContent = editedContent ?? post.content
+  if (editedContent) {
+    await admin.from('posts').update({ content: editedContent }).eq('id', postId)
+  }
+
   // Publicar via Zernio
   let zernioPostId: string | null
   try {
     zernioPostId = await zernioPublishPost(
       org.zernio_account_id,
-      post.content,
+      finalContent,
       (post as Record<string, string>).image_url ?? undefined
     )
   } catch (err) {
