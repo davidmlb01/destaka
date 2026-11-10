@@ -167,7 +167,7 @@ export function PatientFunnelCard() {
             {formatNumber(current.actions_total)}
           </p>
           <p className="text-sm mt-1 mb-3" style={{ color: 'rgba(255,255,255,0.6)' }}>
-            tomaram uma ação
+            entraram em contato
           </p>
 
           {/* Detalhamento das acoes */}
@@ -189,7 +189,7 @@ export function PatientFunnelCard() {
                   <circle cx="12" cy="10" r="3" />
                 </svg>
                 <span className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                  {current.actions_directions} pediram rota
+                  {current.actions_directions} buscaram como chegar
                 </span>
               </div>
             )}
@@ -201,7 +201,7 @@ export function PatientFunnelCard() {
                   <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
                 </svg>
                 <span className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                  {current.actions_website} clicaram no site
+                  {current.actions_website} visitaram o site
                 </span>
               </div>
             )}
