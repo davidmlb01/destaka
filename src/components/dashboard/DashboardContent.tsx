@@ -226,7 +226,7 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
           <div className={`grid grid-cols-2 ${metrics.clicksWebsite > 0 ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-3`}>
             <MetricCard label="Buscas no Google" value={metrics.viewsSearch} icon={<PinIcon size={16} />} hint={metrics.period} delta={metrics.deltas?.viewsSearch} />
             <MetricCard label="Visualizações no Maps" value={metrics.viewsMaps} icon={<PinIcon size={16} />} hint={metrics.period} delta={metrics.deltas?.viewsMaps} />
-            <MetricCard label="Contatos gerados" value={metrics.clicksCall} icon={<PinIcon size={16} />} hint={metrics.period} delta={metrics.deltas?.clicksCall} />
+            <MetricCard label="Solicitações de contato" value={metrics.clicksCall} icon={<PinIcon size={16} />} hint={metrics.period} delta={metrics.deltas?.clicksCall} />
             {metrics.clicksWebsite > 0 && (
               <MetricCard label="Acessos ao site" value={metrics.clicksWebsite} icon={<PinIcon size={16} />} hint={metrics.period} delta={metrics.deltas?.clicksWebsite} />
             )}
@@ -240,7 +240,7 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
               <MetricCard label="Buscas no Google" value={metrics.viewsSearch} icon={<PinIcon size={16} />} hint={metrics.period} />
               <MetricCard label="Visualizações no Maps" value={metrics.viewsMaps} icon={<PinIcon size={16} />} hint={metrics.period} />
               <MetricCard label="Cliques no site" value={metrics.clicksWebsite} icon={<PinIcon size={16} />} hint={metrics.period} />
-              <MetricCard label="Contatos gerados" value={metrics.clicksCall} icon={<PinIcon size={16} />} hint={metrics.period} />
+              <MetricCard label="Solicitações de contato" value={metrics.clicksCall} icon={<PinIcon size={16} />} hint={metrics.period} />
             </div>
           </LockedOverlay>
         </div>
