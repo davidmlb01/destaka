@@ -14,13 +14,26 @@ const BADGE_MAP: Record<string, 'reviews' | 'posts' | 'optimizations'> = {
   '/dashboard/optimizations': 'optimizations',
 }
 
+function specialtyToVertical(specialty?: string | null): string | undefined {
+  if (!specialty) return undefined
+  const s = specialty.toLowerCase()
+  const health = ['fisioterapeuta', 'quiropraxia', 'medico', 'dentista', 'psicologo', 'nutricionista']
+  const pet = ['veterinario', 'petshop']
+  const legal = ['advogado', 'contador']
+  if (health.includes(s)) return 'Saude'
+  if (pet.includes(s)) return 'Pet'
+  if (legal.includes(s)) return 'Juridico'
+  return undefined
+}
+
 interface MobileNavProps {
   profileName: string
   userEmail: string
   activeHref?: string
+  specialty?: string | null
 }
 
-export function MobileNav({ profileName, userEmail, activeHref }: MobileNavProps) {
+export function MobileNav({ profileName, userEmail, activeHref, specialty }: MobileNavProps) {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
   const badges = useBadges()
@@ -40,7 +53,7 @@ export function MobileNav({ profileName, userEmail, activeHref }: MobileNavProps
           backdropFilter: 'blur(16px)',
         }}
       >
-        <Logo size="sm" />
+        <Logo size="sm" vertical={specialtyToVertical(specialty)} />
 
         <div className="flex items-center gap-3">
           <p className="text-xs truncate max-w-[120px]" style={{ color: 'var(--text-tertiary)' }}>
@@ -78,7 +91,7 @@ export function MobileNav({ profileName, userEmail, activeHref }: MobileNavProps
       >
         {/* Header */}
         <div className="flex items-center justify-between px-2 mb-8">
-          <Logo size="sm" />
+          <Logo size="sm" vertical={specialtyToVertical(specialty)} />
           <button
             onClick={() => setOpen(false)}
             className="text-lg leading-none transition-colors"

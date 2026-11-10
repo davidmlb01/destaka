@@ -28,12 +28,25 @@ const PAID_ITEMS = [
 // Export for backward compatibility
 export const NAV_ITEMS = PAID_ITEMS.map(i => ({ label: i.label, href: i.href }))
 
+function specialtyToVertical(specialty?: string | null): string | undefined {
+  if (!specialty) return undefined
+  const s = specialty.toLowerCase()
+  const health = ['fisioterapeuta', 'quiropraxia', 'medico', 'dentista', 'psicologo', 'nutricionista']
+  const pet = ['veterinario', 'petshop']
+  const legal = ['advogado', 'contador']
+  if (health.includes(s)) return 'Saude'
+  if (pet.includes(s)) return 'Pet'
+  if (legal.includes(s)) return 'Juridico'
+  return undefined
+}
+
 interface Props {
   children: ReactNode
   activeHref?: string
   profileName: string
   userEmail: string
   isSubscriber?: boolean
+  specialty?: string | null
 }
 
 const BADGE_MAP: Record<string, keyof ReturnType<typeof useBadges>> = {
@@ -42,7 +55,7 @@ const BADGE_MAP: Record<string, keyof ReturnType<typeof useBadges>> = {
   '/dashboard/optimizations': 'optimizations',
 }
 
-export function DashboardLayout({ children, activeHref, profileName, userEmail, isSubscriber = true }: Props) {
+export function DashboardLayout({ children, activeHref, profileName, userEmail, isSubscriber = true, specialty }: Props) {
   const router = useRouter()
   const pathname = usePathname()
   const resolvedHref = activeHref ?? pathname
@@ -78,7 +91,7 @@ export function DashboardLayout({ children, activeHref, profileName, userEmail, 
       >
         {/* Logo */}
         <div className="px-2 mb-4">
-          <Logo size="md" href="/dashboard" />
+          <Logo size="md" href="/dashboard" vertical={specialtyToVertical(specialty)} />
         </div>
 
         {/* Perfil */}
@@ -168,7 +181,7 @@ export function DashboardLayout({ children, activeHref, profileName, userEmail, 
 
       {/* Main */}
       <main className="flex-1 lg:ml-56 relative z-10">
-        <MobileNav profileName={profileName} userEmail={userEmail} activeHref={activeHref} />
+        <MobileNav profileName={profileName} userEmail={userEmail} activeHref={activeHref} specialty={specialty} />
         {children}
       </main>
     </div>

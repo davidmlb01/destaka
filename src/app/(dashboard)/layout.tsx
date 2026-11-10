@@ -13,6 +13,7 @@ export default async function DashboardRootLayout({
       profileName={ctx.profileName}
       userEmail={ctx.user.email}
       isSubscriber={ctx.isSubscriber}
+      specialty={ctx.specialty}
     >
       {children}
     </DashboardLayout>
