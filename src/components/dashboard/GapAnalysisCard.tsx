@@ -55,8 +55,9 @@ export function GapAnalysisCard() {
 
   if (!data) return null
 
-  const highImpact = data.factors.filter(f => f.impact === 'high')
-  const otherFactors = data.factors.filter(f => f.impact !== 'high')
+  // Só mostrar onde está atrás (behind). Empatados/à frente não ajudam
+  const highImpact = data.factors.filter(f => f.impact === 'high' && f.status === 'behind')
+  const otherFactors = data.factors.filter(f => f.impact !== 'high' && f.status === 'behind')
 
   return (
     <div

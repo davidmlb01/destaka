@@ -47,12 +47,14 @@ function PositionBadge({ position }: { position: number | null }) {
 
 function DeltaIndicator({ delta }: { delta: number | null }) {
   if (delta === null) return null
-  if (delta === 0) return <span className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>sem mudanca</span>
+  if (delta === 0) return <span className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>estável</span>
 
-  const isUp = delta > 0
+  // Delta positivo = subiu posições (ex: de 5 para 2 = +3 subiu)
+  // Delta negativo = caiu posições (ex: de 2 para 5 = -3 caiu)
+  const improved = delta > 0
   return (
-    <span className="text-xs font-medium" style={{ color: isUp ? '#34d399' : '#ef4444' }}>
-      {isUp ? '+' : ''}{delta} {isUp ? 'subiu' : 'caiu'}
+    <span className="text-xs font-medium" style={{ color: improved ? '#4ADE80' : '#FBBF24' }}>
+      {improved ? '↑' : '↓'} {Math.abs(delta)} {improved ? 'subiu' : 'desceu'}
     </span>
   )
 }
@@ -99,7 +101,8 @@ export function RankingCard() {
   }
 
   const { primary, keywords } = data
-  const others = keywords.filter(k => !k.isPrimary)
+  // Só mostrar keywords secundárias que TEM posição (sem dados = esconde)
+  const others = keywords.filter(k => !k.isPrimary && k.currentPosition !== null)
 
   return (
     <div
@@ -113,7 +116,7 @@ export function RankingCard() {
             className="text-xs font-bold tracking-[0.12em] uppercase mb-4"
             style={{ color: 'rgba(255,255,255,0.38)' }}
           >
-            Sua posicao no Google
+            Sua posição no Google
           </p>
 
           <div className="flex items-center gap-5">
