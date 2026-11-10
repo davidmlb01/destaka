@@ -1,19 +1,48 @@
 export const dynamic = 'force-dynamic'
 
-import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
+import { cookies } from 'next/headers'
 
-export async function GET() {
-  // Auth check simples
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
-
+export async function GET(_req: NextRequest) {
   const db = createAdminSupa(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
+
+  // Auth via cookie + admin getUser (SEM createClient do Supabase SSR)
+  const cookieStore = await cookies()
+  const chunks = cookieStore.getAll()
+    .filter(c => c.name.startsWith('sb-') && c.name.includes('auth-token'))
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map(c => c.value)
+
+  const rawToken = chunks.join('')
+  let tokenJson: string
+  try {
+    tokenJson = rawToken.startsWith('base64-')
+      ? Buffer.from(rawToken.slice(7), 'base64').toString('utf8')
+      : rawToken
+  } catch {
+    return NextResponse.json({ error: 'Token invalido' }, { status: 401 })
+  }
+
+  let accessToken: string
+  try {
+    const parsed = JSON.parse(tokenJson)
+    accessToken = parsed.access_token
+  } catch {
+    return NextResponse.json({ error: 'Token invalido' }, { status: 401 })
+  }
+
+  if (!accessToken) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+  }
+
+  const { data: { user }, error: authErr } = await db.auth.getUser(accessToken)
+  if (authErr || !user) {
+    return NextResponse.json({ error: 'Sessão expirada' }, { status: 401 })
+  }
 
   // Resolver org
   const { data: prof } = await db
@@ -30,7 +59,6 @@ export async function GET() {
     .eq('organization_id', orgId)
     .limit(20)
 
-  // Buscar org e gbp
   const { data: org } = await db.from('organizations').select('name, specialty, automation_preference').eq('id', orgId).maybeSingle()
   const { data: gbp } = await db.from('gbp_profiles').select('id').eq('organization_id', orgId).maybeSingle()
 
