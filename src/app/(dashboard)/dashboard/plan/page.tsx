@@ -1,4 +1,3 @@
-export const dynamic = 'force-dynamic'
 
 import { Badge } from '@/components/ui/Badge'
 import { PinIcon } from '@/components/ui/PinIcon'
