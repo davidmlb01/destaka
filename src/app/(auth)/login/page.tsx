@@ -40,7 +40,7 @@ function LoginContent() {
         <h1 className="text-2xl font-semibold text-white mb-2">
           Bem-vindo ao Destaka
         </h1>
-        <p className="text-sm leading-relaxed mb-8" style={{ color: 'rgba(255,255,255,0.45)' }}>
+        <p className="text-sm leading-relaxed mb-8" style={{ color: 'var(--text-tertiary)' }}>
           Use a mesma conta Google que gerencia seu perfil no Google Meu Negócio.
         </p>
 
@@ -61,7 +61,7 @@ function LoginContent() {
           <GoogleIcon />
           Continuar com Google
         </button>
-        <p className="text-xs mt-6 leading-relaxed" style={{ color: 'rgba(255,255,255,0.4)' }}>
+        <p className="text-xs mt-6 leading-relaxed" style={{ color: 'var(--text-muted)' }}>
           Ao continuar, você autoriza o Destaka a gerenciar seu
           perfil no Google Meu Negócio. Você pode revogar esse
           acesso a qualquer momento.

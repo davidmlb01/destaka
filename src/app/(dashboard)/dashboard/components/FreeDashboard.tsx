@@ -65,7 +65,7 @@ export function FreeDashboard({ score, profileName, isNewUser }: FreeDashboardPr
           <p className="text-sm mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>
             Estamos coletando dados do seu perfil no Google. Isso leva alguns minutos.
           </p>
-          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
+          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
             Recarregue a página em instantes para ver seu diagnóstico
           </p>
         </div>

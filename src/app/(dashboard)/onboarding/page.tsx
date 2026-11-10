@@ -255,7 +255,7 @@ export default function OnboardingPage() {
         {/* Progress bar */}
         {isFormStep && (
           <div className="mb-6">
-            <div className="flex justify-between text-xs mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>
+            <div className="flex justify-between text-xs mb-2" style={{ color: 'var(--text-muted)' }}>
               <span>Passo {currentIndex + 1} de {FORM_STEPS.length}</span>
               <span>{Math.round(progress)}%</span>
             </div>
@@ -293,7 +293,7 @@ export default function OnboardingPage() {
               <p className="text-sm mb-2" style={{ color: 'rgba(255,255,255,0.8)' }}>
                 {prefill?.name ? `Bem-vindo, ${prefill.name}!` : 'Bem-vindo ao Destaka!'}
               </p>
-              <p className="text-sm mb-8" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              <p className="text-sm mb-8" style={{ color: 'var(--text-tertiary)' }}>
                 Vamos configurar seu perfil em 2 minutos.
               </p>
               <button
@@ -313,7 +313,7 @@ export default function OnboardingPage() {
               <h1 className="text-lg font-semibold text-white mb-1">
                 Como entrar em contato com você?
               </h1>
-              <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              <p className="text-sm mb-6" style={{ color: 'var(--text-tertiary)' }}>
                 Enviamos relatórios e alertas por WhatsApp. Sem spam, apenas o que importa.
               </p>
 
@@ -374,7 +374,7 @@ export default function OnboardingPage() {
                     <p className="text-sm font-medium" style={{ color: consent ? 'var(--accent-bright)' : 'rgba(255,255,255,0.7)' }}>
                       Autorizo o Destaka a responder minhas avaliações e criar posts no meu perfil do Google.
                     </p>
-                    <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                    <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
                       Você pode desativar a qualquer momento nas configurações.
                     </p>
                   </div>
@@ -398,7 +398,7 @@ export default function OnboardingPage() {
               <h1 className="text-lg font-semibold text-white mb-1">
                 O que mais importa para você hoje?
               </h1>
-              <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              <p className="text-sm mb-6" style={{ color: 'var(--text-tertiary)' }}>
                 Usamos essa informação para priorizar as ações no seu perfil.
               </p>
 
@@ -442,7 +442,7 @@ export default function OnboardingPage() {
                 <button
                   onClick={() => setStep('contact')}
                   className="rounded-xl px-5 py-3.5 font-medium transition-colors cursor-pointer"
-                  style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.08)' }}
+                  style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-secondary)', border: '1px solid rgba(255,255,255,0.08)' }}
                 >
                   Voltar
                 </button>
@@ -464,14 +464,14 @@ export default function OnboardingPage() {
               <h1 className="text-lg font-semibold text-white mb-1">
                 Quais são seus principais serviços?
               </h1>
-              <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              <p className="text-sm mb-6" style={{ color: 'var(--text-tertiary)' }}>
                 Usamos essa informação para criar conteúdo relevante no seu perfil do Google.
               </p>
 
               {/* Sugestões dos concorrentes */}
               {serviceSuggestions.length > 0 && (
                 <div className="mb-4">
-                  <p className="text-xs mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                  <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>
                     Seus concorrentes oferecem:
                   </p>
                   <div className="flex flex-wrap gap-2">
@@ -516,7 +516,7 @@ export default function OnboardingPage() {
                       <button
                         onClick={() => removeService(i)}
                         className="shrink-0 w-10 h-10 rounded-lg flex items-center justify-center transition-colors cursor-pointer"
-                        style={{ background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.4)' }}
+                        style={{ background: 'rgba(255,255,255,0.04)', color: 'var(--text-muted)' }}
                         aria-label="Remover serviço"
                       >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -552,7 +552,7 @@ export default function OnboardingPage() {
                 <button
                   onClick={() => setStep('routine')}
                   className="rounded-xl px-5 py-3.5 font-medium transition-colors cursor-pointer"
-                  style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.08)' }}
+                  style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-secondary)', border: '1px solid rgba(255,255,255,0.08)' }}
                 >
                   Voltar
                 </button>
@@ -582,7 +582,7 @@ export default function OnboardingPage() {
               <h1 className="text-lg font-semibold text-white mb-1">
                 Recursos do seu espaço
               </h1>
-              <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              <p className="text-sm mb-6" style={{ color: 'var(--text-tertiary)' }}>
                 Marque o que seu negócio oferece. Isso ajuda clientes a escolherem você.
               </p>
 
@@ -619,7 +619,7 @@ export default function OnboardingPage() {
                 <button
                   onClick={() => setStep('categories')}
                   className="rounded-xl px-5 py-3.5 font-medium transition-colors cursor-pointer"
-                  style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.08)' }}
+                  style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-secondary)', border: '1px solid rgba(255,255,255,0.08)' }}
                 >
                   Voltar
                 </button>
@@ -640,7 +640,7 @@ export default function OnboardingPage() {
               <h1 className="text-lg font-semibold text-white mb-1">
                 Como prefere que o Destaka atue?
               </h1>
-              <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              <p className="text-sm mb-6" style={{ color: 'var(--text-tertiary)' }}>
                 Você pode mudar isso a qualquer momento nas configurações.
               </p>
 
@@ -667,7 +667,7 @@ export default function OnboardingPage() {
                     <p className="text-sm font-medium mb-0.5" style={{ color: automation === a.value ? 'var(--accent-bright)' : '#fff' }}>
                       {a.label}
                     </p>
-                    <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                    <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
                       {a.description}
                     </p>
                   </button>
@@ -678,7 +678,7 @@ export default function OnboardingPage() {
                 <button
                   onClick={() => setStep('attributes')}
                   className="rounded-xl px-5 py-3.5 font-medium transition-colors cursor-pointer"
-                  style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.08)' }}
+                  style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-secondary)', border: '1px solid rgba(255,255,255,0.08)' }}
                 >
                   Voltar
                 </button>
@@ -748,7 +748,7 @@ export default function OnboardingPage() {
                   <h1 className="text-lg font-semibold text-white mb-2">
                     Perfil configurado
                   </h1>
-                  <p className="text-sm mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                  <p className="text-sm mb-2" style={{ color: 'var(--text-secondary)' }}>
                     Encontramos {improvementCount} melhorias para aplicar no seu perfil.
                   </p>
                   <p className="text-sm mb-8" style={{ color: 'var(--accent-bright)' }}>
@@ -795,7 +795,7 @@ export default function OnboardingPage() {
 function FieldGroup({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="block text-sm font-medium mb-1.5" style={{ color: 'rgba(255,255,255,0.7)' }}>
+      <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
         {label}
       </label>
       {children}

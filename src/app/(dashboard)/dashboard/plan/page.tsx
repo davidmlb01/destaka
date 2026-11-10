@@ -85,11 +85,11 @@ export default async function PlanPage() {
                     >
                       R$197
                     </span>
-                    <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 16 }}>/mês</span>
+                    <span style={{ color: 'var(--text-muted)', fontSize: 16 }}>/mês</span>
                   </div>
                   <p
                     className="mt-1.5 text-xs font-medium"
-                    style={{ color: 'rgba(255,255,255,0.38)' }}
+                    style={{ color: 'var(--text-muted)' }}
                   >
                     Apenas R$6,57/dia para ter mais pacientes
                   </p>
@@ -105,7 +105,7 @@ export default async function PlanPage() {
                       key={f}
                       className="flex items-start gap-3 py-2.5 text-sm"
                       style={{
-                        color: 'rgba(255,255,255,0.82)',
+                        color: 'var(--text-primary)',
                         borderBottom: i < FEATURES.length - 1
                           ? '1px solid rgba(255,255,255,0.05)'
                           : 'none',
@@ -153,7 +153,7 @@ export default async function PlanPage() {
               <div style={{ height: 1, flex: 1, background: 'rgba(255,255,255,0.07)' }} />
               <p
                 className="text-xs font-bold tracking-widest uppercase shrink-0"
-                style={{ color: 'rgba(255,255,255,0.38)' }}
+                style={{ color: 'var(--text-muted)' }}
               >
                 O que você recebe por R$197
               </p>

@@ -58,7 +58,7 @@ export default function Image() {
           trabalhando por você.
         </h1>
 
-        <p style={{ color: 'rgba(255,255,255,0.60)', fontSize: 24, margin: 0, lineHeight: 1.5 }}>
+        <p style={{ color: 'var(--text-secondary)', fontSize: 24, margin: 0, lineHeight: 1.5 }}>
           Presença digital no piloto automático para seu negócio.
         </p>
 

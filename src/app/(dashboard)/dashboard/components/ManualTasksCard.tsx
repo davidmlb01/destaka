@@ -64,7 +64,7 @@ export function ManualTasksCard({ photoCount, unrepliedReviewCount }: ManualTask
               </p>
               <svg
                 width="16" height="16" viewBox="0 0 16 16" fill="none"
-                style={{ flexShrink: 0, color: 'rgba(255,255,255,0.3)' }}
+                style={{ flexShrink: 0, color: 'var(--text-muted)' }}
               >
                 <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>

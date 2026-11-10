@@ -102,7 +102,7 @@ function Nav() {
         }}
       >
         <Logo size="md" href="/saude" vertical="Saúde" />
-        <div className="hidden md:flex items-center gap-6 text-[14px] font-medium" style={{ color: 'rgba(255,255,255,0.68)' }}>
+        <div className="hidden md:flex items-center gap-6 text-[14px] font-medium" style={{ color: 'var(--text-secondary)' }}>
           <a href="#como-funciona" className="hover:text-white transition-colors">Como funciona</a>
           <a href="#recursos" className="hover:text-white transition-colors">Recursos</a>
         </div>
@@ -145,7 +145,7 @@ function Hero() {
 
             <p
               className="leading-relaxed mb-3"
-              style={{ color: 'rgba(255,255,255,0.68)', fontSize: 'clamp(16px, 2vw, 19px)', lineHeight: 1.7 }}
+              style={{ color: 'var(--text-secondary)', fontSize: 'clamp(16px, 2vw, 19px)', lineHeight: 1.7 }}
             >
               O Google decide para quem o seu paciente vai ligar.<br />
               O Destaka decide o que o Google vai ver.
@@ -153,7 +153,7 @@ function Hero() {
 
             <p
               className="leading-relaxed mb-10"
-              style={{ color: 'rgba(255,255,255,0.55)', fontSize: 'clamp(14px, 1.6vw, 16px)', lineHeight: 1.7 }}
+              style={{ color: 'var(--text-tertiary)', fontSize: 'clamp(14px, 1.6vw, 16px)', lineHeight: 1.7 }}
             >
               Descubra em 30 segundos se seu perfil está te ajudando ou te prejudicando.
             </p>
@@ -164,7 +164,7 @@ function Hero() {
               <span className="w-7 h-7 rounded-full bg-black/20 flex items-center justify-center flex-shrink-0 text-[14px]">→</span>
             </Button>
 
-            <p className="mt-4 text-[12px]" style={{ color: 'rgba(255,255,255,0.7)' }}>
+            <p className="mt-4 text-[12px]" style={{ color: 'var(--text-secondary)' }}>
               Grátis. Sem cartão de crédito. Resultado em 30 segundos.
             </p>
 
@@ -196,7 +196,7 @@ function Hero() {
                   </div>
                   <div className="pt-1">
                     <p className="font-display font-bold text-[14px] text-white mb-1 leading-snug">{stat.label}</p>
-                    <p className="text-[14px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.55)', lineHeight: 1.7 }}>{stat.desc}</p>
+                    <p className="text-[14px] leading-relaxed" style={{ color: 'var(--text-tertiary)', lineHeight: 1.7 }}>{stat.desc}</p>
                   </div>
                 </div>
               ))}
@@ -244,7 +244,7 @@ function CustoDaInvisibilidade() {
             Cada dia sem aparecer no Google<br className="hidden md:block" />
             é dinheiro saindo do seu consultório.
           </h2>
-          <p className="text-[17px] max-w-2xl mx-auto" style={{ color: 'rgba(255,255,255,0.68)', lineHeight: 1.7 }}>
+          <p className="text-[17px] max-w-2xl mx-auto" style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
             Enquanto seu perfil está incompleto, pacientes que precisam de você estão ligando para o consultório ao lado.
           </p>
         </div>
@@ -267,7 +267,7 @@ function CustoDaInvisibilidade() {
                   {item.numero}
                 </div>
                 <h3 className="font-display font-bold text-[17px] text-white mb-2">{item.titulo}</h3>
-                <p className="text-[14px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.68)', lineHeight: 1.7 }}>{item.desc}</p>
+                <p className="text-[14px] leading-relaxed" style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>{item.desc}</p>
               </div>
             </div>
           ))}
@@ -281,13 +281,13 @@ function CustoDaInvisibilidade() {
             className="rounded-[14px] p-8 text-center"
             style={{ background: '#071a19', boxShadow: 'inset 0 1px 1px rgba(20,184,166,0.10)' }}
           >
-            <p className="text-[17px] leading-relaxed mb-2" style={{ color: 'rgba(255,255,255,0.75)', lineHeight: 1.7 }}>
+            <p className="text-[17px] leading-relaxed mb-2" style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
               Perfis com Destaka recebem até
             </p>
             <p className="font-display font-bold text-white tracking-[-1px] mb-2" style={{ fontSize: 'clamp(28px, 3.5vw, 40px)' }}>
               <span style={{ color: '#14B8A6' }}>7x mais cliques</span> no Google
             </p>
-            <p className="text-[15px]" style={{ color: 'rgba(255,255,255,0.55)', lineHeight: 1.7 }}>
+            <p className="text-[15px]" style={{ color: 'var(--text-tertiary)', lineHeight: 1.7 }}>
               Mais cliques, mais ligações, mais pacientes na sua agenda.
             </p>
           </div>
@@ -306,7 +306,7 @@ function CustoDaInvisibilidade() {
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
               </svg>
             </div>
-            <p className="text-[15px] leading-relaxed text-center sm:text-left" style={{ color: 'rgba(255,255,255,0.75)', lineHeight: 1.7 }}>
+            <p className="text-[15px] leading-relaxed text-center sm:text-left" style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
               <span className="font-display font-bold text-white">Garantia Destaka:</span> seu score sobe no mínimo 15 pontos em 30 dias. Se não subir, devolvemos 100% do valor. Sem perguntas.
             </p>
           </div>
@@ -318,7 +318,7 @@ function CustoDaInvisibilidade() {
             Fazer diagnóstico gratuito
             <span className="w-7 h-7 rounded-full bg-black/20 flex items-center justify-center flex-shrink-0 text-[14px]">→</span>
           </Button>
-          <p className="mt-4 text-[14px]" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1.7 }}>
+          <p className="mt-4 text-[14px]" style={{ color: 'var(--text-tertiary)', lineHeight: 1.7 }}>
             Descubra quanto seu perfil pode melhorar. Resultado em 30 segundos.
           </p>
         </div>
@@ -343,10 +343,10 @@ function Problema() {
               Você não perde pacientes<br />
               por falta de competência.
             </h2>
-            <p className="text-[17px] leading-relaxed mb-6" style={{ color: 'rgba(255,255,255,0.75)', lineHeight: 1.7 }}>
+            <p className="text-[17px] leading-relaxed mb-6" style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
               Perde porque eles não te encontram.
             </p>
-            <p className="text-[16px] leading-relaxed mb-6" style={{ color: 'rgba(255,255,255,0.68)', lineHeight: 1.7 }}>
+            <p className="text-[16px] leading-relaxed mb-6" style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
               O profissional que aparece em primeiro não é necessariamente o melhor. É o mais visível. Quando alguém digita &quot;médico perto de mim&quot;, o Google decide quem aparece. E na maioria das vezes, não é quem merece mais.
             </p>
             <p className="text-[15px] leading-relaxed font-medium" style={{ color: 'var(--accent)', lineHeight: 1.7 }}>
@@ -372,7 +372,7 @@ function Problema() {
                   <PinIcon size={22} />
                   <div>
                     <p className="font-display font-bold text-[15px] mb-1 text-white">{item.title}</p>
-                    <p className="text-[14px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.68)', lineHeight: 1.7 }}>{item.desc}</p>
+                    <p className="text-[14px] leading-relaxed" style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>{item.desc}</p>
                   </div>
                 </div>
               </div>
@@ -444,7 +444,7 @@ function Manifesto() {
               </div>
             </div>
 
-            <p className="text-[14px] font-medium mb-5" style={{ color: 'rgba(255,255,255,0.55)', lineHeight: 1.7 }}>
+            <p className="text-[14px] font-medium mb-5" style={{ color: 'var(--text-tertiary)', lineHeight: 1.7 }}>
               Se você sabe que merece aparecer, comece aqui.
             </p>
 
@@ -454,7 +454,7 @@ function Manifesto() {
               <span className="w-7 h-7 rounded-full bg-black/20 flex items-center justify-center flex-shrink-0 text-[14px]">→</span>
             </Button>
 
-            <p className="mt-5 text-[12px]" style={{ color: 'rgba(255,255,255,0.45)' }}>
+            <p className="mt-5 text-[12px]" style={{ color: 'var(--text-tertiary)' }}>
               Grátis. Sem cartão. Resultado em 30 segundos.
             </p>
           </div>
@@ -537,7 +537,7 @@ function ComoFunciona() {
                 </div>
                 <div>
                   <h3 className="font-display font-bold text-[20px] text-white mb-2">{step.title}</h3>
-                  <p className="text-[15px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.68)', lineHeight: 1.7 }}>{step.desc}</p>
+                  <p className="text-[15px] leading-relaxed" style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>{step.desc}</p>
                 </div>
                 {step.cta && step.href && (
                   <Button variant="primary" size="md" href={step.href} className="mt-auto self-start">
@@ -585,9 +585,9 @@ function Recursos() {
             style={{ fontSize: 'clamp(28px, 3.5vw, 40px)', color: '#fff' }}
           >
             Tudo no piloto automático.<br />
-            <span style={{ color: 'rgba(255,255,255,0.7)' }}>Sem depender de você.</span>
+            <span style={{ color: 'var(--text-secondary)' }}>Sem depender de você.</span>
           </h2>
-          <p className="text-[17px] max-w-2xl mx-auto" style={{ color: 'rgba(255,255,255,0.68)', lineHeight: 1.7 }}>
+          <p className="text-[17px] max-w-2xl mx-auto" style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
             O Destaka cuida da sua visibilidade enquanto você cuida dos pacientes.
           </p>
         </div>
@@ -608,7 +608,7 @@ function Recursos() {
                   <h3 className={`font-display font-bold mb-1.5 text-white ${f.large ? 'text-[18px]' : 'text-[16px]'}`}>
                     {f.title}
                   </h3>
-                  <p className="text-[14px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.68)', lineHeight: 1.7 }}>{f.desc}</p>
+                  <p className="text-[14px] leading-relaxed" style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>{f.desc}</p>
                 </div>
               </div>
             </div>
@@ -621,7 +621,7 @@ function Recursos() {
             Fazer diagnóstico gratuito
             <span className="w-7 h-7 rounded-full bg-black/20 flex items-center justify-center flex-shrink-0 text-[14px]">→</span>
           </Button>
-          <p className="mt-4 text-[14px]" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1.7 }}>
+          <p className="mt-4 text-[14px]" style={{ color: 'var(--text-tertiary)', lineHeight: 1.7 }}>
             Descubra quanto seu perfil pode melhorar. Resultado em 30 segundos.
           </p>
         </div>
@@ -637,24 +637,24 @@ function Footer() {
     <footer className="px-6 py-12" style={{ background: '#071825', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
       <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5">
         <Logo size="sm" vertical="Saúde" />
-        <p className="text-[14px]" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1.7 }}>
+        <p className="text-[14px]" style={{ color: 'var(--text-tertiary)', lineHeight: 1.7 }}>
           Google Business Profile no piloto automático. Para profissionais de saúde que merecem aparecer primeiro.
         </p>
         <div className="flex flex-col items-center md:items-end gap-2">
           <div className="flex items-center gap-5">
-            <Link href="/privacy" className="text-[12px] hover:text-white transition-colors" style={{ color: 'rgba(255,255,255,0.5)' }}>
+            <Link href="/privacy" className="text-[12px] hover:text-white transition-colors" style={{ color: 'var(--text-tertiary)' }}>
               Privacidade
             </Link>
-            <Link href="/termos" className="text-[12px] hover:text-white transition-colors" style={{ color: 'rgba(255,255,255,0.5)' }}>
+            <Link href="/termos" className="text-[12px] hover:text-white transition-colors" style={{ color: 'var(--text-tertiary)' }}>
               Termos
             </Link>
-            <p className="text-[12px]" style={{ color: 'rgba(255,255,255,0.2)' }}>
+            <p className="text-[12px]" style={{ color: 'var(--text-muted)' }}>
               © 2026 Destaka
             </p>
           </div>
-          <p className="text-[11px]" style={{ color: 'rgba(255,255,255,0.3)' }}>
+          <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>
             Destaka é uma plataforma desenvolvida e operada por{' '}
-            <a href="https://unlmtd.etc.br" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors" style={{ color: 'rgba(255,255,255,0.4)' }}>
+            <a href="https://unlmtd.etc.br" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors" style={{ color: 'var(--text-muted)' }}>
               UNLMTD
             </a>
           </p>

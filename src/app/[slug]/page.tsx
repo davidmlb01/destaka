@@ -175,7 +175,7 @@ export default async function InstitutionLandingPage({ params }: PageProps) {
           </p>
           <p
             className="text-[15px] mb-10 max-w-md mx-auto"
-            style={{ color: 'rgba(255,255,255,0.50)', lineHeight: 1.7 }}
+            style={{ color: 'var(--text-tertiary)', lineHeight: 1.7 }}
           >
             Faça o diagnóstico gratuito e veja a nota do seu perfil em 30 segundos.
           </p>
@@ -190,7 +190,7 @@ export default async function InstitutionLandingPage({ params }: PageProps) {
             </span>
           </Button>
 
-          <p className="mt-4 text-[13px]" style={{ color: 'rgba(255,255,255,0.40)' }}>
+          <p className="mt-4 text-[13px]" style={{ color: 'var(--text-muted)' }}>
             Sem compromisso. Cancele quando quiser.
           </p>
 
@@ -222,7 +222,7 @@ export default async function InstitutionLandingPage({ params }: PageProps) {
               >
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               </svg>
-              <p className="text-[13px] text-left" style={{ color: 'rgba(255,255,255,0.60)', lineHeight: 1.6 }}>
+              <p className="text-[13px] text-left" style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                 <span className="font-display font-bold text-white">Garantia Destaka:</span>{' '}
                 seu score sobe no mínimo 15 pontos em 30 dias ou devolvemos 100%.
               </p>
@@ -233,7 +233,7 @@ export default async function InstitutionLandingPage({ params }: PageProps) {
 
       {/* Footer */}
       <footer className="py-8 px-6 text-center">
-        <p className="text-[12px]" style={{ color: 'rgba(255,255,255,0.30)' }}>
+        <p className="text-[12px]" style={{ color: 'var(--text-muted)' }}>
           Powered by{' '}
           <Link
             href="/"

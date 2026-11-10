@@ -102,7 +102,7 @@ function Nav() {
         }}
       >
         <Logo size="md" href="/" />
-        <div className="hidden md:flex items-center gap-6 text-[13px] font-medium" style={{ color: 'rgba(255,255,255,0.68)' }}>
+        <div className="hidden md:flex items-center gap-6 text-[13px] font-medium" style={{ color: 'var(--text-secondary)' }}>
           <a href="#como-funciona" className="hover:text-white transition-colors">Como funciona</a>
           <a href="#recursos" className="hover:text-white transition-colors">Recursos</a>
         </div>
@@ -145,14 +145,14 @@ function Hero() {
 
             <p
               className="leading-relaxed mb-4"
-              style={{ color: 'rgba(255,255,255,0.65)', fontSize: 'clamp(16px, 1.8vw, 18px)', lineHeight: 1.7 }}
+              style={{ color: 'var(--text-secondary)', fontSize: 'clamp(16px, 1.8vw, 18px)', lineHeight: 1.7 }}
             >
               O Google Meu Negócio decide quem aparece primeiro quando alguém busca perto de você. Para aparecer primeiro, seu perfil precisa ser o mais completo e o mais ativo da região.
             </p>
 
             <p
               className="mb-10"
-              style={{ color: 'rgba(255,255,255,0.50)', fontSize: 'clamp(14px, 1.5vw, 16px)', lineHeight: 1.7 }}
+              style={{ color: 'var(--text-tertiary)', fontSize: 'clamp(14px, 1.5vw, 16px)', lineHeight: 1.7 }}
             >
               Faça o diagnóstico gratuito e veja onde você está perdendo clientes.
             </p>
@@ -163,7 +163,7 @@ function Hero() {
               <span className="w-7 h-7 rounded-full bg-black/20 flex items-center justify-center flex-shrink-0 text-[13px]">→</span>
             </Button>
 
-            <p className="mt-4 text-[13px]" style={{ color: 'rgba(255,255,255,0.5)' }}>
+            <p className="mt-4 text-[13px]" style={{ color: 'var(--text-tertiary)' }}>
               Grátis. Sem cartão de crédito. Resultado em 30 segundos.
             </p>
 
@@ -195,7 +195,7 @@ function Hero() {
                   </div>
                   <div className="pt-1">
                     <p className="font-display font-bold text-[15px] text-white mb-1.5 leading-snug">{stat.label}</p>
-                    <p className="text-[14px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.50)' }}>{stat.desc}</p>
+                    <p className="text-[14px] leading-relaxed" style={{ color: 'var(--text-tertiary)' }}>{stat.desc}</p>
                   </div>
                 </div>
               ))}
@@ -240,7 +240,7 @@ function CustoDaInvisibilidade() {
             Seu perfil está parado.<br className="hidden md:block" />
             O concorrente do lado, não.
           </h2>
-          <p className="text-[16px] max-w-xl mx-auto" style={{ color: 'rgba(255,255,255,0.60)', lineHeight: 1.7 }}>
+          <p className="text-[16px] max-w-xl mx-auto" style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
             O Google Meu Negócio não é uma vitrine opcional. É onde o seu cliente decide entre você e o concorrente, antes de ligar, antes de visitar, antes de qualquer outra coisa.
           </p>
         </div>
@@ -258,7 +258,7 @@ function CustoDaInvisibilidade() {
               >
                 <PinIcon size={28} />
                 <h3 className="font-display font-bold text-[16px] text-white mb-3 mt-5">{item.titulo}</h3>
-                <p className="text-[15px]" style={{ color: 'rgba(255,255,255,0.60)', lineHeight: 1.7 }}>{item.desc}</p>
+                <p className="text-[15px]" style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>{item.desc}</p>
               </div>
             </div>
           ))}
@@ -272,13 +272,13 @@ function CustoDaInvisibilidade() {
             className="rounded-[14px] p-8 text-center"
             style={{ background: '#071a19', boxShadow: 'inset 0 1px 1px rgba(20,184,166,0.10)' }}
           >
-            <p className="text-[16px] leading-relaxed mb-2" style={{ color: 'rgba(255,255,255,0.65)' }}>
+            <p className="text-[16px] leading-relaxed mb-2" style={{ color: 'var(--text-secondary)' }}>
               Perfis com Destaka recebem até
             </p>
             <p className="font-display font-bold text-white tracking-[-1px] mb-2" style={{ fontSize: 'clamp(28px, 4vw, 40px)' }}>
               <span style={{ color: '#14B8A6' }}>7x mais cliques</span> no Google
             </p>
-            <p className="text-[15px]" style={{ color: 'rgba(255,255,255,0.50)' }}>
+            <p className="text-[15px]" style={{ color: 'var(--text-tertiary)' }}>
               Mais cliques, mais ligações, mais clientes na sua porta.
             </p>
           </div>
@@ -297,7 +297,7 @@ function CustoDaInvisibilidade() {
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
               </svg>
             </div>
-            <p className="text-[15px] text-center sm:text-left" style={{ color: 'rgba(255,255,255,0.65)', lineHeight: 1.7 }}>
+            <p className="text-[15px] text-center sm:text-left" style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
               <span className="font-display font-bold text-white">Garantia Destaka:</span> seu score sobe no mínimo 15 pontos em 30 dias. Se não subir, devolvemos 100% do valor. Sem perguntas.
             </p>
           </div>
@@ -309,7 +309,7 @@ function CustoDaInvisibilidade() {
             Fazer diagnóstico gratuito
             <span className="w-7 h-7 rounded-full bg-black/20 flex items-center justify-center flex-shrink-0 text-[13px]">→</span>
           </Button>
-          <p className="mt-4 text-[14px]" style={{ color: 'rgba(255,255,255,0.45)' }}>
+          <p className="mt-4 text-[14px]" style={{ color: 'var(--text-tertiary)' }}>
             Descubra quanto seu perfil pode melhorar.
           </p>
         </div>
@@ -337,7 +337,7 @@ function Problema() {
             <p className="text-[17px] mb-6" style={{ color: 'rgba(255,255,255,0.70)', lineHeight: 1.7 }}>
               Perde porque o Google Meu Negócio não sabe que você existe.
             </p>
-            <p className="text-[16px] mb-6" style={{ color: 'rgba(255,255,255,0.60)', lineHeight: 1.7 }}>
+            <p className="text-[16px] mb-6" style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
               Quando alguém digita o que você faz seguido de &quot;perto de mim&quot;, o Google Meu Negócio decide quem aparece. Não é quem faz melhor. É quem tem o perfil mais completo, mais ativo, com mais avaliações respondidas. O resto fica invisível.
             </p>
             <p className="text-[15px] font-medium" style={{ color: 'var(--accent)', lineHeight: 1.7 }}>
@@ -363,7 +363,7 @@ function Problema() {
                   <PinIcon size={22} />
                   <div>
                     <p className="font-display font-bold text-[15px] mb-1.5 text-white">{item.title}</p>
-                    <p className="text-[14px]" style={{ color: 'rgba(255,255,255,0.60)', lineHeight: 1.7 }}>{item.desc}</p>
+                    <p className="text-[14px]" style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>{item.desc}</p>
                   </div>
                 </div>
               </div>
@@ -396,7 +396,7 @@ function AparecerPrimeiro() {
               Você é o melhor no que faz.<br className="hidden md:block" />
               O Google só precisa saber disso.
             </h2>
-            <p className="text-[16px] mb-8" style={{ color: 'rgba(255,255,255,0.60)', lineHeight: 1.7 }}>
+            <p className="text-[16px] mb-8" style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
               O primeiro lugar no Google vai para quem tem o perfil mais completo, mais ativo, com mais avaliações. O Destaka cuida de tudo isso no piloto automático, para que o primeiro lugar seja seu.
             </p>
             <Button variant="primary" size="md" href="/login">
@@ -469,7 +469,7 @@ function Manifesto() {
               </div>
             </div>
 
-            <p className="text-[14px] font-medium mb-6" style={{ color: 'rgba(255,255,255,0.50)' }}>
+            <p className="text-[14px] font-medium mb-6" style={{ color: 'var(--text-tertiary)' }}>
               Se você sabe que merece aparecer, comece aqui.
             </p>
 
@@ -479,7 +479,7 @@ function Manifesto() {
               <span className="w-7 h-7 rounded-full bg-black/20 flex items-center justify-center flex-shrink-0 text-[13px]">→</span>
             </Button>
 
-            <p className="mt-5 text-[13px]" style={{ color: 'rgba(255,255,255,0.40)' }}>
+            <p className="mt-5 text-[13px]" style={{ color: 'var(--text-muted)' }}>
               Grátis. Sem cartão. Resultado em 30 segundos.
             </p>
           </div>
@@ -562,7 +562,7 @@ function ComoFunciona() {
                 </div>
                 <div>
                   <h3 className="font-display font-bold text-[18px] text-white mb-2">{step.title}</h3>
-                  <p className="text-[15px]" style={{ color: 'rgba(255,255,255,0.60)', lineHeight: 1.7 }}>{step.desc}</p>
+                  <p className="text-[15px]" style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>{step.desc}</p>
                 </div>
                 {step.cta && step.href && (
                   <Button variant="primary" size="md" href={step.href} className="mt-auto self-start">
@@ -610,9 +610,9 @@ function Recursos() {
             style={{ fontSize: 'clamp(28px, 3.5vw, 40px)', color: '#fff' }}
           >
             Tudo no piloto automático.<br />
-            <span style={{ color: 'rgba(255,255,255,0.6)' }}>Sem depender de você.</span>
+            <span style={{ color: 'var(--text-secondary)' }}>Sem depender de você.</span>
           </h2>
-          <p className="text-[16px] max-w-xl mx-auto" style={{ color: 'rgba(255,255,255,0.60)', lineHeight: 1.7 }}>
+          <p className="text-[16px] max-w-xl mx-auto" style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
             O Destaka cuida da sua visibilidade no Google enquanto você cuida do seu negócio.
           </p>
         </div>
@@ -633,7 +633,7 @@ function Recursos() {
                   <h3 className={`font-display font-bold mb-2 text-white ${f.large ? 'text-[17px]' : 'text-[15px]'}`}>
                     {f.title}
                   </h3>
-                  <p className="text-[14px]" style={{ color: 'rgba(255,255,255,0.60)', lineHeight: 1.7 }}>{f.desc}</p>
+                  <p className="text-[14px]" style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>{f.desc}</p>
                 </div>
               </div>
             </div>
@@ -646,7 +646,7 @@ function Recursos() {
             Fazer diagnóstico gratuito
             <span className="w-7 h-7 rounded-full bg-black/20 flex items-center justify-center flex-shrink-0 text-[13px]">→</span>
           </Button>
-          <p className="mt-4 text-[14px]" style={{ color: 'rgba(255,255,255,0.45)' }}>
+          <p className="mt-4 text-[14px]" style={{ color: 'var(--text-tertiary)' }}>
             Descubra quanto seu perfil pode melhorar.
           </p>
         </div>
@@ -662,24 +662,24 @@ function Footer() {
     <footer className="px-6 py-12" style={{ background: '#071825', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
       <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5">
         <Logo size="sm" />
-        <p className="text-[13px]" style={{ color: 'rgba(255,255,255,0.45)' }}>
+        <p className="text-[13px]" style={{ color: 'var(--text-tertiary)' }}>
           Google Meu Negócio no piloto automático. Para quem merece ser encontrado primeiro.
         </p>
         <div className="flex flex-col items-center md:items-end gap-3">
           <div className="flex items-center gap-5">
-            <Link href="/privacy" className="text-[12px] hover:text-white transition-colors" style={{ color: 'rgba(255,255,255,0.45)' }}>
+            <Link href="/privacy" className="text-[12px] hover:text-white transition-colors" style={{ color: 'var(--text-tertiary)' }}>
               Privacidade
             </Link>
-            <Link href="/termos" className="text-[12px] hover:text-white transition-colors" style={{ color: 'rgba(255,255,255,0.45)' }}>
+            <Link href="/termos" className="text-[12px] hover:text-white transition-colors" style={{ color: 'var(--text-tertiary)' }}>
               Termos
             </Link>
-            <p className="text-[12px]" style={{ color: 'rgba(255,255,255,0.2)' }}>
+            <p className="text-[12px]" style={{ color: 'var(--text-muted)' }}>
               © 2026 Destaka
             </p>
           </div>
-          <p className="text-[11px]" style={{ color: 'rgba(255,255,255,0.25)' }}>
+          <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>
             Destaka é uma plataforma desenvolvida e operada por{' '}
-            <a href="https://unlmtd.etc.br" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            <a href="https://unlmtd.etc.br" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors" style={{ color: 'var(--text-muted)' }}>
               UNLMTD
             </a>
           </p>
