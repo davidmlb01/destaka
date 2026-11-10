@@ -50,12 +50,12 @@ export async function publishPost(accountId: string, content: string, imageUrl?:
     const zernio = getZernioClient()
     const body: {
       content: string
-      platforms: Array<{ accountId: string }>
+      platforms: Array<{ accountId: string; platform: string }>
       publishNow: boolean
       mediaItems?: Array<{ url: string; type: 'image' }>
     } = {
       content,
-      platforms: [{ accountId }],
+      platforms: [{ accountId, platform: 'googlebusiness' }],
       publishNow: true,
     }
     if (imageUrl) {
