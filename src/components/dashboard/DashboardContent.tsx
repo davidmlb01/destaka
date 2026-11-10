@@ -140,7 +140,7 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
           style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}
         >
           <div className="flex flex-col items-center w-full">
-            <ScoreGauge score={diagnostic?.score_total ?? 0} />
+            <ScoreGauge score={diagnostic?.score_total ?? 0} initialScore={scoreHistory.length > 1 ? scoreHistory[scoreHistory.length - 1].score_total : null} />
           </div>
 
           {isSubscriber ? (

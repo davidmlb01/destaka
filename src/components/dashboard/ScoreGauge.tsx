@@ -40,11 +40,12 @@ function arcPath(cx: number, cy: number, r: number, fromDeg: number, sweep: numb
 
 interface ScoreGaugeProps {
   score: number
+  initialScore?: number | null
   size?: number
   showGlow?: boolean
 }
 
-export function ScoreGauge({ score, size = 180, showGlow = true }: ScoreGaugeProps) {
+export function ScoreGauge({ score, initialScore, size = 180, showGlow = true }: ScoreGaugeProps) {
   const { statusColor, label } = scoreTheme(score)
 
   const R = (size / 160) * 60
@@ -137,6 +138,14 @@ export function ScoreGauge({ score, size = 180, showGlow = true }: ScoreGaugePro
           >
             {label}
           </p>
+          {initialScore != null && score > initialScore && (
+            <p
+              className="text-[12px] font-medium text-center px-3 py-1 rounded-full"
+              style={{ background: 'rgba(74,222,128,0.1)', color: '#4ADE80', border: '1px solid rgba(74,222,128,0.2)' }}
+            >
+              ↑ +{score - initialScore} pontos desde o início
+            </p>
+          )}
           <p
             className="text-[13px] text-center"
             style={{ color: 'rgba(255,255,255,0.55)', maxWidth: 220, lineHeight: 1.5 }}
