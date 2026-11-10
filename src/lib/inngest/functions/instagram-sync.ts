@@ -277,7 +277,7 @@ export const instagramSync = inngest.createFunction(
               await db.from('posts').insert({
                 organization_id: org.id,
                 content: post.rewritten_caption,
-                post_type: 'instagram_adapted',
+                post_type: 'educativo',
                 status: 'published',
                 published_at: new Date().toISOString(),
                 gbp_post_id: gbpPostId,

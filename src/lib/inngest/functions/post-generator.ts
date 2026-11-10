@@ -131,7 +131,7 @@ export const postGenerator = inngest.createFunction(
               await db.from('posts').insert({
                 organization_id: orgId,
                 content: igPost.rewritten_caption,
-                post_type: 'instagram_adapted',
+                post_type: 'educativo',
                 status: 'published',
                 published_at: new Date().toISOString(),
                 gbp_post_id: gbpPostId,
@@ -140,20 +140,20 @@ export const postGenerator = inngest.createFunction(
               })
             }
 
-            return { org_id: orgId, status: gbpPostId ? 'published' : 'failed', post_type: 'instagram_adapted' }
+            return { org_id: orgId, status: gbpPostId ? 'published' : 'failed', post_type: 'educativo' }
           }
 
           // Se nao e automatico, marca como pending para aprovacao
           await db.from('posts').insert({
             organization_id: orgId,
             content: igPost.rewritten_caption,
-            post_type: 'instagram_adapted',
+            post_type: 'educativo',
             status: 'pending',
             photo_suggestion: 'Foto original do Instagram',
             source: 'instagram',
           })
 
-          return { org_id: orgId, status: 'pending', post_type: 'instagram_adapted' }
+          return { org_id: orgId, status: 'pending', post_type: 'educativo' }
         }
 
         const validToken = await getValidTokenForOrg(db, orgId)
