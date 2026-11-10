@@ -278,7 +278,7 @@ export function CompetitorsContent({ specialty }: { specialty?: string | null })
 
   if (error) return (
     <div className="flex flex-col items-center justify-center py-20 text-center">
-      <p className="text-[15px] mb-4" style={{ color: 'rgba(255,255,255,0.7)' }}>Não foi possível carregar. Tente novamente.</p>
+      <p className="text-[15px] mb-4" style={{ color: 'var(--text-secondary)' }}>Não foi possível carregar. Tente novamente.</p>
       <button onClick={() => window.location.reload()} className="text-[14px] font-medium px-4 py-2 rounded-lg" style={{ background: 'var(--accent)', color: '#fff' }}>
         Tentar novamente
       </button>

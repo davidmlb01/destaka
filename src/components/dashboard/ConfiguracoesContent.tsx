@@ -70,8 +70,8 @@ export function ConfiguracoesContent({ plan, tokenInvalid, userEmail }: Props) {
     <div>
       {/* Conta */}
       <Section title="Conta">
-        <p className="text-sm mb-1" style={{ color: 'rgba(255,255,255,0.55)' }}>{userEmail}</p>
-        <p className="text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>
+        <p className="text-sm mb-1" style={{ color: 'var(--text-tertiary)' }}>{userEmail}</p>
+        <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
           Plano: <span style={{ color: plan === 'free' ? 'rgba(255,255,255,0.45)' : '#4ADE80', fontWeight: 600 }}>
             {plan === 'free' ? 'Gratuito' : 'Ativo'}
           </span>
@@ -88,7 +88,7 @@ export function ConfiguracoesContent({ plan, tokenInvalid, userEmail }: Props) {
             A conexão com o Google expirou. As automações estão pausadas até você reconectar.
           </div>
         )}
-        <p className="text-xs mb-4" style={{ color: 'rgba(255,255,255,0.4)', lineHeight: 1.6 }}>
+        <p className="text-xs mb-4" style={{ color: 'var(--text-muted)', lineHeight: 1.6 }}>
           O Destaka usa a sua conta Google para acessar o Google Meu Negócio. Se as automações pararam de funcionar, reconecte aqui.
         </p>
         <button
@@ -107,7 +107,7 @@ export function ConfiguracoesContent({ plan, tokenInvalid, userEmail }: Props) {
 
       {/* LGPD */}
       <Section title="Seus dados (LGPD)">
-        <p className="text-xs mb-4" style={{ color: 'rgba(255,255,255,0.4)', lineHeight: 1.6 }}>
+        <p className="text-xs mb-4" style={{ color: 'var(--text-muted)', lineHeight: 1.6 }}>
           Você tem o direito de exportar todos os seus dados (Art. 15) ou solicitar a exclusão da sua conta e dados (Art. 18).
         </p>
         <div className="flex flex-col gap-3">
@@ -118,7 +118,7 @@ export function ConfiguracoesContent({ plan, tokenInvalid, userEmail }: Props) {
             style={{
               background: 'rgba(255,255,255,0.05)',
               border: '1px solid rgba(255,255,255,0.1)',
-              color: 'rgba(255,255,255,0.6)',
+              color: 'var(--text-secondary)',
             }}
           >
             Exportar meus dados (JSON)
@@ -144,7 +144,7 @@ export function ConfiguracoesContent({ plan, tokenInvalid, userEmail }: Props) {
               style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)' }}
             >
               <p className="text-sm font-bold text-white mb-1">Tem certeza?</p>
-              <p className="text-xs mb-4" style={{ color: 'rgba(255,255,255,0.45)', lineHeight: 1.5 }}>
+              <p className="text-xs mb-4" style={{ color: 'var(--text-tertiary)', lineHeight: 1.5 }}>
                 Todos os seus dados serão permanentemente excluídos: perfil, avaliações, posts e histórico. Essa ação não pode ser desfeita.
               </p>
               {deleteError && (
@@ -154,7 +154,7 @@ export function ConfiguracoesContent({ plan, tokenInvalid, userEmail }: Props) {
                 <button
                   onClick={() => { setDeleteStep('idle'); setDeleteError(null) }}
                   className="flex-1 rounded-xl py-2 text-xs font-medium"
-                  style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.5)' }}
+                  style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-tertiary)' }}
                 >
                   Cancelar
                 </button>
@@ -170,7 +170,7 @@ export function ConfiguracoesContent({ plan, tokenInvalid, userEmail }: Props) {
           )}
 
           {deleteStep === 'deleting' && (
-            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>Excluindo conta...</p>
+            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Excluindo conta...</p>
           )}
         </div>
       </Section>

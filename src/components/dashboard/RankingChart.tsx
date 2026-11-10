@@ -49,7 +49,7 @@ export function RankingChart({ data, keyword }: RankingChartProps) {
 
   return (
     <div className="mt-4">
-      <p className="text-xs mb-2" style={{ color: 'rgba(255,255,255,0.3)' }}>
+      <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>
         Evolução: &ldquo;{keyword}&rdquo;
       </p>
       <svg

@@ -59,17 +59,17 @@ export default function MapCard({ isSubscriber }: { isSubscriber: boolean }) {
     >
       <p
         className="text-[10px] font-medium tracking-[0.08em] uppercase mb-3"
-        style={{ color: 'rgba(255,255,255,0.35)' }}
+        style={{ color: 'var(--text-muted)' }}
       >
         Onde você aparece
       </p>
-      <p className="text-[13px] mb-4" style={{ color: 'rgba(255,255,255,0.45)' }}>
+      <p className="text-[13px] mb-4" style={{ color: 'var(--text-tertiary)' }}>
         Seu alcance no Google Maps
       </p>
 
       {loading && (
         <div className="h-[240px] sm:h-[280px] flex items-center justify-center">
-          <p className="text-[13px]" style={{ color: 'rgba(255,255,255,0.35)' }}>Carregando mapa...</p>
+          <p className="text-[13px]" style={{ color: 'var(--text-muted)' }}>Carregando mapa...</p>
         </div>
       )}
 
@@ -89,10 +89,10 @@ export default function MapCard({ isSubscriber }: { isSubscriber: boolean }) {
             className="absolute inset-0 flex flex-col items-center justify-center rounded-xl"
             style={{ background: 'rgba(0,0,0,0.4)' }}
           >
-            <svg className="w-8 h-8 mb-2" style={{ color: 'rgba(255,255,255,0.4)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-8 h-8 mb-2" style={{ color: 'var(--text-muted)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
             </svg>
-            <p className="text-[13px] font-medium mb-3" style={{ color: 'rgba(255,255,255,0.7)' }}>
+            <p className="text-[13px] font-medium mb-3" style={{ color: 'var(--text-secondary)' }}>
               Descubra em quais bairros você está invisível
             </p>
             <Link
@@ -108,7 +108,7 @@ export default function MapCard({ isSubscriber }: { isSubscriber: boolean }) {
 
       {!loading && isSubscriber && (!data || data.empty) && (
         <div className="h-[240px] sm:h-[280px] flex items-center justify-center px-4">
-          <p className="text-[13px] text-center" style={{ color: 'rgba(255,255,255,0.35)' }}>
+          <p className="text-[13px] text-center" style={{ color: 'var(--text-muted)' }}>
             Estamos mapeando seu alcance. Recarregue em alguns minutos.
           </p>
         </div>
@@ -116,7 +116,7 @@ export default function MapCard({ isSubscriber }: { isSubscriber: boolean }) {
 
       {!loading && isSubscriber && data && !data.empty && data.zones.length <= 1 && (
         <div className="h-[240px] sm:h-[280px] flex items-center justify-center px-6">
-          <p className="text-[13px] text-center" style={{ color: 'rgba(255,255,255,0.45)', lineHeight: 1.5 }}>
+          <p className="text-[13px] text-center" style={{ color: 'var(--text-tertiary)', lineHeight: 1.5 }}>
             Seu negócio atende por área de serviço. O mapa de bairros aparece para negócios com endereço fixo.
           </p>
         </div>
@@ -137,12 +137,12 @@ export default function MapCard({ isSubscriber }: { isSubscriber: boolean }) {
             ].map(item => (
               <div key={item.label} className="flex items-center gap-1.5">
                 <span className="rounded-full" style={{ width: 7, height: 7, background: item.color }} />
-                <span className="text-[11px]" style={{ color: 'rgba(255,255,255,0.45)' }}>{item.label}</span>
+                <span className="text-[11px]" style={{ color: 'var(--text-tertiary)' }}>{item.label}</span>
               </div>
             ))}
           </div>
 
-          <p className="text-[13px] mt-3" style={{ color: 'rgba(255,255,255,0.55)' }}>
+          <p className="text-[13px] mt-3" style={{ color: 'var(--text-tertiary)' }}>
             Aparece em{' '}
             <span className="font-medium text-white">{data.total_neighborhoods} {data.total_neighborhoods === 1 ? 'bairro' : 'bairros'}</span>
             {(strongCount > 0 || mediumCount > 0 || weakCount > 0) && (
@@ -153,7 +153,7 @@ export default function MapCard({ isSubscriber }: { isSubscriber: boolean }) {
               ].filter(Boolean).join(', ')})</span>
             )}
             {data.radius_km > 0 && (
-              <span style={{ color: 'rgba(255,255,255,0.35)' }}> · {data.radius_km} km</span>
+              <span style={{ color: 'var(--text-muted)' }}> · {data.radius_km} km</span>
             )}
           </p>
         </div>

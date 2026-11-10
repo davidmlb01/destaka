@@ -24,7 +24,7 @@ interface RankingData {
 
 function PositionBadge({ position }: { position: number | null }) {
   if (position === null) return (
-    <span className="text-xs px-2 py-1 rounded-lg" style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.3)' }}>
+    <span className="text-xs px-2 py-1 rounded-lg" style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-muted)' }}>
       Fora do top 20
     </span>
   )
@@ -48,7 +48,7 @@ function PositionBadge({ position }: { position: number | null }) {
 
 function DeltaIndicator({ delta }: { delta: number | null }) {
   if (delta === null) return null
-  if (delta === 0) return <span className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>estável</span>
+  if (delta === 0) return <span className="text-xs" style={{ color: 'var(--text-muted)' }}>estável</span>
 
   // Delta positivo = subiu posições (ex: de 5 para 2 = +3 subiu)
   // Delta negativo = caiu posições (ex: de 2 para 5 = -3 caiu)
@@ -93,7 +93,7 @@ export function RankingCard() {
         style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}
       >
         <div className="flex flex-col items-center py-6 text-center">
-          <p className="text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>
+          <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
             Posicionamento sendo analisado. Primeiro resultado aparece na proxima segunda-feira.
           </p>
         </div>
@@ -124,7 +124,7 @@ export function RankingCard() {
               <div className="flex items-center gap-3 mt-1">
                 <DeltaIndicator delta={primary.delta} />
                 {primary.topCompetitor && primary.currentPosition !== 1 && (
-                  <span className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                  <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
                     1o: {primary.topCompetitor} ({primary.topCompetitorReviews} reviews)
                   </span>
                 )}
@@ -150,7 +150,7 @@ export function RankingCard() {
                 className="flex items-center justify-between rounded-xl px-4 py-3"
                 style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
               >
-                <p className="text-sm truncate flex-1 min-w-0" style={{ color: 'rgba(255,255,255,0.7)' }}>
+                <p className="text-sm truncate flex-1 min-w-0" style={{ color: 'var(--text-secondary)' }}>
                   {kw.keyword}
                 </p>
                 <div className="flex items-center gap-3 shrink-0 ml-3">
@@ -169,7 +169,7 @@ export function RankingCard() {
       )}
 
       {data.lastTracked && (
-        <p className="text-xs mt-4 text-right" style={{ color: 'rgba(255,255,255,0.2)' }}>
+        <p className="text-xs mt-4 text-right" style={{ color: 'var(--text-muted)' }}>
           Atualizado: {new Date(data.lastTracked).toLocaleDateString('pt-BR')}
         </p>
       )}

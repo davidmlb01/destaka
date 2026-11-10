@@ -248,7 +248,7 @@ export function OptimizationsPage({
     return (
       <div className="px-6 py-10 max-w-3xl">
         <h1 className="font-display font-bold text-white text-2xl mb-3">Melhorias para seu perfil</h1>
-        <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 15 }}>
+        <p style={{ color: 'var(--text-tertiary)', fontSize: 15 }}>
           Nenhuma sugestão disponível no momento. Execute o diagnóstico para gerar recomendações.
         </p>
       </div>
@@ -262,7 +262,7 @@ export function OptimizationsPage({
         <h1 className="font-display font-bold text-white" style={{ fontSize: 28, letterSpacing: '-0.5px' }}>
           Melhorias para seu perfil
         </h1>
-        <p className="mt-2" style={{ color: 'rgba(255,255,255,0.55)', fontSize: 15, lineHeight: 1.6 }}>
+        <p className="mt-2" style={{ color: 'var(--text-tertiary)', fontSize: 15, lineHeight: 1.6 }}>
           Cada melhoria sobe você no ranking do Google
         </p>
       </div>
@@ -277,12 +277,12 @@ export function OptimizationsPage({
       >
         <div className="flex-1 min-w-0">
           {autoPilot ? (
-            <p className="text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
               <span className="font-semibold text-white">Modo automático ativado.</span>{' '}
               O Destaka aplica as melhorias sem precisar de aprovação.
             </p>
           ) : (
-            <p className="text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
               Quer que o Destaka aplique tudo automaticamente?{' '}
               <span className="font-semibold text-white">Ative o modo automático.</span>
             </p>
@@ -314,10 +314,10 @@ export function OptimizationsPage({
           style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}
         >
           <div className="flex items-center gap-3">
-            <span className="text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>Score atual:</span>
+            <span className="text-sm" style={{ color: 'var(--text-tertiary)' }}>Score atual:</span>
             <span className="font-display font-bold text-white text-lg">{currentScore}</span>
-            <span style={{ color: 'rgba(255,255,255,0.3)' }}>{'\u2192'}</span>
-            <span className="text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>Score projetado:</span>
+            <span style={{ color: 'var(--text-muted)' }}>{'\u2192'}</span>
+            <span className="text-sm" style={{ color: 'var(--text-tertiary)' }}>Score projetado:</span>
             <span className="font-display font-bold text-lg" style={{ color: '#4ADE80' }}>
               {currentScore + boost}
             </span>
@@ -340,7 +340,7 @@ export function OptimizationsPage({
             style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}
           >
             <div className="px-5 pt-5 pb-3">
-              <p className="text-sm" style={{ color: 'rgba(255,255,255,0.55)' }}>
+              <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
                 Escolha uma das opções abaixo ou edite antes de aplicar.
               </p>
             </div>
@@ -349,10 +349,10 @@ export function OptimizationsPage({
             {currentDescription && (
               <div className="px-5 pb-3">
                 <div className="rounded-xl px-4 py-3" style={{ background: 'rgba(255,255,255,0.04)' }}>
-                  <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--text-muted)' }}>
                     Descrição atual
                   </p>
-                  <p className="text-[13px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                  <p className="text-[13px] leading-relaxed" style={{ color: 'var(--text-tertiary)' }}>
                     {currentDescription}
                   </p>
                 </div>
@@ -389,11 +389,11 @@ export function OptimizationsPage({
                         >
                           {cfg.label}
                         </span>
-                        <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                        <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
                           {v.char_count || v.text.length} caracteres
                         </span>
                       </div>
-                      <p className="text-[13px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.65)' }}>
+                      <p className="text-[13px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                         {v.text}
                       </p>
                     </div>
@@ -405,7 +405,7 @@ export function OptimizationsPage({
             {/* Editable textarea */}
             {selectedVariant !== null && (
               <div className="px-5 pb-4">
-                <p className="text-[11px] font-medium mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                <p className="text-[11px] font-medium mb-2" style={{ color: 'var(--text-muted)' }}>
                   Edite o texto antes de aplicar (opcional)
                 </p>
                 <textarea
@@ -416,7 +416,7 @@ export function OptimizationsPage({
                   style={{
                     background: 'rgba(255,255,255,0.04)',
                     border: '1px solid rgba(255,255,255,0.1)',
-                    color: 'rgba(255,255,255,0.85)',
+                    color: 'var(--text-primary)',
                     lineHeight: 1.6,
                   }}
                 />
@@ -457,7 +457,7 @@ export function OptimizationsPage({
 
             {/* Competitor attributes */}
             <div className="px-5 pb-3">
-              <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: 'rgba(255,255,255,0.35)' }}>
+              <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: 'var(--text-muted)' }}>
                 Seus concorrentes oferecem
               </p>
               <div className="space-y-2">
@@ -481,7 +481,7 @@ export function OptimizationsPage({
                       />
                       <div className="flex-1 min-w-0">
                         <p className="text-[13px] font-medium text-white">{attr.attribute}</p>
-                        <p className="text-[11px] mt-0.5" style={{ color: 'rgba(255,255,255,0.45)' }}>
+                        <p className="text-[11px] mt-0.5" style={{ color: 'var(--text-tertiary)' }}>
                           {attr.justification}
                         </p>
                       </div>
@@ -514,7 +514,7 @@ export function OptimizationsPage({
             {/* Current categories */}
             {currentCategories.length > 0 && (
               <div className="px-5 pt-5 pb-3">
-                <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: 'var(--text-muted)' }}>
                   Categorias atuais
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -522,7 +522,7 @@ export function OptimizationsPage({
                     <span
                       key={i}
                       className="text-[12px] px-3 py-1 rounded-lg"
-                      style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.6)' }}
+                      style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-secondary)' }}
                     >
                       {cat}
                     </span>
@@ -533,7 +533,7 @@ export function OptimizationsPage({
 
             {/* Suggestions */}
             <div className="px-5 pb-3">
-              <p className="text-[10px] font-bold uppercase tracking-widest mb-3 mt-3" style={{ color: 'rgba(255,255,255,0.35)' }}>
+              <p className="text-[10px] font-bold uppercase tracking-widest mb-3 mt-3" style={{ color: 'var(--text-muted)' }}>
                 Sugestões baseadas nos concorrentes
               </p>
               <div className="space-y-2">
@@ -567,7 +567,7 @@ export function OptimizationsPage({
                             </span>
                           )}
                         </div>
-                        <p className="text-[11px] mt-0.5" style={{ color: 'rgba(255,255,255,0.45)' }}>
+                        <p className="text-[11px] mt-0.5" style={{ color: 'var(--text-tertiary)' }}>
                           {cat.justification}
                         </p>
                       </div>
@@ -600,7 +600,7 @@ export function OptimizationsPage({
             {/* Onboarding services (read-only) */}
             {onboardingServices.length > 0 && (
               <div className="px-5 pt-5 pb-3">
-                <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: 'var(--text-muted)' }}>
                   Serviços do seu cadastro
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -608,7 +608,7 @@ export function OptimizationsPage({
                     <span
                       key={i}
                       className="text-[12px] px-3 py-1 rounded-lg"
-                      style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.6)' }}
+                      style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-secondary)' }}
                     >
                       {svc}
                     </span>
@@ -619,7 +619,7 @@ export function OptimizationsPage({
 
             {/* Optimized versions */}
             <div className="px-5 pb-3">
-              <p className="text-[10px] font-bold uppercase tracking-widest mb-3 mt-3" style={{ color: 'rgba(255,255,255,0.35)' }}>
+              <p className="text-[10px] font-bold uppercase tracking-widest mb-3 mt-3" style={{ color: 'var(--text-muted)' }}>
                 Nomes otimizados para o Google
               </p>
               <div className="space-y-3">
@@ -630,10 +630,10 @@ export function OptimizationsPage({
                     style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}
                   >
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-[12px]" style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'line-through' }}>
+                      <span className="text-[12px]" style={{ color: 'var(--text-muted)', textDecoration: 'line-through' }}>
                         {svc.original}
                       </span>
-                      <span style={{ color: 'rgba(255,255,255,0.2)' }}>{'\u2192'}</span>
+                      <span style={{ color: 'var(--text-muted)' }}>{'\u2192'}</span>
                     </div>
                     <input
                       type="text"
@@ -646,7 +646,7 @@ export function OptimizationsPage({
                       style={{
                         background: 'rgba(255,255,255,0.04)',
                         border: '1px solid rgba(255,255,255,0.1)',
-                        color: 'rgba(255,255,255,0.85)',
+                        color: 'var(--text-primary)',
                       }}
                     />
                     {svc.keywords_added.length > 0 && (
@@ -700,7 +700,7 @@ export function OptimizationsPage({
             >
               <polyline points="9 18 15 12 9 6" />
             </svg>
-            <span className="text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.5)' }}>
+            <span className="text-sm font-semibold" style={{ color: 'var(--text-tertiary)' }}>
               Já aplicados nesta sessão
             </span>
           </button>
@@ -803,7 +803,7 @@ function AppliedItem({ label }: { label: string }) {
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ADE80" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
         <polyline points="20 6 9 17 4 12" />
       </svg>
-      <span className="text-[13px]" style={{ color: 'rgba(255,255,255,0.6)' }}>{label}</span>
+      <span className="text-[13px]" style={{ color: 'var(--text-secondary)' }}>{label}</span>
     </div>
   )
 }

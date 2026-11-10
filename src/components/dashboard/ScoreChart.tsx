@@ -25,7 +25,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
       className="rounded-xl px-3 py-2 text-sm"
       style={{ background: 'var(--modal-bg)', border: '1px solid var(--border-card)', color: '#fff' }}
     >
-      <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11 }}>{label}</p>
+      <p style={{ color: 'var(--text-tertiary)', fontSize: 11 }}>{label}</p>
       <p className="font-display font-bold" style={{ color: '#4ADE80' }}>{payload[0].value} pts</p>
     </div>
   )
@@ -34,7 +34,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
 export function ScoreChart({ data }: { data: DataPoint[] }) {
   if (data.length < 2) {
     return (
-      <div className="flex items-center justify-center h-32" style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14 }}>
+      <div className="flex items-center justify-center h-32" style={{ color: 'var(--text-tertiary)', fontSize: 14 }}>
         Dados insuficientes para o gráfico. Refaça diagnósticos ao longo do tempo.
       </div>
     )

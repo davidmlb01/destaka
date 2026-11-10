@@ -69,7 +69,7 @@ export function ProfileAlerts() {
               <p className="text-sm font-medium text-white mb-1">
                 Alteração detectada: {FIELD_LABELS[alert.field] ?? alert.field}
               </p>
-              <p className="text-xs mb-3" style={{ color: 'rgba(255,255,255,0.55)', lineHeight: 1.5 }}>
+              <p className="text-xs mb-3" style={{ color: 'var(--text-tertiary)', lineHeight: 1.5 }}>
                 {alert.old_value
                   ? `Valor anterior: "${truncate(alert.old_value, 80)}" → Novo valor: "${truncate(alert.new_value ?? '(vazio)', 80)}"`
                   : `Novo valor definido: "${truncate(alert.new_value ?? '(vazio)', 80)}"`

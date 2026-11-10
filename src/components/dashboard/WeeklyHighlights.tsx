@@ -53,8 +53,8 @@ export function WeeklyHighlights({ data }: WeeklyHighlightsProps) {
       >
         ✦
       </span>
-      <p className="text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>
-        <span style={{ color: 'rgba(255,255,255,0.4)', fontWeight: 600, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+      <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+        <span style={{ color: 'var(--text-muted)', fontWeight: 600, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
           Esta semana:
         </span>{' '}
         {parts.join(' · ')}

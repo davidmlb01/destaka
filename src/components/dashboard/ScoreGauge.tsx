@@ -62,7 +62,7 @@ export function ScoreGauge({ score, initialScore, size = 200, showGlow = true }:
       {showGlow && (
         <p
           className="text-[10px] font-medium tracking-[0.08em] uppercase mb-3"
-          style={{ color: 'rgba(255,255,255,0.35)' }}
+          style={{ color: 'var(--text-muted)' }}
         >
           Score Destaka
         </p>
@@ -148,7 +148,7 @@ export function ScoreGauge({ score, initialScore, size = 200, showGlow = true }:
           )}
           <p
             className="text-[13px] text-center"
-            style={{ color: 'rgba(255,255,255,0.55)', maxWidth: 220, lineHeight: 1.5 }}
+            style={{ color: 'var(--text-tertiary)', maxWidth: 220, lineHeight: 1.5 }}
           >
             {scoreDescription(score)}
           </p>

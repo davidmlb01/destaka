@@ -78,7 +78,7 @@ export function OptimizationWizard({ profileId, diagnosticId, onComplete, specia
             <h2 className="font-display font-bold text-white" style={{ fontSize: 17 }}>
               Otimizar seu perfil
             </h2>
-            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
+            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
               {step === 'loading-plan' && 'Analisando seu perfil...'}
               {step === 'preview' && `${plan?.actions.length} melhorias prontas para aplicar`}
               {step === 'executing' && `Aplicando ${currentActionIndex + 1} de ${plan?.actions.length}...`}
@@ -105,18 +105,18 @@ export function OptimizationWizard({ profileId, diagnosticId, onComplete, specia
             >
               <div className="text-center">
                 <p className="font-display font-extrabold text-white" style={{ fontSize: 22 }}>{plan.currentScore}</p>
-                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>Score atual</p>
+                <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>Score atual</p>
               </div>
               <span style={{ color: '#4ADE80', fontSize: 18 }}>→</span>
               <div className="text-center">
                 <p className="font-display font-extrabold" style={{ fontSize: 22, color: '#4ADE80' }}>{plan.projectedScore}</p>
-                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>Score projetado</p>
+                <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>Score projetado</p>
               </div>
               <div className="text-center">
                 <p className="font-display font-extrabold" style={{ fontSize: 16, color: '#4ADE80' }}>
                   +{plan.projectedScore - plan.currentScore}
                 </p>
-                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>pontos</p>
+                <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>pontos</p>
               </div>
             </div>
 
@@ -145,7 +145,7 @@ export function OptimizationWizard({ profileId, diagnosticId, onComplete, specia
                         </span>
                       )}
                       <p className="text-sm font-medium text-white">{action.label}</p>
-                      <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.4)' }}>{action.description}</p>
+                      <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>{action.description}</p>
                     </div>
                     <span className="text-xs font-bold shrink-0" style={{ color: '#4ADE80' }}>+{action.impact}pts</span>
                   </div>
@@ -157,7 +157,7 @@ export function OptimizationWizard({ profileId, diagnosticId, onComplete, specia
               <button
                 onClick={reset}
                 className="flex-1 rounded-xl py-2.5 text-sm font-medium"
-                style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.5)' }}
+                style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-tertiary)' }}
               >
                 Cancelar
               </button>
@@ -207,7 +207,7 @@ export function OptimizationWizard({ profileId, diagnosticId, onComplete, specia
               className="rounded-xl px-4 py-4 mb-4 text-center"
               style={{ background: 'rgba(74,222,128,0.08)', border: '1px solid rgba(74,222,128,0.15)' }}
             >
-              <p className="text-xs mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>Score atualizado</p>
+              <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>Score atualizado</p>
               <div className="flex items-center justify-center gap-3">
                 <span className="font-display font-extrabold text-white" style={{ fontSize: 28 }}>
                   {execution.scoreBefore}
@@ -248,7 +248,7 @@ export function OptimizationWizard({ profileId, diagnosticId, onComplete, specia
               <p className="text-xs font-medium text-white mb-1">
                 Conhece outro {vocab.profissional}?
               </p>
-              <p className="text-xs mb-2" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              <p className="text-xs mb-2" style={{ color: 'var(--text-tertiary)' }}>
                 Indique o Destaka e ganhe 1 mês grátis para cada profissional que assinar.
               </p>
               <a
@@ -269,7 +269,7 @@ export function OptimizationWizard({ profileId, diagnosticId, onComplete, specia
             <button
               onClick={reset}
               className="w-full rounded-xl py-2.5 text-sm font-medium"
-              style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.5)' }}
+              style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-tertiary)' }}
             >
               Fechar
             </button>

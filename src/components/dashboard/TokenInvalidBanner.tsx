@@ -26,7 +26,7 @@ export function TokenInvalidBanner() {
           <p className="font-display font-semibold text-white text-sm">
             Conexão com o Google expirou
           </p>
-          <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.45)' }}>
+          <p className="text-xs mt-0.5" style={{ color: 'var(--text-tertiary)' }}>
             As automações estão pausadas até você reconectar sua conta Google.
           </p>
         </div>

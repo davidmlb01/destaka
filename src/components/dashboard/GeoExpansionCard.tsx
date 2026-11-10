@@ -59,7 +59,7 @@ export function GeoExpansionCard() {
         <h3 className="font-display font-bold text-white text-[15px] mb-2">
           Expansão Geográfica
         </h3>
-        <p className="text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>
+        <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
           Dados sendo coletados. O mapa de alcance aparece após a primeira semana.
         </p>
       </Card>
@@ -86,7 +86,7 @@ export function GeoExpansionCard() {
         <span className="text-3xl font-bold text-white">
           {current?.radius?.toFixed(1)}km
         </span>
-        <span className="text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>
+        <span className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
           raio de alcance
         </span>
         {totalGrowth > 0 && (
@@ -125,14 +125,14 @@ export function GeoExpansionCard() {
           className="rounded-lg px-3 py-2"
           style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)' }}
         >
-          <p className="text-xs mb-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
+          <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>
             Expandindo para:
           </p>
           <p className="text-sm text-white font-medium">
             {expansion.targetRegions.join(', ')}
           </p>
           {expansion.actionCount > 0 && (
-            <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
+            <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
               {expansion.actionCount} {expansion.actionCount === 1 ? 'ação executada' : 'ações executadas'} esta semana
             </p>
           )}

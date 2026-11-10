@@ -17,7 +17,7 @@ export function NextActionsPanel({ actions }: { actions: Action[] }) {
           <PinIcon size={24} />
         </div>
         <p className="font-display font-semibold text-white text-sm">Tudo em ordem</p>
-        <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>Nenhuma ação crítica pendente</p>
+        <p className="text-xs mt-1" style={{ color: 'var(--text-tertiary)' }}>Nenhuma ação crítica pendente</p>
       </div>
     )
   }
@@ -77,7 +77,7 @@ function ActionItem({ action, auto }: { action: Action; auto?: boolean }) {
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm text-white" style={{ lineHeight: 1.5 }}>{action.message}</p>
-        <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>
+        <p className="text-xs mt-1" style={{ color: 'var(--text-tertiary)' }}>
           {auto ? 'O Destaka cuida disso automaticamente' : `+${action.impact} pts ao corrigir`}
         </p>
       </div>

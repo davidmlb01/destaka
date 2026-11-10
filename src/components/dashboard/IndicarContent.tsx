@@ -61,7 +61,7 @@ export function IndicarContent({ specialty }: { userId: string; specialty?: stri
         className="rounded-2xl p-6 text-center"
         style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
       >
-        <p className="text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>
+        <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
           Seu código de indicação será gerado automaticamente. Volte em instantes.
         </p>
       </div>
@@ -92,10 +92,10 @@ export function IndicarContent({ specialty }: { userId: string; specialty?: stri
           />
         </div>
         <div className="flex justify-between mt-2">
-          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
+          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
             {data.activeCount} de 5 indicados ativos
           </p>
-          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
+          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
             {data.discountPercent >= 100
               ? 'Você não paga nada!'
               : `Faltam ${freeSlots} para pagar zero`}
@@ -118,13 +118,13 @@ export function IndicarContent({ specialty }: { userId: string; specialty?: stri
           </span>
         </div>
 
-        <p className="text-xs mb-3" style={{ color: 'rgba(255,255,255,0.4)' }}>
+        <p className="text-xs mb-3" style={{ color: 'var(--text-muted)' }}>
           Seu link de indicação
         </p>
         <div className="flex gap-2">
           <div
             className="flex-1 rounded-xl px-4 py-2.5 text-xs truncate"
-            style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.5)', fontFamily: 'monospace' }}
+            style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text-tertiary)', fontFamily: 'monospace' }}
           >
             {data.link}
           </div>
@@ -174,7 +174,7 @@ export function IndicarContent({ specialty }: { userId: string; specialty?: stri
               >
                 {step.n}
               </span>
-              <p className="text-sm" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1.5 }}>
+              <p className="text-sm" style={{ color: 'var(--text-tertiary)', lineHeight: 1.5 }}>
                 {step.text}
               </p>
             </div>
@@ -200,7 +200,7 @@ export function IndicarContent({ specialty }: { userId: string; specialty?: stri
                 >
                   <div>
                     <p className="text-sm font-medium text-white">{ref.orgName}</p>
-                    <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                    <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
                       {new Date(ref.createdAt).toLocaleDateString('pt-BR')}
                     </p>
                   </div>

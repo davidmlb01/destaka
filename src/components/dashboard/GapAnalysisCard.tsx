@@ -25,7 +25,7 @@ interface GapData {
 const STATUS_STYLE = {
   ahead: { bg: 'rgba(52,211,153,0.1)', border: 'rgba(52,211,153,0.2)', icon: '✓', color: '#34d399' },
   behind: { bg: 'rgba(248,113,113,0.08)', border: 'rgba(248,113,113,0.2)', icon: '!', color: '#f87171' },
-  tied: { bg: 'rgba(255,255,255,0.03)', border: 'rgba(255,255,255,0.08)', icon: '=', color: 'rgba(255,255,255,0.4)' },
+  tied: { bg: 'rgba(255,255,255,0.03)', border: 'rgba(255,255,255,0.08)', icon: '=', color: 'var(--text-muted)' },
 }
 
 export function GapAnalysisCard() {
@@ -67,7 +67,7 @@ export function GapAnalysisCard() {
     >
       <SectionLabel className="mb-2">O que falta para o 1º lugar</SectionLabel>
 
-      <p className="text-sm mb-5" style={{ color: 'rgba(255,255,255,0.6)' }}>
+      <p className="text-sm mb-5" style={{ color: 'var(--text-secondary)' }}>
         Comparação com <strong className="text-white">{data.competitorName}</strong> para &ldquo;{data.keyword}&rdquo;
       </p>
 
@@ -92,15 +92,15 @@ export function GapAnalysisCard() {
                   <span className="text-sm font-medium text-white">{f.label}</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                  <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
                     Você: <strong className="text-white">{f.userValue}</strong>
                   </span>
-                  <span className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                  <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
                     vs <strong style={{ color: style.color }}>{f.competitorValue}</strong>
                   </span>
                 </div>
               </div>
-              <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>{f.action}</p>
+              <p className="text-xs mt-1" style={{ color: 'var(--text-tertiary)' }}>{f.action}</p>
             </div>
           )
         })}
@@ -119,9 +119,9 @@ export function GapAnalysisCard() {
               >
                 <div className="flex items-center gap-2">
                   <span className="text-xs" style={{ color: style.color }}>{style.icon}</span>
-                  <span className="text-xs" style={{ color: 'rgba(255,255,255,0.6)' }}>{f.label}</span>
+                  <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>{f.label}</span>
                 </div>
-                <span className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
                   {f.userValue} vs {f.competitorValue}
                 </span>
               </div>
@@ -135,7 +135,7 @@ export function GapAnalysisCard() {
         className="mt-4 pt-3 rounded-lg px-4 py-3"
         style={{ background: 'rgba(14,165,233,0.06)', border: '1px solid rgba(14,165,233,0.12)' }}
       >
-        <p className="text-sm" style={{ color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
+        <p className="text-sm" style={{ color: 'var(--text-secondary)', lineHeight: 1.5 }}>
           {data.summary}
         </p>
       </div>

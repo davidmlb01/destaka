@@ -61,7 +61,7 @@ export function PostsContent() {
 
   if (error) return (
     <div className="flex flex-col items-center justify-center py-20 text-center">
-      <p className="text-[15px] mb-4" style={{ color: 'rgba(255,255,255,0.7)' }}>Não foi possível carregar. Tente novamente.</p>
+      <p className="text-[15px] mb-4" style={{ color: 'var(--text-secondary)' }}>Não foi possível carregar. Tente novamente.</p>
       <button onClick={() => window.location.reload()} className="text-[14px] font-medium px-4 py-2 rounded-lg" style={{ background: 'var(--accent)', color: '#fff' }}>
         Tentar novamente
       </button>
@@ -82,7 +82,7 @@ export function PostsContent() {
         {/* Modo de postagem */}
         <Card variant="dark" padding="sm">
           <p className="font-display font-semibold text-white text-sm mb-1">Modo de postagem</p>
-          <p className="text-xs mb-4" style={{ color: 'rgba(255,255,255,0.5)' }}>
+          <p className="text-xs mb-4" style={{ color: 'var(--text-tertiary)' }}>
             Como os posts semanais serão tratados
           </p>
           <div className="flex gap-2">
@@ -102,7 +102,7 @@ export function PostsContent() {
               </button>
             ))}
           </div>
-          <p className="text-xs mt-3" style={{ color: 'rgba(255,255,255,0.25)' }}>
+          <p className="text-xs mt-3" style={{ color: 'var(--text-muted)' }}>
             {data?.autoPostMode === 'automatic'
               ? 'Posts são publicados direto toda semana, sem precisar revisar.'
               : 'Você recebe o post para revisar antes de publicar.'}
@@ -114,7 +114,7 @@ export function PostsContent() {
           {data?.scheduledNext ? (
             <div className="mb-3">
               <p className="font-display font-semibold text-white text-sm mb-1">Próximo post agendado</p>
-              <p className="text-xs line-clamp-2" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              <p className="text-xs line-clamp-2" style={{ color: 'var(--text-tertiary)' }}>
                 {data.scheduledNext.content}
               </p>
               {data.scheduledNext.scheduled_at && (
@@ -127,11 +127,11 @@ export function PostsContent() {
             <div className="mb-3">
               <p className="font-display font-semibold text-white text-sm mb-1">Nenhum post agendado</p>
               {data?.autoPostMode === 'automatic' ? (
-                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>
+                <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
                   Próximo post automático: <span style={{ color: 'var(--accent-bright)' }}>{getNextAutoPostLabel()}</span>
                 </p>
               ) : (
-                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>
+                <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
                   Gere um post agora ou aguarde o agendamento diário.
                 </p>
               )}
@@ -180,7 +180,7 @@ export function PostsContent() {
                   >
                     {TYPE_LABELS[post.type] ?? post.type}
                   </span>
-                  <span className="text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>
+                  <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
                     {formatDate(post.created_at)}
                   </span>
                 </div>
@@ -192,13 +192,13 @@ export function PostsContent() {
                     style={{
                       background: 'rgba(255,255,255,0.05)',
                       border: '1px solid rgba(255,255,255,0.1)',
-                      color: 'rgba(255,255,255,0.9)',
+                      color: 'var(--text-primary)',
                       lineHeight: 1.6,
                       minHeight: 120,
                     }}
                   />
                 ) : (
-                  <p className="text-sm mb-4" style={{ color: 'rgba(255,255,255,0.8)', lineHeight: 1.6 }}>
+                  <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                     {post.content}
                   </p>
                 )}
@@ -223,7 +223,7 @@ export function PostsContent() {
                     <button
                       onClick={() => setEditingId(null)}
                       className="px-4 py-2 rounded-xl text-xs font-medium"
-                      style={{ background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.5)' }}
+                      style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-tertiary)' }}
                     >
                       Cancelar
                     </button>
@@ -231,7 +231,7 @@ export function PostsContent() {
                     <button
                       onClick={() => { setEditingId(post.id); setEditText(post.content) }}
                       className="px-4 py-2 rounded-xl text-xs font-medium"
-                      style={{ background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.5)' }}
+                      style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-tertiary)' }}
                     >
                       Editar
                     </button>
@@ -240,7 +240,7 @@ export function PostsContent() {
                     onClick={() => handleDiscard(post.id)}
                     disabled={deletingId === post.id}
                     className="px-4 py-2 rounded-xl text-xs font-medium"
-                    style={{ background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.5)' }}
+                    style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-tertiary)' }}
                   >
                     Descartar
                   </button>
@@ -262,7 +262,7 @@ export function PostsContent() {
             className="rounded-2xl flex items-center justify-center py-12"
             style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.06)' }}
           >
-            <p className="text-sm" style={{ color: 'rgba(255,255,255,0.45)' }}>
+            <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
               Nenhum post publicado ainda. Gere seu primeiro post acima.
             </p>
           </div>
@@ -276,17 +276,17 @@ export function PostsContent() {
                     <div className="flex items-center gap-2">
                       <span
                         className="text-xs font-medium px-2 py-0.5 rounded-full"
-                        style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.4)' }}
+                        style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-muted)' }}
                       >
                         {TYPE_LABELS[post.type] ?? post.type}
                       </span>
-                      <span className="text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>
+                      <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
                         {formatDate(post.published_at ?? post.created_at)}
                       </span>
                     </div>
                     <span className="text-xs font-medium" style={{ color: cfg.color }}>{cfg.label}</span>
                   </div>
-                  <p className="text-sm" style={{ color: 'rgba(255,255,255,0.65)', lineHeight: 1.6 }}>
+                  <p className="text-sm" style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                     {post.content}
                   </p>
                 </Card>

@@ -103,7 +103,7 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
       <h2 className="font-display font-bold text-white text-[22px] mb-2">
         Não foi possível carregar o painel
       </h2>
-      <p className="text-[15px] leading-relaxed mb-6" style={{ color: 'rgba(255,255,255,0.7)', maxWidth: 400 }}>
+      <p className="text-[15px] leading-relaxed mb-6" style={{ color: 'var(--text-secondary)', maxWidth: 400 }}>
         Houve um problema ao conectar com o servidor. Verifique sua conexão e tente novamente.
       </p>
       <button
@@ -145,7 +145,7 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
                 {syncError && (
                   <p className="text-xs font-medium" style={{ color: '#F87171' }}>{syncError}</p>
                 )}
-                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
                   Sync: {lastSync}
                 </p>
                 <button
@@ -168,7 +168,7 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
                 <div className="text-center space-y-1">
                   <p className="text-sm font-semibold text-white">{impactText.split('|')[0]}</p>
                   {impactText.split('|')[1] && (
-                    <p className="text-xs" style={{ color: 'rgba(255,255,255,0.6)' }}>{impactText.split('|')[1]}</p>
+                    <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{impactText.split('|')[1]}</p>
                   )}
                 </div>
               )}

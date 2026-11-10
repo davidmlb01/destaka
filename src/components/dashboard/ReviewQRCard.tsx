@@ -165,7 +165,7 @@ export function ReviewQRCard({ specialty }: { specialty?: string | null }) {
           <h3 className="font-display font-bold text-white text-[16px] mb-1.5">
             QR Code para avaliações
           </h3>
-          <p className="text-sm mb-4" style={{ color: 'rgba(255,255,255,0.55)', lineHeight: 1.6 }}>
+          <p className="text-sm mb-4" style={{ color: 'var(--text-tertiary)', lineHeight: 1.6 }}>
             Imprima e coloque na recepção{vocab.local !== 'estabelecimento' ? ` do ${vocab.local}` : ''}. Seus {vocab.clientes} escaneiam e avaliam direto no Google.
           </p>
 
@@ -176,7 +176,7 @@ export function ReviewQRCard({ specialty }: { specialty?: string | null }) {
           >
             <span
               className="text-xs truncate flex-1"
-              style={{ color: 'rgba(255,255,255,0.45)', fontFamily: 'monospace' }}
+              style={{ color: 'var(--text-tertiary)', fontFamily: 'monospace' }}
             >
               {data.reviewUrl}
             </span>

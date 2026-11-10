@@ -52,7 +52,7 @@ export function ReviewsContent() {
 
   if (error) return (
     <div className="flex flex-col items-center justify-center py-20 text-center">
-      <p className="text-[15px] mb-4" style={{ color: 'rgba(255,255,255,0.7)' }}>Não foi possível carregar. Tente novamente.</p>
+      <p className="text-[15px] mb-4" style={{ color: 'var(--text-secondary)' }}>Não foi possível carregar. Tente novamente.</p>
       <button onClick={() => mutate()} className="text-[14px] font-medium px-4 py-2 rounded-lg" style={{ background: 'var(--accent)', color: '#fff' }}>
         Tentar novamente
       </button>
@@ -108,7 +108,7 @@ export function ReviewsContent() {
           className="rounded-2xl flex items-center justify-center py-16"
           style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.06)' }}
         >
-          <p className="text-sm" style={{ color: 'rgba(255,255,255,0.45)' }}>
+          <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
             Nenhuma avaliação encontrada para este filtro.
           </p>
         </div>
@@ -141,7 +141,7 @@ export function ReviewsContent() {
 
               {/* Texto da avaliação */}
               {review.text && (
-                <p className="text-sm mb-3" style={{ color: 'rgba(255,255,255,0.65)', lineHeight: 1.6 }}>
+                <p className="text-sm mb-3" style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                   &ldquo;{review.text}&rdquo;
                 </p>
               )}
@@ -153,7 +153,7 @@ export function ReviewsContent() {
                   style={{ background: 'rgba(74,222,128,0.06)', border: '1px solid rgba(74,222,128,0.12)' }}
                 >
                   <p className="text-xs mb-1 font-medium" style={{ color: 'var(--success)' }}>Sua resposta</p>
-                  <p className="text-sm" style={{ color: 'rgba(255,255,255,0.6)', lineHeight: 1.5 }}>
+                  <p className="text-sm" style={{ color: 'var(--text-secondary)', lineHeight: 1.5 }}>
                     {review.reply}
                   </p>
                 </div>
@@ -166,7 +166,7 @@ export function ReviewsContent() {
                   style={{ background: 'rgba(14,165,233,0.06)', border: '1px solid rgba(14,165,233,0.12)' }}
                 >
                   <p className="text-xs mb-1 font-medium" style={{ color: 'var(--accent-bright)' }}>Resposta sugerida</p>
-                  <p className="text-sm" style={{ color: 'rgba(255,255,255,0.6)', lineHeight: 1.5 }}>
+                  <p className="text-sm" style={{ color: 'var(--text-secondary)', lineHeight: 1.5 }}>
                     {review.ai_reply_draft}
                   </p>
                 </div>
@@ -203,14 +203,14 @@ export function ReviewsContent() {
                   <button
                     onClick={() => openReplyModal(review)}
                     className="px-3 py-1.5 rounded-lg text-xs font-medium"
-                    style={{ background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.5)' }}
+                    style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-tertiary)' }}
                   >
                     Editar
                   </button>
                   <button
                     onClick={() => ignoreReview(review.id)}
                     className="px-3 py-1.5 rounded-lg text-xs font-medium"
-                    style={{ background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.5)' }}
+                    style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-tertiary)' }}
                   >
                     Ignorar
                   </button>
@@ -235,7 +235,7 @@ export function ReviewsContent() {
           >
             ← Anterior
           </button>
-          <span className="text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>
+          <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
             {page} / {totalPages}
           </span>
           <button
@@ -287,7 +287,7 @@ export function ReviewsContent() {
                 className="rounded-xl px-4 py-3 mb-4"
                 style={{ background: 'rgba(255,255,255,0.04)' }}
               >
-                <p className="text-sm" style={{ color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 }}>
+                <p className="text-sm" style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                   &ldquo;{modal.review.text}&rdquo;
                 </p>
               </div>
@@ -296,7 +296,7 @@ export function ReviewsContent() {
             {/* Editor de resposta */}
             <div className="mb-4">
               <div className="flex items-center justify-between mb-2">
-                <label className="text-xs font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                <label className="text-xs font-medium" style={{ color: 'var(--text-tertiary)' }}>
                   Sua resposta
                 </label>
                 <button
@@ -333,7 +333,7 @@ export function ReviewsContent() {
                 }}
                 placeholder="Escreva sua resposta ou clique em 'Sugerir resposta'..."
               />
-              <p className="text-xs mt-1 text-right" style={{ color: 'rgba(255,255,255,0.25)' }}>
+              <p className="text-xs mt-1 text-right" style={{ color: 'var(--text-muted)' }}>
                 {modal.draft.length}/4096
               </p>
             </div>
@@ -342,7 +342,7 @@ export function ReviewsContent() {
               <button
                 onClick={closeModal}
                 className="flex-1 rounded-xl py-2.5 text-sm font-medium"
-                style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.5)' }}
+                style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-tertiary)' }}
               >
                 Cancelar
               </button>
@@ -375,8 +375,8 @@ function StatusBadge({ status }: { status: string }) {
     no_response: { label: 'Sem resposta', color: '#FBBF24', dot: '#FBBF24' },
     pending: { label: 'Aguardando aprovação', color: 'var(--accent-bright)', dot: 'var(--accent-bright)' },
     replied: { label: 'Respondida', color: 'var(--success)', dot: 'var(--success)' },
-    ignored: { label: 'Ignorada', color: 'rgba(255,255,255,0.3)', dot: 'rgba(255,255,255,0.3)' },
-  }[status] ?? { label: status, color: 'rgba(255,255,255,0.3)', dot: 'rgba(255,255,255,0.3)' }
+    ignored: { label: 'Ignorada', color: 'var(--text-muted)', dot: 'rgba(255,255,255,0.3)' },
+  }[status] ?? { label: status, color: 'var(--text-muted)', dot: 'rgba(255,255,255,0.3)' }
 
   return (
     <span className="inline-flex items-center gap-1.5 text-xs font-medium shrink-0" style={{ color: config.color }}>

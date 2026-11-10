@@ -59,7 +59,7 @@ export function PendingDescriptionBanner() {
           <p className="text-sm font-semibold" style={{ color: '#34D399' }}>
             Descrição pronta para aprovação
           </p>
-          <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.45)' }}>
+          <p className="text-xs mt-0.5" style={{ color: 'var(--text-tertiary)' }}>
             Gerada com base nas informações do seu perfil. Edite se necessário e aprove para publicar no Google.
           </p>
         </div>
@@ -74,12 +74,12 @@ export function PendingDescriptionBanner() {
         style={{
           background: 'rgba(255,255,255,0.05)',
           border: '1px solid rgba(255,255,255,0.12)',
-          color: 'rgba(255,255,255,0.85)',
+          color: 'var(--text-primary)',
           lineHeight: '1.6',
         }}
       />
 
-      <p className="text-xs text-right" style={{ color: 'rgba(255,255,255,0.45)', marginTop: -8 }}>
+      <p className="text-xs text-right" style={{ color: 'var(--text-tertiary)', marginTop: -8 }}>
         {displayText.length}/750
       </p>
 
@@ -100,7 +100,7 @@ export function PendingDescriptionBanner() {
           onClick={() => handleAction('reject')}
           disabled={!!loading}
           className="px-4 py-2.5 rounded-xl text-sm font-semibold transition-all hover:brightness-110 disabled:opacity-50"
-          style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.6)' }}
+          style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', color: 'var(--text-secondary)' }}
         >
           {loading === 'reject' ? 'Removendo...' : 'Rejeitar'}
         </button>

@@ -28,7 +28,7 @@ export const ScoreCard = memo(function ScoreCard({ category }: { category: Categ
             <span className="font-display font-extrabold" style={{ color, fontSize: 20 }}>
               {category.score}
             </span>
-            <span style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13 }}>/{category.maxScore}</span>
+            <span style={{ color: 'var(--text-tertiary)', fontSize: 13 }}>/{category.maxScore}</span>
           </div>
         </div>
 
@@ -64,7 +64,7 @@ export function TotalScoreBadge({ score }: { score: number }) {
       <span className="font-display font-extrabold" style={{ fontSize: 56, color, lineHeight: 1 }}>
         {score}
       </span>
-      <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13, marginTop: 4 }}>de 100 pontos</span>
+      <span style={{ color: 'var(--text-muted)', fontSize: 13, marginTop: 4 }}>de 100 pontos</span>
       <span className="font-display font-bold text-sm mt-2" style={{ color }}>
         {label}
       </span>
