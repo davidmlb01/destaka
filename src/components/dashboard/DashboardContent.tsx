@@ -132,14 +132,14 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
       {isSubscriber && <PendingDescriptionBanner />}
 
       {/* ===== NIVEL 1: Hero (Score + Mapa) ===== */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in-up">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-5 animate-fade-in-up">
 
-        {/* Score gauge */}
+        {/* Score gauge (2/5 do grid) */}
         <div
-          className="rounded-2xl p-7 flex flex-col items-center justify-between gap-4"
-          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', minHeight: 340 }}
+          className="lg:col-span-2 rounded-2xl p-5 flex flex-col items-center justify-between"
+          style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}
         >
-          <div className="flex-1 flex flex-col items-center justify-center w-full">
+          <div className="flex-1 flex flex-col items-center justify-center w-full py-2">
             <ScoreGauge score={diagnostic?.score_total ?? 0} />
           </div>
 
@@ -191,8 +191,10 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
           )}
         </div>
 
-        {/* Mapa de posicionamento */}
-        <MapCard isSubscriber={isSubscriber} />
+        {/* Mapa de posicionamento (3/5 do grid) */}
+        <div className="lg:col-span-3">
+          <MapCard isSubscriber={isSubscriber} />
+        </div>
       </div>
 
       {/* ===== DETALHES DO SCORE (aberto, logo abaixo do hero) ===== */}

@@ -54,7 +54,6 @@ export default function MapCard({ isSubscriber }: { isSubscriber: boolean }) {
       style={{
         background: 'var(--card-subtle)',
         border: '1px solid var(--border-card)',
-        minHeight: 340,
       }}
     >
       <p
