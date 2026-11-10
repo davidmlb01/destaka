@@ -13,7 +13,7 @@ interface Props {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="mb-6 rounded-2xl p-5" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
-      <p className="font-display font-bold text-white text-sm mb-4">{title}</p>
+      <p className="font-display font-semibold text-white text-sm mb-4">{title}</p>
       {children}
     </div>
   )

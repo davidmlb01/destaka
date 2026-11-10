@@ -60,7 +60,7 @@ export function ChecklistContent() {
       <Card variant="dark" padding="sm">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <p className="font-display font-bold text-white text-sm">
+            <p className="font-display font-semibold text-white text-sm">
               {data.doneCount} de {data.totalCount} tarefas concluídas
             </p>
             <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.5)' }}>
@@ -84,7 +84,7 @@ export function ChecklistContent() {
       {/* Tarefas pendentes */}
       {pending.length > 0 && (
         <div>
-          <p className="font-display font-bold text-white text-sm mb-3" style={{ opacity: 0.7 }}>
+          <p className="font-display font-semibold text-white text-sm mb-3" style={{ opacity: 0.7 }}>
             Pendentes ({pending.length})
           </p>
           <div className="flex flex-col gap-3">
@@ -105,7 +105,7 @@ export function ChecklistContent() {
       {/* Tarefas concluídas */}
       {done.length > 0 && (
         <div>
-          <p className="font-display font-bold text-white text-sm mb-3" style={{ opacity: 0.5 }}>
+          <p className="font-display font-semibold text-white text-sm mb-3" style={{ opacity: 0.5 }}>
             Concluídas ({done.length})
           </p>
           <div className="flex flex-col gap-2">

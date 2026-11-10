@@ -115,7 +115,7 @@ function CompetitorCard({ comp, profile }: { comp: Competitor; profile: Profile 
           className="flex flex-col items-center gap-1 py-3 rounded-xl"
           style={{ background: 'var(--card-dark)' }}
         >
-          <p className="font-display font-bold text-white text-base leading-none">{comp.review_count}</p>
+          <p className="font-display font-semibold text-white text-base leading-none">{comp.review_count}</p>
           <p className="text-xs" style={{ color: 'var(--text-muted)' }}>avaliações</p>
           {profile.review_count !== null && <DiffLabel diff={reviewDiff} />}
         </div>
@@ -125,7 +125,7 @@ function CompetitorCard({ comp, profile }: { comp: Competitor; profile: Profile 
           className="flex flex-col items-center gap-1 py-3 rounded-xl"
           style={{ background: 'var(--card-dark)' }}
         >
-          <p className="font-display font-bold text-white text-base leading-none">{comp.photo_count}</p>
+          <p className="font-display font-semibold text-white text-base leading-none">{comp.photo_count}</p>
           <p className="text-xs" style={{ color: 'var(--text-muted)' }}>fotos</p>
         </div>
       </div>
@@ -151,7 +151,7 @@ function OpportunitiesSection({ specialty }: { specialty?: string | null }) {
   return (
     <div className="mt-8">
       <div className="flex items-center gap-2 mb-4">
-        <h2 className="font-display font-bold text-white text-base">Oportunidades</h2>
+        <h2 className="font-display font-semibold text-white text-base">Oportunidades</h2>
         <span
           className="text-[10px] font-bold px-1.5 py-0.5 rounded"
           style={{ background: 'rgba(168,85,247,0.15)', color: '#C084FC' }}
@@ -290,7 +290,7 @@ export function CompetitorsContent({ specialty }: { specialty?: string | null })
       {/* Header */}
       <div className="flex items-start justify-between gap-4 mb-5">
         <div>
-          <h2 className="font-display font-bold text-white text-base mb-1">Concorrentes</h2>
+          <h2 className="font-display font-semibold text-white text-base mb-1">Concorrentes</h2>
           <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
             Top 3 concorrentes na sua especialidade e região
           </p>

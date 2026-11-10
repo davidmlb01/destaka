@@ -16,7 +16,7 @@ export function NextActionsPanel({ actions }: { actions: Action[] }) {
         <div className="flex justify-center mb-2">
           <PinIcon size={24} />
         </div>
-        <p className="font-display font-bold text-white text-sm">Tudo em ordem</p>
+        <p className="font-display font-semibold text-white text-sm">Tudo em ordem</p>
         <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>Nenhuma ação crítica pendente</p>
       </div>
     )

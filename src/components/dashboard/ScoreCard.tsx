@@ -22,7 +22,7 @@ export const ScoreCard = memo(function ScoreCard({ category }: { category: Categ
         <div className="flex items-start justify-between gap-4 mb-3">
           <div className="flex items-center gap-2">
             <PinIcon size={18} />
-            <span className="font-display font-bold text-white text-sm">{category.label}</span>
+            <span className="font-display font-semibold text-white text-sm">{category.label}</span>
           </div>
           <div className="text-right">
             <span className="font-display font-extrabold" style={{ color, fontSize: 20 }}>

@@ -81,7 +81,7 @@ export function PostsContent() {
 
         {/* Modo de postagem */}
         <Card variant="dark" padding="sm">
-          <p className="font-display font-bold text-white text-sm mb-1">Modo de postagem</p>
+          <p className="font-display font-semibold text-white text-sm mb-1">Modo de postagem</p>
           <p className="text-xs mb-4" style={{ color: 'rgba(255,255,255,0.5)' }}>
             Como os posts semanais serão tratados
           </p>
@@ -113,7 +113,7 @@ export function PostsContent() {
         <Card variant="dark" padding="sm" className="flex flex-col justify-between">
           {data?.scheduledNext ? (
             <div className="mb-3">
-              <p className="font-display font-bold text-white text-sm mb-1">Próximo post agendado</p>
+              <p className="font-display font-semibold text-white text-sm mb-1">Próximo post agendado</p>
               <p className="text-xs line-clamp-2" style={{ color: 'rgba(255,255,255,0.5)' }}>
                 {data.scheduledNext.content}
               </p>
@@ -125,7 +125,7 @@ export function PostsContent() {
             </div>
           ) : (
             <div className="mb-3">
-              <p className="font-display font-bold text-white text-sm mb-1">Nenhum post agendado</p>
+              <p className="font-display font-semibold text-white text-sm mb-1">Nenhum post agendado</p>
               {data?.autoPostMode === 'automatic' ? (
                 <p className="text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>
                   Próximo post automático: <span style={{ color: 'var(--accent-bright)' }}>{getNextAutoPostLabel()}</span>
@@ -163,7 +163,7 @@ export function PostsContent() {
       {/* Posts aguardando aprovação */}
       {data?.posts.some(p => p.status === 'draft' || p.status === 'pending') && (
         <div>
-          <p className="font-display font-bold text-white text-sm mb-3" style={{ opacity: 0.7 }}>
+          <p className="font-display font-semibold text-white text-sm mb-3" style={{ opacity: 0.7 }}>
             Aguardando aprovação
           </p>
           <div className="flex flex-col gap-3">
@@ -253,7 +253,7 @@ export function PostsContent() {
 
       {/* Histórico */}
       <div>
-        <p className="font-display font-bold text-white text-sm mb-3" style={{ opacity: 0.7 }}>
+        <p className="font-display font-semibold text-white text-sm mb-3" style={{ opacity: 0.7 }}>
           Histórico de posts
         </p>
 

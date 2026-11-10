@@ -23,7 +23,7 @@ export function TokenInvalidBanner() {
       <div className="flex items-start gap-3">
         <span style={{ fontSize: 18, lineHeight: 1 }}>⚠️</span>
         <div>
-          <p className="font-display font-bold text-white text-sm">
+          <p className="font-display font-semibold text-white text-sm">
             Conexão com o Google expirou
           </p>
           <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.45)' }}>

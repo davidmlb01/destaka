@@ -79,7 +79,7 @@ export function IndicarContent({ specialty }: { userId: string; specialty?: stri
         style={{ background: 'rgba(74,222,128,0.06)', border: '1px solid rgba(74,222,128,0.15)' }}
       >
         <div className="flex items-center justify-between mb-3">
-          <p className="font-display font-bold text-white text-sm">Seu desconto</p>
+          <p className="font-display font-semibold text-white text-sm">Seu desconto</p>
           <p className="font-display font-extrabold" style={{ fontSize: 24, color: data.discountPercent > 0 ? '#4ADE80' : 'rgba(255,255,255,0.3)' }}>
             {data.discountPercent}%
           </p>
@@ -109,7 +109,7 @@ export function IndicarContent({ specialty }: { userId: string; specialty?: stri
         style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
       >
         <div className="flex items-center justify-between mb-3">
-          <p className="font-display font-bold text-white text-sm">Seu código</p>
+          <p className="font-display font-semibold text-white text-sm">Seu código</p>
           <span
             className="rounded-lg px-3 py-1 text-xs font-bold"
             style={{ background: 'rgba(14,165,233,0.15)', color: 'var(--accent-bright)', letterSpacing: '1px' }}
@@ -159,7 +159,7 @@ export function IndicarContent({ specialty }: { userId: string; specialty?: stri
         className="rounded-2xl p-5"
         style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
       >
-        <p className="font-display font-bold text-white text-sm mb-4">Como funciona</p>
+        <p className="font-display font-semibold text-white text-sm mb-4">Como funciona</p>
         <div className="flex flex-col gap-3">
           {[
             { n: '1', text: `Envie seu link para um colega ${vocab.profissional}.` },
@@ -188,7 +188,7 @@ export function IndicarContent({ specialty }: { userId: string; specialty?: stri
           className="rounded-2xl p-5"
           style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
         >
-          <p className="font-display font-bold text-white text-sm mb-4">Suas indicações</p>
+          <p className="font-display font-semibold text-white text-sm mb-4">Suas indicações</p>
           <div className="flex flex-col gap-2">
             {data.referrals.map(ref => {
               const st = STATUS_LABELS[ref.status] ?? STATUS_LABELS.pending
