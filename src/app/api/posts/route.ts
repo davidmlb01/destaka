@@ -1,36 +1,23 @@
 export const dynamic = 'force-dynamic'
 
-import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthOrg, privateJson } from '@/lib/api/with-auth'
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 
 const PAGE_SIZE = 20
 
-export async function GET() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
-  }
-
-  const db = createAdminSupa(
+function admin() {
+  return createAdminSupa(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
+}
 
-  const { data: prof } = await db
-    .from('professionals')
-    .select('organization_id')
-    .eq('user_id', user.id)
-    .maybeSingle()
+export async function GET() {
+  const auth = await getAuthOrg()
+  if (auth.error) return auth.error
+  const { orgId } = auth
+  const db = admin()
 
-  if (!prof?.organization_id) {
-    return NextResponse.json({ error: 'Organização não encontrada' }, { status: 404 })
-  }
-
-  const orgId = prof.organization_id
-
-  // SEM filtro .in() de status (causava resultado vazio)
   const { data: posts, count } = await db
     .from('posts')
     .select('id, content, post_type, status, scheduled_for, published_at, created_at', { count: 'exact' })
@@ -82,7 +69,7 @@ export async function GET() {
     created_at: scheduledPost.created_at,
   } : null
 
-  const resp = NextResponse.json({
+  return privateJson({
     posts: mappedPosts,
     total: count ?? 0,
     page: 1,
@@ -95,7 +82,4 @@ export async function GET() {
       category: (org?.specialty as string) ?? '',
     },
   })
-  resp.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate')
-  resp.headers.set('Vary', 'Cookie')
-  return resp
 }
