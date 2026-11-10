@@ -17,6 +17,7 @@ import { PinIcon } from '@/components/ui/PinIcon'
 import { useDashboard, type DashboardData } from './hooks/useDashboard'
 import MapCard from './MapCard'
 import { PatientFunnelCard } from './PatientFunnelCard'
+import { SectionLabel } from '@/components/ui/SectionLabel'
 import { RankingCard } from './RankingCard'
 import { GapAnalysisCard } from './GapAnalysisCard'
 
@@ -45,12 +46,7 @@ function getScoreMessage(score: number, isSubscriber: boolean): string {
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex items-center gap-3 mb-5">
-      <p
-        className="text-xs font-bold tracking-[0.12em] uppercase shrink-0"
-        style={{ color: 'rgba(255,255,255,0.38)' }}
-      >
-        {children}
-      </p>
+      <SectionLabel className="shrink-0">{children}</SectionLabel>
       <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
     </div>
   )

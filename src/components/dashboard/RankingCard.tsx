@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { RankingChart } from './RankingChart'
+import { SectionLabel } from '@/components/ui/SectionLabel'
 
 interface RankingKeyword {
   keyword: string
@@ -112,12 +113,7 @@ export function RankingCard() {
       {/* Keyword principal */}
       {primary && (
         <div className="mb-5">
-          <p
-            className="text-xs font-bold tracking-[0.12em] uppercase mb-4"
-            style={{ color: 'rgba(255,255,255,0.38)' }}
-          >
-            Sua posição no Google
-          </p>
+          <SectionLabel className="mb-4">Sua posição no Google</SectionLabel>
 
           <div className="flex items-center gap-5">
             <PositionBadge position={primary.currentPosition} />

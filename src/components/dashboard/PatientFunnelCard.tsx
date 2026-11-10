@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Spinner } from '@/components/ui/Spinner'
+import { SectionLabel } from '@/components/ui/SectionLabel'
 
 interface FunnelData {
   current: {
@@ -99,12 +100,7 @@ export function PatientFunnelCard() {
       className="rounded-2xl p-6 animate-fade-in-up"
       style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}
     >
-      <p
-        className="text-xs font-bold tracking-[0.12em] uppercase mb-5"
-        style={{ color: 'rgba(255,255,255,0.38)' }}
-      >
-        Seus clientes esta semana
-      </p>
+      <SectionLabel className="mb-5">Seus clientes esta semana</SectionLabel>
 
       {/* Funil vertical */}
       <div className="flex flex-col gap-1">

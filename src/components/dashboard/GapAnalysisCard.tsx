@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { SectionLabel } from '@/components/ui/SectionLabel'
 
 interface GapFactor {
   factor: string
@@ -64,12 +65,7 @@ export function GapAnalysisCard() {
       className="rounded-2xl p-6 animate-fade-in-up"
       style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}
     >
-      <p
-        className="text-xs font-bold tracking-[0.12em] uppercase mb-2"
-        style={{ color: 'rgba(255,255,255,0.38)' }}
-      >
-        O que falta para o 1º lugar
-      </p>
+      <SectionLabel className="mb-2">O que falta para o 1º lugar</SectionLabel>
 
       <p className="text-sm mb-5" style={{ color: 'rgba(255,255,255,0.6)' }}>
         Comparação com <strong className="text-white">{data.competitorName}</strong> para &ldquo;{data.keyword}&rdquo;
