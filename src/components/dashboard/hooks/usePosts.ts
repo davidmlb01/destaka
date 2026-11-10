@@ -25,7 +25,7 @@ interface PostsData {
 }
 
 export function usePosts() {
-  const { data, error, isLoading, mutate } = useSWR<PostsData>('/api/posts-v2', fetcher)
+  const { data, error, isLoading, mutate } = useSWR<PostsData>('/api/posts', fetcher)
   const [generating, setGenerating] = useState(false)
   const [publishingId, setPublishingId] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
