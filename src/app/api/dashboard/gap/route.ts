@@ -41,9 +41,15 @@ export async function GET() {
   // Dados do perfil
   const { data: profile } = await db
     .from('gbp_profiles')
-    .select('photo_count, website')
+    .select('photo_count')
     .eq('organization_id', orgId)
     .maybeSingle()
+
+  // Website do gmb_profiles
+  const { data: prof } = await db.from('professionals').select('user_id').eq('organization_id', orgId).maybeSingle()
+  const { data: gmbProf } = prof?.user_id
+    ? await db.from('gmb_profiles').select('website').eq('user_id', prof.user_id).maybeSingle()
+    : { data: null }
 
   // Review count real
   const { count: reviewCount } = await db
@@ -93,7 +99,7 @@ export async function GET() {
       rating: 5.0,
       reviewCount: totalReviews,
       photoCount: profile?.photo_count ?? 0,
-      hasWebsite: !!(profile as Record<string, unknown>)?.website,
+      hasWebsite: !!(gmbProf as Record<string, unknown> | null)?.website,
       hasPhone: true,
       hasHours: true,
       recentPostCount: recentPostCount ?? 0,
