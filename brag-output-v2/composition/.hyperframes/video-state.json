@@ -1,0 +1,1327 @@
+{
+  "version": 1,
+  "historyId": "8677f4b1-a700-478a-9880-31fbf1e94cc7",
+  "currentRevision": "4b82da45-ccbd-4175-b6e9-9874d9ebeb32",
+  "pendingChanges": false,
+  "files": {
+    "assets/sfx/impact/impactBell_heavy_000.ogg": {
+      "hash": "94b8bb5f2d43ab65e4bcc32b28562416e9bc2c51d9fd4be1e333660ee52f977f",
+      "content": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/94/94b8bb5f2d43ab65e4bcc32b28562416e9bc2c51d9fd4be1e333660ee52f977f"
+    },
+    "assets/sfx/impact/impactSoft_medium_001.ogg": {
+      "hash": "7642a4fd43e547afe4f7adfadb3dabb681c0ff512f52c1674bae30a726841faf",
+      "content": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/76/7642a4fd43e547afe4f7adfadb3dabb681c0ff512f52c1674bae30a726841faf"
+    },
+    "assets/sfx/interface/drop_001.ogg": {
+      "hash": "692ee3a6f1821402ca649ff735bee9591dc4846c8098fc7d6a90fd15fa57c1af",
+      "content": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/69/692ee3a6f1821402ca649ff735bee9591dc4846c8098fc7d6a90fd15fa57c1af"
+    },
+    "assets/sfx/interface/drop_002.ogg": {
+      "hash": "4ac4d1cef7e936965cbf795852ca2020300b9e2ba7daa59f2bf4f1f7bf416218",
+      "content": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/4a/4ac4d1cef7e936965cbf795852ca2020300b9e2ba7daa59f2bf4f1f7bf416218"
+    },
+    "assets/sfx/interface/drop_003.ogg": {
+      "hash": "43d086d50f90493a98cd2e09aa6dbf150d164f1578e1ec768d21cb185571ad87",
+      "content": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/43/43d086d50f90493a98cd2e09aa6dbf150d164f1578e1ec768d21cb185571ad87"
+    },
+    "index.html": {
+      "hash": "1283c58f3f20a91a2032fdb4c893279435e0c53b2759c7310269c3b937b1982d",
+      "content": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/12/1283c58f3f20a91a2032fdb4c893279435e0c53b2759c7310269c3b937b1982d"
+    },
+    "assets/music/happy-beats-business-moves-vol-12-by-ende-dot-app.mp3": {
+      "hash": "5888d4bd2ba0119b87a94e502ae2cc401c08192945cc5e5c2f8e8a33aa47a0a1",
+      "content": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/58/5888d4bd2ba0119b87a94e502ae2cc401c08192945cc5e5c2f8e8a33aa47a0a1"
+    },
+    "hyperframes.json": {
+      "hash": "53dbce1e19aa713cbb12ee0bc4d206143b45ab15e6ffbfcaa8f69572d4d24d50",
+      "content": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/53/53dbce1e19aa713cbb12ee0bc4d206143b45ab15e6ffbfcaa8f69572d4d24d50"
+    },
+    "meta.json": {
+      "hash": "af844ac243956c38d22c268d54be6a0f2b86997c715fe97322dbe49f4b0a4de1",
+      "content": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/af/af844ac243956c38d22c268d54be6a0f2b86997c715fe97322dbe49f4b0a4de1"
+    },
+    "package.json": {
+      "hash": "4041ab747e627e6ca8ad709fbdd17efb1e9d0be9619087621b6a721f039ac807",
+      "content": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/40/4041ab747e627e6ca8ad709fbdd17efb1e9d0be9619087621b6a721f039ac807"
+    }
+  },
+  "revisions": {
+    "695dbefc-093e-4ceb-8bfa-81934be33eb4": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793193137449,
+      "endedAt": 1793193137455,
+      "files": {
+        "hyperframes.json": {
+          "before": null,
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/53/53dbce1e19aa713cbb12ee0bc4d206143b45ab15e6ffbfcaa8f69572d4d24d50"
+        },
+        "meta.json": {
+          "before": null,
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/af/af844ac243956c38d22c268d54be6a0f2b86997c715fe97322dbe49f4b0a4de1"
+        },
+        "package.json": {
+          "before": null,
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/40/4041ab747e627e6ca8ad709fbdd17efb1e9d0be9619087621b6a721f039ac807"
+        }
+      }
+    },
+    "3f0ce301-cf8c-462f-90bd-37dfa7519915": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793193164648,
+      "endedAt": 1793193164648,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/e4/e4d085fb0333fbe2700b40a9a6266ee99936cb5d574445084b7722316a76e999",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/a1/a10ce250447327c12821366d77c5ae309ddb38c562ac82fc0f4af54ed8036e42"
+        }
+      }
+    },
+    "303cce6e-93da-4455-9afc-5813c0a63975": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793193289570,
+      "endedAt": 1793193289571,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/a1/a10ce250447327c12821366d77c5ae309ddb38c562ac82fc0f4af54ed8036e42",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/99/999665b0e4ba1787e53d82722bbd38f1e43b9a6700756cc36dae20361a91715b"
+        }
+      }
+    },
+    "951d5360-3465-4e39-a863-53a09ec7f202": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "targets": [
+        {
+          "file": "index.html",
+          "hfId": "hf-rs4b",
+          "selector": ".block",
+          "selectorIndex": 0
+        }
+      ],
+      "label": "Move layer",
+      "startedAt": 1793193342492,
+      "endedAt": 1793193342492,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/99/999665b0e4ba1787e53d82722bbd38f1e43b9a6700756cc36dae20361a91715b",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/ee/ee355c6c7810f3d6bcac385c35038378d00c027f9699eb14fc01ef9f6eb71681"
+        }
+      }
+    },
+    "ba43a04f-d8a4-4694-bf8b-b118e63154a6": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "targets": [
+        {
+          "file": "index.html",
+          "id": "s1a",
+          "hfId": "hf-bpxm",
+          "selector": "#s1a"
+        }
+      ],
+      "label": "Edit layer style",
+      "startedAt": 1793193350506,
+      "endedAt": 1793193350506,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/ee/ee355c6c7810f3d6bcac385c35038378d00c027f9699eb14fc01ef9f6eb71681",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/dc/dcf3f1159bfabcfc06bce14c48a9e1c1a1bede715e4de50aba17c1283fbaa7e9"
+        }
+      }
+    },
+    "5d12ebfe-ee07-44d5-b668-fc22abc3b67e": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "targets": [
+        {
+          "file": "index.html",
+          "id": "s1c",
+          "hfId": "hf-g57n",
+          "selector": "#s1c"
+        }
+      ],
+      "label": "Edit layer style",
+      "startedAt": 1793193364466,
+      "endedAt": 1793193364466,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/dc/dcf3f1159bfabcfc06bce14c48a9e1c1a1bede715e4de50aba17c1283fbaa7e9",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/aa/aaa78bee4257dfaae467ecc6c2956e8f9c4dbe38f15e40c2343c3e64533df3ac"
+        }
+      }
+    },
+    "4d3d4991-306a-4806-bd6b-d47437e4d71a": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "targets": [
+        {
+          "file": "index.html",
+          "id": "s2a",
+          "hfId": "hf-dgmq",
+          "selector": "#s2a"
+        }
+      ],
+      "label": "Edit layer style",
+      "startedAt": 1793193387919,
+      "endedAt": 1793193387919,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/aa/aaa78bee4257dfaae467ecc6c2956e8f9c4dbe38f15e40c2343c3e64533df3ac",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/91/9112b34bedba58da426638098d8aa9481b7f1a594ad7cc9966173ccb1e393824"
+        }
+      }
+    },
+    "0aae6b98-ea54-4168-8bbd-5cf60c19be3a": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "targets": [
+        {
+          "file": "index.html",
+          "hfId": "hf-qusb",
+          "selector": ".block",
+          "selectorIndex": 1
+        }
+      ],
+      "label": "Move layer",
+      "startedAt": 1793193395341,
+      "endedAt": 1793193395341,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/91/9112b34bedba58da426638098d8aa9481b7f1a594ad7cc9966173ccb1e393824",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/f3/f30d38ce1ecf122da5e92702994a01718f5e8ae159991494a52569f0fd1cdd3d"
+        }
+      }
+    },
+    "615c2e01-aed7-43e6-bb90-6c211495ab98": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "targets": [
+        {
+          "file": "index.html",
+          "id": "s3a",
+          "hfId": "hf-fehk",
+          "selector": "#s3a"
+        }
+      ],
+      "label": "Edit text",
+      "startedAt": 1793193426310,
+      "endedAt": 1793193426310,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/f3/f30d38ce1ecf122da5e92702994a01718f5e8ae159991494a52569f0fd1cdd3d",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/fb/fbbde02d529875d466fab4b1a2c98f3470c606f666890b6c1858440a45c802ed"
+        }
+      }
+    },
+    "48539945-eb1e-433b-b7d0-f59fb10f2797": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "targets": [
+        {
+          "file": "index.html",
+          "id": "s3a",
+          "hfId": "hf-fehk",
+          "selector": "#s3a"
+        }
+      ],
+      "label": "Edit layer style",
+      "startedAt": 1793193428935,
+      "endedAt": 1793193428935,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/fb/fbbde02d529875d466fab4b1a2c98f3470c606f666890b6c1858440a45c802ed",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/1d/1df15705f0f7b42b252a7722bcb496166b0bb28feaa30af63f14516b9ee0d52f"
+        }
+      }
+    },
+    "f562c19d-4dd8-40b1-b963-288e84f98a9a": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "targets": [
+        {
+          "file": "index.html",
+          "hfId": "hf-qgha",
+          "selector": ".block",
+          "selectorIndex": 2
+        }
+      ],
+      "label": "Move layer",
+      "startedAt": 1793193444992,
+      "endedAt": 1793193444992,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/1d/1df15705f0f7b42b252a7722bcb496166b0bb28feaa30af63f14516b9ee0d52f",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/78/78a6d7212cf36ab799150c08eb698c8852f74a261a2f33278a202b2007c3aee4"
+        }
+      }
+    },
+    "5db3039f-42d6-41e0-8bf7-28b5e69b9e2e": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "targets": [
+        {
+          "file": "index.html",
+          "id": "s3a",
+          "hfId": "hf-fehk",
+          "selector": "#s3a"
+        }
+      ],
+      "label": "Edit text",
+      "startedAt": 1793193470436,
+      "endedAt": 1793193470436,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/78/78a6d7212cf36ab799150c08eb698c8852f74a261a2f33278a202b2007c3aee4",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/cd/cd3437e56da27caaede0bd63662d0f591a5f3ef5689b31fbfa6bd35ad7f4ea1c"
+        }
+      }
+    },
+    "f9bab88d-4b90-420f-8d77-20b95d5ef706": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "label": "Move layer",
+      "startedAt": 1793193477168,
+      "endedAt": 1793193477168,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/cd/cd3437e56da27caaede0bd63662d0f591a5f3ef5689b31fbfa6bd35ad7f4ea1c",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/5a/5ab59041d47c90fcac2f14f822c2af0f47976372a200fed04c0833daa0ade344"
+        }
+      }
+    },
+    "352e898b-4fb7-4a4d-bbf1-3f701ece3cc2": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "targets": [
+        {
+          "file": "index.html",
+          "id": "s3a",
+          "hfId": "hf-fehk",
+          "selector": "#s3a"
+        }
+      ],
+      "label": "Edit text",
+      "startedAt": 1793193482176,
+      "endedAt": 1793193482176,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/5a/5ab59041d47c90fcac2f14f822c2af0f47976372a200fed04c0833daa0ade344",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/b6/b6534e7a332015d7bfc497de8ba35180730092aa2ac3c80010d67f41aaf1df52"
+        }
+      }
+    },
+    "7bac76fd-8323-4430-bae1-8a8f343c8c75": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "targets": [
+        {
+          "file": "index.html",
+          "id": "s4a",
+          "hfId": "hf-p8p8",
+          "selector": "#s4a"
+        }
+      ],
+      "label": "Edit text",
+      "startedAt": 1793193498176,
+      "endedAt": 1793193498176,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/b6/b6534e7a332015d7bfc497de8ba35180730092aa2ac3c80010d67f41aaf1df52",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/f9/f9f36aaf332e02857ab64cb9469dd6ae22fc0df924c4c643d98ad439b26e3dab"
+        }
+      }
+    },
+    "40a9efef-b4ba-4d74-8332-87d0d31bfa33": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "targets": [
+        {
+          "file": "index.html",
+          "id": "s4a",
+          "hfId": "hf-p8p8",
+          "selector": "#s4a"
+        }
+      ],
+      "label": "Edit layer style",
+      "startedAt": 1793193500061,
+      "endedAt": 1793193500061,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/f9/f9f36aaf332e02857ab64cb9469dd6ae22fc0df924c4c643d98ad439b26e3dab",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/65/65efd4f323e94d775e2910fe5034ce4140fd081f9c2676f84df7179b5d2002be"
+        }
+      }
+    },
+    "5e472d2e-2053-405b-80a7-d89d2f8dd410": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "targets": [
+        {
+          "file": "index.html",
+          "id": "s4a",
+          "hfId": "hf-p8p8",
+          "selector": "#s4a"
+        }
+      ],
+      "label": "Edit text",
+      "startedAt": 1793193519556,
+      "endedAt": 1793193519556,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/65/65efd4f323e94d775e2910fe5034ce4140fd081f9c2676f84df7179b5d2002be",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/9d/9dd02bfc785f024c7fa54b31b1ec27ea3a64e226f8ad0687b6934419b12c9055"
+        }
+      }
+    },
+    "e4600db4-8c5c-485d-a6be-8f5487970934": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "targets": [
+        {
+          "file": "index.html",
+          "id": "s5a",
+          "hfId": "hf-tj8g",
+          "selector": "#s5a"
+        }
+      ],
+      "label": "Edit text",
+      "startedAt": 1793193539936,
+      "endedAt": 1793193539936,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/9d/9dd02bfc785f024c7fa54b31b1ec27ea3a64e226f8ad0687b6934419b12c9055",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/1b/1b315e390c0f203a8cac13651fce1fe4fd2b9343fc19e1d93ee0250dbd17b203"
+        }
+      }
+    },
+    "016921fd-1a20-4697-9702-dccd3a6e5f53": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "targets": [
+        {
+          "file": "index.html",
+          "id": "s5a",
+          "hfId": "hf-tj8g",
+          "selector": "#s5a"
+        }
+      ],
+      "label": "Edit text",
+      "startedAt": 1793193550875,
+      "endedAt": 1793193550875,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/1b/1b315e390c0f203a8cac13651fce1fe4fd2b9343fc19e1d93ee0250dbd17b203",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/09/0912694a46417f6172aca9ee7f8d139cecc09285a070a18ce172310970f98190"
+        }
+      }
+    },
+    "e9eaec6f-982a-4d35-b98f-d61ee6c0f088": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "targets": [
+        {
+          "file": "index.html",
+          "id": "s6a",
+          "hfId": "hf-xi3m",
+          "selector": "#s6a"
+        }
+      ],
+      "label": "Edit layer style",
+      "startedAt": 1793193585921,
+      "endedAt": 1793193585921,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/09/0912694a46417f6172aca9ee7f8d139cecc09285a070a18ce172310970f98190",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/3a/3a2d96a84f3296df267719f54756437414dec85a61ea128e8163efe5d1300304"
+        }
+      }
+    },
+    "07c267d5-39bb-4daa-9fc2-c19002d7811d": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "targets": [
+        {
+          "file": "index.html",
+          "id": "s6b",
+          "hfId": "hf-94xo",
+          "selector": "#s6b"
+        }
+      ],
+      "label": "Edit layer style",
+      "startedAt": 1793193599697,
+      "endedAt": 1793193599697,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/3a/3a2d96a84f3296df267719f54756437414dec85a61ea128e8163efe5d1300304",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/e5/e50cf17bef3560087386ca26c1a999a780ba112d99a6dbb17f81a4deb7f84ab2"
+        }
+      }
+    },
+    "fa252579-7425-4fe5-9f89-ce1536b98947": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "targets": [
+        {
+          "file": "index.html",
+          "id": "s6b",
+          "hfId": "hf-94xo",
+          "selector": "#s6b"
+        }
+      ],
+      "label": "Edit layer style",
+      "startedAt": 1793193610835,
+      "endedAt": 1793193610835,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/e5/e50cf17bef3560087386ca26c1a999a780ba112d99a6dbb17f81a4deb7f84ab2",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/ab/ab881498a8769f61686cc434b7321c271a40e3d353e37f2d0d5f700bf6de9bd2"
+        }
+      }
+    },
+    "8bd15422-4f1d-4d6e-b7e6-e3f4fcadf732": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "targets": [
+        {
+          "file": "index.html",
+          "id": "s7a",
+          "hfId": "hf-1jvp",
+          "selector": "#s7a"
+        }
+      ],
+      "label": "Edit layer style",
+      "startedAt": 1793193625393,
+      "endedAt": 1793193625393,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/ab/ab881498a8769f61686cc434b7321c271a40e3d353e37f2d0d5f700bf6de9bd2",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/a9/a92d4dc39fa83dd770ba81e24946aaa7ba14dbdd21ec158624298b941ad226fe"
+        }
+      }
+    },
+    "63828b7a-c199-421e-83b7-4a19b9f938f5": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "targets": [
+        {
+          "file": "index.html",
+          "id": "s7a",
+          "hfId": "hf-1jvp",
+          "selector": "#s7a"
+        }
+      ],
+      "label": "Edit text",
+      "startedAt": 1793193645773,
+      "endedAt": 1793193645773,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/a9/a92d4dc39fa83dd770ba81e24946aaa7ba14dbdd21ec158624298b941ad226fe",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/10/1098c9a274fa6da2be2f3641d132ed880957fd72b87ca6f69449be39889b168c"
+        }
+      }
+    },
+    "2dc0d35d-f818-4fce-8fa1-3a4d64da56d5": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "targets": [
+        {
+          "file": "index.html",
+          "id": "s8btn",
+          "hfId": "hf-qhuo",
+          "selector": "#s8btn"
+        }
+      ],
+      "label": "Edit layer style",
+      "startedAt": 1793193789848,
+      "endedAt": 1793193789848,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/10/1098c9a274fa6da2be2f3641d132ed880957fd72b87ca6f69449be39889b168c",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/a8/a81eec2efc4a718a8cde2d191b9f9c5c2006558724786b1e4d5812693f7c4d75"
+        }
+      }
+    },
+    "4566a75e-619e-4cba-bab5-416e5c760f3f": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "targets": [
+        {
+          "file": "index.html",
+          "id": "s8sub",
+          "hfId": "hf-eauj",
+          "selector": "#s8sub"
+        }
+      ],
+      "label": "Edit layer style",
+      "startedAt": 1793193799420,
+      "endedAt": 1793193799420,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/a8/a81eec2efc4a718a8cde2d191b9f9c5c2006558724786b1e4d5812693f7c4d75",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/f7/f7c3b55c4cfd6fae9c0d72c79b932517fcef61d095238e97a458c4aedf9b084f"
+        }
+      }
+    },
+    "f17e5f23-1100-45ff-9429-87a8af0c99e2": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793193830527,
+      "endedAt": 1793193832529,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/f7/f7c3b55c4cfd6fae9c0d72c79b932517fcef61d095238e97a458c4aedf9b084f",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/00/00d6898bf9b75e2bbf24e003cccaa6ca46f25275cbdeaf86784167392341425a"
+        }
+      }
+    },
+    "ed741b05-ac58-4280-95cb-3c58888f7667": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793193834923,
+      "endedAt": 1793193836925,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/00/00d6898bf9b75e2bbf24e003cccaa6ca46f25275cbdeaf86784167392341425a",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/e4/e4e2ef96b54c4b04072a851515c52bc1443a9d1f338beedea767b6a60d5753e4"
+        }
+      }
+    },
+    "914f2ab6-1949-4b0d-8d60-c71517c8442c": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793193839485,
+      "endedAt": 1793193841486,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/e4/e4e2ef96b54c4b04072a851515c52bc1443a9d1f338beedea767b6a60d5753e4",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/62/62b8fe67d661a230c93ef29fad4dbd09de107833376bf7073ecd8f6ae8f84405"
+        }
+      }
+    },
+    "a0f63e0b-69f4-40cb-941c-2852dab78630": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793193845982,
+      "endedAt": 1793193847982,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/62/62b8fe67d661a230c93ef29fad4dbd09de107833376bf7073ecd8f6ae8f84405",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/c7/c7585d0019dda4b957bca04ede027d7c9cdcdef6d25890c424c8a030904dbd1f"
+        }
+      }
+    },
+    "b63cde42-75e0-4d3b-9253-7853d7661b1b": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793193851028,
+      "endedAt": 1793193853029,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/c7/c7585d0019dda4b957bca04ede027d7c9cdcdef6d25890c424c8a030904dbd1f",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/06/0690c7bdd6393d38ab079f3e0bb2ce7009683b9eef559c419a24f5651a42a1ff"
+        }
+      }
+    },
+    "da09f212-ff7a-4d70-b93a-e2c280291b75": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793193857506,
+      "endedAt": 1793193859509,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/06/0690c7bdd6393d38ab079f3e0bb2ce7009683b9eef559c419a24f5651a42a1ff",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/a8/a8b494c4eb5e4dff6d7faccf063f913590a3cdaf3edacc5dcf73c119aba7a1d4"
+        }
+      }
+    },
+    "ccb6bb8a-fb0a-4a49-91e3-b13b6cb063c6": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793193863461,
+      "endedAt": 1793193865462,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/a8/a8b494c4eb5e4dff6d7faccf063f913590a3cdaf3edacc5dcf73c119aba7a1d4",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/25/25e4d1e4f8ad1793d61ed2b84abff966b356f1166e22734c3f509e48d9a9c355"
+        }
+      }
+    },
+    "5a18e2a9-ea00-4e0a-ad7a-676a80b523e0": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793193874147,
+      "endedAt": 1793193876148,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/25/25e4d1e4f8ad1793d61ed2b84abff966b356f1166e22734c3f509e48d9a9c355",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/4a/4aecfde5a349d973326a1bd823b89e14d8735ad70c2e2ae6d41047b17ae96b84"
+        }
+      }
+    },
+    "6afaec3b-4b17-4bc6-9ff9-298b6395af7e": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793193879612,
+      "endedAt": 1793193881613,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/4a/4aecfde5a349d973326a1bd823b89e14d8735ad70c2e2ae6d41047b17ae96b84",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/fb/fb323fd3841c3dccde5a9f4a1a10d39cdacac18ee8a967d68f15406904c0f06e"
+        }
+      }
+    },
+    "f3f2c0d1-685b-4c9f-9b79-d3b1873eba4b": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793193885266,
+      "endedAt": 1793193887267,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/fb/fb323fd3841c3dccde5a9f4a1a10d39cdacac18ee8a967d68f15406904c0f06e",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/5d/5d5b02c39491b0efbd2bfdb82bd954bf809b9c494fc94eb309f1190ee8a1dda6"
+        }
+      }
+    },
+    "7937cabb-360e-4ff8-bbf5-9e16bb4ba74e": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793193890633,
+      "endedAt": 1793193892636,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/5d/5d5b02c39491b0efbd2bfdb82bd954bf809b9c494fc94eb309f1190ee8a1dda6",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/2a/2ac925f0dfdf73244d7765924656a5caf34caba9b9a9a1e663e5ab82fef985e4"
+        }
+      }
+    },
+    "df5d27ea-37df-4a2b-a870-aaffcc314f6e": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "label": "Move layer",
+      "startedAt": 1793193965643,
+      "endedAt": 1793193965644,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/2a/2ac925f0dfdf73244d7765924656a5caf34caba9b9a9a1e663e5ab82fef985e4",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/09/09902e950134a9308f3bd9b4cb95826732db79f6d2d2f8024262f56a09f379f8"
+        }
+      }
+    },
+    "ab2f8dd4-0a5e-4fd4-8f5d-0902a7e62598": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "label": "Move layer",
+      "startedAt": 1793193975820,
+      "endedAt": 1793193975820,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/09/09902e950134a9308f3bd9b4cb95826732db79f6d2d2f8024262f56a09f379f8",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/e8/e8c6e53be93b62c84fe18ba98b089c4b6d6a0bc8525737663af658a2fb5cf6ce"
+        }
+      }
+    },
+    "6d28af37-2b56-4e42-a9af-6614dce9797e": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "label": "Delete element",
+      "startedAt": 1793193987053,
+      "endedAt": 1793193987053,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/e8/e8c6e53be93b62c84fe18ba98b089c4b6d6a0bc8525737663af658a2fb5cf6ce",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/7e/7e264a7e208dcfe67734d9cb839d9ae736ccaa63a2df5bc93825ce52a315dc57"
+        }
+      }
+    },
+    "0db7e02d-99bd-486f-8ec3-aecb02ec3337": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "label": "Undid: Delete element",
+      "startedAt": 1793193989795,
+      "endedAt": 1793193989796,
+      "undoes": "6d28af37-2b56-4e42-a9af-6614dce9797e",
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/7e/7e264a7e208dcfe67734d9cb839d9ae736ccaa63a2df5bc93825ce52a315dc57",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/e8/e8c6e53be93b62c84fe18ba98b089c4b6d6a0bc8525737663af658a2fb5cf6ce"
+        }
+      }
+    },
+    "c4591120-6ad2-4af3-8d2a-cf222e3ae65e": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "label": "Move layer",
+      "startedAt": 1793194013941,
+      "endedAt": 1793194013941,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/e8/e8c6e53be93b62c84fe18ba98b089c4b6d6a0bc8525737663af658a2fb5cf6ce",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/db/db0ec315a2bf16480e3011ba8a576e3c65282d2a785daa70003412651f191c2f"
+        }
+      }
+    },
+    "aa34c35a-7edd-4ea6-8623-15e5280d4014": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "label": "Delete element",
+      "startedAt": 1793194020349,
+      "endedAt": 1793194020349,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/db/db0ec315a2bf16480e3011ba8a576e3c65282d2a785daa70003412651f191c2f",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/7e/7e264a7e208dcfe67734d9cb839d9ae736ccaa63a2df5bc93825ce52a315dc57"
+        }
+      }
+    },
+    "ac8b0a3e-ae93-43e9-b8e3-9fa50db42167": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "label": "Undid: Delete element",
+      "startedAt": 1793194032984,
+      "endedAt": 1793194032987,
+      "undoes": "aa34c35a-7edd-4ea6-8623-15e5280d4014",
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/7e/7e264a7e208dcfe67734d9cb839d9ae736ccaa63a2df5bc93825ce52a315dc57",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/db/db0ec315a2bf16480e3011ba8a576e3c65282d2a785daa70003412651f191c2f"
+        }
+      }
+    },
+    "841bb0c9-d12f-4576-ab65-2a319a0c838e": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "label": "Undid: Move layer",
+      "startedAt": 1793194034682,
+      "endedAt": 1793194034683.863,
+      "undoes": "c4591120-6ad2-4af3-8d2a-cf222e3ae65e",
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/db/db0ec315a2bf16480e3011ba8a576e3c65282d2a785daa70003412651f191c2f",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/e8/e8c6e53be93b62c84fe18ba98b089c4b6d6a0bc8525737663af658a2fb5cf6ce"
+        }
+      }
+    },
+    "6d342c2f-30ec-4ae9-90ba-224d9bdc58df": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "label": "Undid: Move layer",
+      "startedAt": 1793194040934,
+      "endedAt": 1793194040937,
+      "undoes": "ab2f8dd4-0a5e-4fd4-8f5d-0902a7e62598",
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/e8/e8c6e53be93b62c84fe18ba98b089c4b6d6a0bc8525737663af658a2fb5cf6ce",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/09/09902e950134a9308f3bd9b4cb95826732db79f6d2d2f8024262f56a09f379f8"
+        }
+      }
+    },
+    "ce056771-c57f-44db-95e9-49510161498f": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "label": "Undid: Move layer",
+      "startedAt": 1793194041725,
+      "endedAt": 1793194041726.986,
+      "undoes": "df5d27ea-37df-4a2b-a870-aaffcc314f6e",
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/09/09902e950134a9308f3bd9b4cb95826732db79f6d2d2f8024262f56a09f379f8",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/2a/2ac925f0dfdf73244d7765924656a5caf34caba9b9a9a1e663e5ab82fef985e4"
+        }
+      }
+    },
+    "be5a4184-676e-4cec-b7e0-f72763106b7c": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "label": "Undid: Changed outside the app",
+      "startedAt": 1793194042412,
+      "endedAt": 1793194042414,
+      "undoes": "7937cabb-360e-4ff8-bbf5-9e16bb4ba74e",
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/2a/2ac925f0dfdf73244d7765924656a5caf34caba9b9a9a1e663e5ab82fef985e4",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/5d/5d5b02c39491b0efbd2bfdb82bd954bf809b9c494fc94eb309f1190ee8a1dda6"
+        }
+      }
+    },
+    "d15fbed9-8dc2-4425-8e28-c3a45c76eea6": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "targets": [
+        {
+          "file": "index.html",
+          "id": "s4label",
+          "hfId": "hf-folb",
+          "selector": "#s4label"
+        }
+      ],
+      "label": "Edit layer style",
+      "startedAt": 1793194126221,
+      "endedAt": 1793194126221,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/5d/5d5b02c39491b0efbd2bfdb82bd954bf809b9c494fc94eb309f1190ee8a1dda6",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/7f/7ff65dda75051b47988b53ea291f26cbf8c35ebd81da2b071485c122d760338f"
+        }
+      }
+    },
+    "1450cf25-a99b-4165-8668-7ccfbdafc37d": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "targets": [
+        {
+          "file": "index.html",
+          "id": "s4label",
+          "hfId": "hf-folb",
+          "selector": "#s4label"
+        }
+      ],
+      "label": "Edit layer style",
+      "startedAt": 1793194133877,
+      "endedAt": 1793194133877,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/7f/7ff65dda75051b47988b53ea291f26cbf8c35ebd81da2b071485c122d760338f",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/ea/eaeebac6ff00ba1b60ae1b292f0698c572bfb0ad2a0973c6c68772e6af0c8342"
+        }
+      }
+    },
+    "450b3b86-1c0f-4a2a-a023-0dd52f0a3678": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "targets": [
+        {
+          "file": "index.html",
+          "id": "s5label",
+          "hfId": "hf-g7d5",
+          "selector": "#s5label"
+        }
+      ],
+      "label": "Edit layer style",
+      "startedAt": 1793194143805,
+      "endedAt": 1793194143805,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/ea/eaeebac6ff00ba1b60ae1b292f0698c572bfb0ad2a0973c6c68772e6af0c8342",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/0e/0ed8436672411730e647c1798ab18eb7d8051253a86af6e24018d5b5802415e3"
+        }
+      }
+    },
+    "d96c57d4-aa16-4d19-bd82-3ceba5e20ac8": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "targets": [
+        {
+          "file": "index.html",
+          "id": "s6label",
+          "hfId": "hf-umej",
+          "selector": "#s6label"
+        }
+      ],
+      "label": "Edit layer style",
+      "startedAt": 1793194152285,
+      "endedAt": 1793194152285,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/0e/0ed8436672411730e647c1798ab18eb7d8051253a86af6e24018d5b5802415e3",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/c1/c1ebbe610fc268f52e1f1666c232d35c4fdb9996675dbb04bb0fd93460e89cb6"
+        }
+      }
+    },
+    "e0f70dfb-3154-48d7-857a-6237cbbef806": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "targets": [
+        {
+          "file": "index.html",
+          "id": "s6label",
+          "hfId": "hf-umej",
+          "selector": "#s6label"
+        }
+      ],
+      "label": "Edit layer style",
+      "startedAt": 1793194156032,
+      "endedAt": 1793194156032,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/c1/c1ebbe610fc268f52e1f1666c232d35c4fdb9996675dbb04bb0fd93460e89cb6",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/d4/d43d4b2f989a99405342174cbc5aa550a5346d9d32e635d11f1ef4eb984e860d"
+        }
+      }
+    },
+    "d817e558-735f-4db2-a4c0-a7eab9e9a197": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "targets": [
+        {
+          "file": "index.html",
+          "id": "s7label",
+          "hfId": "hf-3e59",
+          "selector": "#s7label"
+        }
+      ],
+      "label": "Edit layer style",
+      "startedAt": 1793194171023,
+      "endedAt": 1793194171023,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/d4/d43d4b2f989a99405342174cbc5aa550a5346d9d32e635d11f1ef4eb984e860d",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/e3/e35fc9b15459797629e5806dca46fc7d2a1d0b7f68424a16aa62a70fa74a77cf"
+        }
+      }
+    },
+    "684e5797-8534-4d5f-914b-adbab41c0bed": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "targets": [
+        {
+          "file": "index.html",
+          "id": "s8url",
+          "hfId": "hf-cmox",
+          "selector": "#s8url"
+        }
+      ],
+      "label": "Edit layer style",
+      "startedAt": 1793194254744,
+      "endedAt": 1793194254744,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/e3/e35fc9b15459797629e5806dca46fc7d2a1d0b7f68424a16aa62a70fa74a77cf",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/fd/fd77b5371db434a52812c7a574138e83c241e8421b3a4e06aea832d6567ba8d9"
+        }
+      }
+    },
+    "fa542117-a0d6-483e-86af-90ae4ea1bf53": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793194287169,
+      "endedAt": 1793194289169,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/fd/fd77b5371db434a52812c7a574138e83c241e8421b3a4e06aea832d6567ba8d9",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/ff/ff05714e8a71d4a3fa7d02838e74f6173484868d662a7e7372ff5959b0c92647"
+        }
+      }
+    },
+    "c9855355-f85a-435c-bee6-032482eb5c74": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793194293315,
+      "endedAt": 1793194295316,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/ff/ff05714e8a71d4a3fa7d02838e74f6173484868d662a7e7372ff5959b0c92647",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/2d/2d9d81219baead02daa2fb4ead46ddcea3151fd448c64d5ae3462bf7a060528d"
+        }
+      }
+    },
+    "634c44b1-0676-4a59-ac01-130b30e8e0e0": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793194298792,
+      "endedAt": 1793194300793,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/2d/2d9d81219baead02daa2fb4ead46ddcea3151fd448c64d5ae3462bf7a060528d",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/a5/a521a4bb605f5ff59913e35364165ea45507b7a065d76a44d79432ab3190bb2b"
+        }
+      }
+    },
+    "6717df1b-c690-4951-91b9-b3595515616a": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "targets": [
+        {
+          "file": "index.html",
+          "id": "s8sub",
+          "hfId": "hf-eauj",
+          "selector": "#s8sub"
+        }
+      ],
+      "label": "Edit layer style",
+      "startedAt": 1793194647696,
+      "endedAt": 1793194647696,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/a5/a521a4bb605f5ff59913e35364165ea45507b7a065d76a44d79432ab3190bb2b",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/ab/abc537ba7783b9f85838f245c54556e92261a659dc767f49d691183db3b75e98"
+        }
+      }
+    },
+    "4b82da45-ccbd-4175-b6e9-9874d9ebeb32": {
+      "actor": {
+        "kind": "person",
+        "name": "You"
+      },
+      "targets": [
+        {
+          "file": "index.html",
+          "id": "s8sub",
+          "hfId": "hf-eauj",
+          "selector": "#s8sub"
+        }
+      ],
+      "label": "Edit text",
+      "startedAt": 1793194666521,
+      "endedAt": 1793194666521,
+      "files": {
+        "index.html": {
+          "before": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/ab/abc537ba7783b9f85838f245c54556e92261a659dc767f49d691183db3b75e98",
+          "after": "/Users/davidlevy/.cache/hyperframes/history/8677f4b1-a700-478a-9880-31fbf1e94cc7/blobs/12/1283c58f3f20a91a2032fdb4c893279435e0c53b2759c7310269c3b937b1982d"
+        }
+      }
+    }
+  },
+  "checks": {
+    "latest": {
+      "revision": "3f0ce301-cf8c-462f-90bd-37dfa7519915",
+      "id": "7ef7c9c0-2a80-41b9-8fdd-77956c991227"
+    },
+    "revisions": {
+      "695dbefc-093e-4ceb-8bfa-81934be33eb4": [
+        {
+          "id": "205c2a58-dded-40be-8e2f-1c51e9c23fc4",
+          "scope": "project",
+          "metadata": {
+            "ok": false,
+            "browserSkipped": true,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 10000,
+              "contrast": true,
+              "strict": false,
+              "snapshots": false,
+              "browserGpuMode": "auto"
+            }
+          },
+          "createdAt": 1793193138223,
+          "contentHash": "4c357db71a9d6e050a13cd9d7908c308737ab668843ebecfca7e2d4220ff3eb3",
+          "revision": "695dbefc-093e-4ceb-8bfa-81934be33eb4",
+          "inputFingerprint": "3fbe728c2f2d5d875451be163ae18f5af5c420e8163d8ac99544cf7e1b6d7f43",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "8dcf46d6-a690-44e2-93b3-5bec03d65a47"
+        }
+      ],
+      "3f0ce301-cf8c-462f-90bd-37dfa7519915": [
+        {
+          "id": "7ef7c9c0-2a80-41b9-8fdd-77956c991227",
+          "scope": "project",
+          "report": "/Users/davidlevy/Desktop/PJ/DESTAKA/brag-output-v2/composition/.hyperframes/artifacts/checks/7ef7c9c0-2a80-41b9-8fdd-77956c991227.json",
+          "metadata": {
+            "ok": true,
+            "browserSkipped": false,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 10000,
+              "contrast": true,
+              "strict": false,
+              "snapshots": false,
+              "browserGpuMode": "auto"
+            }
+          },
+          "createdAt": 1793193168633,
+          "contentHash": "d9eae357d06916f8621d2549399ef001b579b40d61daa08f048dddb51decfff2",
+          "revision": "3f0ce301-cf8c-462f-90bd-37dfa7519915",
+          "inputFingerprint": "b413cf37217226f675776b5c4f8d72638105fc6496e2558707329a463a0c5302",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ]
+    },
+    "unversioned": [
+      {
+        "id": "2423dec6-10a6-4e15-ae82-728a03f44ff4",
+        "scope": "project",
+        "report": "/Users/davidlevy/Desktop/PJ/DESTAKA/brag-output-v2/composition/.hyperframes/artifacts/checks/2423dec6-10a6-4e15-ae82-728a03f44ff4.json",
+        "metadata": {
+          "ok": false,
+          "browserSkipped": true,
+          "options": {
+            "samples": 9,
+            "atTransitions": false,
+            "maxIssues": 80,
+            "collapseStatic": true,
+            "tolerance": 2,
+            "timeout": 10000,
+            "contrast": true,
+            "strict": false,
+            "snapshots": false,
+            "browserGpuMode": "auto"
+          }
+        },
+        "createdAt": 1793192518281,
+        "contentHash": "4c357db71a9d6e050a13cd9d7908c308737ab668843ebecfca7e2d4220ff3eb3",
+        "revision": null,
+        "inputFingerprint": "0131721a0c808b87242b81b8661244c23b233fa689d4da01da5b6470e6892eb3",
+        "inputScope": "local-project-files",
+        "attribution": "unversioned"
+      }
+    ]
+  },
+  "snapshots": {
+    "latest": null,
+    "revisions": {},
+    "unversioned": []
+  },
+  "renders": {
+    "latest": {
+      "id": "2c02bc61-4cda-4947-bfa4-5d7b17d0fd71",
+      "completedAt": 1793194859255,
+      "output": "/Users/davidlevy/Desktop/PJ/DESTAKA/brag-output-v2/brag-v2.mp4",
+      "status": "completed",
+      "revision": "4b82da45-ccbd-4175-b6e9-9874d9ebeb32"
+    },
+    "retainedRevisions": [
+      "4b82da45-ccbd-4175-b6e9-9874d9ebeb32",
+      "3f0ce301-cf8c-462f-90bd-37dfa7519915"
+    ]
+  },
+  "pendingArtifactCleanup": []
+}

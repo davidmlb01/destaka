@@ -1,0 +1,691 @@
+{
+  "ok": true,
+  "strict": false,
+  "browserSkipped": false,
+  "lint": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 14,
+    "infoCount": 0,
+    "findings": [
+      {
+        "code": "overlapping_gsap_tweens",
+        "severity": "warning",
+        "message": "GSAP tweens overlap on \"#hook-line1\" for opacity, y between 0.30s and 0.90s.",
+        "selector": "#hook-line1",
+        "dataAttributes": {},
+        "sourceFile": "/Users/davidlevy/Desktop/PJ/DESTAKA/brag-output/composition/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Shorten the earlier tween, move the later tween, or add `overwrite: \"auto\"`."
+      },
+      {
+        "code": "overlapping_gsap_tweens",
+        "severity": "warning",
+        "message": "GSAP tweens overlap on \"#hook-line2\" for opacity, y between 1.20s and 1.80s.",
+        "selector": "#hook-line2",
+        "dataAttributes": {},
+        "sourceFile": "/Users/davidlevy/Desktop/PJ/DESTAKA/brag-output/composition/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Shorten the earlier tween, move the later tween, or add `overwrite: \"auto\"`."
+      },
+      {
+        "code": "overlapping_gsap_tweens",
+        "severity": "warning",
+        "message": "GSAP tweens overlap on \"#scene-hook .hook-container\" for opacity between 3.60s and 4.00s.",
+        "selector": "#scene-hook .hook-container",
+        "dataAttributes": {},
+        "sourceFile": "/Users/davidlevy/Desktop/PJ/DESTAKA/brag-output/composition/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Shorten the earlier tween, move the later tween, or add `overwrite: \"auto\"`."
+      },
+      {
+        "code": "overlapping_gsap_tweens",
+        "severity": "warning",
+        "message": "GSAP tweens overlap on \"#score-label\" for opacity, y between 4.30s and 4.50s.",
+        "selector": "#score-label",
+        "dataAttributes": {},
+        "sourceFile": "/Users/davidlevy/Desktop/PJ/DESTAKA/brag-output/composition/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Shorten the earlier tween, move the later tween, or add `overwrite: \"auto\"`."
+      },
+      {
+        "code": "overlapping_gsap_tweens",
+        "severity": "warning",
+        "message": "GSAP tweens overlap on \"#score-row\" for opacity, scale between 4.74s and 4.99s.",
+        "selector": "#score-row",
+        "dataAttributes": {},
+        "sourceFile": "/Users/davidlevy/Desktop/PJ/DESTAKA/brag-output/composition/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Shorten the earlier tween, move the later tween, or add `overwrite: \"auto\"`."
+      },
+      {
+        "code": "gsap_repeated_fromto_without_baseline",
+        "severity": "warning",
+        "message": "2 tl.fromTo() calls target \"#hook-line1\" with no stable baseline. The last-authored fromTo \"from\" values become the element's resting state for any seek before the first tween actually runs, because GSAP applies fromTo from-values at authoring time (immediateRender), not at tween position.",
+        "selector": "#hook-line1",
+        "dataAttributes": {},
+        "sourceFile": "/Users/davidlevy/Desktop/PJ/DESTAKA/brag-output/composition/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Add `immediateRender: false` to every fromTo except the earliest-positioned one (at 0.3s), so pre-first-tween seeks keep its \"from\" values. A hiding `tl.set(..., 0)` baseline trips gsap_timeline_set_initial_hide, and a `gsap.set` authored before the fromTo calls is overwritten by them."
+      },
+      {
+        "code": "gsap_repeated_fromto_without_baseline",
+        "severity": "warning",
+        "message": "2 tl.fromTo() calls target \"#hook-line2\" with no stable baseline. The last-authored fromTo \"from\" values become the element's resting state for any seek before the first tween actually runs, because GSAP applies fromTo from-values at authoring time (immediateRender), not at tween position.",
+        "selector": "#hook-line2",
+        "dataAttributes": {},
+        "sourceFile": "/Users/davidlevy/Desktop/PJ/DESTAKA/brag-output/composition/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Add `immediateRender: false` to every fromTo except the earliest-positioned one (at 1.2s), so pre-first-tween seeks keep its \"from\" values. A hiding `tl.set(..., 0)` baseline trips gsap_timeline_set_initial_hide, and a `gsap.set` authored before the fromTo calls is overwritten by them."
+      },
+      {
+        "code": "gsap_repeated_fromto_without_baseline",
+        "severity": "warning",
+        "message": "2 tl.fromTo() calls target \"#score-label\" with no stable baseline. The last-authored fromTo \"from\" values become the element's resting state for any seek before the first tween actually runs, because GSAP applies fromTo from-values at authoring time (immediateRender), not at tween position.",
+        "selector": "#score-label",
+        "dataAttributes": {},
+        "sourceFile": "/Users/davidlevy/Desktop/PJ/DESTAKA/brag-output/composition/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Add `immediateRender: false` to every fromTo except the earliest-positioned one (at 4.2s), so pre-first-tween seeks keep its \"from\" values. A hiding `tl.set(..., 0)` baseline trips gsap_timeline_set_initial_hide, and a `gsap.set` authored before the fromTo calls is overwritten by them."
+      },
+      {
+        "code": "gsap_repeated_fromto_without_baseline",
+        "severity": "warning",
+        "message": "2 tl.fromTo() calls target \"#score-row\" with no stable baseline. The last-authored fromTo \"from\" values become the element's resting state for any seek before the first tween actually runs, because GSAP applies fromTo from-values at authoring time (immediateRender), not at tween position.",
+        "selector": "#score-row",
+        "dataAttributes": {},
+        "sourceFile": "/Users/davidlevy/Desktop/PJ/DESTAKA/brag-output/composition/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Add `immediateRender: false` to every fromTo except the earliest-positioned one (at 4.74s), so pre-first-tween seeks keep its \"from\" values. A hiding `tl.set(..., 0)` baseline trips gsap_timeline_set_initial_hide, and a `gsap.set` authored before the fromTo calls is overwritten by them."
+      },
+      {
+        "code": "composition_file_too_large",
+        "severity": "warning",
+        "message": "This HTML composition file has 342 lines. Smaller sub-compositions are easier to read, iterate on, and diff.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {},
+        "sourceFile": "/Users/davidlevy/Desktop/PJ/DESTAKA/brag-output/composition/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Split coherent scenes or layers into separate .html files under compositions/, then mount them from the parent with data-composition-src so each file stays small enough to inspect, revise, and validate independently."
+      },
+      {
+        "code": "nested_structure_needs_subcomposition",
+        "severity": "warning",
+        "message": "<div id=\"scene-hook\"> is a timeline element that contains nested <div>. The timeline shows one row per top-level element, and the root composition is built only from sub-compositions.",
+        "selector": "#scene-hook",
+        "dataAttributes": {},
+        "sourceFile": "/Users/davidlevy/Desktop/PJ/DESTAKA/brag-output/composition/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Move <div id=\"scene-hook\"> and its contents into a sub-composition file and mount it with data-composition-src."
+      },
+      {
+        "code": "nested_structure_needs_subcomposition",
+        "severity": "warning",
+        "message": "<div id=\"scene-score\"> is a timeline element that contains nested <div>. The timeline shows one row per top-level element, and the root composition is built only from sub-compositions.",
+        "selector": "#scene-score",
+        "dataAttributes": {},
+        "sourceFile": "/Users/davidlevy/Desktop/PJ/DESTAKA/brag-output/composition/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Move <div id=\"scene-score\"> and its contents into a sub-composition file and mount it with data-composition-src."
+      },
+      {
+        "code": "nested_structure_needs_subcomposition",
+        "severity": "warning",
+        "message": "<div id=\"scene-stats\"> is a timeline element that contains nested <div>. The timeline shows one row per top-level element, and the root composition is built only from sub-compositions.",
+        "selector": "#scene-stats",
+        "dataAttributes": {},
+        "sourceFile": "/Users/davidlevy/Desktop/PJ/DESTAKA/brag-output/composition/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Move <div id=\"scene-stats\"> and its contents into a sub-composition file and mount it with data-composition-src."
+      },
+      {
+        "code": "nested_structure_needs_subcomposition",
+        "severity": "warning",
+        "message": "<div id=\"scene-outro\"> is a timeline element that contains nested <div id=\"outro-wrap\">. The timeline shows one row per top-level element, and the root composition is built only from sub-compositions.",
+        "selector": "#scene-outro",
+        "dataAttributes": {},
+        "sourceFile": "/Users/davidlevy/Desktop/PJ/DESTAKA/brag-output/composition/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Move <div id=\"scene-outro\"> and its contents into a sub-composition file and mount it with data-composition-src."
+      }
+    ],
+    "filesScanned": 1
+  },
+  "runtime": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 4,
+    "infoCount": 0,
+    "findings": [
+      {
+        "code": "clip_media_fit",
+        "severity": "warning",
+        "message": "Audio \"sfx-stat-1\" is 0.11s but its slot (data-duration) is 1.00s — the slot is shortened to the media length when rendered. Set data-duration to ~0.11s if that isn't intended.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {
+          "data-composition-id": "main",
+          "data-start": "0",
+          "data-duration": "20",
+          "data-width": "1920",
+          "data-height": "1080"
+        },
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080
+        },
+        "time": 0
+      },
+      {
+        "code": "clip_media_fit",
+        "severity": "warning",
+        "message": "Audio \"sfx-stat-2\" is 0.19s but its slot (data-duration) is 1.00s — the slot is shortened to the media length when rendered. Set data-duration to ~0.19s if that isn't intended.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {
+          "data-composition-id": "main",
+          "data-start": "0",
+          "data-duration": "20",
+          "data-width": "1920",
+          "data-height": "1080"
+        },
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080
+        },
+        "time": 0
+      },
+      {
+        "code": "clip_media_fit",
+        "severity": "warning",
+        "message": "Audio \"sfx-stat-3\" is 0.19s but its slot (data-duration) is 1.00s — the slot is shortened to the media length when rendered. Set data-duration to ~0.19s if that isn't intended.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {
+          "data-composition-id": "main",
+          "data-start": "0",
+          "data-duration": "20",
+          "data-width": "1920",
+          "data-height": "1080"
+        },
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080
+        },
+        "time": 0
+      },
+      {
+        "code": "clip_media_fit",
+        "severity": "warning",
+        "message": "Audio \"sfx-logo\" is 0.18s but its slot (data-duration) is 1.50s — the slot is shortened to the media length when rendered. Set data-duration to ~0.18s if that isn't intended.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {
+          "data-composition-id": "main",
+          "data-start": "0",
+          "data-duration": "20",
+          "data-width": "1920",
+          "data-height": "1080"
+        },
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080
+        },
+        "time": 0
+      }
+    ]
+  },
+  "layout": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": [],
+    "duration": 20,
+    "samples": [
+      1.111,
+      3.333,
+      5.556,
+      7.778,
+      10,
+      12.222,
+      14.444,
+      16.667,
+      18.889
+    ],
+    "transitionSamples": [],
+    "transitionSamplesDropped": 0,
+    "tolerance": 2,
+    "totalIssueCount": 0,
+    "truncated": false
+  },
+  "motion": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": [],
+    "enabled": false,
+    "samples": 0
+  },
+  "contrast": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 4,
+    "infoCount": 0,
+    "findings": [
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 3.2:1; WCAG AA requires 4.5:1.",
+        "text": "Score Destaka",
+        "fg": "rgb(94,106,106)",
+        "bg": "rgb(7,26,25)",
+        "ratio": 3.2,
+        "requiredRatio": 4.5,
+        "suggestedColor": "rgb(120,130,130)",
+        "large": false,
+        "selector": "#score-label",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 878.40625,
+          "y": 369.5,
+          "width": 163.1875,
+          "height": 19
+        },
+        "time": 5.556,
+        "times": [
+          5.556
+        ]
+      },
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 4.21:1; WCAG AA requires 4.5:1.",
+        "text": "Presenca Fraca",
+        "fg": "rgb(239,68,68)",
+        "bg": "rgb(42,32,31)",
+        "ratio": 4.21,
+        "requiredRatio": 4.5,
+        "suggestedColor": "rgb(240,80,80)",
+        "large": false,
+        "selector": "#score-badge",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 873.546875,
+          "y": 612.5,
+          "width": 172.890625,
+          "height": 37
+        },
+        "time": 5.556,
+        "times": [
+          5.556
+        ]
+      },
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 3.2:1; WCAG AA requires 4.5:1.",
+        "text": "Score Destaka",
+        "fg": "rgb(94,106,106)",
+        "bg": "rgb(7,26,25)",
+        "ratio": 3.2,
+        "requiredRatio": 4.5,
+        "suggestedColor": "rgb(120,130,130)",
+        "large": false,
+        "selector": "div > div:nth-of-type(4) > div > div:nth-of-type(1) > div:nth-of-type(1)",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 878.40625,
+          "y": 416,
+          "width": 163.1875,
+          "height": 19
+        },
+        "time": 14.444,
+        "times": [
+          14.444
+        ]
+      },
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 4.21:1; WCAG AA requires 4.5:1.",
+        "text": "Presenca Fraca",
+        "fg": "rgb(239,68,68)",
+        "bg": "rgb(42,32,31)",
+        "ratio": 4.21,
+        "requiredRatio": 4.5,
+        "suggestedColor": "rgb(240,80,80)",
+        "large": false,
+        "selector": "#score-badge-2",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 873.546875,
+          "y": 627,
+          "width": 172.890625,
+          "height": 37
+        },
+        "time": 14.444,
+        "times": [
+          14.444
+        ]
+      }
+    ],
+    "enabled": true,
+    "samples": [
+      1.111,
+      5.556,
+      10,
+      14.444,
+      18.889
+    ],
+    "checked": 11,
+    "passed": 7
+  },
+  "craft": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 2,
+    "infoCount": 0,
+    "findings": [
+      {
+        "code": "first_frame_empty",
+        "severity": "warning",
+        "message": "Frame 0 shows only the background, and the first frame is the thumbnail on social players: have the title or key image already on screen at 0 s instead of entering from nothing; see references/review.md.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0
+      },
+      {
+        "code": "text_below_floor",
+        "severity": "warning",
+        "message": "Type floor is 28 px (2.6% of the 1080 px short side, what a phone can read) and 18 text elements stay under it for 0.5 s or more, the smallest \"Perfil\" at 13 px: set reading text to at least 28 px, or put data-layout-ignore on text that is texture rather than reading; see references/look.md.",
+        "text": "Perfil",
+        "selector": "#score-bars > div:nth-of-type(1) > div:nth-of-type(1) > span:nth-of-type(1)",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 510,
+          "y": 681.5,
+          "width": 29.8,
+          "height": 15
+        },
+        "time": 5.75,
+        "times": [
+          4.375,
+          5.375,
+          5.75,
+          5.75,
+          5.75,
+          5.75,
+          5.75,
+          5.75,
+          5.75,
+          5.75,
+          5.75,
+          5.75,
+          11.125,
+          12.125,
+          13.25,
+          14,
+          14,
+          17.625
+        ],
+        "fontPx": 13,
+        "floorPx": 28,
+        "seconds": 3.25,
+        "elements": [
+          {
+            "selector": "#score-bars > div:nth-of-type(1) > div:nth-of-type(1) > span:nth-of-type(1)",
+            "text": "Perfil",
+            "fontPx": 13,
+            "time": 5.75,
+            "seconds": 3.25
+          },
+          {
+            "selector": "#score-bars > div:nth-of-type(1) > div:nth-of-type(1) > span:nth-of-type(2)",
+            "text": "12/25",
+            "fontPx": 13,
+            "time": 5.75,
+            "seconds": 3.25
+          },
+          {
+            "selector": "#score-bars > div:nth-of-type(2) > div:nth-of-type(1) > span:nth-of-type(1)",
+            "text": "Reputacao",
+            "fontPx": 13,
+            "time": 5.75,
+            "seconds": 3.25
+          },
+          {
+            "selector": "#score-bars > div:nth-of-type(2) > div:nth-of-type(1) > span:nth-of-type(2)",
+            "text": "8/25",
+            "fontPx": 13,
+            "time": 5.75,
+            "seconds": 3.25
+          },
+          {
+            "selector": "#score-bars > div:nth-of-type(3) > div:nth-of-type(1) > span:nth-of-type(1)",
+            "text": "Visibilidade",
+            "fontPx": 13,
+            "time": 5.75,
+            "seconds": 3.25
+          },
+          {
+            "selector": "#score-bars > div:nth-of-type(3) > div:nth-of-type(1) > span:nth-of-type(2)",
+            "text": "6/20",
+            "fontPx": 13,
+            "time": 5.75,
+            "seconds": 3.25
+          },
+          {
+            "selector": "#score-bars > div:nth-of-type(4) > div:nth-of-type(1) > span:nth-of-type(1)",
+            "text": "Retencao",
+            "fontPx": 13,
+            "time": 5.75,
+            "seconds": 3.25
+          },
+          {
+            "selector": "#score-bars > div:nth-of-type(4) > div:nth-of-type(1) > span:nth-of-type(2)",
+            "text": "10/20",
+            "fontPx": 13,
+            "time": 5.75,
+            "seconds": 3.25
+          },
+          {
+            "selector": "#score-bars > div:nth-of-type(5) > div:nth-of-type(1) > span:nth-of-type(1)",
+            "text": "Conversao",
+            "fontPx": 13,
+            "time": 5.75,
+            "seconds": 3.25
+          },
+          {
+            "selector": "#score-bars > div:nth-of-type(5) > div:nth-of-type(1) > span:nth-of-type(2)",
+            "text": "7/10",
+            "fontPx": 13,
+            "time": 5.75,
+            "seconds": 3.25
+          },
+          {
+            "selector": "#score-label",
+            "text": "Score Destaka",
+            "fontPx": 16,
+            "time": 4.375,
+            "seconds": 4.625
+          },
+          {
+            "selector": "#transform-score > div:nth-of-type(1)",
+            "text": "Score Destaka",
+            "fontPx": 16,
+            "time": 14,
+            "seconds": 3
+          },
+          {
+            "selector": "#score-badge",
+            "text": "Presenca Fraca",
+            "fontPx": 18,
+            "time": 5.375,
+            "seconds": 3.625
+          },
+          {
+            "selector": "#score-badge-2",
+            "text": "Presenca Forte",
+            "fontPx": 18,
+            "time": 14,
+            "seconds": 3
+          },
+          {
+            "selector": "#stat-2 > div:nth-of-type(2)",
+            "text": "visitam no mesmo dia",
+            "fontPx": 19.5,
+            "time": 12.125,
+            "seconds": 1.875
+          },
+          {
+            "selector": "#stat-3 > div:nth-of-type(2)",
+            "text": "confiam em avaliacoes",
+            "fontPx": 19.68,
+            "time": 13.25,
+            "seconds": 0.75
+          },
+          {
+            "selector": "#stat-1 > div:nth-of-type(2)",
+            "text": "das buscas sao locais",
+            "fontPx": 19.81,
+            "time": 11.125,
+            "seconds": 2.875
+          },
+          {
+            "selector": "div.tagline",
+            "text": "Google Meu Negocio no piloto automatico.",
+            "fontPx": 23.28,
+            "time": 17.625,
+            "seconds": 2.375
+          }
+        ]
+      }
+    ],
+    "enabled": true,
+    "step": 0.125,
+    "samples": 160
+  },
+  "audio": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": []
+  },
+  "hdr": {
+    "autoPromotion": null,
+    "inspection": "available"
+  },
+  "snapshots": {
+    "enabled": false,
+    "files": [],
+    "times": [],
+    "findingFiles": []
+  }
+}

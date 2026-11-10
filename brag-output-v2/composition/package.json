@@ -1,0 +1,1 @@
+{"name":"destaka-v2","private":true,"scripts":{"dev":"npx hyperframes preview","check":"npx hyperframes check","render":"npx hyperframes render"}}

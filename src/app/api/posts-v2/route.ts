@@ -7,7 +7,6 @@ import { createClient as createAdminSupa } from '@supabase/supabase-js'
 const PAGE_SIZE = 20
 
 export async function GET() {
-  // Auth check
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) {
@@ -19,18 +18,14 @@ export async function GET() {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
 
-  // Resolver orgId (com log de debug temporario)
   const { data: prof } = await db
     .from('professionals')
     .select('organization_id')
     .eq('user_id', user.id)
     .maybeSingle()
 
-  // TEMPORARIO: se nao encontrar, usar orgId conhecido da Paula
   const orgId = prof?.organization_id ?? 'f6c6416f-3c34-4bea-b75e-bb8c1056369e'
-  console.log('[posts-v3] userId=' + user.id + ' orgId=' + orgId + ' fromDb=' + !!prof?.organization_id)
 
-  // Queries sequenciais (nao Promise.all) para evitar qualquer race condition
   const { data: posts, count } = await db
     .from('posts')
     .select('id, content, post_type, status, scheduled_for, published_at, created_at', { count: 'exact' })
@@ -96,6 +91,5 @@ export async function GET() {
     },
   })
   resp.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate')
-  resp.headers.set('Vary', 'Cookie')
   return resp
 }
