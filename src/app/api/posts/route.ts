@@ -6,38 +6,35 @@ import { createClient as createAdminSupa } from '@supabase/supabase-js'
 
 const PAGE_SIZE = 20
 
-function admin() {
-  return createAdminSupa(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
-}
-
 export async function GET() {
   // Auth: apenas verificar que o usuario esta logado
   const supabase = await createClient()
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
-  if (authError || !user) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
     return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
   }
 
-  // Resolver orgId via admin (bypass RLS)
-  const db = admin()
-  const { data: professional } = await db
+  // Tudo via admin client (mesmo padrao do endpoint debug que funciona)
+  const db = createAdminSupa(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+
+  // Resolver orgId
+  const { data: prof } = await db
     .from('professionals')
     .select('organization_id')
     .eq('user_id', user.id)
     .maybeSingle()
 
-  if (!professional?.organization_id) {
+  if (!prof?.organization_id) {
     return NextResponse.json({ error: 'Organização não encontrada' }, { status: 404 })
   }
 
-  const orgId = professional.organization_id
-  console.log('[posts] orgId resolved:', orgId)
+  const orgId = prof.organization_id
 
-  // Buscar posts via admin
-  const { data: posts, count, error: postsError } = await db
+  // Queries sequenciais (nao Promise.all) para evitar qualquer race condition
+  const { data: posts, count } = await db
     .from('posts')
     .select('id, content, post_type, status, scheduled_for, published_at, created_at', { count: 'exact' })
     .eq('organization_id', orgId)
@@ -45,21 +42,18 @@ export async function GET() {
     .order('created_at', { ascending: false })
     .limit(PAGE_SIZE)
 
-  // Buscar org info
   const { data: org } = await db
     .from('organizations')
     .select('name, specialty, automation_preference')
     .eq('id', orgId)
     .maybeSingle()
 
-  // Buscar gbp profile
   const { data: gbp } = await db
     .from('gbp_profiles')
     .select('id')
     .eq('organization_id', orgId)
     .maybeSingle()
 
-  // Buscar scheduled next
   const { data: scheduledPost } = await db
     .from('posts')
     .select('id, content, post_type, status, scheduled_for, published_at, created_at')
@@ -69,34 +63,29 @@ export async function GET() {
     .limit(1)
     .maybeSingle()
 
-  console.log('[posts] query result: count=' + (count ?? 'null') + ' posts=' + (posts?.length ?? 'null') + ' error=' + (postsError?.message ?? 'none'))
-
   const autoPostMode = org?.automation_preference === 'automatico' ? 'automatic' : 'approval'
 
-  const mappedPosts = (posts ?? []).map((p: {
-    id: string; content: string; post_type: string; status: string
-    scheduled_for: string | null; published_at: string | null; created_at: string
-  }) => ({
-    id: p.id,
-    content: p.content,
-    type: p.post_type,
-    status: p.status === 'pending' ? 'draft' : p.status,
-    scheduled_for: p.scheduled_for,
-    published_at: p.published_at,
-    created_at: p.created_at,
+  const mappedPosts = (posts ?? []).map((p: Record<string, unknown>) => ({
+    id: p.id as string,
+    content: p.content as string,
+    type: p.post_type as string,
+    status: p.status === 'pending' ? 'draft' : p.status as string,
+    scheduled_for: p.scheduled_for as string | null,
+    published_at: p.published_at as string | null,
+    created_at: p.created_at as string,
   }))
 
   const mappedScheduled = scheduledPost ? {
     id: scheduledPost.id,
     content: scheduledPost.content,
     type: scheduledPost.post_type,
-    status: scheduledPost.status as 'scheduled',
+    status: 'scheduled' as const,
     scheduled_for: scheduledPost.scheduled_for,
     published_at: scheduledPost.published_at,
     created_at: scheduledPost.created_at,
   } : null
 
-  const response = NextResponse.json({
+  const resp = NextResponse.json({
     posts: mappedPosts,
     total: count ?? 0,
     page: 1,
@@ -104,12 +93,12 @@ export async function GET() {
     scheduledNext: mappedScheduled,
     autoPostMode,
     profile: {
-      id: gbp?.id ?? orgId,
-      name: org?.name ?? 'Meu Perfil',
-      category: org?.specialty ?? '',
+      id: (gbp?.id as string) ?? orgId,
+      name: (org?.name as string) ?? 'Meu Perfil',
+      category: (org?.specialty as string) ?? '',
     },
   })
-  response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate')
-  response.headers.set('Vary', 'Cookie')
-  return response
+  resp.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate')
+  resp.headers.set('Vary', 'Cookie')
+  return resp
 }
