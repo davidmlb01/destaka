@@ -22,8 +22,6 @@ export async function GET() {
     .from('posts')
     .select('id, content, post_type, status, scheduled_for, published_at, created_at', { count: 'exact' })
     .eq('organization_id', orgId)
-    .neq('status', 'rejected')
-    .order('created_at', { ascending: false })
     .limit(PAGE_SIZE)
 
   const { data: org } = await db
