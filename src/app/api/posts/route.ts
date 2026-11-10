@@ -34,9 +34,10 @@ export async function GET() {
   }
 
   const orgId = professional.organization_id
+  console.log('[posts] orgId resolved:', orgId)
 
   // Buscar posts via admin
-  const { data: posts, count } = await db
+  const { data: posts, count, error: postsError } = await db
     .from('posts')
     .select('id, content, post_type, status, scheduled_for, published_at, created_at', { count: 'exact' })
     .eq('organization_id', orgId)
@@ -67,6 +68,8 @@ export async function GET() {
     .order('scheduled_for', { ascending: true })
     .limit(1)
     .maybeSingle()
+
+  console.log('[posts] query result: count=' + (count ?? 'null') + ' posts=' + (posts?.length ?? 'null') + ' error=' + (postsError?.message ?? 'none'))
 
   const autoPostMode = org?.automation_preference === 'automatico' ? 'automatic' : 'approval'
 
