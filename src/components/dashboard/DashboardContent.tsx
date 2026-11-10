@@ -223,10 +223,10 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
         <div className="animate-fade-in-up stagger-1">
           <SectionTitle>Performance</SectionTitle>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <MetricCard label="Buscas no Google" value={metrics.viewsSearch} icon={<PinIcon size={16} />} hint={metrics.period} />
-            <MetricCard label="Visualizações no Maps" value={metrics.viewsMaps} icon={<PinIcon size={16} />} hint={metrics.period} />
-            <MetricCard label="Cliques no site" value={metrics.clicksWebsite} icon={<PinIcon size={16} />} hint={metrics.period} />
-            <MetricCard label="Ligações geradas" value={metrics.clicksCall} icon={<PinIcon size={16} />} hint={metrics.period} />
+            <MetricCard label="Buscas no Google" value={metrics.viewsSearch} icon={<PinIcon size={16} />} hint={metrics.period} delta={metrics.deltas?.viewsSearch} />
+            <MetricCard label="Visualizações no Maps" value={metrics.viewsMaps} icon={<PinIcon size={16} />} hint={metrics.period} delta={metrics.deltas?.viewsMaps} />
+            <MetricCard label="Cliques no site" value={metrics.clicksWebsite} icon={<PinIcon size={16} />} hint={metrics.period} delta={metrics.deltas?.clicksWebsite} />
+            <MetricCard label="Ligações geradas" value={metrics.clicksCall} icon={<PinIcon size={16} />} hint={metrics.period} delta={metrics.deltas?.clicksCall} />
           </div>
         </div>
       ) : (

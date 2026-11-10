@@ -8,7 +8,7 @@ interface DashboardData {
   diagnostic: (Record<string, number> & { id?: string; issues: Array<{ field: string; severity: string; message: string; impact: number }> }) | null
   scoreHistory: Array<{ score_total: number; created_at: string }>
   recentActions: Array<{ id: string; type: string; status: string; created_at: string }>
-  metrics: { viewsSearch: number; viewsMaps: number; clicksWebsite: number; clicksCall: number; clicksDirections: number; period: string }
+  metrics: { viewsSearch: number; viewsMaps: number; clicksWebsite: number; clicksCall: number; clicksDirections: number; period: string; deltas?: { viewsSearch: number | null; viewsMaps: number | null; clicksWebsite: number | null; clicksCall: number | null } }
   nextActions: Array<{ field: string; message: string; impact: number; severity: string }>
   weeklySummary: { posts_published: number; reviews_replied: number; score_delta: number } | null
   specialty: string | null

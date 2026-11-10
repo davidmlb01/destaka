@@ -8,15 +8,21 @@ interface MetricCardProps {
   icon: ReactNode
   hint: string
   lastKnownDate?: string | null
+  delta?: number | null
 }
 
-export const MetricCard = memo(function MetricCard({ label, value, icon, hint, lastKnownDate }: MetricCardProps) {
+export const MetricCard = memo(function MetricCard({ label, value, icon, hint, lastKnownDate, delta }: MetricCardProps) {
+  const hasDelta = delta !== undefined && delta !== null && value > 0
+  const deltaPositive = (delta ?? 0) > 0
+  const deltaText = hasDelta
+    ? `${deltaPositive ? '+' : ''}${delta?.toFixed(1)}%`
+    : null
+
   return (
     <div
       className="rounded-2xl p-5 relative overflow-hidden"
       style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}
     >
-      {/* Subtle ambient glow no canto */}
       <div
         className="absolute top-0 right-0 pointer-events-none"
         style={{
@@ -45,12 +51,22 @@ export const MetricCard = memo(function MetricCard({ label, value, icon, hint, l
 
       {value > 0 ? (
         <>
-          <p
-            className="font-display font-extrabold text-white relative"
-            style={{ fontSize: 30, lineHeight: 1, letterSpacing: '-0.5px' }}
-          >
-            {value.toLocaleString('pt-BR')}
-          </p>
+          <div className="flex items-baseline gap-2 relative">
+            <p
+              className="font-display font-extrabold text-white"
+              style={{ fontSize: 30, lineHeight: 1, letterSpacing: '-0.5px' }}
+            >
+              {value.toLocaleString('pt-BR')}
+            </p>
+            {deltaText && (
+              <span
+                className="text-[11px] font-medium"
+                style={{ color: deltaPositive ? '#4ADE80' : '#F87171' }}
+              >
+                {deltaPositive ? '↑' : '↓'} {deltaText}
+              </span>
+            )}
+          </div>
           <p className="text-xs mt-1.5" style={{ color: 'var(--text-tertiary)' }}>
             {label}
           </p>

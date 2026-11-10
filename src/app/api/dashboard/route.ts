@@ -141,6 +141,19 @@ export async function GET() {
         period: `Últimas ${perfRows.length} semanas`,
         source: 'database',
       }
+
+      // Calcular deltas: semana atual vs semana anterior
+      if (perfRows.length >= 2) {
+        const curr = perfRows[0] as Record<string, number>
+        const prev = perfRows[1] as Record<string, number>
+        const pct = (c: number, p: number) => p > 0 ? ((c - p) / p) * 100 : null
+        ;(metrics as Record<string, unknown>).deltas = {
+          viewsSearch: pct(curr.views_search ?? 0, prev.views_search ?? 0),
+          viewsMaps: pct(curr.views_maps ?? 0, prev.views_maps ?? 0),
+          clicksWebsite: pct(curr.actions_website ?? 0, prev.actions_website ?? 0),
+          clicksCall: pct(curr.actions_phone ?? 0, prev.actions_phone ?? 0),
+        }
+      }
     }
   }
 
