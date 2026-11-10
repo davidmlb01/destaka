@@ -8,6 +8,7 @@ export interface InstagramPost {
   shortCode: string
   caption: string
   imageUrl: string
+  videoUrl: string | null
   timestamp: string
   likesCount: number
   type: 'Image' | 'Sidecar' | 'Video'
@@ -78,6 +79,7 @@ export async function scrapeInstagramPosts(
       shortCode: p.shortCode ?? '',
       caption: p.caption ?? '',
       imageUrl: p.displayUrl ?? p.url ?? '',
+      videoUrl: (p as Record<string, unknown>).videoUrl as string ?? null,
       timestamp: p.timestamp ?? new Date().toISOString(),
       likesCount: p.likesCount ?? 0,
       type: (p.type ?? 'Image') as 'Image' | 'Sidecar' | 'Video',

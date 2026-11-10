@@ -45,20 +45,23 @@ export async function generateConnectUrl(profileId: string, redirectUrl: string)
   return data.authUrl
 }
 
-export async function publishPost(accountId: string, content: string, imageUrl?: string): Promise<string | null> {
+export async function publishPost(accountId: string, content: string, imageUrl?: string, videoUrl?: string): Promise<string | null> {
   try {
     const zernio = getZernioClient()
     const body: {
       content: string
       platforms: Array<{ accountId: string; platform: string }>
       publishNow: boolean
-      mediaItems?: Array<{ url: string; type: 'image' }>
+      mediaItems?: Array<{ url: string; type: 'image' | 'video' }>
     } = {
       content,
       platforms: [{ accountId, platform: 'googlebusiness' }],
       publishNow: true,
     }
-    if (imageUrl) {
+    // Video tem prioridade sobre imagem
+    if (videoUrl) {
+      body.mediaItems = [{ url: videoUrl, type: 'video' }]
+    } else if (imageUrl) {
       body.mediaItems = [{ url: imageUrl, type: 'image' }]
     }
     const { data } = await zernio.posts.createPost({ body })
