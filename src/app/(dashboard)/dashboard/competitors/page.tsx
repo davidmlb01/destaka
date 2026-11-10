@@ -1,7 +1,10 @@
+import { getDashboardContext } from '@/lib/dashboard/get-dashboard-context'
 import { CompetitorsContent } from '@/components/dashboard/CompetitorsContent'
 import { Badge } from '@/components/ui/Badge'
 
-export default function CompetitorsPage() {
+export default async function CompetitorsPage() {
+  const ctx = await getDashboardContext()
+
   return (
     <div className="px-6 py-8 max-w-5xl">
       <div className="mb-8">
@@ -13,7 +16,7 @@ export default function CompetitorsPage() {
           Compare seu perfil com os concorrentes que aparecem nas buscas da sua região.
         </p>
       </div>
-      <CompetitorsContent />
+      <CompetitorsContent specialty={ctx.specialty} />
     </div>
   )
 }
