@@ -136,10 +136,10 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
 
         {/* Score gauge (2/5 do grid) */}
         <div
-          className="lg:col-span-2 rounded-2xl p-5 flex flex-col items-center justify-between"
+          className="lg:col-span-2 rounded-2xl p-5 flex flex-col justify-between"
           style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}
         >
-          <div className="flex-1 flex flex-col items-center justify-center w-full py-2">
+          <div className="flex flex-col items-center w-full">
             <ScoreGauge score={diagnostic?.score_total ?? 0} />
           </div>
 

@@ -46,6 +46,7 @@ export default function MapCard({ isSubscriber }: { isSubscriber: boolean }) {
   }, [isSubscriber])
 
   const strongCount = data?.zones?.filter(z => z.status === 'strong').length ?? 0
+  const mediumCount = data?.zones?.filter(z => z.status === 'medium').length ?? 0
   const weakCount = data?.zones?.filter(z => z.status === 'weak').length ?? 0
 
   return (
@@ -144,8 +145,12 @@ export default function MapCard({ isSubscriber }: { isSubscriber: boolean }) {
           <p className="text-[13px] mt-3" style={{ color: 'rgba(255,255,255,0.55)' }}>
             Aparece em{' '}
             <span className="font-medium text-white">{data.total_neighborhoods} {data.total_neighborhoods === 1 ? 'bairro' : 'bairros'}</span>
-            {strongCount > 0 && weakCount > 0 && (
-              <span> ({strongCount} {strongCount === 1 ? 'forte' : 'fortes'}, {weakCount} a melhorar)</span>
+            {(strongCount > 0 || mediumCount > 0 || weakCount > 0) && (
+              <span> ({[
+                strongCount > 0 ? `${strongCount} ${strongCount === 1 ? 'forte' : 'fortes'}` : '',
+                mediumCount > 0 ? `${mediumCount} ${mediumCount === 1 ? 'médio' : 'médios'}` : '',
+                weakCount > 0 ? `${weakCount} a melhorar` : '',
+              ].filter(Boolean).join(', ')})</span>
             )}
             {data.radius_km > 0 && (
               <span style={{ color: 'rgba(255,255,255,0.35)' }}> · {data.radius_km} km</span>
