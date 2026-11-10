@@ -1,21 +1,43 @@
 export const dynamic = 'force-dynamic'
 
 import { NextResponse } from 'next/server'
+import { getAuthOrg, privateJson } from '@/lib/api/with-auth'
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 
-const ORG_ID = 'f6c6416f-3c34-4bea-b75e-bb8c1056369e'
-
-export async function GET() {
-  const db = createAdminSupa(
+function adminClient() {
+  return createAdminSupa(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
+}
 
-  const { data: posts, count } = await db
+export async function GET() {
+  const auth = await getAuthOrg()
+  if (auth.error) return auth.error
+  const { orgId } = auth
+  const db = adminClient()
+
+  const { data: posts, count, error: queryErr } = await db
     .from('posts')
     .select('id, content, post_type, status, scheduled_for, published_at, created_at', { count: 'exact' })
-    .eq('organization_id', ORG_ID)
+    .eq('organization_id', orgId)
     .limit(20)
+
+  if (queryErr) {
+    console.error('[posts] query error:', queryErr.message, queryErr.code, queryErr.details)
+  }
+
+  const { data: org } = await db
+    .from('organizations')
+    .select('name, specialty, automation_preference')
+    .eq('id', orgId)
+    .maybeSingle()
+
+  const { data: gbp } = await db
+    .from('gbp_profiles')
+    .select('id')
+    .eq('organization_id', orgId)
+    .maybeSingle()
 
   const mappedPosts = (posts ?? []).map((p: Record<string, unknown>) => ({
     id: p.id as string,
@@ -27,19 +49,17 @@ export async function GET() {
     created_at: p.created_at as string,
   }))
 
-  const resp = NextResponse.json({
+  return privateJson({
     posts: mappedPosts,
     total: count ?? 0,
     page: 1,
     pageSize: 20,
     scheduledNext: null,
-    autoPostMode: 'approval',
+    autoPostMode: org?.automation_preference === 'automatico' ? 'automatic' : 'approval',
     profile: {
-      id: ORG_ID,
-      name: 'Bacellar Fisioterapia Especializada & Quiropraxia',
-      category: 'fisioterapeuta',
+      id: (gbp?.id as string) ?? orgId,
+      name: (org?.name as string) ?? 'Meu Perfil',
+      category: (org?.specialty as string) ?? '',
     },
   })
-  resp.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate')
-  return resp
 }
