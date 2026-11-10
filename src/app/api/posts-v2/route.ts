@@ -65,7 +65,7 @@ export async function GET(_req: NextRequest) {
   // Queries
   const { data: posts, count } = await db
     .from('posts')
-    .select('id, content, post_type, status, scheduled_for, published_at, created_at', { count: 'exact' })
+    .select('id, content, post_type, status, scheduled_at, published_at, created_at', { count: 'exact' })
     .eq('organization_id', orgId)
     .in('status', ['draft', 'pending', 'published', 'scheduled', 'failed'])
     .order('created_at', { ascending: false })
@@ -85,10 +85,10 @@ export async function GET(_req: NextRequest) {
 
   const { data: scheduledPost } = await db
     .from('posts')
-    .select('id, content, post_type, status, scheduled_for, published_at, created_at')
+    .select('id, content, post_type, status, scheduled_at, published_at, created_at')
     .eq('organization_id', orgId)
     .eq('status', 'scheduled')
-    .order('scheduled_for', { ascending: true })
+    .order('scheduled_at', { ascending: true })
     .limit(1)
     .maybeSingle()
 
@@ -99,7 +99,7 @@ export async function GET(_req: NextRequest) {
     content: p.content as string,
     type: p.post_type as string,
     status: p.status === 'pending' ? 'draft' : p.status as string,
-    scheduled_for: p.scheduled_for as string | null,
+    scheduled_at: p.scheduled_at as string | null,
     published_at: p.published_at as string | null,
     created_at: p.created_at as string,
   }))
@@ -109,7 +109,7 @@ export async function GET(_req: NextRequest) {
     content: scheduledPost.content,
     type: scheduledPost.post_type,
     status: 'scheduled' as const,
-    scheduled_for: scheduledPost.scheduled_for,
+    scheduled_at: scheduledPost.scheduled_at,
     published_at: scheduledPost.published_at,
     created_at: scheduledPost.created_at,
   } : null

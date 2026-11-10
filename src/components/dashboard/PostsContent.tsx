@@ -113,9 +113,9 @@ export function PostsContent() {
               <p className="text-xs line-clamp-2" style={{ color: 'rgba(255,255,255,0.5)' }}>
                 {data.scheduledNext.content}
               </p>
-              {data.scheduledNext.scheduled_for && (
+              {data.scheduledNext.scheduled_at && (
                 <p className="text-xs mt-1" style={{ color: 'var(--accent-bright)' }}>
-                  Agendado para {formatDate(data.scheduledNext.scheduled_for)}
+                  Agendado para {formatDate(data.scheduledNext.scheduled_at)}
                 </p>
               )}
             </div>

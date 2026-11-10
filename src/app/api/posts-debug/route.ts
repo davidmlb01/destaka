@@ -55,7 +55,7 @@ export async function GET(_req: NextRequest) {
   // Buscar posts
   const { data: posts, count } = await db
     .from('posts')
-    .select('id, content, post_type, status, scheduled_for, published_at, created_at', { count: 'exact' })
+    .select('id, content, post_type, status, scheduled_at, published_at, created_at', { count: 'exact' })
     .eq('organization_id', orgId)
     .limit(20)
 
@@ -67,7 +67,7 @@ export async function GET(_req: NextRequest) {
     content: p.content as string,
     type: p.post_type as string,
     status: p.status === 'pending' ? 'draft' : p.status as string,
-    scheduled_for: p.scheduled_for as string | null,
+    scheduled_at: p.scheduled_at as string | null,
     published_at: p.published_at as string | null,
     created_at: p.created_at as string,
   }))

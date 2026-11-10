@@ -9,7 +9,7 @@ interface Post {
   content: string
   type: string
   status: 'draft' | 'pending' | 'published' | 'scheduled' | 'failed'
-  scheduled_for: string | null
+  scheduled_at: string | null
   published_at: string | null
   created_at: string
 }
@@ -25,7 +25,7 @@ interface PostsData {
 }
 
 export function usePosts() {
-  const { data, error, isLoading, mutate } = useSWR<PostsData>('/api/posts-debug', fetcher)
+  const { data, error, isLoading, mutate } = useSWR<PostsData>('/api/posts', fetcher)
   const [generating, setGenerating] = useState(false)
   const [publishingId, setPublishingId] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
