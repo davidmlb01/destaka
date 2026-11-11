@@ -35,6 +35,7 @@ REGRAS DE COMPLIANCE OBRIGATÓRIAS (CFM/CRO/COFFITO):
 - Procedimentos devem ser mencionados de forma técnica e educativa, nunca promocional
 - O post deve soar como se o PRÓPRIO PROFISSIONAL tivesse escrito, não uma IA
 - NUNCA use travessão (—)
+- SEMPRE termine o post com um CTA claro e curto: "Agende sua consulta", "Fale conosco", "Saiba mais" ou "Ligue agora"
 `
 
 export interface GeneratedPost {
