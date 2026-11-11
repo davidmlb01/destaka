@@ -131,12 +131,10 @@ export async function analyzeGap(
   const ahead = factors.filter(f => f.status === 'ahead')
 
   let summary: string
-  const priorities = behind.filter(f => f.impact === 'high').map(f => f.label.toLowerCase())
-  const focusItems = priorities.length > 0 ? priorities.join(', ') : behind.map(f => f.label.toLowerCase()).join(', ')
   if (behind.length === 0) {
     summary = `Você está à frente de ${competitor.name} nos fatores analisados. Continue o ritmo.`
   } else {
-    summary = `Para subir no ranking, priorize: ${focusItems}.`
+    summary = `O Destaka cuida de posts, respostas e otimizações do seu perfil. Sua parte: solicitar avaliações aos seus pacientes. Cada nova avaliação te aproxima do topo.`
   }
 
   return {
