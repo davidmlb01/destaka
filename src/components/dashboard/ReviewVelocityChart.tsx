@@ -44,29 +44,14 @@ export function ReviewVelocityChart() {
       .finally(() => setLoading(false))
   }, [])
 
-  if (loading) {
-    return (
-      <div
-        className="rounded-2xl p-5 flex items-center justify-center"
-        style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)', minHeight: 200 }}
-      >
-        <p className="text-[13px]" style={{ color: 'var(--text-muted)' }}>Carregando velocidade de avaliações...</p>
-      </div>
-    )
-  }
+  // Esconder completamente quando não tem dados suficientes (< 2 semanas)
+  if (loading) return null
 
-  if (!data?.series.length) {
-    return (
-      <div
-        className="rounded-2xl p-5 flex items-center justify-center"
-        style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)', minHeight: 200 }}
-      >
-        <p className="text-[13px]" style={{ color: 'var(--text-muted)' }}>
-          Dados de velocidade sendo coletados. Aparece após a segunda semana de monitoramento.
-        </p>
-      </div>
-    )
-  }
+  if (!data?.series.length) return null
+
+  // Precisa de pelo menos 2 datas para mostrar gráfico (senão é só pontos soltos)
+  const allDatesCount = new Set(data.series.flatMap(s => s.data.map(d => d.date))).size
+  if (allDatesCount < 2) return null
 
   // Construir dados para Recharts: cada ponto no eixo X é uma data, cada série é uma linha
   const allDates = [...new Set(data.series.flatMap(s => s.data.map(d => d.date)))].sort()
