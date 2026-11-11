@@ -9,8 +9,19 @@ interface VelocitySeries {
   data: { date: string; count: number }[]
 }
 
+interface OvertakePrediction {
+  competitorName: string
+  competitorCount: number
+  userCount: number
+  gap: number
+  weeksToOvertake: number | null
+  userVelocity: number
+  competitorVelocity: number
+}
+
 interface VelocityResponse {
   series: VelocitySeries[]
+  predictions?: OvertakePrediction[]
   empty?: boolean
 }
 
@@ -155,6 +166,43 @@ export function ReviewVelocityChart() {
           )
         })}
       </div>
+      {/* Previsões de ultrapassagem (Story 5.5) */}
+      {data.predictions && data.predictions.length > 0 && (
+        <div className="mt-4 pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+          <p className="text-[10px] font-medium tracking-[0.08em] uppercase mb-2" style={{ color: 'var(--text-muted)' }}>
+            Previsão de ultrapassagem
+          </p>
+          <div className="flex flex-col gap-1.5">
+            {data.predictions.map(p => {
+              const timeText = p.weeksToOvertake === null
+                ? 'No ritmo atual, não ultrapassa'
+                : p.weeksToOvertake === 0
+                  ? 'Você já está à frente'
+                  : p.weeksToOvertake <= 4
+                    ? `~${p.weeksToOvertake} semanas`
+                    : `~${Math.round(p.weeksToOvertake / 4.3)} meses`
+
+              const color = p.weeksToOvertake === 0
+                ? '#4ADE80'
+                : p.weeksToOvertake !== null && p.weeksToOvertake <= 12
+                  ? '#FBBF24'
+                  : 'var(--text-muted)'
+
+              return (
+                <div key={p.competitorName} className="flex items-center justify-between">
+                  <span className="text-[12px]" style={{ color: 'var(--text-tertiary)' }}>
+                    {p.competitorName.split(' ').slice(0, 3).join(' ')}
+                    <span style={{ color: 'var(--text-muted)' }}> ({p.competitorCount} avaliações, {p.gap > 0 ? `+${p.gap}` : p.gap} vs você)</span>
+                  </span>
+                  <span className="text-[12px] font-medium" style={{ color }}>
+                    {timeText}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import { getAuthOrg, privateJson } from '@/lib/api/with-auth'
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
+import { predictOvertake } from '@/lib/ranking/overtake-predictor'
 
 function admin() {
   return createAdminSupa(
@@ -66,5 +67,23 @@ export async function GET() {
     series.push({ name: c.name, isSelf: false, data: c.data })
   }
 
-  return privateJson({ series })
+  // Calcular velocidades e previsões de ultrapassagem (Story 5.5)
+  function calcVelocity(data: { date: string; count: number }[]): number {
+    if (data.length < 2) return 0
+    const first = data[0]
+    const last = data[data.length - 1]
+    const weeks = Math.max(1, (new Date(last.date).getTime() - new Date(first.date).getTime()) / (7 * 24 * 60 * 60 * 1000))
+    return Math.round(((last.count - first.count) / weeks) * 10) / 10
+  }
+
+  const velocityEntries = series.map(s => ({
+    name: s.name,
+    currentCount: s.data[s.data.length - 1]?.count ?? 0,
+    weeklyVelocity: calcVelocity(s.data),
+    isSelf: s.isSelf,
+  }))
+
+  const predictions = predictOvertake(velocityEntries)
+
+  return privateJson({ series, predictions })
 }
