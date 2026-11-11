@@ -1,3 +1,5 @@
+'use client'
+
 /**
  * Label de seção padronizado. Uppercase, tracking, muted.
  * Uso: <SectionLabel>Performance</SectionLabel>
