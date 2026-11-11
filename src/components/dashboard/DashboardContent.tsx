@@ -20,6 +20,7 @@ import { PatientFunnelCard } from './PatientFunnelCard'
 import { SectionLabel } from '@/components/ui/SectionLabel'
 import { RankingCard } from './RankingCard'
 import { GapAnalysisCard } from './GapAnalysisCard'
+import { GeoGridMap } from './GeoGridMap'
 
 const CATEGORY_LABELS: Record<string, string> = {
   'Informações Básicas': 'Seu perfil está completo?',
@@ -256,6 +257,7 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
           <SectionTitle>Seu ranking no Google</SectionTitle>
           <div className="flex flex-col gap-4">
             <RankingCard />
+            <GeoGridMap />
             <GapAnalysisCard />
           </div>
         </div>
