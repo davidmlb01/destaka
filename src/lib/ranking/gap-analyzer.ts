@@ -131,12 +131,12 @@ export async function analyzeGap(
   const ahead = factors.filter(f => f.status === 'ahead')
 
   let summary: string
+  const priorities = behind.filter(f => f.impact === 'high').map(f => f.label.toLowerCase())
+  const focusItems = priorities.length > 0 ? priorities.join(', ') : behind.map(f => f.label.toLowerCase()).join(', ')
   if (behind.length === 0) {
-    summary = `Você está à frente do ${competitor.name} em todos os fatores analisados. Continue o ritmo para consolidar a 1ª posição.`
-  } else if (behind.length <= 2) {
-    summary = `Você está perto de ultrapassar ${competitor.name}. Foco em: ${behind.map(f => f.label.toLowerCase()).join(' e ')}.`
+    summary = `Você está à frente de ${competitor.name} nos fatores analisados. Continue o ritmo.`
   } else {
-    summary = `Para alcançar ${competitor.name}, priorize: ${behind.filter(f => f.impact === 'high').map(f => f.label.toLowerCase()).join(', ')}.`
+    summary = `Para subir no ranking, priorize: ${focusItems}.`
   }
 
   return {

@@ -250,7 +250,7 @@ export function OptimizationsPage({
       <div className="px-6 py-10 max-w-3xl">
         <h1 className="font-display font-bold text-white text-2xl mb-3">Melhorias para seu perfil</h1>
         <p style={{ color: 'var(--text-tertiary)', fontSize: 15 }}>
-          Nenhuma sugestão disponível no momento. Execute o diagnóstico para gerar recomendações.
+          Tudo otimizado! O Destaka monitora seu perfil e sugere melhorias automaticamente quando identificar oportunidades.
         </p>
       </div>
     )

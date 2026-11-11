@@ -202,7 +202,19 @@ export async function GET() {
     fallbackActions.push({ field: 'photos', severity: 'warning', message: 'Adicione pelo menos 5 fotos reais do seu espaço para aumentar a confiança.', impact: 6 })
   }
 
+  // Filtrar ações já aplicadas via otimizações
+  const optimReport = gbpProfile?.optimization_report as Record<string, unknown> | null
+  const appliedSections = Array.isArray(optimReport?.applied_sections) ? optimReport.applied_sections as string[] : []
+  const appliedFieldMap: Record<string, string[]> = {
+    attributes: ['attributes'],
+    categories: ['category', 'categories'],
+    description: ['description'],
+    services: ['services', 'services_count', 'services_desc'],
+  }
+  const appliedFields = appliedSections.flatMap(s => appliedFieldMap[s] ?? [])
+
   const nextActions = [...issues, ...fallbackActions]
+    .filter(a => !appliedFields.includes(a.field))
     .sort((a, b) => b.impact - a.impact)
     .slice(0, 5)
     .map(i => ({

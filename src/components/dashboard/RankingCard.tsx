@@ -37,11 +37,8 @@ function PositionBadge({ position }: { position: number | null }) {
   const style = colors[position] ?? { bg: 'rgba(255,255,255,0.06)', text: 'rgba(255,255,255,0.5)' }
 
   return (
-    <span
-      className="font-display font-extrabold"
-      style={{ fontSize: 36, lineHeight: 1, color: style.text, letterSpacing: '-1px' }}
-    >
-      {position}o
+    <span className="font-display font-extrabold" style={{ fontSize: 36, lineHeight: 1, color: style.text, letterSpacing: '-1px' }}>
+      {position}<span style={{ fontSize: 16, verticalAlign: 'super', marginLeft: 1 }}>º</span>
     </span>
   )
 }
