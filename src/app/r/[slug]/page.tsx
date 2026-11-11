@@ -15,12 +15,41 @@ interface Props {
 
 async function getOrg(slug: string) {
   const db = admin()
-  const { data } = await db
+  const { data: org } = await db
     .from('organizations')
-    .select('id, name, google_place_id, specialty, review_slug')
+    .select('id, name, specialty, review_slug')
     .eq('review_slug', slug)
     .maybeSingle()
-  return data
+
+  if (!org) return null
+
+  // google_place_id está em gmb_profiles, não em organizations
+  const { data: gmb } = await db
+    .from('gmb_profiles')
+    .select('google_place_id')
+    .eq('user_id', org.id)
+    .maybeSingle()
+
+  // Fallback: buscar via organization_id na tabela gmb_profiles (user_id pode ser o prof user_id)
+  let placeId = gmb?.google_place_id ?? null
+  if (!placeId) {
+    const { data: prof } = await db
+      .from('professionals')
+      .select('user_id')
+      .eq('organization_id', org.id)
+      .limit(1)
+      .maybeSingle()
+    if (prof?.user_id) {
+      const { data: gmb2 } = await db
+        .from('gmb_profiles')
+        .select('google_place_id')
+        .eq('user_id', prof.user_id)
+        .maybeSingle()
+      placeId = gmb2?.google_place_id ?? null
+    }
+  }
+
+  return { ...org, google_place_id: placeId }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

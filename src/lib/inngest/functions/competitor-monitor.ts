@@ -45,7 +45,7 @@ export const competitorMonitor = inngest.createFunction(
         // Busca dados da organização e perfil GBP
         const { data: org } = await db
           .from('organizations')
-          .select('id, name, specialty')
+          .select('id, name, specialty, google_review_count')
           .eq('id', orgId)
           .single()
 
@@ -160,9 +160,12 @@ export const competitorMonitor = inngest.createFunction(
           photo_count?: number
         } | null
 
+        // Usar google_review_count como fallback quando audit_report não tem review_count
+        const ownReviewCount = auditReport?.review_count ?? (org as Record<string, unknown>).google_review_count as number ?? 0
+
         const benchmark = await analyzeCompetitors({
           ownName: org.name,
-          ownReviewCount: auditReport?.review_count ?? 0,
+          ownReviewCount,
           ownAvgRating: auditReport?.avg_rating ?? 0,
           ownCategoryCount: auditReport?.category_count ?? (profile.categories?.length ?? 1),
           ownHasDescription: !!profile.description,
@@ -205,7 +208,7 @@ export const competitorMonitor = inngest.createFunction(
           organization_id: orgId,
           competitor_id: null,
           name: org.name,
-          review_count: auditReport?.review_count ?? 0,
+          review_count: ownReviewCount,
           avg_rating: auditReport?.avg_rating ?? null,
           snapshot_date: today,
           is_self: true,
