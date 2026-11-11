@@ -90,7 +90,7 @@ export const geoGridTracker = inngest.createFunction(
 
         // Salvar snapshot
         const weekStart = new Date().toISOString().split('T')[0]
-        await db.from('geo_grid_snapshots').upsert({
+        await db.from('geo_grid_snapshots').insert({
           organization_id: orgId,
           keyword_id: keyword.id,
           keyword: keyword.keyword,
@@ -98,17 +98,6 @@ export const geoGridTracker = inngest.createFunction(
           radius_km: 3,
           grid_size: 4,
           week_start: weekStart,
-        }, { onConflict: 'organization_id,week_start' }).catch(() => {
-          // Se não tem unique constraint, faz insert
-          return db.from('geo_grid_snapshots').insert({
-            organization_id: orgId,
-            keyword_id: keyword.id,
-            keyword: keyword.keyword,
-            grid_data: gridResult,
-            radius_km: 3,
-            grid_size: 4,
-            week_start: weekStart,
-          })
         })
 
         console.log(`[geo-grid] Org ${orgId}: ${gridResult.summary.strong} strong, ${gridResult.summary.medium} medium, ${gridResult.summary.weak} weak, ${gridResult.summary.invisible} invisible`)
