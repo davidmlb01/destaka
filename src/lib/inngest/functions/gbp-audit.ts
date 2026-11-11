@@ -111,10 +111,10 @@ export const gbpAudit = inngest.createFunction(
         const reviewList = reviews.status === 'fulfilled' ? reviews.value : []
         const mediaList = media.status === 'fulfilled' ? media.value : []
 
-        // Busca dados existentes para nao sobrescrever dados do onboarding com arrays vazios
+        // Busca dados existentes para comparação de edições e merge inteligente
         const { data: existingProfile } = await db
           .from('gbp_profiles')
-          .select('attributes, services, photo_count')
+          .select('attributes, services, photo_count, name, phone, description, hours, categories, address')
           .eq('organization_id', orgId)
           .maybeSingle()
 
@@ -144,6 +144,64 @@ export const gbpAudit = inngest.createFunction(
         await db
           .from('gbp_profiles')
           .upsert(profilePayload, { onConflict: 'organization_id,location_id' })
+
+        // Story 5.7: Detecção de edições não autorizadas
+        if (existingProfile?.name) {
+          const changes: { field: string; before: string; after: string }[] = []
+
+          const check = (field: string, before: unknown, after: unknown) => {
+            const b = JSON.stringify(before ?? null)
+            const a = JSON.stringify(after ?? null)
+            if (b !== a && before != null) {
+              changes.push({ field, before: String(before), after: String(after) })
+            }
+          }
+
+          check('Nome', existingProfile.name, profilePayload.name)
+          check('Telefone', existingProfile.phone, profilePayload.phone)
+          check('Descrição', existingProfile.description, profilePayload.description)
+          check('Horários', JSON.stringify(existingProfile.hours), JSON.stringify(profilePayload.hours))
+          check('Categorias', (existingProfile.categories as string[])?.join(', '), profilePayload.categories.join(', '))
+          check('Endereço', JSON.stringify(existingProfile.address), JSON.stringify(profilePayload.address))
+
+          if (changes.length > 0) {
+            // Log de alterações
+            await db.from('profile_change_log').insert({
+              organization_id: orgId,
+              changes,
+              detected_at: new Date().toISOString(),
+              source: 'gbp-audit',
+            })
+
+            // Enviar email de alerta
+            try {
+              const { data: prof } = await db
+                .from('professionals')
+                .select('user_id')
+                .eq('organization_id', orgId)
+                .limit(1)
+                .maybeSingle()
+
+              if (prof?.user_id) {
+                const { data: authUser } = await db.auth.admin.getUserById(prof.user_id)
+                const email = authUser?.user?.email
+                if (email) {
+                  const { sendProfileChangeAlert } = await import('@/lib/email/profile-change-alert')
+                  await sendProfileChangeAlert({
+                    to: email,
+                    orgName: profilePayload.name ?? 'Seu perfil',
+                    changes,
+                    dashboardUrl: 'https://destaka.com.br/dashboard',
+                  })
+                }
+              }
+            } catch (emailErr) {
+              console.error('[gbp-audit] profile change alert email error:', emailErr)
+            }
+
+            console.log(`[gbp-audit] profile changes detected for org ${orgId}:`, changes.map(c => c.field).join(', '))
+          }
+        }
 
         // Persiste reviews na tabela reviews
         if (reviewList.length > 0) {
