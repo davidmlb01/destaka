@@ -1,5 +1,5 @@
 
-import { createClient } from '@/lib/supabase/server'
+import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { redirect } from 'next/navigation'
 import { getDashboardContext } from '@/lib/dashboard/get-dashboard-context'
 import { DashboardContent } from '@/components/dashboard/DashboardContent'
@@ -19,8 +19,8 @@ export default async function DashboardPage({
     redirect('/diagnostico')
   }
 
-  const supabase = await createClient()
-  const { data: org } = await supabase
+  const db = createAdminSupa(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
+  const { data: org } = await db
     .from('organizations')
     .select('lgpd_ai_consent')
     .eq('id', ctx.orgId)
@@ -31,8 +31,8 @@ export default async function DashboardPage({
   }
 
   const [{ data: profile }] = await Promise.all([
-    supabase.from('gbp_profiles').select('optimization_report, description, photo_count').eq('organization_id', ctx.orgId).maybeSingle(),
-    supabase.from('reviews').select('id', { count: 'exact', head: true }).eq('organization_id', ctx.orgId).is('response_text', null),
+    db.from('gbp_profiles').select('optimization_report, description, photo_count').eq('organization_id', ctx.orgId).maybeSingle(),
+    db.from('reviews').select('id', { count: 'exact', head: true }).eq('organization_id', ctx.orgId).is('response_text', null),
   ])
 
   return (

@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { redirect } from 'next/navigation'
 import { isActiveSubscriber } from '@/lib/subscription'
 import { cache } from 'react'
@@ -11,13 +12,22 @@ export interface DashboardContext {
   isSubscriber: boolean
 }
 
+function admin() {
+  return createAdminSupa(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
+
 // React cache() garante que chamadas multiplas no mesmo request reutilizam o resultado
 export const getDashboardContext = cache(async (): Promise<DashboardContext> => {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const { data: professional } = await supabase
+  const db = admin()
+
+  const { data: professional } = await db
     .from('professionals')
     .select('organization_id')
     .eq('user_id', user.id)
@@ -28,7 +38,7 @@ export const getDashboardContext = cache(async (): Promise<DashboardContext> => 
   const orgId = professional.organization_id
 
   const [{ data: org }, subscriber] = await Promise.all([
-    supabase.from('organizations').select('name, specialty').eq('id', orgId).maybeSingle(),
+    db.from('organizations').select('name, specialty').eq('id', orgId).maybeSingle(),
     isActiveSubscriber(orgId),
   ])
 
