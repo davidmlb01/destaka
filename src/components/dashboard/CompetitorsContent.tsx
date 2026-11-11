@@ -37,7 +37,7 @@ function BenchmarkCard({ data }: { data: BenchmarkData }) {
 
       {(data.alerts?.length ?? 0) > 0 && (
         <div className="flex flex-col gap-1.5 mb-2">
-          {data.alerts.map((a, i) => (
+          {(data.alerts ?? []).map((a, i) => (
             <div key={i} className="flex items-start gap-2">
               <span className="text-xs mt-0.5 shrink-0" style={{ color: 'var(--error)' }}>!</span>
               <span className="text-xs" style={{ color: '#FCA5A5' }}>{a}</span>
@@ -48,7 +48,7 @@ function BenchmarkCard({ data }: { data: BenchmarkData }) {
 
       {(data.gaps?.length ?? 0) > 0 && (
         <div className="flex flex-col gap-1.5">
-          {data.gaps.map((g, i) => (
+          {(data.gaps ?? []).map((g, i) => (
             <div key={i} className="flex items-start gap-2">
               <span className="text-xs mt-0.5 shrink-0" style={{ color: 'var(--success)' }}>+</span>
               <span className="text-xs" style={{ color: '#6EE7B7' }}>{g}</span>
@@ -146,7 +146,7 @@ function OpportunitiesSection({ specialty }: { specialty?: string | null }) {
   const { analysis, isLoading } = useCompetitiveAnalysis()
 
   if (isLoading) return null
-  if (!analysis || analysis.gaps.length === 0) return null
+  if (!analysis || !Array.isArray(analysis.gaps) || analysis.gaps.length === 0) return null
 
   return (
     <div className="mt-8">
