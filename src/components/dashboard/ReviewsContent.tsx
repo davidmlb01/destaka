@@ -61,18 +61,28 @@ export function ReviewsContent() {
 
   return (
     <div className="flex flex-col gap-5">
-      {/* Badge de pendentes */}
-      {data && data.pendingCount > 0 && (
+      {/* Status de avaliações */}
+      {data && data.pendingCount > 0 ? (
         <div
           className="rounded-xl px-4 py-3 flex items-center gap-3"
           style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)' }}
         >
           <PinIcon size={18} />
-          <p className="text-sm font-medium" style={{ color: 'var(--accent-bright)' }}>
+          <p className="text-sm font-medium" style={{ color: 'var(--warning)' }}>
             {data.pendingCount} {data.pendingCount === 1 ? 'avaliação aguardando' : 'avaliações aguardando'} resposta. Responder rápido melhora seu ranking.
           </p>
         </div>
-      )}
+      ) : data && data.reviews.length > 0 ? (
+        <div
+          className="rounded-xl px-4 py-3 flex items-center gap-3"
+          style={{ background: 'rgba(74,222,128,0.06)', border: '1px solid rgba(74,222,128,0.15)' }}
+        >
+          <PinIcon size={18} />
+          <p className="text-sm" style={{ color: 'var(--success)' }}>
+            Todas as avaliações estão respondidas. O Destaka monitora novas avaliações automaticamente.
+          </p>
+        </div>
+      ) : null}
 
       {/* Filtros */}
       <div className="flex gap-2 flex-wrap">

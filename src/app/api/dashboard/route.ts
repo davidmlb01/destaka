@@ -206,10 +206,10 @@ export async function GET() {
   const optimReport = gbpProfile?.optimization_report as Record<string, unknown> | null
   const appliedSections = Array.isArray(optimReport?.applied_sections) ? optimReport.applied_sections as string[] : []
   const appliedFieldMap: Record<string, string[]> = {
-    attributes: ['attributes'],
-    categories: ['category', 'categories'],
-    description: ['description'],
-    services: ['services', 'services_count', 'services_desc'],
+    attributes: ['attributes', 'atributos'],
+    categories: ['category', 'categories', 'categorias'],
+    description: ['description', 'descricao'],
+    services: ['services', 'services_count', 'services_desc', 'servicos'],
   }
   const appliedFields = appliedSections.flatMap(s => appliedFieldMap[s] ?? [])
 
