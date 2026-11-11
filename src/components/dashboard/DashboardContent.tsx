@@ -135,7 +135,7 @@ export function DashboardContent({ isSubscriber = true, onCheckout, impactText, 
           className="lg:col-span-2 rounded-2xl p-5 flex flex-col"
           style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}
         >
-          <div className="flex-1 flex flex-col items-center justify-center w-full">
+          <div className="flex-1 flex flex-col items-center w-full">
             <ScoreGauge score={diagnostic?.score_total ?? 0} initialScore={scoreHistory.length > 1 ? scoreHistory[scoreHistory.length - 1].score_total : null} />
           </div>
 
