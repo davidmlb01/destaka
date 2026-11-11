@@ -1,6 +1,6 @@
 # EPIC-005: Destaka Core Delivery
 
-**Status:** Ready for Development
+**Status:** 10/11 Stories Done (Story 5.1 blocked by Meta API approval)
 **Owner:** Morgan (PM)
 **Sprint:** 6 semanas (3 waves de 2 semanas)
 **Objetivo:** Implementar tudo que e fundamental para entregar a promessa do produto: colocar o usuario em primeiro lugar nas buscas do Google.
@@ -23,7 +23,7 @@ Tudo mais (QR Code, CTA, fotos IA) e polimento. Este epic foca no que entrega va
 
 > Sem isso, o produto nao entrega a promessa.
 
-### Story 5.1: Solicitacao de Reviews via WhatsApp
+### Story 5.1: Solicitacao de Reviews via WhatsApp [BLOCKED - Meta API approval]
 **Prioridade:** P0 | **Esforco:** 5 dias | **Agente:** @dev
 **Pilar:** Avaliacoes
 
@@ -60,7 +60,7 @@ Profissional marca consulta como realizada. Em ate 2h, paciente recebe WhatsApp 
 
 ---
 
-### Story 5.2: Geo-Grid Rank Tracking
+### Story 5.2: Geo-Grid Rank Tracking [DONE]
 **Prioridade:** P0 | **Esforco:** 7 dias | **Agente:** @dev + @ux-design-expert
 **Pilar:** Geo
 
@@ -103,7 +103,7 @@ Dashboard mostra mapa com 16 pontos ao redor de Copacabana. Pontos verdes onde P
 
 > Transforma dados em acoes. Profissional ve progresso e sabe o que fazer.
 
-### Story 5.3: Dashboard Review Velocity vs Concorrentes
+### Story 5.3: Dashboard Review Velocity vs Concorrentes [DONE]
 **Prioridade:** P1 | **Esforco:** 4 dias | **Agente:** @dev
 **Pilar:** Avaliacoes + Competitivo
 
@@ -127,7 +127,7 @@ Dashboard mostra mapa com 16 pontos ao redor de Copacabana. Pontos verdes onde P
 
 ---
 
-### Story 5.4: Alertas de Movimento dos Concorrentes
+### Story 5.4: Alertas de Movimento dos Concorrentes [DONE]
 **Prioridade:** P1 | **Esforco:** 3 dias | **Agente:** @dev
 **Pilar:** Competitivo
 
@@ -150,7 +150,7 @@ Dashboard mostra mapa com 16 pontos ao redor de Copacabana. Pontos verdes onde P
 
 ---
 
-### Story 5.5: Previsao de Ultrapassagem
+### Story 5.5: Previsao de Ultrapassagem [DONE]
 **Prioridade:** P1 | **Esforco:** 2 dias | **Agente:** @dev
 **Pilar:** Competitivo
 
@@ -173,7 +173,7 @@ Dashboard mostra mapa com 16 pontos ao redor de Copacabana. Pontos verdes onde P
 
 ---
 
-### Story 5.6: QR Code Personalizado
+### Story 5.6: QR Code Personalizado [DONE - pre-existing]
 **Prioridade:** P1 | **Esforco:** 2 dias | **Agente:** @dev
 **Pilar:** Avaliacoes
 
@@ -196,7 +196,7 @@ Dashboard mostra mapa com 16 pontos ao redor de Copacabana. Pontos verdes onde P
 
 ---
 
-### Story 5.7: Monitoramento de Edicoes nao Autorizadas
+### Story 5.7: Monitoramento de Edicoes nao Autorizadas [DONE]
 **Prioridade:** P1 | **Esforco:** 2 dias | **Agente:** @dev
 **Pilar:** Perfil
 
@@ -223,7 +223,7 @@ Dashboard mostra mapa com 16 pontos ao redor de Copacabana. Pontos verdes onde P
 
 > Melhora a experiencia. Nao e bloqueador mas diferencia o produto.
 
-### Story 5.8: Mapa de Calor Visual (Geo-Grid Dashboard)
+### Story 5.8: Mapa de Calor Visual (Geo-Grid Dashboard) [DONE]
 **Prioridade:** P1 | **Esforco:** 3 dias | **Agente:** @dev + @ux-design-expert
 **Depende de:** Story 5.2 (geo-grid tracking)
 **Pilar:** Geo
@@ -235,7 +235,7 @@ Dashboard mostra mapa com 16 pontos ao redor de Copacabana. Pontos verdes onde P
 
 ---
 
-### Story 5.9: Landing Page de Review com Marca
+### Story 5.9: Landing Page de Review com Marca [DONE]
 **Prioridade:** P2 | **Esforco:** 2 dias | **Agente:** @dev
 **Pilar:** Avaliacoes
 
@@ -253,7 +253,7 @@ Dashboard mostra mapa com 16 pontos ao redor de Copacabana. Pontos verdes onde P
 
 ---
 
-### Story 5.10: CTA nos Posts + Fotos IA
+### Story 5.10: CTA nos Posts + Fotos IA [DONE - CTA only, photos TBD]
 **Prioridade:** P2 | **Esforco:** 3 dias | **Agente:** @dev
 **Pilar:** Posts
 
@@ -264,7 +264,7 @@ Dashboard mostra mapa com 16 pontos ao redor de Copacabana. Pontos verdes onde P
 
 ---
 
-### Story 5.11: Comparativo Visual Concorrentes ao Longo do Tempo
+### Story 5.11: Comparativo Visual Concorrentes ao Longo do Tempo [DONE]
 **Prioridade:** P2 | **Esforco:** 3 dias | **Agente:** @dev
 **Pilar:** Competitivo
 **Depende de:** Story 5.3 (velocity dashboard)
@@ -278,11 +278,11 @@ Dashboard mostra mapa com 16 pontos ao redor de Copacabana. Pontos verdes onde P
 
 ## Resumo de Waves
 
-| Wave | Semana | Stories | Esforco total | Impacto |
-|------|--------|---------|---------------|---------|
-| 1 | 1-2 | 5.1 (WhatsApp) + 5.2 (Geo-Grid) | 12 dias | Entrega a promessa |
-| 2 | 3-4 | 5.3 + 5.4 + 5.5 + 5.6 + 5.7 | 13 dias | Inteligencia competitiva |
-| 3 | 5-6 | 5.8 + 5.9 + 5.10 + 5.11 | 11 dias | Polimento e diferenciacao |
+| Wave | Semana | Stories | Status |
+|------|--------|---------|--------|
+| 1 | 1-2 | 5.1 (WhatsApp) + 5.2 (Geo-Grid) | 5.2 DONE, 5.1 BLOCKED (Meta API) |
+| 2 | 3-4 | 5.3 + 5.4 + 5.5 + 5.6 + 5.7 | ALL DONE |
+| 3 | 5-6 | 5.8 + 5.9 + 5.10 + 5.11 | ALL DONE |
 
 ---
 
