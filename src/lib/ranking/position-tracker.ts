@@ -64,18 +64,22 @@ export async function trackPosition(
     return matchCount >= 2
   }
 
-  // Encontrar posicao do negocio nos resultados
+  // Filtrar apenas concorrentes relevantes (100+ reviews) + o proprio negocio
+  const MIN_REVIEWS = 100
+  const relevantResults = results.filter(r => (r.user_ratings_total ?? 0) >= MIN_REVIEWS || isMatch(r.name))
+
+  // Encontrar posicao entre concorrentes relevantes
   let position: number | null = null
-  for (let i = 0; i < results.length; i++) {
-    if (isMatch(results[i].name)) {
+  for (let i = 0; i < relevantResults.length; i++) {
+    if (isMatch(relevantResults[i].name)) {
       position = i + 1
       break
     }
   }
 
-  // Top competitor (primeiro resultado que nao e o proprio negocio)
+  // Top competitor (primeiro relevante que nao e o proprio negocio)
   let topCompetitor: { name: string; reviews: number } | null = null
-  for (const r of results) {
+  for (const r of relevantResults) {
     if (!isMatch(r.name)) {
       topCompetitor = {
         name: r.name,
@@ -88,7 +92,7 @@ export async function trackPosition(
   return {
     keyword,
     position,
-    totalResults: results.length,
+    totalResults: relevantResults.length,
     topCompetitor,
   }
 }
