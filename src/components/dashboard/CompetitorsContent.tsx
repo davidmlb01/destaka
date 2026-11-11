@@ -35,7 +35,7 @@ function BenchmarkCard({ data }: { data: BenchmarkData }) {
         {data.summary}
       </p>
 
-      {data.alerts.length > 0 && (
+      {(data.alerts?.length ?? 0) > 0 && (
         <div className="flex flex-col gap-1.5 mb-2">
           {data.alerts.map((a, i) => (
             <div key={i} className="flex items-start gap-2">
@@ -46,7 +46,7 @@ function BenchmarkCard({ data }: { data: BenchmarkData }) {
         </div>
       )}
 
-      {data.gaps.length > 0 && (
+      {(data.gaps?.length ?? 0) > 0 && (
         <div className="flex flex-col gap-1.5">
           {data.gaps.map((g, i) => (
             <div key={i} className="flex items-start gap-2">
@@ -177,7 +177,7 @@ function OpportunitiesSection({ specialty }: { specialty?: string | null }) {
           missing: string[]
           suggested_action: { label: string } | null
         }, i: number) => {
-          const cfg = PRIORITY_CONFIG[gap.priority]
+          const cfg = PRIORITY_CONFIG[gap.priority] ?? PRIORITY_CONFIG.medium
           return (
             <div
               key={i}
