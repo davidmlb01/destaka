@@ -6,6 +6,7 @@ import { Spinner } from '@/components/ui/Spinner'
 import { useCompetitors } from './hooks/useCompetitors'
 import { useCompetitiveAnalysis } from './hooks/useCompetitiveAnalysis'
 import { getVocab } from '@/lib/vertical-vocab'
+import { ReviewVelocityChart } from './ReviewVelocityChart'
 
 interface Profile {
   id: string
@@ -353,6 +354,9 @@ export function CompetitorsContent({ specialty }: { specialty?: string | null })
           {data.competitors.map(comp => (
             <CompetitorCard key={comp.id} comp={comp} profile={data.profile} />
           ))}
+          <div className="mt-6">
+            <ReviewVelocityChart />
+          </div>
           <OpportunitiesSection specialty={specialty} />
         </>
       )}

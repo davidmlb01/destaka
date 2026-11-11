@@ -197,6 +197,40 @@ export const competitorMonitor = inngest.createFunction(
           analyzed_at: new Date().toISOString(),
         })
 
+        // Salvar snapshots semanais para velocity tracking (Story 5.3)
+        const today = new Date().toISOString().slice(0, 10)
+
+        // Snapshot do próprio usuário
+        const selfSnapshot = {
+          organization_id: orgId,
+          competitor_id: null,
+          name: org.name,
+          review_count: auditReport?.review_count ?? 0,
+          avg_rating: auditReport?.avg_rating ?? null,
+          snapshot_date: today,
+          is_self: true,
+        }
+
+        // Snapshots dos concorrentes
+        const { data: savedComps } = await db
+          .from('competitors')
+          .select('id, name, review_count, avg_rating')
+          .eq('profile_id', profileId)
+
+        const compSnapshots = (savedComps ?? []).map((c: { id: string; name: string; review_count: number; avg_rating: number | null }) => ({
+          organization_id: orgId,
+          competitor_id: c.id,
+          name: c.name,
+          review_count: c.review_count,
+          avg_rating: c.avg_rating,
+          snapshot_date: today,
+          is_self: false,
+        }))
+
+        await db
+          .from('competitor_snapshots')
+          .upsert([selfSnapshot, ...compSnapshots], { onConflict: 'organization_id,snapshot_date,is_self,name' })
+
         return { org_id: orgId, status: 'ok', competitors: top3.length }
       })
 
