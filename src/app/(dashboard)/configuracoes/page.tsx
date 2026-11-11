@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 
 import { getDashboardContext } from '@/lib/dashboard/get-dashboard-context'
 import { ConfiguracoesContent } from '@/components/dashboard/ConfiguracoesContent'

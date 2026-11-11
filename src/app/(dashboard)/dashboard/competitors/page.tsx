@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { getDashboardContext } from '@/lib/dashboard/get-dashboard-context'
 import { CompetitorsContent } from '@/components/dashboard/CompetitorsContent'
 import { Badge } from '@/components/ui/Badge'
