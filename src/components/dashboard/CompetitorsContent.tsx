@@ -4,8 +4,6 @@ import type { Competitor, BenchmarkData } from '@/lib/gmb/competitors'
 import { CompetitorsSkeleton } from './Skeletons'
 import { Spinner } from '@/components/ui/Spinner'
 import { useCompetitors } from './hooks/useCompetitors'
-import { useCompetitiveAnalysis } from './hooks/useCompetitiveAnalysis'
-import { getVocab } from '@/lib/vertical-vocab'
 import { ReviewVelocityChart } from './ReviewVelocityChart'
 
 interface Profile {
@@ -86,78 +84,6 @@ function CompetitorCard({ comp, profile, rank }: { comp: Competitor; profile: Pr
       {gap <= 0 && (
         <p className="text-[12px] mt-3" style={{ color: '#4ADE80' }}>
           Você já está à frente neste concorrente.
-        </p>
-      )}
-    </div>
-  )
-}
-
-function InsightsSection({ specialty }: { specialty?: string | null }) {
-  const vocab = getVocab(specialty)
-  const { analysis, isLoading } = useCompetitiveAnalysis()
-
-  if (isLoading) return null
-  if (!analysis || !Array.isArray(analysis.gaps) || analysis.gaps.length === 0) return null
-
-  // Máximo 3 insights, priorizados por importância
-  const topGaps = analysis.gaps
-    .sort((a: { priority: string }, b: { priority: string }) => {
-      const order: Record<string, number> = { high: 0, medium: 1, low: 2 }
-      return (order[a.priority] ?? 1) - (order[b.priority] ?? 1)
-    })
-    .slice(0, 3)
-
-  return (
-    <div className="mt-6">
-      <h2 className="font-display font-semibold text-white text-base mb-1">O que o Destaka faz por você</h2>
-      <p className="text-[13px] mb-4" style={{ color: 'var(--text-tertiary)' }}>
-        Baseado na análise dos seus concorrentes
-      </p>
-
-      <div className="flex flex-col gap-3">
-        {topGaps.map((gap: {
-          type: string
-          priority: 'high' | 'medium' | 'low'
-          gap_description: string
-          suggested_action: { label: string } | null
-        }, i: number) => (
-          <div
-            key={i}
-            className="rounded-xl px-4 py-3 flex items-start gap-3"
-            style={{ background: 'rgba(14,165,233,0.06)', border: '1px solid rgba(14,165,233,0.12)' }}
-          >
-            <span className="text-[14px] mt-0.5 shrink-0">
-              {gap.type === 'reviews' ? '⭐' : gap.type === 'photos' ? '📸' : '📍'}
-            </span>
-            <div>
-              <p className="text-[13px] font-medium text-white">{gap.gap_description}</p>
-              {gap.suggested_action && (
-                <a
-                  href="/dashboard/optimizations"
-                  className="text-[12px] font-bold mt-1 inline-block"
-                  style={{ color: 'var(--accent-bright)' }}
-                >
-                  Aplicar no meu perfil →
-                </a>
-              )}
-              {!gap.suggested_action && gap.type === 'reviews' && (
-                <p className="text-[12px] mt-1" style={{ color: 'var(--text-tertiary)' }}>
-                  Peça uma avaliação ao {vocab.cliente} no final de cada {vocab.atendimento}.
-                </p>
-              )}
-              {!gap.suggested_action && gap.type === 'photos' && (
-                <p className="text-[12px] mt-1" style={{ color: 'var(--text-tertiary)' }}>
-                  Adicione fotos do seu espaço e equipe no Google.
-                </p>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {analysis.analyzed_at && (
-        <p className="text-[10px] mt-4" style={{ color: 'var(--text-muted)' }}>
-          Atualizado: {new Date(analysis.analyzed_at).toLocaleDateString('pt-BR')}
         </p>
       )}
     </div>
@@ -259,7 +185,6 @@ export function CompetitorsContent({ specialty }: { specialty?: string | null })
             <CompetitorCard key={comp.id} comp={comp} profile={data!.profile} rank={i + 1} />
           ))}
           <ReviewVelocityChart />
-          <InsightsSection specialty={specialty} />
         </>
       )}
     </div>
