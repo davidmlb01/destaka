@@ -292,7 +292,7 @@ export function CompetitorsContent({ specialty }: { specialty?: string | null })
         <div>
           <h2 className="font-display font-semibold text-white text-base mb-1">Concorrentes</h2>
           <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
-            Top 3 concorrentes na sua especialidade e região
+            Principais concorrentes na sua especialidade e região
           </p>
         </div>
         <button
