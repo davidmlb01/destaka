@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { RankingChart } from './RankingChart'
-import { SectionLabel } from '@/components/ui/SectionLabel'
+function SectionLabel({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+  return <p className={`text-[11px] font-semibold tracking-[0.08em] uppercase ${className}`} style={{ color: 'var(--text-muted)' }}>{children}</p>
+}
 
 interface RankingKeyword {
   keyword: string

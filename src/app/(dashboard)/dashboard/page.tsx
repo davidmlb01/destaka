@@ -45,13 +45,14 @@ export default async function DashboardPage({
 
       <OptimizationConfirmCard
         totalSuggestions={(() => {
-          const r = profile?.optimization_report
+          const r = profile?.optimization_report as Record<string, unknown> | null
           if (!r) return 0
+          const applied = Array.isArray(r.applied_sections) ? r.applied_sections as string[] : []
           return (
-            (r.description_variants?.length ?? 0) +
-            (r.category_suggestions?.length ?? 0) +
-            (r.attribute_suggestions?.length ?? 0) +
-            (r.service_optimizations?.length ?? 0)
+            (!applied.includes('description') ? (Array.isArray(r.description_variants) ? r.description_variants.length : 0) : 0) +
+            (!applied.includes('categories') ? (Array.isArray(r.category_suggestions) ? r.category_suggestions.length : 0) : 0) +
+            (!applied.includes('attributes') ? (Array.isArray(r.attribute_suggestions) ? r.attribute_suggestions.length : 0) : 0) +
+            (!applied.includes('services') ? (Array.isArray(r.service_optimizations) ? r.service_optimizations.length : 0) : 0)
           )
         })()}
       />
