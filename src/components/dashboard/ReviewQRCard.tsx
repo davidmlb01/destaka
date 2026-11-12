@@ -234,6 +234,17 @@ export function ReviewQRCard({ specialty }: { specialty?: string | null }) {
             >
               Baixar QR Code (PNG)
             </button>
+            <a
+              href="/dashboard/kit-reviews"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
+              style={{
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                color: 'var(--text-secondary)',
+              }}
+            >
+              Ver kit completo
+            </a>
           </div>
         </div>
       </div>
