@@ -140,9 +140,8 @@ export function ReviewQRCard({ specialty }: { specialty?: string | null }) {
 
   const shareWhatsApp = useCallback(() => {
     if (!data) return
-    const message = `Oi! Tudo bem? Se puder, sua avaliação no Google me ajuda muito. Leva menos de 1 minuto: ${data.reviewUrl}`
+    const message = `Oi! Obrigado(a) pela confiança. Se puder deixar sua opinião no Google, ajuda muito quem está procurando um profissional de confiança na região. É rapidinho: ${data.reviewUrl}`
 
-    // Tenta share nativo primeiro (mobile), senão abre WhatsApp direto
     if (navigator.share) {
       navigator.share({ text: message }).catch(() => {
         window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank')

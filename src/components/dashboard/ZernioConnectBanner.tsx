@@ -38,10 +38,10 @@ export function ZernioConnectBanner({ orgId }: Props) {
     >
       <div className="flex-1">
         <h3 className="font-display font-bold text-white text-[15px] mb-1">
-          Ative a publicação automática
+          Ative a publicação no Google
         </h3>
         <p className="text-[13px]" style={{ color: 'var(--text-tertiary)', lineHeight: 1.6 }}>
-          Para que o Destaka publique posts e responda avaliações no seu Google automaticamente, autorize a conexão abaixo. Leva 10 segundos.
+          Para que o Destaka publique posts e responda avaliações no seu Google Meu Negócio, autorize a conexão abaixo.
         </p>
       </div>
       <div className="flex items-center gap-3 shrink-0">
