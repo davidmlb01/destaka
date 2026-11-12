@@ -137,12 +137,13 @@ export async function GET(request: NextRequest) {
 
         const userEmail = user.email ?? ''
 
-        // Assinante com onboarding completo: conectar Zernio silenciosamente, depois dashboard
+        // Assinante com onboarding completo: direto pro dashboard
+        // Zernio connect movido para banner na dashboard (sem interromper login)
         if (isSubscriber && orgCheck?.lgpd_ai_consent === true) {
-          return connectZernioSilently(existingProfessional.organization_id, orgName, userEmail, `${origin}/dashboard`, admin)
+          return NextResponse.redirect(`${origin}/dashboard`)
         }
-        // Nao-assinante ou onboarding incompleto: conectar Zernio silenciosamente, depois diagnostico
-        return connectZernioSilently(existingProfessional.organization_id, orgName, userEmail, `${origin}/diagnostico`, admin)
+        // Nao-assinante ou onboarding incompleto: diagnostico
+        return NextResponse.redirect(`${origin}/diagnostico`)
       }
 
       // Busca dados do GBP para criar org
@@ -257,8 +258,9 @@ export async function GET(request: NextRequest) {
 
       populateFromPlaces(org.id).catch(() => {})
 
-      // Novo usuario: conectar Zernio silenciosamente, depois diagnostico
-      return connectZernioSilently(org.id, orgName, user.email ?? '', `${origin}/diagnostico`, admin)
+      // Novo usuario: direto pro diagnostico
+      // Zernio connect movido para banner na dashboard
+      return NextResponse.redirect(`${origin}/diagnostico`)
     }
   }
 

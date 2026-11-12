@@ -7,6 +7,7 @@ import { getDashboardContext } from '@/lib/dashboard/get-dashboard-context'
 import { DashboardContent } from '@/components/dashboard/DashboardContent'
 import { OptimizationConfirmCard } from './components/OptimizationConfirmCard'
 import { CheckoutBanner } from './components/CheckoutBanner'
+import { ZernioConnectBanner } from '@/components/dashboard/ZernioConnectBanner'
 
 export default async function DashboardPage({
   searchParams,
@@ -40,6 +41,8 @@ export default async function DashboardPage({
   return (
     <div className="max-w-5xl mx-auto px-6 py-10 space-y-8">
       {checkoutStatus && <CheckoutBanner status={checkoutStatus} />}
+
+      {!ctx.zernioConnected && <ZernioConnectBanner orgId={ctx.orgId} />}
 
       <DashboardContent />
 

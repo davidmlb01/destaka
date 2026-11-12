@@ -10,6 +10,7 @@ export interface DashboardContext {
   profileName: string
   specialty: string | null
   isSubscriber: boolean
+  zernioConnected: boolean
 }
 
 function admin() {
@@ -38,7 +39,7 @@ export const getDashboardContext = cache(async (): Promise<DashboardContext> => 
   const orgId = professional.organization_id
 
   const [{ data: org }, subscriber] = await Promise.all([
-    db.from('organizations').select('name, specialty').eq('id', orgId).maybeSingle(),
+    db.from('organizations').select('name, specialty, zernio_account_id').eq('id', orgId).maybeSingle(),
     isActiveSubscriber(orgId),
   ])
 
@@ -48,5 +49,6 @@ export const getDashboardContext = cache(async (): Promise<DashboardContext> => 
     profileName: (org?.name as string) ?? 'Meu Perfil',
     specialty: (org?.specialty as string) ?? null,
     isSubscriber: subscriber,
+    zernioConnected: !!(org?.zernio_account_id),
   }
 })
