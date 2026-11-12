@@ -97,7 +97,9 @@ export async function GET() {
   ])
 
   // Score e categorias
+  // Se nao tem score ainda (collectors rodando), sinaliza "analyzing"
   const s = latestScore as Record<string, unknown> | null
+  const analyzing = !s
   const scoreAtual = (s?.total as number) ?? 0
   const scoreProjetado = (s?.projected_score as number) ?? scoreAtual
 
@@ -254,6 +256,7 @@ export async function GET() {
   }
 
   const result = {
+    analyzing,
     score: {
       atual: scoreAtual,
       projetado: scoreProjetado,

@@ -109,6 +109,7 @@ export default function DiagnosticoPage() {
   const endereco = data.perfil?.endereco || ''
   const categoria = data.perfil?.categoria || ''
   const gaps = data.gaps ?? []
+  const isAnalyzing = data.analyzing === true && data.score?.atual === 0 && gaps.length === 0
   const hasScore = !!data.score && (data.score.atual > 0 || gaps.length > 0)
   const score = data.score?.atual ?? 0
   const scoreColor = hasScore ? getScoreColor(score) : 'var(--text-muted)'

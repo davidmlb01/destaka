@@ -20,7 +20,8 @@ import { keywordSnapshot } from '@/lib/inngest/functions/keyword-snapshot'
 import { performanceCollector } from '@/lib/inngest/functions/performance-collector'
 import { geoExpansionEngine } from '@/lib/inngest/functions/geo-expansion-engine'
 import { referralTrigger } from '@/lib/inngest/functions/referral-trigger'
-import { onboardingDataBootstrap } from '@/lib/inngest/functions/onboarding-data-bootstrap'
+// onboarding-data-bootstrap removido: collectors ja sao disparados pelo auth callback (signup)
+// e pelo POST /api/onboarding (apos form). Bootstrap era a 3a duplicacao.
 import { rankingTracker } from '@/lib/inngest/functions/ranking-tracker'
 import { geoGridTracker } from '@/lib/inngest/functions/geo-grid-tracker'
 import { reviewSolicitation } from '@/lib/inngest/functions/review-solicitation'
@@ -45,7 +46,7 @@ export const { GET, POST, PUT } = serve({
     performanceCollector,
     geoExpansionEngine,
     referralTrigger,
-    onboardingDataBootstrap,
+    // onboardingDataBootstrap removido (duplicado)
     rankingTracker,
     geoGridTracker,
     reviewSolicitation,

@@ -83,7 +83,7 @@ export default function OnboardingPage() {
   // Contact
   const [phone, setPhone] = useState('')
   const [instagramHandle, setInstagramHandle] = useState('')
-  const [consent, setConsent] = useState(true)
+  const [consent, setConsent] = useState(false)
 
   // Routine
   const [challenge, setChallenge] = useState('')

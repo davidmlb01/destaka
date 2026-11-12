@@ -27,6 +27,7 @@ export interface DiagMapZone {
 }
 
 export interface DiagnosticoData {
+  analyzing?: boolean
   score: {
     atual: number
     projetado: number
