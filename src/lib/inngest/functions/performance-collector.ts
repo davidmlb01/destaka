@@ -128,8 +128,6 @@ export const performanceCollector = inngest.createFunction(
           // Agregar valores diarios em totais semanais
           let impressionsMaps = 0
           let impressionsSearch = 0
-          let viewsMaps = 0
-          let viewsSearch = 0
           let actionsPhone = 0
           let actionsWebsite = 0
           let actionsDirections = 0
@@ -154,9 +152,11 @@ export const performanceCollector = inngest.createFunction(
             }
           }
 
-          // Maps views = impressions from Maps, Search views = impressions from Search
-          viewsMaps = impressionsMaps
-          viewsSearch = impressionsSearch
+          // GBP Performance API nao tem metrica separada de "profile views".
+          // views_maps/views_search armazenam impressoes (quantas vezes apareceu),
+          // que e o dado mais proximo disponivel. Usado nos cards de Performance.
+          const viewsMaps = impressionsMaps
+          const viewsSearch = impressionsSearch
 
           const weekStart = getWeekStart()
 

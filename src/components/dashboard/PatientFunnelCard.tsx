@@ -93,7 +93,9 @@ export function PatientFunnelCard() {
   }
 
   const { current, deltas } = data
-  const totalViews = current.views_maps + current.views_search
+  const conversionRate = current.impressions > 0
+    ? ((current.actions_total / current.impressions) * 100).toFixed(1)
+    : '0.0'
 
   return (
     <div
@@ -119,39 +121,31 @@ export function PatientFunnelCard() {
           <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
             pessoas te encontraram no Google
           </p>
+          <div className="flex flex-wrap gap-4 mt-2">
+            {current.views_search > 0 && (
+              <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                {formatNumber(current.views_search)} na Busca
+              </span>
+            )}
+            {current.views_maps > 0 && (
+              <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                {formatNumber(current.views_maps)} no Maps
+              </span>
+            )}
+          </div>
         </div>
 
-        {/* Seta */}
-        <div className="flex justify-center py-1">
+        {/* Seta com taxa de conversao */}
+        <div className="flex justify-center items-center gap-2 py-1">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path d="M8 2v10M4 9l4 4 4-4" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
+          {current.impressions > 0 && (
+            <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{conversionRate}% converteram</span>
+          )}
         </div>
 
-        {/* Nivel 2: Viram o perfil */}
-        <div
-          className="rounded-xl px-5 py-4"
-          style={{ background: 'rgba(14,165,233,0.05)', border: '1px solid rgba(14,165,233,0.08)' }}
-        >
-          <p
-            className="font-display font-extrabold text-white"
-            style={{ fontSize: 28, lineHeight: 1, letterSpacing: '-0.5px' }}
-          >
-            {formatNumber(totalViews)}
-          </p>
-          <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
-            viram seu perfil
-          </p>
-        </div>
-
-        {/* Seta */}
-        <div className="flex justify-center py-1">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M8 2v10M4 9l4 4 4-4" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </div>
-
-        {/* Nivel 3: Tomaram acao */}
+        {/* Nivel 2: Tomaram acao */}
         <div
           className="rounded-xl px-5 py-4"
           style={{ background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.1)' }}
