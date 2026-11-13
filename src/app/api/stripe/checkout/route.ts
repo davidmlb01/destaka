@@ -7,6 +7,7 @@ import { getAuthOrg } from '@/lib/api/with-auth'
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { getStripe, PLAN } from '@/lib/stripe'
 import { REFERRAL_COOKIE_NAME } from '@/lib/referral/constants'
+import { isActiveSubscriber } from '@/lib/subscription'
 
 function createServiceClient() {
   return createAdminSupa(
@@ -19,6 +20,13 @@ export async function POST(request: NextRequest) {
   const auth = await getAuthOrg()
   if (auth.error) return auth.error
   const { user, orgId } = auth
+
+  // Subscriber ativo nao deve criar nova sessao de checkout
+  const alreadySubscribed = await isActiveSubscriber(orgId)
+  if (alreadySubscribed) {
+    const origin = process.env.NEXT_PUBLIC_APP_URL ?? 'https://destaka.com.br'
+    return NextResponse.json({ url: `${origin}/onboarding?checkout=success` })
+  }
 
   const admin = createServiceClient()
   const stripe = getStripe()

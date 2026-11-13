@@ -213,18 +213,22 @@ export default function DiagnosticoPage() {
 
             <button
               onClick={() => {
+                if (data.isSubscriber) {
+                  window.location.href = '/onboarding?checkout=success'
+                  return
+                }
                 trackBeginCheckout()
                 fetch('/api/stripe/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })
                   .then(r => r.json())
-                  .then(d => { if (d.url) window.location.href = d.url })
-                  .catch(() => {})
+                  .then(d => { if (d.url) window.location.href = d.url; else alert('Erro ao iniciar pagamento. Tente novamente.') })
+                  .catch(() => alert('Erro de conexão. Verifique sua internet e tente novamente.'))
               }}
               className="inline-block font-semibold cursor-pointer"
               style={{ padding: '16px 48px', borderRadius: 14, background: 'var(--accent)', color: '#fff', fontSize: 16, border: 'none', boxShadow: '0 4px 24px rgba(20,184,166,0.3)', transition: 'transform 150ms, box-shadow 150ms' }}
               onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.02)'; e.currentTarget.style.boxShadow = '0 6px 32px rgba(20,184,166,0.4)' }}
               onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 4px 24px rgba(20,184,166,0.3)' }}
             >
-              {getCtaText(score)}
+              {data.isSubscriber ? 'Completar meu cadastro' : getCtaText(score)}
             </button>
           </section>
         )}
@@ -254,10 +258,10 @@ export default function DiagnosticoPage() {
         )}
 
         {/* BLOCO 5: Oferta */}
-        {hasScore && <OfferSection score={score} specialty={segment} />}
+        {hasScore && <OfferSection score={score} specialty={segment} isSubscriber={data.isSubscriber} />}
       </main>
 
-      {hasScore && <StickyCTA score={score} />}
+      {hasScore && <StickyCTA score={score} isSubscriber={data.isSubscriber} />}
     </div>
   )
 }

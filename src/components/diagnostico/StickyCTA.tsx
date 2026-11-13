@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 
 interface StickyCTAProps {
   score: number
+  isSubscriber?: boolean
 }
 
 function getCtaText(score: number): string {
@@ -14,7 +15,7 @@ function getCtaText(score: number): string {
   return 'Manter liderança'
 }
 
-export default function StickyCTA({ score }: StickyCTAProps) {
+export default function StickyCTA({ score, isSubscriber }: StickyCTAProps) {
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
@@ -43,10 +44,14 @@ export default function StickyCTA({ score }: StickyCTAProps) {
       >
         <div className="flex items-center justify-between gap-4">
           <span style={{ fontSize: 14, color: 'var(--text-primary)', fontWeight: 500 }}>
-            Menos de R$7/dia
+            {isSubscriber ? 'Falta pouco!' : 'Menos de R$7/dia'}
           </span>
           <button
             onClick={() => {
+              if (isSubscriber) {
+                window.location.href = '/onboarding?checkout=success'
+                return
+              }
               trackBeginCheckout()
               fetch('/api/stripe/checkout', {
                 method: 'POST',
@@ -54,8 +59,8 @@ export default function StickyCTA({ score }: StickyCTAProps) {
                 body: '{}',
               })
                 .then(r => r.json())
-                .then(d => { if (d.url) window.location.href = d.url })
-                .catch(() => {})
+                .then(d => { if (d.url) window.location.href = d.url; else alert('Erro ao iniciar pagamento. Tente novamente.') })
+                .catch(() => alert('Erro de conexão. Verifique sua internet e tente novamente.'))
             }}
             className="font-semibold cursor-pointer"
             style={{
@@ -68,7 +73,7 @@ export default function StickyCTA({ score }: StickyCTAProps) {
               whiteSpace: 'nowrap',
             }}
           >
-            {getCtaText(score)}
+            {isSubscriber ? 'Completar cadastro' : getCtaText(score)}
           </button>
         </div>
       </div>

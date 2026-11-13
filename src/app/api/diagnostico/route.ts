@@ -8,6 +8,7 @@ import { getAuthOrg, privateJson } from '@/lib/api/with-auth'
 import { GBPClient } from '@/lib/google/gbp-client'
 import { getValidGmbToken } from '@/lib/gmb/auth'
 import { cacheGet, cacheSet } from '@/lib/redis'
+import { isActiveSubscriber } from '@/lib/subscription'
 
 const CACHE_TTL = 3600 // 1 hora
 
@@ -275,6 +276,7 @@ export async function GET() {
       sem_resposta_count: unrepliedResult.count ?? 0,
     },
     perfil,
+    isSubscriber: await isActiveSubscriber(orgId),
   }
 
   // Cache por 1 hora

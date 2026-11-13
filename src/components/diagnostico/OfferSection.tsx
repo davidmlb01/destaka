@@ -6,6 +6,7 @@ import { getVocab } from '@/lib/vertical-vocab'
 interface OfferSectionProps {
   score: number
   specialty?: string | null
+  isSubscriber?: boolean
 }
 
 const beneficios = [
@@ -23,7 +24,7 @@ function getCtaText(score: number): string {
   return 'Quero manter minha liderança'
 }
 
-export default function OfferSection({ score, specialty }: OfferSectionProps) {
+export default function OfferSection({ score, specialty, isSubscriber }: OfferSectionProps) {
   return (
     <section
       style={{
@@ -92,6 +93,10 @@ export default function OfferSection({ score, specialty }: OfferSectionProps) {
       {/* CTA */}
       <button
         onClick={() => {
+          if (isSubscriber) {
+            window.location.href = '/onboarding?checkout=success'
+            return
+          }
           trackBeginCheckout()
           fetch('/api/stripe/checkout', {
             method: 'POST',
@@ -99,8 +104,8 @@ export default function OfferSection({ score, specialty }: OfferSectionProps) {
             body: '{}',
           })
             .then(r => r.json())
-            .then(d => { if (d.url) window.location.href = d.url })
-            .catch(() => {})
+            .then(d => { if (d.url) window.location.href = d.url; else alert('Erro ao iniciar pagamento. Tente novamente.') })
+            .catch(() => alert('Erro de conexão. Verifique sua internet e tente novamente.'))
         }}
         className="block w-full text-center font-semibold cursor-pointer"
         style={{
@@ -116,16 +121,20 @@ export default function OfferSection({ score, specialty }: OfferSectionProps) {
         onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.02)'; e.currentTarget.style.boxShadow = '0 6px 32px rgba(20,184,166,0.4)' }}
         onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 4px 24px rgba(20,184,166,0.3)' }}
       >
-        {getCtaText(score)}
+        {isSubscriber ? 'Completar meu cadastro' : getCtaText(score)}
       </button>
 
-      <p className="text-center" style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 12 }}>
-        Cancele quando quiser. Sem contrato, sem multa.
-      </p>
+      {!isSubscriber && (
+        <>
+          <p className="text-center" style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 12 }}>
+            Cancele quando quiser. Sem contrato, sem multa.
+          </p>
 
-      <p className="text-center" style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 8 }}>
-        🛡 Garantia de 30 dias: melhore seu score ou devolvemos seu dinheiro.
-      </p>
+          <p className="text-center" style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 8 }}>
+            Garantia de 30 dias: melhore seu score ou devolvemos seu dinheiro.
+          </p>
+        </>
+      )}
     </section>
   )
 }

@@ -246,14 +246,12 @@ export async function GET(request: NextRequest) {
         })
       }
 
-      // Dispara auditoria + geo + keywords + performance em background
-      // Score NAO e disparado aqui: o audit ja dispara score.calculate ao finalizar,
-      // garantindo que o score seja calculado apenas UMA vez com dados completos
+      // Dispara apenas audit em background (popula diagnostico).
+      // Os demais collectors (geo, keywords, performance, reviews, optimize, posts)
+      // sao disparados pelo POST /api/onboarding apos o usuario completar o formulario,
+      // evitando duplicacao. O audit cascateia para score.calculate ao finalizar.
       inngest.send([
         { name: 'destaka/gbp.audit.requested', data: { organization_id: org.id } },
-        { name: 'destaka/geo.collect.requested', data: { organization_id: org.id } },
-        { name: 'destaka/keywords.snapshot.requested', data: { organization_id: org.id } },
-        { name: 'destaka/performance.collect.requested', data: { organization_id: org.id } },
       ]).catch(() => {})
 
       populateFromPlaces(org.id).catch(() => {})
