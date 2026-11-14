@@ -1,6 +1,6 @@
 # EPIC-006: Personalização Multi-Vertical
 
-**Status:** DRAFT
+**Status:** IN PROGRESS (Waves 1-4 DONE, Wave 5 pendente)
 **Prioridade:** CRITICAL (bloqueante para beta)
 **Criado:** 2026-11-14
 **Owner:** @pm (Morgan)
