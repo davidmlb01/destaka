@@ -646,10 +646,16 @@ export function getVocab(specialty: string | null | undefined): VerticalVocab {
 }
 
 /**
- * Retorna sempre "Destaka". Sem sub-marcas.
+ * Retorna "Destaka" ou sub-marca quando existir.
+ * Sub-marcas aprovadas: Saúde. Demais são adicionadas sob demanda.
  */
+const APPROVED_SUB_BRANDS: Record<string, string> = {
+  'Saúde': 'Destaka Saúde',
+}
+
 export function getBrandName(specialty: string | null | undefined): string {
-  return 'Destaka'
+  const vocab = getVocab(specialty)
+  return APPROVED_SUB_BRANDS[vocab.brandLabel] ?? 'Destaka'
 }
 
 // =============================================================================

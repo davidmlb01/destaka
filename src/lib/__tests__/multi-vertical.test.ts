@@ -288,9 +288,9 @@ describe('4. No health leakage — flores and juridico', () => {
 // 5. Brand name tests
 // ---------------------------------------------------------------------------
 
-describe('5. Brand name — getBrandName() sempre retorna "Destaka"', () => {
-  assert(getBrandName(PROFILES.saude.specialty) === 'Destaka',
-    `saude → "Destaka" (got "${getBrandName(PROFILES.saude.specialty)}")`)
+describe('5. Brand name — getBrandName() retorna sub-marca só quando aprovada', () => {
+  assert(getBrandName(PROFILES.saude.specialty) === 'Destaka Saúde',
+    `saude → "Destaka Saúde" (got "${getBrandName(PROFILES.saude.specialty)}")`)
 
   assert(getBrandName(PROFILES.flores.specialty) === 'Destaka',
     `flores → "Destaka" (got "${getBrandName(PROFILES.flores.specialty)}")`)
