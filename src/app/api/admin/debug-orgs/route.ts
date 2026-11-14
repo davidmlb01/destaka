@@ -27,8 +27,8 @@ export async function GET(request: Request) {
     db.from('professionals').select('id, organization_id, user_id, email, created_at'),
     db.from('scores').select('organization_id, total, faixa, snapshot_date').order('snapshot_date', { ascending: false }).limit(20),
     db.from('google_tokens').select('organization_id, updated_at'),
-    db.from('review_responses').select('id, organization_id, review_text, status, created_at').eq('status', 'pending'),
-    db.from('posts').select('id, organization_id, title, status, created_at').eq('status', 'pending'),
+    db.from('review_responses').select('*').eq('status', 'pending').limit(10),
+    db.from('posts').select('*').eq('status', 'pending').limit(10),
   ])
 
   return NextResponse.json({
