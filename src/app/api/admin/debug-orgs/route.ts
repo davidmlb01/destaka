@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-const ADMIN_KEY = process.env.ADMIN_API_KEY ?? ''
+const ADMIN_KEY = process.env.ADMIN_SECRET_KEY ?? ''
 
 export async function GET(request: Request) {
   // Auth check
