@@ -24,7 +24,7 @@ export async function sendLeadMagnetEmail(params: LeadMagnetEmailParams) {
   const { to, placeName, score, categories, specialty } = params
   const vocab = getVocab(specialty)
   const brand = getBrandName(specialty)
-  const brandSuffix = vocab.brandLabel ? `<span style="font-size:18px;font-weight:300;color:rgba(255,255,255,0.5);letter-spacing:-0.015em;line-height:1;margin-left:4px;">${vocab.brandLabel}</span>` : ''
+  const brandSuffix = ''
   const color = scoreColor(score)
   const label = scoreLabel(score)
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://destaka.com.br'

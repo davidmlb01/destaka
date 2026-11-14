@@ -5,7 +5,7 @@
 // =============================================================================
 
 export interface VerticalVocab {
-  /** "Destaka Saúde", "Destaka Pet", etc. */
+  /** Label interno da vertical (usado apenas para lógica, nunca exibido ao usuário) */
   brandLabel: string
   /** "pacientes", "tutores", "clientes" */
   clientes: string
@@ -646,12 +646,10 @@ export function getVocab(specialty: string | null | undefined): VerticalVocab {
 }
 
 /**
- * Retorna o label da marca: "Destaka Saúde", "Destaka Pet", etc.
- * Se não tem vertical específica, retorna apenas "Destaka".
+ * Retorna sempre "Destaka". Sem sub-marcas.
  */
 export function getBrandName(specialty: string | null | undefined): string {
-  const vocab = getVocab(specialty)
-  return vocab.brandLabel ? `Destaka ${vocab.brandLabel}` : 'Destaka'
+  return 'Destaka'
 }
 
 // =============================================================================
@@ -682,7 +680,7 @@ export function getEngineContext(specialty: string | null | undefined): EngineCo
   return {
     vocab,
     brandName: getBrandName(specialty),
-    systemPromptRole: `especialista em Google Business Profile e SEO local para ${vocab.brandLabel ? vocab.brandLabel.toLowerCase() : 'negócios locais'} no Brasil`,
+    systemPromptRole: `especialista em Google Business Profile e SEO local para negócios no Brasil, com foco em ${vocab.auditContext}`,
     complianceRules: vocab.complianceContext,
     postKeywords: vocab.postKeywords,
     placesSearchType: vocab.placesSearchType,

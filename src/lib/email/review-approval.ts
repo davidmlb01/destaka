@@ -16,7 +16,7 @@ export async function sendReviewApprovalEmail(params: ReviewApprovalParams) {
   const { to, businessName, reviewAuthor, reviewRating, reviewText, suggestedReply, specialty } = params
   const vocab = getVocab(specialty)
   const brand = getBrandName(specialty)
-  const brandSuffix = vocab.brandLabel ? `<span style="font-size:18px;font-weight:300;color:rgba(255,255,255,0.5);letter-spacing:-0.015em;line-height:1;margin-left:4px;">${vocab.brandLabel}</span>` : ''
+  const brandSuffix = ''
   const stars = '★'.repeat(reviewRating) + '☆'.repeat(5 - reviewRating)
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://destaka.com.br'
   const dashboardUrl = `${appUrl}/dashboard/reviews`

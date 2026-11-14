@@ -124,7 +124,7 @@ function engagementInsight(data: MonthlyReportData): string {
 export function buildMonthlyReportEmail(data: MonthlyReportData): { subject: string; html: string } {
   const vocab = getVocab(data.specialty)
   const brand = getBrandName(data.specialty)
-  const brandSuffix = vocab.brandLabel ? `<span style="font-size:18px;font-weight:300;color:rgba(255,255,255,0.5);letter-spacing:-0.015em;line-height:1;margin-left:4px;">${vocab.brandLabel}</span>` : ''
+  const brandSuffix = ''
   const color = FAIXA_COLOR[data.score_faixa] ?? '#6b7280'
   const faixaLabel = FAIXA_LABEL[data.score_faixa] ?? 'Presença'
   const badgeTextColor = FAIXA_BADGE_TEXT[data.score_faixa] ?? color

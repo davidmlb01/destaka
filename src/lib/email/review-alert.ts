@@ -15,7 +15,7 @@ interface NegativeReviewAlertParams {
 export async function sendNegativeReviewAlert(params: NegativeReviewAlertParams) {
   const { to, orgName, reviewAuthor, reviewRating, reviewText, dashboardUrl, specialty } = params
   const vocab = getVocab(specialty)
-  const brandSuffix = vocab.brandLabel ? `<span style="font-size:18px;font-weight:300;color:rgba(255,255,255,0.5);letter-spacing:-0.015em;line-height:1;margin-left:4px;">${vocab.brandLabel}</span>` : ''
+  const brandSuffix = ''
   const stars = '\u2605'.repeat(reviewRating) + '\u2606'.repeat(5 - reviewRating)
   const safeAuthor = (reviewAuthor ?? '').replace(/[\r\n\t]/g, ' ').slice(0, 100)
 
