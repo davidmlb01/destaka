@@ -37,12 +37,11 @@ export async function GET() {
     adminClient().from('review_responses').select('id, published_at').eq('organization_id', orgId).eq('status', 'published').gte('published_at', sevenDaysAgo.toISOString()),
   ])
 
-  // Construir o profile no formato esperado pelo useDashboard
-  const profileData = {
+  // Profile sera montado apos calcular o score real (abaixo)
+  const profileBase = {
     id: gbpProfile?.id ?? orgId,
     name: org?.name ?? 'Meu Perfil',
     address: '',
-    score: latestScore?.total ?? 0,
     last_synced_at: (gbpProfile as Record<string, unknown> | null)?.last_synced_at ?? latestScore?.snapshot_date ?? null,
   }
 
@@ -98,17 +97,31 @@ export async function GET() {
   // Score de atributos do gmb/scorer (max 5), usar details se disponivel
   const scoreAtributosReal = details?.attributes?.attributes ?? Math.min((s?.conversao as number) ?? 0, 5)
 
+  // Calcular cada categoria e somar para o total (uma unica fonte de verdade)
+  const catInfoBasica = Math.min((s?.gmb_completude as number) ?? 0, 25)
+  const catFotos = Math.min((gbpProfile?.photo_count ?? 0) * 2, 20)
+  const catAvaliacoes = (s?.reputacao as number) ?? 0
+  const catPosts = Math.min(scorePostsReal, 15)
+  const catServicos = Math.min(scoreServicosReal, 10)
+  const catAtributos = Math.min(scoreAtributosReal, 5)
+
+  // Total = soma das categorias exibidas (nao do banco, que usa outro scorer)
+  const computedTotal = catInfoBasica + catFotos + catAvaliacoes + catPosts + catServicos + catAtributos
+
   const diagnostic = latestScore ? {
     id: (s?.id as string) ?? '',
-    score_total: (s?.total as number) ?? 0,
-    score_info_basica: Math.min((s?.gmb_completude as number) ?? 0, 25),
-    score_fotos: Math.min((gbpProfile?.photo_count ?? 0) * 2, 20),
-    score_avaliacoes: (s?.reputacao as number) ?? 0,
-    score_posts: Math.min(scorePostsReal, 15),
-    score_servicos: Math.min(scoreServicosReal, 10),
-    score_atributos: Math.min(scoreAtributosReal, 5),
+    score_total: computedTotal,
+    score_info_basica: catInfoBasica,
+    score_fotos: catFotos,
+    score_avaliacoes: catAvaliacoes,
+    score_posts: catPosts,
+    score_servicos: catServicos,
+    score_atributos: catAtributos,
     issues,
   } : null
+
+  // Profile com score computado (mesma fonte de verdade das categorias)
+  const profileData = { ...profileBase, score: computedTotal }
 
   // Score history no formato esperado
   const mappedScoreHistory = (scoreHistory ?? []).map((s: Record<string, unknown>) => ({
