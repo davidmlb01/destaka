@@ -40,7 +40,7 @@ export const ScoreCard = memo(function ScoreCard({ category }: { category: Categ
           <div
             className="h-1.5 rounded-full transition-all duration-500"
             style={{
-              width: `${category.percentage}%`,
+              width: `${Math.min(category.percentage, 100)}%`,
               background: color,
               boxShadow: category.percentage > 0 ? `0 0 6px ${color}88` : 'none',
             }}

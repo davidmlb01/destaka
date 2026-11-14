@@ -180,5 +180,6 @@ function makeCategory(
   maxScore: number,
   issues: ScoreIssue[]
 ): CategoryScore {
-  return { name, label, score, maxScore, percentage: Math.round((score / maxScore) * 100), issues }
+  const capped = Math.min(score, maxScore)
+  return { name, label, score: capped, maxScore, percentage: Math.min(100, Math.round((capped / maxScore) * 100)), issues }
 }
