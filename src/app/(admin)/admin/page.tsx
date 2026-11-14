@@ -43,6 +43,54 @@ interface LeadRow {
   created_at: string
 }
 
+interface PartnerRow {
+  id: string
+  name: string
+  email: string
+  type: string
+  reward_rule: string
+  active: boolean
+  created_at: string
+}
+
+interface ReferralCodeRow {
+  id: string
+  code: string
+  owner_type: string
+  owner_partner_id: string | null
+  stripe_coupon_id: string | null
+  active: boolean
+  created_at: string
+}
+
+interface ReferralRow {
+  id: string
+  referral_code_id: string
+  referred_org_id: string | null
+  status: string
+  activated_at: string | null
+  created_at: string
+}
+
+interface RewardRow {
+  id: string
+  referral_id: string
+  type: string
+  amount_cents: number
+  status: string
+  created_at: string
+}
+
+interface PartnerSummary {
+  partner: PartnerRow
+  codes: ReferralCodeRow[]
+  totalReferrals: number
+  activeReferrals: number
+  pendingReferrals: number
+  totalRewardsCents: number
+  pendingRewardsCents: number
+}
+
 async function getAdminData() {
   // Client sem cookies para bypassar RLS (admin ve tudo)
   const db = createClient(
@@ -58,6 +106,10 @@ async function getAdminData() {
     { data: tokens },
     { data: leads },
     { data: allLeads },
+    { data: partners },
+    { data: referralCodes },
+    { data: referrals },
+    { data: rewards },
   ] = await Promise.all([
     db.from('organizations').select('id, name, specialty, subscription_status, lgpd_ai_consent, created_at, utm_source'),
     db.from('scores').select('organization_id, total, faixa, snapshot_date').order('snapshot_date', { ascending: false }),
@@ -66,6 +118,10 @@ async function getAdminData() {
     db.from('google_tokens').select('organization_id, updated_at'),
     db.from('leads').select('id, email, place_name, score, utm_source, utm_medium, utm_campaign, created_at').order('created_at', { ascending: false }).limit(20),
     db.from('leads').select('id, utm_source, created_at'),
+    db.from('partners').select('id, name, email, type, reward_rule, active, created_at'),
+    db.from('referral_codes').select('id, code, owner_type, owner_partner_id, stripe_coupon_id, active, created_at'),
+    db.from('referrals').select('id, referral_code_id, referred_org_id, status, activated_at, created_at'),
+    db.from('rewards').select('id, referral_id, type, amount_cents, status, created_at'),
   ])
 
   const safeOrgs = (orgs ?? []) as OrgRow[]
@@ -150,6 +206,45 @@ async function getAdminData() {
     ga4Data = await getPageViews(ga4PropertyId, startDate, endDate)
   }
 
+  // === Referral program ===
+  const safePartners = (partners ?? []) as PartnerRow[]
+  const safeCodes = (referralCodes ?? []) as ReferralCodeRow[]
+  const safeReferrals = (referrals ?? []) as ReferralRow[]
+  const safeRewards = (rewards ?? []) as RewardRow[]
+
+  const referralsByCode: Record<string, ReferralRow[]> = {}
+  for (const r of safeReferrals) {
+    if (!referralsByCode[r.referral_code_id]) referralsByCode[r.referral_code_id] = []
+    referralsByCode[r.referral_code_id].push(r)
+  }
+
+  const rewardsByReferral: Record<string, RewardRow[]> = {}
+  for (const rw of safeRewards) {
+    if (!rewardsByReferral[rw.referral_id]) rewardsByReferral[rw.referral_id] = []
+    rewardsByReferral[rw.referral_id].push(rw)
+  }
+
+  const partnerSummaries: PartnerSummary[] = safePartners.map(p => {
+    const codes = safeCodes.filter(c => c.owner_partner_id === p.id)
+    const codeIds = new Set(codes.map(c => c.id))
+    const partnerReferrals = safeReferrals.filter(r => codeIds.has(r.referral_code_id))
+    const partnerRewards = partnerReferrals.flatMap(r => rewardsByReferral[r.id] ?? [])
+
+    return {
+      partner: p,
+      codes,
+      totalReferrals: partnerReferrals.length,
+      activeReferrals: partnerReferrals.filter(r => r.status === 'active').length,
+      pendingReferrals: partnerReferrals.filter(r => r.status === 'pending').length,
+      totalRewardsCents: partnerRewards.reduce((s, rw) => s + rw.amount_cents, 0),
+      pendingRewardsCents: partnerRewards.filter(rw => rw.status === 'pending').reduce((s, rw) => s + rw.amount_cents, 0),
+    }
+  })
+
+  // Client referrals (codigos de clientes, nao parceiros)
+  const clientCodes = safeCodes.filter(c => c.owner_type === 'client')
+  const clientReferralCount = clientCodes.reduce((sum, c) => sum + (referralsByCode[c.id]?.length ?? 0), 0)
+
   return {
     orgs: safeOrgs,
     scoresByOrg,
@@ -164,6 +259,9 @@ async function getAdminData() {
     churnRate,
     leadToPayingRate,
     ga4Data,
+    partnerSummaries,
+    clientReferralCount,
+    totalReferrals: safeReferrals.length,
   }
 }
 
@@ -502,6 +600,7 @@ export default async function AdminPage() {
     orgs, scoresByOrg, pendingByOrg, tokenByOrg, leads,
     mrrLeadsData, scoreEvolution, topMovers, attribution,
     activationRate, churnRate, leadToPayingRate, ga4Data,
+    partnerSummaries, clientReferralCount, totalReferrals,
   } = await getAdminData()
 
   const totalPending = Object.values(pendingByOrg).reduce((a, b) => a + b, 0)
@@ -655,11 +754,123 @@ export default async function AdminPage() {
             <Attribution channels={attribution} />
           </div>
 
-          {/* Secao 4: Tráfego do site (GA4) */}
+          {/* Secao 4: Indicações */}
+          <section className="rounded-2xl overflow-hidden admin-section-hover" style={{ background: 'var(--admin-bg-card)', backgroundImage: 'var(--admin-gradient-card)', border: '1px solid var(--admin-border-card)', boxShadow: 'var(--admin-shadow-md)' }}>
+            <div className="px-6 py-4 flex items-center justify-between" style={{ borderBottom: '1px solid var(--admin-border-subtle)' }}>
+              <div>
+                <h2 className="font-semibold" style={{ color: 'var(--admin-text-heading)' }}>Indicações</h2>
+                <p className="text-xs mt-0.5" style={{ color: 'var(--admin-text-muted)' }}>Parceiros, influenciadores e indicações de clientes</p>
+              </div>
+              <div className="flex gap-3 text-xs">
+                <span style={{ color: 'var(--admin-accent)' }} className="font-semibold">{totalReferrals} indicações</span>
+                <span style={{ color: 'var(--admin-text-muted)' }}>|</span>
+                <span style={{ color: 'var(--admin-text-secondary)' }}>{partnerSummaries.length} parceiros</span>
+                <span style={{ color: 'var(--admin-text-muted)' }}>|</span>
+                <span style={{ color: 'var(--admin-text-secondary)' }}>{clientReferralCount} de clientes</span>
+              </div>
+            </div>
+
+            {partnerSummaries.length === 0 && clientReferralCount === 0 ? (
+              <div className="px-6 py-8 text-center">
+                <p className="text-sm" style={{ color: 'var(--admin-text-muted)' }}>Nenhuma indicação registrada ainda.</p>
+              </div>
+            ) : (
+              <div>
+                {partnerSummaries.length > 0 && (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr style={{ background: 'rgba(35,83,71,0.5)' }}>
+                          <th className="px-6 py-3 text-left" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)' }}>Parceiro</th>
+                          <th className="px-4 py-3 text-left" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)' }}>Tipo</th>
+                          <th className="px-4 py-3 text-left" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)' }}>Códigos</th>
+                          <th className="px-4 py-3 text-right" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)' }}>Indicações</th>
+                          <th className="px-4 py-3 text-right" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)' }}>Ativos</th>
+                          <th className="px-4 py-3 text-right" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)' }}>Comissão</th>
+                          <th className="px-4 py-3 text-center" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)' }}>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {partnerSummaries.map((ps, i) => {
+                          const typeLabel: Record<string, string> = { influencer: 'Influenciador', commercial: 'Comercial', institution: 'Instituição' }
+                          return (
+                            <tr key={ps.partner.id} className="admin-row-hover" style={i > 0 ? { borderTop: '1px solid var(--admin-border-subtle)' } : undefined}>
+                              <td className="px-6 py-3">
+                                <p className="font-medium" style={{ color: 'var(--admin-text-primary)' }}>{ps.partner.name}</p>
+                                <p className="text-xs" style={{ color: 'var(--admin-text-muted)' }}>{ps.partner.email}</p>
+                              </td>
+                              <td className="px-4 py-3">
+                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md" style={{ background: 'var(--admin-bg-surface)', color: 'var(--admin-accent)' }}>
+                                  {typeLabel[ps.partner.type] ?? ps.partner.type}
+                                </span>
+                              </td>
+                              <td className="px-4 py-3">
+                                <div className="flex flex-wrap gap-1">
+                                  {ps.codes.map(c => (
+                                    <span key={c.id} className="text-[10px] font-mono px-1.5 py-0.5 rounded" style={{ background: 'rgba(142,182,155,0.1)', color: 'var(--admin-text-secondary)' }}>
+                                      {c.code}
+                                    </span>
+                                  ))}
+                                  {ps.codes.length === 0 && <span className="text-xs" style={{ color: 'var(--admin-text-muted)' }}>-</span>}
+                                </div>
+                              </td>
+                              <td className="px-4 py-3 text-right font-bold" style={{ color: 'var(--admin-text-primary)' }}>{ps.totalReferrals}</td>
+                              <td className="px-4 py-3 text-right">
+                                <span className="font-bold" style={{ color: ps.activeReferrals > 0 ? 'var(--admin-success)' : 'var(--admin-text-muted)' }}>{ps.activeReferrals}</span>
+                                {ps.pendingReferrals > 0 && (
+                                  <span className="text-xs ml-1" style={{ color: 'var(--admin-warning)' }}>+{ps.pendingReferrals} pend.</span>
+                                )}
+                              </td>
+                              <td className="px-4 py-3 text-right">
+                                {ps.totalRewardsCents > 0 ? (
+                                  <span className="font-bold" style={{ color: 'var(--admin-text-primary)' }}>
+                                    R${(ps.totalRewardsCents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                  </span>
+                                ) : (
+                                  <span style={{ color: 'var(--admin-text-muted)' }}>-</span>
+                                )}
+                                {ps.pendingRewardsCents > 0 && (
+                                  <p className="text-[10px]" style={{ color: 'var(--admin-warning)' }}>
+                                    R${(ps.pendingRewardsCents / 100).toFixed(2)} pendente
+                                  </p>
+                                )}
+                              </td>
+                              <td className="px-4 py-3 text-center">
+                                <span
+                                  className="text-[10px] font-bold px-2 py-0.5 rounded-md"
+                                  style={{
+                                    background: ps.partner.active ? 'var(--admin-success-bg)' : 'var(--admin-error-bg)',
+                                    color: ps.partner.active ? 'var(--admin-success)' : 'var(--admin-error)',
+                                    border: `1px solid ${ps.partner.active ? 'var(--admin-success-border)' : 'var(--admin-error-border)'}`,
+                                  }}
+                                >
+                                  {ps.partner.active ? 'Ativo' : 'Inativo'}
+                                </span>
+                              </td>
+                            </tr>
+                          )
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {clientReferralCount > 0 && (
+                  <div className="px-6 py-3" style={{ borderTop: '1px solid var(--admin-border-subtle)' }}>
+                    <p className="text-xs" style={{ color: 'var(--admin-text-muted)' }}>
+                      Indicações de clientes: <span className="font-bold" style={{ color: 'var(--admin-text-primary)' }}>{clientReferralCount}</span>
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+          </section>
+
+          {/* Secao 5: Tráfego do site (GA4) */}
           <section id="traffic" className="rounded-2xl overflow-hidden" style={{ background: 'var(--admin-bg-card)', backgroundImage: 'var(--admin-gradient-card)', border: '1px solid var(--admin-border-card)', boxShadow: 'var(--admin-shadow-md)' }} aria-labelledby="traffic-heading">
             <div className="px-6 py-4" style={{ borderBottom: '1px solid var(--admin-border-subtle)' }}>
               <h2 id="traffic-heading" className="font-semibold" style={{ color: 'var(--admin-text-heading)' }}>Tráfego do site</h2>
-              <p className="text-xs mt-0.5" style={{ color: 'var(--admin-text-muted)' }}>Page views dos ultimos 30 dias (GA4)</p>
+              <p className="text-xs mt-0.5" style={{ color: 'var(--admin-text-muted)' }}>Page views dos últimos 30 dias (GA4)</p>
             </div>
             {ga4Data ? (
               <div className="px-6 py-4">
