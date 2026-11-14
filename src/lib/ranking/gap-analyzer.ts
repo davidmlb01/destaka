@@ -4,6 +4,7 @@
 
 import { getPlaceDetails } from '@/lib/places/client'
 import type { PlaceDetails } from '@/lib/places/client'
+import { getVocab } from '@/lib/vertical-vocab'
 
 export interface GapFactor {
   factor: string
@@ -38,8 +39,10 @@ export async function analyzeGap(
   },
   competitorPlaceId: string,
   keyword: string,
-  userPosition: number | null
+  userPosition: number | null,
+  specialty?: string | null
 ): Promise<GapAnalysis | null> {
+  const vocab = getVocab(specialty)
   const competitor = await getPlaceDetails(competitorPlaceId)
   if (!competitor) return null
 
@@ -55,7 +58,7 @@ export async function analyzeGap(
     status: reviewGap > 0 ? 'behind' : reviewGap < 0 ? 'ahead' : 'tied',
     impact: 'high',
     action: reviewGap > 0
-      ? `Faltam ${reviewGap} avaliações para empatar. Peça a 5 pacientes por semana.`
+      ? `Faltam ${reviewGap} avaliações para empatar. Peça a 5 ${vocab.clientes} por semana.`
       : 'Você tem mais avaliações. Continue pedindo para manter a vantagem.',
   })
 
@@ -84,7 +87,7 @@ export async function analyzeGap(
     status: photoGap > 0 ? 'behind' : photoGap < 0 ? 'ahead' : 'tied',
     impact: 'medium',
     action: photoGap > 0
-      ? `Adicione ${Math.min(photoGap, 5)} fotos novas do consultório, equipe ou atendimento.`
+      ? `Adicione ${Math.min(photoGap, 5)} fotos novas do seu ${vocab.local}, equipe ou ${vocab.atendimento}.`
       : 'Você tem mais fotos. Adicione novas mensalmente para manter atividade.',
   })
 
@@ -134,7 +137,7 @@ export async function analyzeGap(
   if (behind.length === 0) {
     summary = `Você está à frente de ${competitor.name} nos fatores analisados. Continue o ritmo.`
   } else {
-    summary = `O Destaka cuida de posts, respostas e otimizações do seu perfil. Sua parte: solicitar avaliações aos seus pacientes. Cada nova avaliação te aproxima do topo.`
+    summary = `O Destaka cuida de posts, respostas e otimizações do seu perfil. Sua parte: solicitar avaliações aos seus ${vocab.clientes}. Cada nova avaliação te aproxima do topo.`
   }
 
   return {

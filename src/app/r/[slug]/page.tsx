@@ -1,6 +1,7 @@
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { redirect, notFound } from 'next/navigation'
 import type { Metadata } from 'next'
+import { getVocab } from '@/lib/vertical-vocab'
 
 function admin() {
   return createAdminSupa(
@@ -81,6 +82,7 @@ export default async function ReviewLandingPage({ params }: Props) {
   if (!org?.google_place_id) notFound()
 
   const reviewUrl = await trackAndGetUrl(org.id, org.google_place_id)
+  const vocab = getVocab(org.specialty)
 
   return (
     <main
@@ -110,7 +112,7 @@ export default async function ReviewLandingPage({ params }: Props) {
             Como foi sua experiência com {org.name}?
           </h1>
           <p className="mb-6" style={{ color: 'rgba(255,255,255,0.6)', fontSize: 15, lineHeight: 1.6 }}>
-            Sua avaliação ajuda outros pacientes a encontrar o profissional certo. Leva menos de 1 minuto.
+            {vocab.reviewPageCopy} Leva menos de 1 minuto.
           </p>
 
           {/* Stars visual */}

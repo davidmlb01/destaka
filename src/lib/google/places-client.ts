@@ -1,6 +1,8 @@
 // Google Places API — descoberta de concorrentes por especialidade + localização
 // Requer GOOGLE_MAPS_API_KEY (chave de servidor, não OAuth)
 
+import { getEngineContext } from '@/lib/vertical-vocab'
+
 export interface PlaceResult {
   place_id: string
   name: string
@@ -23,30 +25,6 @@ export interface PlaceDetails {
   formatted_phone_number?: string
 }
 
-const SPECIALTY_TO_PLACES_TYPE: Record<string, string> = {
-  dentista: 'dentist',
-  medico: 'doctor',
-  fisioterapeuta: 'physiotherapist',
-  quiropraxia: 'physiotherapist',
-  osteopatia: 'physiotherapist',
-  pilates: 'gym',
-  psicologo: 'doctor',
-  nutricionista: 'health',
-  outro: 'health',
-}
-
-const SPECIALTY_TO_KEYWORD: Record<string, string> = {
-  dentista: 'dentista consultório',
-  medico: 'médico clínica',
-  fisioterapeuta: 'fisioterapia',
-  quiropraxia: 'quiropraxia',
-  osteopatia: 'osteopatia',
-  pilates: 'pilates estúdio',
-  psicologo: 'psicólogo psicologia',
-  nutricionista: 'nutricionista nutrição',
-  outro: 'clínica saúde',
-}
-
 export class PlacesClient {
   private apiKey: string
 
@@ -57,12 +35,18 @@ export class PlacesClient {
   async nearbySearch(params: {
     lat: number
     lng: number
-    specialty: string
+    specialty: string | null | undefined
+    gbpCategory?: string | null
     radiusMeters?: number
   }): Promise<PlaceResult[]> {
-    const { lat, lng, specialty, radiusMeters = 5000 } = params
-    const type = SPECIALTY_TO_PLACES_TYPE[specialty] ?? 'health'
-    const keyword = SPECIALTY_TO_KEYWORD[specialty] ?? 'saúde'
+    const { lat, lng, specialty, gbpCategory, radiusMeters = 5000 } = params
+    const ctx = getEngineContext(specialty)
+    // Se a specialty é conhecida no vocab, usa os campos do vocab.
+    // Se não, usa a categoria GBP diretamente como keyword (sem fallback para 'health').
+    const type = ctx.placesSearchType
+    const keyword = ctx.placesSearchKeyword !== 'negócio local' && ctx.placesSearchKeyword
+      ? ctx.placesSearchKeyword
+      : (gbpCategory ?? ctx.placesSearchKeyword)
 
     const url = new URL('https://maps.googleapis.com/maps/api/place/nearbysearch/json')
     url.searchParams.set('location', `${lat},${lng}`)

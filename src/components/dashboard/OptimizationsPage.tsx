@@ -245,7 +245,22 @@ export function OptimizationsPage({
     attrSuggestions.length === 0 &&
     svcOptimizations.length === 0
 
-  if (!report || hasNoSuggestions) {
+  // optimization_report com status 'pending' (ou ausente) significa que a auditoria
+  // ainda não completou. Nunca mostrar "Tudo otimizado!" nesse caso.
+  const isPending = !report || (report as unknown as Record<string, unknown>)?.status === 'pending'
+
+  if (isPending) {
+    return (
+      <div className="px-6 py-10 max-w-3xl">
+        <h1 className="font-display font-bold text-white text-2xl mb-3">Melhorias para seu perfil</h1>
+        <p style={{ color: 'var(--text-tertiary)', fontSize: 15 }}>
+          Analisando seu perfil... As sugestões de melhoria aparecem aqui assim que a análise for concluída.
+        </p>
+      </div>
+    )
+  }
+
+  if (hasNoSuggestions) {
     return (
       <div className="px-6 py-10 max-w-3xl">
         <h1 className="font-display font-bold text-white text-2xl mb-3">Melhorias para seu perfil</h1>

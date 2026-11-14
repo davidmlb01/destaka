@@ -4,6 +4,7 @@
 // =============================================================================
 
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { getVocab } from '@/lib/vertical-vocab'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -78,7 +79,7 @@ const ACTION_MATRIX = [
   {
     id: 'description',
     title: 'Melhorar sua descrição no Google',
-    description: 'Vamos incluir os termos que pacientes realmente usam quando procuram por você.',
+    description: 'Vamos incluir os termos que sua clientela realmente usa quando procura por você.',
     mode: 'auto' as StepMode,
     impact: 6,
     component: 'gmb_completude',
@@ -89,7 +90,7 @@ const ACTION_MATRIX = [
   {
     id: 'services',
     title: 'Colocar seus serviços no perfil',
-    description: 'No Google Maps, pacientes filtram por serviço. Sem lista, você fica invisível.',
+    description: 'No Google Maps, clientes filtram por serviço. Sem lista, você fica invisível.',
     mode: 'auto' as StepMode,
     impact: 5,
     component: 'gmb_completude',
@@ -110,7 +111,7 @@ const ACTION_MATRIX = [
   },
   {
     id: 'attributes',
-    title: 'Completar informações do consultório',
+    title: 'Completar informações do seu espaço',
     description: 'Wi-Fi, estacionamento, acessibilidade. Cada detalhe conta para o Google te recomendar.',
     mode: 'auto' as StepMode,
     impact: 4,
@@ -133,7 +134,7 @@ const ACTION_MATRIX = [
   {
     id: 'photos',
     title: 'Adicionar fotos do seu espaço',
-    description: 'Pacientes confiam mais em perfis com fotos reais. Seus concorrentes têm mais fotos que você.',
+    description: 'Clientes confiam mais em perfis com fotos reais. Seus concorrentes têm mais fotos que você.',
     mode: 'manual' as StepMode,
     impact: 5,
     component: 'gmb_completude',
@@ -144,7 +145,7 @@ const ACTION_MATRIX = [
   {
     id: 'review-responses',
     title: 'Responder suas avaliações',
-    description: 'O Destaka já responde por você. Profissionais que respondem recebem mais pacientes.',
+    description: 'O Destaka já responde por você. Profissionais que respondem recebem mais clientes.',
     mode: 'auto' as StepMode,
     impact: 5,
     component: 'reputacao',
@@ -155,7 +156,7 @@ const ACTION_MATRIX = [
   {
     id: 'request-reviews',
     title: 'Conseguir mais avaliações',
-    description: 'Peça uma avaliação ao final de cada consulta. Dois por mês já faz diferença.',
+    description: 'Peça uma avaliação ao final de cada atendimento. Dois por mês já faz diferença.',
     mode: 'manual' as StepMode,
     impact: 8,
     component: 'reputacao',
@@ -178,8 +179,10 @@ const ACTION_MATRIX = [
 
 export function generatePlan(
   scoreCtx: ScoreContext,
-  competitorCtx: CompetitorContext | null
+  competitorCtx: CompetitorContext | null,
+  specialty?: string | null
 ): Omit<SurpassPlan, 'id' | 'organization_id' | 'created_at' | 'updated_at' | 'expires_at'> {
+  const vocab = getVocab(specialty)
   const steps: PlanStep[] = []
 
   // Filtrar acoes aplicaveis
@@ -193,7 +196,7 @@ export function generatePlan(
         description = `Adicione fotos do seu espaço e equipe. Seus concorrentes têm em média ${Math.round(competitorCtx.avgPhotoCount)} fotos.`
       }
       if (action.id === 'request-reviews' && competitorCtx.avgReviewCount > 0) {
-        description = `Peça uma avaliação ao final de cada consulta. Seus concorrentes têm em média ${Math.round(competitorCtx.avgReviewCount)} avaliações.`
+        description = `Peça uma avaliação ao final de cada ${vocab.atendimento}. Seus concorrentes têm em média ${Math.round(competitorCtx.avgReviewCount)} avaliações.`
       }
     }
 

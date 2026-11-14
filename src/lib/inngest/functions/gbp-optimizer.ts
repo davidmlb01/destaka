@@ -51,7 +51,14 @@ export const gbpOptimizer = inngest.createFunction(
 
       const rawAudit = profile.audit_report as Record<string, unknown> | null
       if (!rawAudit) {
-        return { status: 'skip', error: 'auditoria não disponível ainda' }
+        // Auditoria ainda não completou. Salva status 'pending' no optimization_report
+        // para que a UI mostre "Analisando..." em vez de "Tudo otimizado!".
+        await db
+          .from('gbp_profiles')
+          .update({ optimization_report: { status: 'pending', generated_at: new Date().toISOString() } })
+          .eq('organization_id', orgId)
+          .eq('location_id', profile.location_id)
+        return { status: 'pending', reason: 'auditoria ainda não disponível' }
       }
 
       // Normaliza formato: score-calculator usa {issues}, audit-engine usa {gaps}

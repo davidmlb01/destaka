@@ -7,6 +7,7 @@ import { searchPlace, getPlaceDetails } from '@/lib/places/client'
 import { getAnthropic, AI_MODEL } from '@/lib/ai'
 import { sanitizeForPrompt } from '@/lib/sanitize'
 import { extractReviewKeywords } from './competitive-analyzer'
+import { getEngineContext } from '@/lib/vertical-vocab'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 export interface Competitor {
@@ -51,10 +52,10 @@ function extractNeighborhood(address: string): string {
   return cityPart || address
 }
 
-// Infere especialidade do nome do negocio quando category e null
-function inferSpecialtyFromName(name: string): string {
+// Infere termo de busca do nome do negocio quando category e null
+function inferSearchTermFromName(name: string): string {
   const lower = name.toLowerCase()
-  const specialtyMap: Array<[string, string]> = [
+  const termMap: Array<[string, string]> = [
     ['quiropraxia', 'quiropraxia'],
     ['quiroprat', 'quiropraxia'],
     ['osteopatia', 'osteopatia'],
@@ -62,35 +63,80 @@ function inferSpecialtyFromName(name: string): string {
     ['pilates', 'pilates'],
     ['acupuntura', 'acupuntura'],
     ['dentist', 'dentista'],
-    ['odonto', 'dentista'],
-    ['psicolog', 'psicologo'],
+    ['odonto', 'odontologia'],
+    ['psicolog', 'psicologia'],
     ['nutri', 'nutricionista'],
-    ['dermatolog', 'dermatologista'],
-    ['pediatr', 'pediatra'],
-    ['ortoped', 'ortopedista'],
+    ['dermatolog', 'dermatologia'],
+    ['pediatr', 'pediatria'],
+    ['ortoped', 'ortopedia'],
+    ['advocac', 'advocacia'],
+    ['advogad', 'advogado'],
+    ['contab', 'contabilidade'],
+    ['imobili', 'imobiliária'],
+    ['veterin', 'veterinário'],
+    ['academia', 'academia'],
+    ['salao', 'salão de beleza'],
+    ['restauran', 'restaurante'],
+    ['oficina', 'oficina mecânica'],
+    ['floricultur', 'floricultura'],
+    ['fotograf', 'fotógrafo'],
+    ['marketing', 'agência de marketing'],
+    ['tecnolog', 'empresa de tecnologia'],
   ]
-  for (const [pattern, specialty] of specialtyMap) {
-    if (lower.includes(pattern)) return specialty
+  for (const [pattern, term] of termMap) {
+    if (lower.includes(pattern)) return term
   }
-  return 'saude'
+  // Sem reconhecimento: retorna o nome como termo (melhor que 'saude' para verticais desconhecidas)
+  return name
 }
 
 // Constroi query de busca para concorrentes
-function buildCompetitorQuery(category: string | null, address: string, name: string): string {
+function buildCompetitorQuery(
+  category: string | null,
+  address: string,
+  name: string,
+  specialty: string | null = null
+): string {
   const neighborhood = extractNeighborhood(address)
-  const categoryMap: Record<string, string> = {
-    dentist: 'dentista',
-    physiotherapist: 'fisioterapeuta',
-    chiropractor: 'quiropraxia',
-    psychologist: 'psicologo',
-    nutritionist: 'nutricionista',
-    doctor: 'medico',
+
+  // Prioridade 1: specialty mapeada no vocab (via getEngineContext)
+  if (specialty) {
+    const ctx = getEngineContext(specialty)
+    // Se a keyword não é o genérico 'negócio local', usa ela
+    if (ctx.placesSearchKeyword !== 'negócio local') {
+      return `${ctx.placesSearchKeyword} ${neighborhood}`
+    }
   }
-  // Prioridade: category do GBP > inferencia do nome > fallback "saude"
-  const localCategory = category
-    ? (categoryMap[category.toLowerCase()] ?? category)
-    : inferSpecialtyFromName(name)
-  return `${localCategory} ${neighborhood}`
+
+  // Prioridade 2: categoria do GBP (texto livre do Google)
+  if (category) {
+    const categoryMap: Record<string, string> = {
+      dentist: 'dentista',
+      physiotherapist: 'fisioterapeuta',
+      chiropractor: 'quiropraxia',
+      psychologist: 'psicólogo',
+      nutritionist: 'nutricionista',
+      doctor: 'médico',
+      lawyer: 'advogado',
+      accounting: 'contabilidade',
+      real_estate_agency: 'imobiliária',
+      veterinary_care: 'veterinário',
+      gym: 'academia',
+      beauty_salon: 'salão de beleza',
+      restaurant: 'restaurante',
+      car_repair: 'oficina mecânica',
+      florist: 'floricultura',
+      photographer: 'fotógrafo',
+      marketing_agency: 'agência de marketing',
+      school: 'escola',
+      software_company: 'empresa de tecnologia',
+    }
+    const mapped = categoryMap[category.toLowerCase()]
+    return `${mapped ?? category} ${neighborhood}`
+  }
+
+  // Prioridade 3: inferência pelo nome do negócio (sem fallback para 'saude')
+  return `${inferSearchTermFromName(name)} ${neighborhood}`
 }
 
 // Descobre os top 3 concorrentes e salva no banco
@@ -102,7 +148,7 @@ export async function discoverCompetitors(
 
   const { data: profile, error: profileError } = await db
     .from('gmb_profiles')
-    .select('id, name, address, category, google_location_id, latitude, longitude')
+    .select('id, name, address, category, google_location_id, latitude, longitude, organization_id')
     .eq('id', profileId)
     .single()
 
@@ -110,16 +156,26 @@ export async function discoverCompetitors(
     return { discovered: 0, errors: ['Perfil nao encontrado'] }
   }
 
-  const query = buildCompetitorQuery(profile.category, profile.address ?? '', profile.name ?? '')
+  // Busca specialty da organização para usar o vocab correto
+  const { data: org } = await db
+    .from('organizations')
+    .select('specialty')
+    .eq('id', profile.organization_id)
+    .single()
+
+  const specialty = (org?.specialty as string | null) ?? null
+
+  const query = buildCompetitorQuery(profile.category, profile.address ?? '', profile.name ?? '', specialty)
   const lat = profile.latitude as number | null
   const lng = profile.longitude as number | null
   const results: Array<{ placeId: string; details: Awaited<ReturnType<typeof getPlaceDetails>> }> = []
 
   // Busca por texto com coordenadas para restringir por proximidade
+  // Variações genéricas (sem termos de saúde hardcoded)
   const searches = [
     query,
-    `${query} consultorio`,
-    `clinica ${query}`,
+    `${query} perto`,
+    query,
   ]
 
   const placeIds = new Set<string>()

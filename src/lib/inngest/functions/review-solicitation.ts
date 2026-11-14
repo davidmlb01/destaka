@@ -6,7 +6,7 @@
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { inngest } from '../client'
 import { resend, FROM } from '@/lib/email/index'
-import { getBrandName } from '@/lib/vertical-vocab'
+import { getBrandName, getVocab } from '@/lib/vertical-vocab'
 
 function admin() {
   return createAdminSupa(
@@ -93,7 +93,8 @@ export const reviewSolicitation = inngest.createFunction(
           const topCompetitorReviews = rankingPos?.top_competitor_reviews ?? 0
           const gap = topCompetitorReviews - (reviewCount ?? 0)
 
-          const brandName = getBrandName((org.specialty as string) ?? 'saude')
+          const brandName = getBrandName((org.specialty as string) ?? null)
+          const vocab = getVocab((org.specialty as string) ?? null)
           const profName = prof.name?.split(' ')[0] ?? 'Profissional'
 
           // Email com contexto de ranking
@@ -106,7 +107,7 @@ export const reviewSolicitation = inngest.createFunction(
             : ''
 
           const gapContext = position && position > 1
-            ? `<p style="margin:0 0 12px;font-size:14px;color:#4B5563;">O ${brandName} está trabalhando para subir sua posição: publicando posts, respondendo avaliações e otimizando seu perfil. Avaliações de pacientes reais são o complemento mais forte que você pode adicionar.</p>`
+            ? `<p style="margin:0 0 12px;font-size:14px;color:#4B5563;">O ${brandName} está trabalhando para subir sua posição: publicando posts, respondendo avaliações e otimizando seu perfil. Avaliações de ${vocab.clientes} reais são o complemento mais forte que você pode adicionar.</p>`
             : ''
 
           const html = `
@@ -116,7 +117,7 @@ export const reviewSolicitation = inngest.createFunction(
   ${positionContext}
   ${gapContext}
 
-  <p style="margin:0 0 12px;font-size:14px;color:#4B5563;">A melhor forma de subir no Google é pedir avaliações aos seus pacientes. Uma mensagem simples no WhatsApp funciona:</p>
+  <p style="margin:0 0 12px;font-size:14px;color:#4B5563;">A melhor forma de subir no Google é pedir avaliações aos seus ${vocab.clientes}. Uma mensagem simples no WhatsApp funciona:</p>
 
   <div style="background:#F3F4F6;border-radius:12px;padding:16px;margin:16px 0;">
     <p style="margin:0;font-size:14px;color:#374151;font-style:italic;">
@@ -124,7 +125,7 @@ export const reviewSolicitation = inngest.createFunction(
     </p>
   </div>
 
-  <p style="margin:0 0 8px;font-size:14px;color:#4B5563;">Envie para 3 a 5 pacientes recentes. Leva 30 segundos e faz diferença real.</p>
+  <p style="margin:0 0 8px;font-size:14px;color:#4B5563;">Envie para 3 a 5 ${vocab.clientes} recentes. Leva 30 segundos e faz diferença real.</p>
 
   <div style="text-align:center;margin:24px 0;">
     <a href="${reviewLink}" style="display:inline-block;background:#14B8A6;color:#fff;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">

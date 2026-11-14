@@ -2,39 +2,44 @@
 
 import { useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
+import { getVocab } from '@/lib/vertical-vocab'
 
-const FEATURE_INFO: Record<string, { title: string; description: string; benefit: string }> = {
-  reviews: {
-    title: 'Avaliações',
-    description: 'O Destaka responde avaliações automaticamente com o tom da sua clínica e monitora sua reputação.',
-    benefit: 'Clínicas que respondem avaliações recebem 35% mais contatos.',
-  },
-  posts: {
-    title: 'Posts',
-    description: 'Publicação automática de posts semanais no Google com conteúdo relevante para sua especialidade.',
-    benefit: 'Perfis com posts recentes aparecem 70% mais em buscas locais.',
-  },
-  optimizations: {
-    title: 'Otimizações',
-    description: 'Análise automática do seu perfil com correções aplicadas diretamente na sua conta Google.',
-    benefit: 'Perfis otimizados recebem até 3x mais visualizações no Google Maps.',
-  },
-  competitors: {
-    title: 'Concorrentes',
-    description: 'Mapeamento dos seus concorrentes na região com análise comparativa de pontos fortes e oportunidades.',
-    benefit: 'Identifique o que seus concorrentes fazem que você ainda não faz.',
-  },
-  plan: {
-    title: 'Plano de Melhoria',
-    description: 'Plano semanal de 8 semanas com ações automáticas e manuais para elevar seu score.',
-    benefit: 'Profissionais que seguem o plano aumentam o score em média 40 pontos em 60 dias.',
-  },
+function buildFeatureInfo(vocab: ReturnType<typeof getVocab>) {
+  return {
+    reviews: {
+      title: 'Avaliações',
+      description: `O Destaka responde avaliações automaticamente com o tom do seu ${vocab.local} e monitora sua reputação.`,
+      benefit: `${vocab.local.charAt(0).toUpperCase() + vocab.local.slice(1)}s que respondem avaliações recebem 35% mais contatos.`,
+    },
+    posts: {
+      title: 'Posts',
+      description: 'Publicação automática de posts semanais no Google com conteúdo relevante para sua especialidade.',
+      benefit: 'Perfis com posts recentes aparecem 70% mais em buscas locais.',
+    },
+    optimizations: {
+      title: 'Otimizações',
+      description: 'Análise automática do seu perfil com correções aplicadas diretamente na sua conta Google.',
+      benefit: 'Perfis otimizados recebem até 3x mais visualizações no Google Maps.',
+    },
+    competitors: {
+      title: 'Concorrentes',
+      description: 'Mapeamento dos seus concorrentes na região com análise comparativa de pontos fortes e oportunidades.',
+      benefit: 'Identifique o que seus concorrentes fazem que você ainda não faz.',
+    },
+    plan: {
+      title: 'Plano de Melhoria',
+      description: 'Plano semanal de 8 semanas com ações automáticas e manuais para elevar seu score.',
+      benefit: 'Profissionais que seguem o plano aumentam o score em média 40 pontos em 60 dias.',
+    },
+  }
 }
 
-function UpgradeContent() {
+function UpgradeContent({ specialty }: { specialty: string | null }) {
+  const vocab = getVocab(specialty)
+  const FEATURE_INFO = buildFeatureInfo(vocab)
   const searchParams = useSearchParams()
   const feature = searchParams.get('feature') ?? 'reviews'
-  const info = FEATURE_INFO[feature] ?? FEATURE_INFO.reviews
+  const info = FEATURE_INFO[feature as keyof typeof FEATURE_INFO] ?? FEATURE_INFO.reviews
 
   async function handleCheckout() {
     try {
@@ -106,10 +111,15 @@ function UpgradeContent() {
   )
 }
 
-export default function UpgradePage() {
+import { getDashboardContext } from '@/lib/dashboard/get-dashboard-context'
+
+export const dynamic = 'force-dynamic'
+
+export default async function UpgradePage() {
+  const ctx = await getDashboardContext()
   return (
     <Suspense>
-      <UpgradeContent />
+      <UpgradeContent specialty={ctx.specialty} />
     </Suspense>
   )
 }

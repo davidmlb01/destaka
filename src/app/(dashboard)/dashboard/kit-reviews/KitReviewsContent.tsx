@@ -1,30 +1,22 @@
 'use client'
 
 import { useCallback } from 'react'
+import { getVocab } from '@/lib/vertical-vocab'
 
 interface Props {
   profileName: string
   reviewUrl: string
   landingUrl: string
   qrDataUrl: string
+  specialty: string | null
 }
 
-const MESSAGES = [
-  {
-    label: 'Curta e direta',
-    text: 'Oi! Obrigado(a) pela confiança. Se puder deixar sua opinião no Google, ajuda muito quem está procurando um profissional de confiança na região. É rapidinho:',
-  },
-  {
-    label: 'Pós-consulta',
-    text: 'Oi! Espero que esteja se sentindo bem. Se a consulta foi positiva para você, sua avaliação no Google faz toda a diferença para que outros pacientes me encontrem:',
-  },
-  {
-    label: 'Presencial (para falar ao paciente)',
-    text: 'Se puder, deixa uma avaliação no Google. Ajuda muito quem está procurando um profissional na região. Tem um QR Code ali na recepção, é rapidinho.',
-  },
-]
-
-export function KitReviewsContent({ profileName, reviewUrl, landingUrl, qrDataUrl }: Props) {
+export function KitReviewsContent({ profileName, reviewUrl, landingUrl, qrDataUrl, specialty }: Props) {
+  const vocab = getVocab(specialty)
+  const MESSAGES = vocab.whatsappMessages.map(m => ({
+    label: m.label,
+    text: m.text.replace(' {link}', ''),
+  }))
   const handlePrint = useCallback(() => {
     window.print()
   }, [])
@@ -108,7 +100,7 @@ export function KitReviewsContent({ profileName, reviewUrl, landingUrl, qrDataUr
           Mensagens prontas
         </h2>
         <p className="text-[13px] mb-5" style={{ color: 'var(--text-tertiary)' }}>
-          Copie e envie pelo WhatsApp aos seus pacientes
+          Copie e envie pelo WhatsApp aos seus {vocab.clientes}
         </p>
 
         <div className="flex flex-col gap-4">
@@ -126,7 +118,7 @@ export function KitReviewsContent({ profileName, reviewUrl, landingUrl, qrDataUr
             Meta semanal: 5 avaliações
           </h3>
           <p className="text-[13px]" style={{ color: 'var(--text-tertiary)', lineHeight: 1.6 }}>
-            Peça a 1 paciente por dia. Em 4 meses no ritmo de 5 por semana, você ultrapassa a maioria dos concorrentes da sua região. Cada avaliação conta.
+            Peça a 1 {vocab.cliente} por dia. Em 4 meses no ritmo de 5 por semana, você ultrapassa a maioria dos concorrentes da sua região. Cada avaliação conta.
           </p>
         </div>
       </div>

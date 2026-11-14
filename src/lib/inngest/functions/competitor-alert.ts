@@ -28,23 +28,23 @@ export const competitorAlert = inngest.createFunction(
     const orgs = await step.run('get-orgs', async () => {
       const { data } = await db
         .from('organizations')
-        .select('id, name, owner_email:professionals!inner(user_id, users:auth_users(email))')
+        .select('id, name, specialty, owner_email:professionals!inner(user_id, users:auth_users(email))')
 
       // Extrair email do owner via join
       return (data ?? []).map((o: Record<string, unknown>) => {
         const profs = o.professionals as Array<{ users: { email: string } | null }> | undefined
         const email = profs?.[0]?.users?.email ?? null
-        return { id: o.id as string, name: o.name as string, email }
+        return { id: o.id as string, name: o.name as string, specialty: (o.specialty as string | null) ?? null, email }
       }).filter(o => o.email)
     })
 
     // Fallback: buscar emails diretamente se o join complexo não funcionar
     const orgList = await step.run('resolve-emails', async () => {
-      const results: { id: string; name: string; email: string }[] = []
+      const results: { id: string; name: string; specialty: string | null; email: string }[] = []
 
       for (const org of orgs) {
         if (org.email) {
-          results.push({ id: org.id, name: org.name, email: org.email })
+          results.push({ id: org.id, name: org.name, specialty: org.specialty, email: org.email })
           continue
         }
         // Fallback: buscar via professionals -> auth.users
@@ -58,7 +58,7 @@ export const competitorAlert = inngest.createFunction(
         if (prof?.user_id) {
           const { data: authUser } = await db.auth.admin.getUserById(prof.user_id)
           if (authUser?.user?.email) {
-            results.push({ id: org.id, name: org.name, email: authUser.user.email })
+            results.push({ id: org.id, name: org.name, specialty: org.specialty, email: authUser.user.email })
           }
         }
       }
@@ -119,6 +119,7 @@ export const competitorAlert = inngest.createFunction(
               userReviews,
               userGain,
               dashboardUrl: 'https://destaka.com.br/dashboard/competitors',
+              specialty: org.specialty,
             })
             alertsSent++
           }

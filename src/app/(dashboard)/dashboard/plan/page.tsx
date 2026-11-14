@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/Badge'
 import { PinIcon } from '@/components/ui/PinIcon'
 import { getDashboardContext } from '@/lib/dashboard/get-dashboard-context'
 import { CheckoutButton } from './CheckoutButton'
+import { getVocab } from '@/lib/vertical-vocab'
 
 const VALUE_STACK = [
   { label: 'Gestão do Google Meu Negócio', value: 'R$400/mês', desc: 'O que uma agência cobraria para fazer o mesmo' },
@@ -27,6 +28,7 @@ const FEATURES = [
 
 export default async function PlanPage() {
   const ctx = await getDashboardContext()
+  const vocab = getVocab(ctx.specialty)
 
   return (
       <div className="px-6 py-10 max-w-5xl">
@@ -43,7 +45,7 @@ export default async function PlanPage() {
           </h1>
 
           <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 15, marginTop: 10, lineHeight: 1.65, maxWidth: 520 }}>
-            Enquanto você cuida dos seus pacientes, o Destaka cuida da sua presença digital. Sem agência. Sem complicação.
+            Enquanto você cuida dos seus {vocab.clientes}, o Destaka cuida da sua presença digital. Sem agência. Sem complicação.
           </p>
         </div>
 
@@ -92,7 +94,7 @@ export default async function PlanPage() {
                     className="mt-1.5 text-xs font-medium"
                     style={{ color: 'var(--text-muted)' }}
                   >
-                    Apenas R$6,57/dia para ter mais pacientes
+                    Apenas R$6,57/dia para ter mais {vocab.clientes}
                   </p>
                 </div>
 

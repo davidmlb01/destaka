@@ -296,10 +296,10 @@ export function buildMonthlyReportEmail(data: MonthlyReportData): { subject: str
 
     <tr><td style="background:#ffffff;padding:0 36px;"><hr style="border:none;border-top:1px solid #f3f4f6;margin:0;"></td></tr>` : ''}
 
-    <!-- Pacientes que encontraram você -->
+    <!-- Clientes que encontraram você -->
     ${(data.profile_views ?? 0) > 0 || (data.website_clicks ?? 0) > 0 || (data.phone_clicks ?? 0) > 0 || (data.whatsapp_clicks ?? 0) > 0 ? `
     <tr><td style="background:#ffffff;padding:28px 36px;">
-      <p style="color:#6b7280;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 8px;">Pacientes que encontraram você</p>
+      <p style="color:#6b7280;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 8px;">${vocab.clientes.charAt(0).toUpperCase() + vocab.clientes.slice(1)} que encontraram você</p>
       <p style="color:#111827;font-size:16px;font-weight:700;margin:0 0 16px;">Quem pesquisou, encontrou o seu nome.</p>
 
       <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">

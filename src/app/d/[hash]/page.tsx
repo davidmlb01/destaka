@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { Logo } from '@/components/ui/Logo'
+import { getVocab } from '@/lib/vertical-vocab'
 
 interface PublicDiagData {
   score: { atual: number; projetado: number; faixa: string; snapshot_date: string | null }
@@ -94,6 +95,7 @@ export default function PublicDiagnosticoPage() {
   const scoreColor = getScoreColor(score)
   const nome = data.perfil.nome || 'Negócio'
   const totalGapImpact = data.gaps.reduce((s, g) => s + g.impact, 0)
+  const vocab = getVocab(data.perfil.categoria || null)
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg-base)' }}>
@@ -199,10 +201,10 @@ export default function PublicDiagnosticoPage() {
             className="font-display font-bold"
             style={{ fontSize: 22, color: 'var(--text-primary)', lineHeight: 1.35, maxWidth: 480, margin: '0 auto 8px' }}
           >
-            Você cuida de atender seus pacientes.
+            {vocab.tagline.title}
           </h2>
           <p style={{ fontSize: 17, color: 'var(--accent-bright)', marginBottom: 24, fontWeight: 500 }}>
-            Nós cuidamos de fazer novos pacientes chegar até você.
+            {vocab.tagline.subtitle}
           </p>
           <a
             href="https://destaka.com.br/verificar"

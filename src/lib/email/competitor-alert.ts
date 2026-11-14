@@ -1,5 +1,6 @@
 import { resend, FROM } from './index'
 import { escapeHtml } from '@/lib/utils/escape-html'
+import { getVocab } from '@/lib/vertical-vocab'
 
 interface CompetitorAlertParams {
   to: string
@@ -10,13 +11,15 @@ interface CompetitorAlertParams {
   userReviews: number
   userGain: number
   dashboardUrl: string
+  specialty?: string | null
 }
 
 export async function sendCompetitorAlert(params: CompetitorAlertParams) {
   const {
     to, orgName, competitorName, competitorReviews,
-    competitorGain, userReviews, userGain, dashboardUrl,
+    competitorGain, userReviews, userGain, dashboardUrl, specialty,
   } = params
+  const vocab = getVocab(specialty)
 
   const diff = competitorReviews - userReviews
   const aheadText = diff > 0
@@ -67,7 +70,7 @@ export async function sendCompetitorAlert(params: CompetitorAlertParams) {
             ${aheadText}
           </p>
           <p style="font-size:15px;color:#4b5563;line-height:1.6;margin:0 0 24px;">
-            Peça a 5 pacientes esta semana para avaliarem sua consulta no Google. Cada avaliação conta.
+            Peça a 5 ${vocab.clientes} esta semana para avaliarem seu ${vocab.atendimento} no Google. Cada avaliação conta.
           </p>
 
           <a href="${escapeHtml(dashboardUrl)}" style="display:inline-block;background:#0f766e;color:#ffffff;font-weight:700;font-size:15px;padding:14px 32px;border-radius:10px;text-decoration:none;">

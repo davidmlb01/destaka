@@ -61,6 +61,7 @@ export default async function KitReviewsPage() {
       reviewUrl={reviewUrl}
       landingUrl={landingUrl}
       qrDataUrl={qrDataUrl}
+      specialty={ctx.specialty}
     />
   )
 }

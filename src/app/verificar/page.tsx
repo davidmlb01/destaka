@@ -5,7 +5,7 @@ import { VerifyTool } from '@/components/verificar/VerifyTool'
 
 export const metadata = {
   title: 'Diagnóstico GMB Gratuito | Destaka',
-  description: 'Cole o link do Google Maps de qualquer clínica ou consultório e veja o score de visibilidade em segundos.',
+  description: 'Cole o link do Google Maps de qualquer negócio e veja o score de visibilidade em segundos.',
 }
 
 export default function VerificarPage() {
