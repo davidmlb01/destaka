@@ -20,7 +20,7 @@ export function Attribution({ channels }: { channels: ChannelRow[] }) {
     >
       <div className="px-5 py-4" style={{ borderBottom: '1px solid var(--admin-border-subtle)' }}>
         <h2 className="font-semibold" style={{ color: 'var(--admin-text-heading)', fontSize: 15 }}>Attribution por canal</h2>
-        <p className="text-xs mt-0.5" style={{ color: 'var(--admin-text-muted)' }}>Leads e conversoes por fonte de trafego</p>
+        <p className="text-xs mt-0.5" style={{ color: 'var(--admin-text-muted)' }}>Leads e conversões por fonte de tráfego</p>
       </div>
       {channels.length === 0 ? (
         <p className="text-sm py-8 text-center" style={{ color: 'var(--admin-text-muted)' }}>Nenhum dado de UTM capturado ainda.</p>

@@ -39,7 +39,7 @@ export function AdminAlertBar({ brokenTokensCount, totalPending }: AdminAlertBar
         <AlertTriangleIcon />
       </span>
       <span style={{ fontSize: 13, fontWeight: 600, color: primary ? 'var(--admin-error)' : 'var(--admin-warning)' }}>
-        {primary ? 'Atencao: tokens com problema' : 'Itens pendentes de revisao'}
+        {primary ? 'Atenção: tokens com problema' : 'Itens pendentes de revisão'}
       </span>
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
         {brokenTokensCount > 0 && (

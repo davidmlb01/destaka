@@ -49,7 +49,7 @@ export function MrrLeadsChart({ data }: { data: MrrPoint[] }) {
       <h2 className="font-semibold mb-1" style={{ color: 'var(--admin-text-heading)', fontSize: 15 }}>MRR e Leads por mes</h2>
       <p className="text-xs mb-4" style={{ color: 'var(--admin-text-muted)' }}>Receita recorrente e volume de leads</p>
       {data.length < 2 ? (
-        <p className="text-sm py-8 text-center" style={{ color: 'var(--admin-text-muted)' }}>Dados insuficientes para o grafico.</p>
+        <p className="text-sm py-8 text-center" style={{ color: 'var(--admin-text-muted)' }}>Dados insuficientes para o gráfico.</p>
       ) : (
         <ResponsiveContainer width="100%" height={220}>
           <AreaChart data={data}>
@@ -88,10 +88,10 @@ export function ScoreEvolutionChart({ data }: { data: ScorePoint[] }) {
         boxShadow: 'var(--admin-shadow-md)',
       }}
     >
-      <h2 className="font-semibold mb-1" style={{ color: 'var(--admin-text-heading)', fontSize: 15 }}>Score medio</h2>
-      <p className="text-xs mb-4" style={{ color: 'var(--admin-text-muted)' }}>Evolucao mensal dos clientes</p>
+      <h2 className="font-semibold mb-1" style={{ color: 'var(--admin-text-heading)', fontSize: 15 }}>Score médio</h2>
+      <p className="text-xs mb-4" style={{ color: 'var(--admin-text-muted)' }}>Evolução mensal dos clientes</p>
       {data.length < 2 ? (
-        <p className="text-sm py-8 text-center" style={{ color: 'var(--admin-text-muted)' }}>Dados insuficientes para o grafico.</p>
+        <p className="text-sm py-8 text-center" style={{ color: 'var(--admin-text-muted)' }}>Dados insuficientes para o gráfico.</p>
       ) : (
         <ResponsiveContainer width="100%" height={220}>
           <AreaChart data={data}>
@@ -132,11 +132,11 @@ export function ConversionDonutChart({ payingOrgs, freeOrgs, cancelledOrgs, lead
         boxShadow: 'var(--admin-shadow-md)',
       }}
     >
-      <h2 className="font-semibold" style={{ color: 'var(--admin-text-heading)', fontSize: 15 }}>Conversao</h2>
+      <h2 className="font-semibold" style={{ color: 'var(--admin-text-heading)', fontSize: 15 }}>Conversão</h2>
       <p className="text-xs mt-0.5 mb-4" style={{ color: 'var(--admin-text-muted)' }}>Lead para pagante</p>
 
       {!hasData ? (
-        <p className="text-sm py-8 text-center" style={{ color: 'var(--admin-text-muted)' }}>Sem dados de conversao.</p>
+        <p className="text-sm py-8 text-center" style={{ color: 'var(--admin-text-muted)' }}>Sem dados de conversão.</p>
       ) : (
         <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <ResponsiveContainer width="100%" height={200}>

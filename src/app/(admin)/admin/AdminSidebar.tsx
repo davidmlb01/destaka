@@ -62,10 +62,10 @@ function AlertTriangleIcon({ size = 18 }: { size?: number }) {
 }
 
 const NAV_ITEMS = [
-  { id: 'overview',  label: 'Visao Geral', Icon: LayoutDashboardIcon, href: '#overview'  },
+  { id: 'overview',  label: 'Visão Geral', Icon: LayoutDashboardIcon, href: '#overview'  },
   { id: 'clients',   label: 'Clientes',    Icon: UsersIcon,            href: '#clients'   },
   { id: 'leads',     label: 'Leads',       Icon: UserPlusIcon,         href: '#leads'     },
-  { id: 'traffic',   label: 'Trafego',     Icon: BarChart2Icon,        href: '#traffic'   },
+  { id: 'traffic',   label: 'Tráfego',     Icon: BarChart2Icon,        href: '#traffic'   },
   { id: 'alerts',    label: 'Alertas',     Icon: AlertTriangleIcon,    href: '#alerts'    },
 ]
 
@@ -93,7 +93,7 @@ export function AdminSidebar({ brokenTokensCount, totalPending }: AdminSidebarPr
         flexShrink: 0,
         zIndex: 10,
       }}
-      aria-label="Menu de navegacao admin"
+      aria-label="Menu de navegação admin"
     >
       {/* Logo area */}
       <div
@@ -126,7 +126,7 @@ export function AdminSidebar({ brokenTokensCount, totalPending }: AdminSidebarPr
       <nav style={{ flex: 1, padding: '8px 0' }} aria-label="Secoes do admin">
         {!collapsed && (
           <p style={{ fontSize: 10, fontWeight: 700, color: 'var(--admin-text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', padding: '8px 22px 4px' }}>
-            Navegacao
+            Navegação
           </p>
         )}
         {NAV_ITEMS.map(({ id, label, Icon, href }) => {

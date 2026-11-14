@@ -562,7 +562,7 @@ export default async function AdminPage() {
               id="overview-heading"
               style={{ fontSize: 13, fontWeight: 700, color: 'var(--admin-text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 16 }}
             >
-              Visao Geral
+              Visão Geral
             </h2>
             <div
               style={{
@@ -588,14 +588,14 @@ export default async function AdminPage() {
               />
               <StatCard
                 value={avgScore}
-                label="Score medio"
+                label="Score médio"
                 icon={<StarIcon />}
                 iconColor="var(--admin-accent)"
                 sparkline={scoreSparkline}
               />
               <StatCard
                 value={`${activationRate}%`}
-                label="Ativacao"
+                label="Ativação"
                 icon={<ZapIcon />}
                 iconColor={activationRate > 50 ? 'var(--admin-success)' : 'var(--admin-warning)'}
               />
@@ -613,7 +613,7 @@ export default async function AdminPage() {
               />
               <StatCard
                 value={leads.length}
-                label="Ultimos leads"
+                label="Últimos leads"
                 icon={<UserPlusSmallIcon />}
                 iconColor="#FBBF24"
                 sparkline={leadsSparkline}
@@ -655,10 +655,10 @@ export default async function AdminPage() {
             <Attribution channels={attribution} />
           </div>
 
-          {/* Secao 4: Trafego do site (GA4) */}
+          {/* Secao 4: Tráfego do site (GA4) */}
           <section id="traffic" className="rounded-2xl overflow-hidden" style={{ background: 'var(--admin-bg-card)', backgroundImage: 'var(--admin-gradient-card)', border: '1px solid var(--admin-border-card)', boxShadow: 'var(--admin-shadow-md)' }} aria-labelledby="traffic-heading">
             <div className="px-6 py-4" style={{ borderBottom: '1px solid var(--admin-border-subtle)' }}>
-              <h2 id="traffic-heading" className="font-semibold" style={{ color: 'var(--admin-text-heading)' }}>Trafego do site</h2>
+              <h2 id="traffic-heading" className="font-semibold" style={{ color: 'var(--admin-text-heading)' }}>Tráfego do site</h2>
               <p className="text-xs mt-0.5" style={{ color: 'var(--admin-text-muted)' }}>Page views dos ultimos 30 dias (GA4)</p>
             </div>
             {ga4Data ? (
@@ -679,7 +679,7 @@ export default async function AdminPage() {
               </div>
             ) : (
               <div className="px-6 py-8 text-center">
-                <p className="text-sm" style={{ color: 'var(--admin-text-muted)' }}>Configure GA4_SERVICE_ACCOUNT_KEY para ver dados de trafego.</p>
+                <p className="text-sm" style={{ color: 'var(--admin-text-muted)' }}>Configure GA4_SERVICE_ACCOUNT_KEY para ver dados de tráfego.</p>
               </div>
             )}
           </section>
@@ -849,7 +849,7 @@ export default async function AdminPage() {
           {/* Secao 6: Leads */}
           <section id="leads" className="rounded-2xl overflow-hidden" style={{ background: 'var(--admin-bg-card)', backgroundImage: 'var(--admin-gradient-card)', border: '1px solid var(--admin-border-card)', boxShadow: 'var(--admin-shadow-md)' }} aria-labelledby="leads-heading">
             <div className="px-6 py-4" style={{ borderBottom: '1px solid var(--admin-border-subtle)' }}>
-              <h2 id="leads-heading" className="font-semibold" style={{ color: 'var(--admin-text-heading)' }}>Ultimos leads ({leads.length})</h2>
+              <h2 id="leads-heading" className="font-semibold" style={{ color: 'var(--admin-text-heading)' }}>Últimos leads ({leads.length})</h2>
             </div>
             {leads.length === 0 ? (
               <div className="px-6 py-8 text-center">
@@ -911,7 +911,7 @@ export default async function AdminPage() {
             <section id="alerts" className="rounded-2xl overflow-hidden" style={{ background: 'var(--admin-bg-card)', border: '1px solid var(--admin-error-border)' }} aria-labelledby="alerts-heading">
               <div className="px-6 py-4" style={{ borderBottom: '1px solid var(--admin-error-border)' }}>
                 <h2 id="alerts-heading" className="font-semibold" style={{ color: 'var(--admin-error)' }}>Tokens com problema ({brokenTokens.length})</h2>
-                <p className="text-xs mt-0.5" style={{ color: 'var(--admin-text-muted)' }}>Clientes com entrega parada. Automacoes nao estao funcionando.</p>
+                <p className="text-xs mt-0.5" style={{ color: 'var(--admin-text-muted)' }}>Clientes com entrega parada. Automações não estão funcionando.</p>
               </div>
               <div>
                 {brokenTokens.map((org, i) => {
@@ -925,7 +925,7 @@ export default async function AdminPage() {
                       <div>
                         <p className="text-sm font-medium" style={{ color: 'var(--admin-text-primary)' }}>{org.name}</p>
                         <p className="text-xs" style={{ color: 'var(--admin-text-muted)' }}>
-                          {!t?.hasToken ? 'Sem token Google' : `Ultima atualizacao: ${t.updatedAt ? formatDateFull(t.updatedAt) : 'nunca'}`}
+                          {!t?.hasToken ? 'Sem token Google' : `Última atualização: ${t.updatedAt ? formatDateFull(t.updatedAt) : 'nunca'}`}
                         </p>
                       </div>
                       <RetriggerButton orgId={org.id} orgName={org.name} />

@@ -27,9 +27,9 @@ export function TopMovers({ movers }: { movers: Mover[] }) {
       }}
     >
       <h2 className="font-semibold mb-1" style={{ color: 'var(--admin-text-heading)', fontSize: 15 }}>Top movers da semana</h2>
-      <p className="text-xs mb-4" style={{ color: 'var(--admin-text-muted)' }}>Maior variacao de score nos ultimos 7 dias</p>
+      <p className="text-xs mb-4" style={{ color: 'var(--admin-text-muted)' }}>Maior variação de score nos últimos 7 dias</p>
       {movers.length === 0 ? (
-        <p className="text-sm py-4 text-center" style={{ color: 'var(--admin-text-muted)' }}>Nenhuma evolucao detectada esta semana.</p>
+        <p className="text-sm py-4 text-center" style={{ color: 'var(--admin-text-muted)' }}>Nenhuma evolução detectada esta semana.</p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {movers.map((m, i) => {
