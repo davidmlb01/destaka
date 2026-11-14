@@ -6,7 +6,7 @@ function buildCsp(nonce: string): string {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
   return [
     `default-src 'self'`,
-    `script-src 'self' 'nonce-${nonce}' https://js.stripe.com https://accounts.google.com https://www.googletagmanager.com https://connect.facebook.net`,
+    `script-src 'self' 'nonce-${nonce}' ${process.env.NODE_ENV !== 'production' ? "'unsafe-eval'" : ''} https://js.stripe.com https://accounts.google.com https://www.googletagmanager.com https://connect.facebook.net`,
     `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
     `font-src 'self' https://fonts.gstatic.com`,
     `img-src 'self' data: blob: https://*.googleusercontent.com https://*.googleapis.com https://*.stripe.com https://*.basemaps.cartocdn.com https://*.tile.openstreetmap.org`,

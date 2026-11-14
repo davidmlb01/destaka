@@ -1,0 +1,67 @@
+/* Admin Design Tokens — Destaka Admin Dashboard */
+:root {
+  --admin-bg-deep:      #051F20;
+  --admin-bg-sidebar:   #0B2B26;
+  --admin-bg-card:      #163832;
+  --admin-bg-card-alt:  #1E4038;
+  --admin-bg-surface:   #235347;
+  --admin-text-primary:   #DAF1DE;
+  --admin-text-secondary: #8EB69B;
+  --admin-text-muted:     #7AB49A;
+  --admin-text-heading:   #FFFFFF;
+  --admin-accent:         #8EB69B;
+  --admin-accent-bright:  #DAF1DE;
+  --admin-success:        #4ADE80;
+  --admin-success-bg:     rgba(74, 222, 128, 0.12);
+  --admin-success-border: rgba(74, 222, 128, 0.25);
+  --admin-warning:        #FBBF24;
+  --admin-warning-bg:     rgba(251, 191, 36, 0.12);
+  --admin-warning-border: rgba(251, 191, 36, 0.25);
+  --admin-error:          #F87171;
+  --admin-error-bg:       rgba(248, 113, 113, 0.12);
+  --admin-error-border:   rgba(248, 113, 113, 0.30);
+  --admin-border-subtle:  rgba(142, 182, 155, 0.10);
+  --admin-border-card:    rgba(142, 182, 155, 0.15);
+  --admin-border-active:  rgba(142, 182, 155, 0.35);
+  --admin-chart-mrr:      #14B8A6;
+  --admin-chart-leads:    #FBBF24;
+  --admin-chart-score:    #8EB69B;
+  --admin-chart-donut-1:  #235347;
+  --admin-chart-donut-2:  #4ADE80;
+  --admin-chart-donut-3:  #FBBF24;
+  --admin-chart-donut-4:  #F87171;
+
+  /* Sombras em camadas */
+  --admin-shadow-sm: 0 1px 2px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.15);
+  --admin-shadow-md: 0 4px 6px rgba(0,0,0,0.25), 0 2px 4px rgba(0,0,0,0.15), 0 0 0 1px rgba(142,182,155,0.06);
+  --admin-shadow-lg: 0 10px 25px rgba(0,0,0,0.35), 0 4px 10px rgba(0,0,0,0.2), 0 0 0 1px rgba(142,182,155,0.08);
+  --admin-shadow-sidebar: 4px 0 24px rgba(0,0,0,0.4), 2px 0 8px rgba(0,0,0,0.2);
+
+  /* Gradientes */
+  --admin-gradient-card: linear-gradient(135deg, rgba(142,182,155,0.07) 0%, rgba(20,184,166,0.03) 100%);
+  --admin-gradient-hero: linear-gradient(135deg, #163832 0%, #0B2B26 100%);
+  --admin-gradient-accent: linear-gradient(135deg, rgba(20,184,166,0.14) 0%, rgba(74,222,128,0.07) 100%);
+  --admin-gradient-mrr: linear-gradient(135deg, rgba(20,184,166,0.18) 0%, rgba(5,31,32,0.6) 100%);
+  --admin-gradient-bg: linear-gradient(160deg, #051F20 0%, #071a1b 50%, #051F20 100%);
+}
+
+/* Hover effects via CSS (Server Components nao suportam event handlers) */
+.admin-card-hover {
+  transition: box-shadow 200ms ease, transform 200ms ease;
+}
+.admin-card-hover:hover {
+  box-shadow: var(--admin-shadow-lg) !important;
+  transform: translateY(-2px);
+}
+.admin-row-hover:hover {
+  background: rgba(142,182,155,0.05);
+}
+.admin-section-hover {
+  transition: box-shadow 200ms ease;
+}
+.admin-section-hover:hover {
+  box-shadow: var(--admin-shadow-lg) !important;
+}
+.admin-mover-hover:hover {
+  background: rgba(142,182,155,0.07) !important;
+}

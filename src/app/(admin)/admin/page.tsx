@@ -1,11 +1,13 @@
 export const dynamic = 'force-dynamic'
 
+import './admin-tokens.css'
 import { createServiceClient } from '@/lib/supabase/server'
-import { Logo } from '@/components/ui/Logo'
 import { RetriggerButton } from './RetriggerButton'
-import { MrrLeadsChart, ScoreEvolutionChart } from './AdminCharts'
+import { MrrLeadsChart, ScoreEvolutionChart, ConversionDonutChart } from './AdminCharts'
 import { TopMovers } from './TopMovers'
 import { Attribution } from './Attribution'
+import { AdminSidebar } from './AdminSidebar'
+import { AdminAlertBar } from './AdminAlertBar'
 import { getPageViews } from '@/lib/analytics/ga4'
 
 interface OrgRow {
@@ -292,10 +294,10 @@ function daysSince(iso: string): number {
 }
 
 const FAIXA_STYLE: Record<string, { bg: string; text: string }> = {
-  fraca: { bg: 'var(--error-bg)', text: 'var(--error)' },
-  funcional: { bg: 'var(--warning-bg)', text: 'var(--warning)' },
-  forte: { bg: 'var(--success-bg)', text: 'var(--success)' },
-  perfeita: { bg: 'var(--accent-bg)', text: 'var(--accent-bright)' },
+  fraca:     { bg: 'var(--admin-error-bg)',   text: 'var(--admin-error)'   },
+  funcional: { bg: 'var(--admin-warning-bg)', text: 'var(--admin-warning)' },
+  forte:     { bg: 'var(--admin-success-bg)', text: 'var(--admin-success)' },
+  perfeita:  { bg: 'rgba(142,182,155,0.15)',  text: 'var(--admin-accent-bright)' },
 }
 
 const FAIXA_LABEL: Record<string, string> = {
@@ -306,9 +308,189 @@ const FAIXA_LABEL: Record<string, string> = {
 }
 
 const SUB_STYLE: Record<string, { bg: string; border: string; text: string; label: string }> = {
-  active: { bg: 'var(--success-bg)', border: 'var(--success-border)', text: 'var(--success)', label: 'Pagante' },
-  cancelled: { bg: 'var(--error-bg)', border: 'var(--error-border)', text: 'var(--error)', label: 'Cancelado' },
-  free: { bg: 'rgba(255,255,255,0.06)', border: 'rgba(255,255,255,0.1)', text: 'var(--text-muted)', label: 'Free' },
+  active:    { bg: 'var(--admin-success-bg)', border: 'var(--admin-success-border)', text: 'var(--admin-success)', label: 'Pagante' },
+  cancelled: { bg: 'var(--admin-error-bg)',   border: 'var(--admin-error-border)',   text: 'var(--admin-error)',   label: 'Cancelado' },
+  free:      { bg: 'rgba(142,182,155,0.08)',  border: 'rgba(142,182,155,0.15)',      text: 'var(--admin-text-muted)', label: 'Free' },
+}
+
+// --- KPI icon components ---
+
+function DollarSignIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <line x1="12" y1="1" x2="12" y2="23" />
+      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+    </svg>
+  )
+}
+
+function CreditCardIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+      <line x1="1" y1="10" x2="23" y2="10" />
+    </svg>
+  )
+}
+
+function StarIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+    </svg>
+  )
+}
+
+function ZapIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+    </svg>
+  )
+}
+
+function TrendingDownIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <polyline points="23 18 13.5 8.5 8.5 13.5 1 6" />
+      <polyline points="17 18 23 18 23 12" />
+    </svg>
+  )
+}
+
+function TargetIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" />
+      <circle cx="12" cy="12" r="6" />
+      <circle cx="12" cy="12" r="2" />
+    </svg>
+  )
+}
+
+function UserPlusSmallIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="8.5" cy="7" r="4" />
+      <line x1="20" y1="8" x2="20" y2="14" />
+      <line x1="23" y1="11" x2="17" y2="11" />
+    </svg>
+  )
+}
+
+function KeyIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
+    </svg>
+  )
+}
+
+// --- StatCard ---
+
+interface StatCardProps {
+  value: string | number
+  label: string
+  icon: React.ReactNode
+  iconColor: string
+  alert?: boolean
+  highlight?: boolean
+  sparkline?: number[]
+}
+
+function Sparkline({ values, color }: { values: number[]; color: string }) {
+  const max = Math.max(...values, 1)
+  const min = Math.min(...values)
+  const range = max - min || 1
+  const w = 60
+  const h = 24
+  const pts = values.map((v, i) => {
+    const x = (i / (values.length - 1)) * w
+    const y = h - ((v - min) / range) * (h - 4) - 2
+    return `${x},${y}`
+  })
+  return (
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} aria-hidden="true" style={{ overflow: 'visible' }}>
+      <defs>
+        <linearGradient id={`spk-${color.replace(/[^a-z0-9]/gi, '')}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity={0.25} />
+          <stop offset="100%" stopColor={color} stopOpacity={0} />
+        </linearGradient>
+      </defs>
+      <polyline
+        points={pts.join(' ')}
+        fill="none"
+        stroke={color}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+function StatCard({ value, label, icon, iconColor, alert = false, highlight = false, sparkline }: StatCardProps) {
+  let bg = 'var(--admin-bg-card)'
+  let grad = 'var(--admin-gradient-card)'
+  let border = 'var(--admin-border-card)'
+
+  if (alert) {
+    bg = 'var(--admin-error-bg)'
+    grad = 'none'
+    border = 'var(--admin-error-border)'
+  } else if (highlight) {
+    bg = 'var(--admin-bg-card)'
+    grad = 'var(--admin-gradient-mrr)'
+    border = 'rgba(20,184,166,0.3)'
+  }
+
+  return (
+    <div
+      className="admin-card-hover"
+      style={{
+        padding: 24,
+        borderRadius: 20,
+        background: bg,
+        backgroundImage: grad,
+        border: `1px solid ${border}`,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 14,
+        boxShadow: 'var(--admin-shadow-md)',
+        cursor: 'default',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      <div
+        style={{
+          width: 44,
+          height: 44,
+          borderRadius: 14,
+          background: alert ? 'rgba(248,113,113,0.2)' : `${iconColor}28`,
+          border: `1px solid ${alert ? 'rgba(248,113,113,0.3)' : `${iconColor}30`}`,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: iconColor,
+          flexShrink: 0,
+        }}
+        aria-hidden="true"
+      >
+        {icon}
+      </div>
+      <div>
+        <p style={{ fontSize: 32, fontWeight: 900, color: 'var(--admin-text-heading)', lineHeight: 1, letterSpacing: '-0.02em' }}>{value}</p>
+        <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--admin-text-muted)', marginTop: 5, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{label}</p>
+        {sparkline && sparkline.length >= 2 && (
+          <div style={{ marginTop: 10, opacity: 0.7 }}>
+            <Sparkline values={sparkline} color={iconColor} />
+          </div>
+        )}
+      </div>
+    </div>
+  )
 }
 
 export default async function AdminPage() {
@@ -332,276 +514,445 @@ export default async function AdminPage() {
     : 0
   const ltv = churnRate > 0 ? Math.round(197 / (churnRate / 100)) : 0
 
+  const mrrSparkline = mrrLeadsData.map(d => d.mrr)
+  const leadsSparkline = mrrLeadsData.map(d => d.leads)
+  const scoreSparkline = scoreEvolution.map(d => d.avgScore)
+
   return (
-    <main className="min-h-screen" style={{ background: 'var(--bg-gradient)' }}>
-      {/* Header */}
-      <div style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Logo size="sm" />
-            <h1 className="text-sm font-semibold" style={{ color: 'var(--text-tertiary)' }}>Admin</h1>
+    <div
+      style={{
+        display: 'flex',
+        height: '100vh',
+        overflow: 'hidden',
+        background: 'var(--admin-bg-deep)',
+        backgroundImage: 'var(--admin-gradient-bg)',
+      }}
+    >
+      {/* Sidebar */}
+      <AdminSidebar
+        brokenTokensCount={brokenTokens.length}
+        totalPending={totalPending}
+      />
+
+      {/* Content area */}
+      <div
+        style={{
+          flex: 1,
+          overflowY: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+          minWidth: 0,
+        }}
+      >
+        {/* Alert bar */}
+        <AdminAlertBar
+          brokenTokensCount={brokenTokens.length}
+          totalPending={totalPending}
+        />
+
+        <main style={{ padding: '32px 28px', display: 'flex', flexDirection: 'column', gap: 32 }}>
+
+          {/* Secao 1: KPI Cards */}
+          <section id="overview" aria-labelledby="overview-heading">
+            <h2
+              id="overview-heading"
+              style={{ fontSize: 13, fontWeight: 700, color: 'var(--admin-text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 16 }}
+            >
+              Visao Geral
+            </h2>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(4, 1fr)',
+                gap: 12,
+              }}
+              className="kpi-grid"
+            >
+              <StatCard
+                value={`R$${mrr.toLocaleString('pt-BR')}`}
+                label="MRR"
+                icon={<DollarSignIcon />}
+                iconColor="#14B8A6"
+                highlight
+                sparkline={mrrSparkline}
+              />
+              <StatCard
+                value={payingOrgs.length}
+                label="Pagantes"
+                icon={<CreditCardIcon />}
+                iconColor="var(--admin-success)"
+              />
+              <StatCard
+                value={avgScore}
+                label="Score medio"
+                icon={<StarIcon />}
+                iconColor="var(--admin-accent)"
+                sparkline={scoreSparkline}
+              />
+              <StatCard
+                value={`${activationRate}%`}
+                label="Ativacao"
+                icon={<ZapIcon />}
+                iconColor={activationRate > 50 ? 'var(--admin-success)' : 'var(--admin-warning)'}
+              />
+              <StatCard
+                value={`${churnRate}%`}
+                label="Churn"
+                icon={<TrendingDownIcon />}
+                iconColor={churnRate > 5 ? 'var(--admin-error)' : 'var(--admin-success)'}
+              />
+              <StatCard
+                value={ltv > 0 ? `R$${ltv.toLocaleString('pt-BR')}` : '-'}
+                label="LTV estimado"
+                icon={<TargetIcon />}
+                iconColor="var(--admin-accent-bright)"
+              />
+              <StatCard
+                value={leads.length}
+                label="Ultimos leads"
+                icon={<UserPlusSmallIcon />}
+                iconColor="#FBBF24"
+                sparkline={leadsSparkline}
+              />
+              <StatCard
+                value={brokenTokens.length}
+                label="Tokens"
+                icon={<KeyIcon />}
+                iconColor={brokenTokens.length > 0 ? 'var(--admin-error)' : 'var(--admin-text-muted)'}
+                alert={brokenTokens.length > 0}
+              />
+            </div>
+          </section>
+
+          {/* Secao 2: Charts */}
+          <section aria-label="Graficos de desempenho">
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '2fr 1fr 1fr',
+                gap: 16,
+              }}
+              className="charts-grid"
+            >
+              <MrrLeadsChart data={mrrLeadsData} />
+              <ScoreEvolutionChart data={scoreEvolution} />
+              <ConversionDonutChart
+                payingOrgs={payingOrgs.length}
+                freeOrgs={freeOrgs.length}
+                cancelledOrgs={cancelledOrgs.length}
+                leadToPayingRate={leadToPayingRate}
+              />
+            </div>
+          </section>
+
+          {/* Secao 3: Top Movers + Attribution */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }} className="movers-grid">
+            <TopMovers movers={topMovers} />
+            <Attribution channels={attribution} />
           </div>
-          <div className="flex items-center gap-2">
-            {brokenTokens.length > 0 && (
-              <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ background: 'var(--error-bg)', color: 'var(--error)', border: '1px solid var(--error-border)' }}>
-                {brokenTokens.length} token{brokenTokens.length > 1 ? 's' : ''} com problema
-              </span>
+
+          {/* Secao 4: Trafego do site (GA4) */}
+          <section id="traffic" className="rounded-2xl overflow-hidden" style={{ background: 'var(--admin-bg-card)', backgroundImage: 'var(--admin-gradient-card)', border: '1px solid var(--admin-border-card)', boxShadow: 'var(--admin-shadow-md)' }} aria-labelledby="traffic-heading">
+            <div className="px-6 py-4" style={{ borderBottom: '1px solid var(--admin-border-subtle)' }}>
+              <h2 id="traffic-heading" className="font-semibold" style={{ color: 'var(--admin-text-heading)' }}>Trafego do site</h2>
+              <p className="text-xs mt-0.5" style={{ color: 'var(--admin-text-muted)' }}>Page views dos ultimos 30 dias (GA4)</p>
+            </div>
+            {ga4Data ? (
+              <div className="px-6 py-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {['/', '/diagnostico', '/login', '/dashboard'].map(path => {
+                    const row = ga4Data.find(r => r.pagePath === path)
+                    return (
+                      <div key={path} className="rounded-xl px-4 py-3" style={{ background: 'var(--admin-bg-card-alt)', border: '1px solid var(--admin-border-subtle)' }}>
+                        <p className="text-xs font-mono truncate" style={{ color: 'var(--admin-text-muted)' }}>{path}</p>
+                        <p className="text-lg font-bold mt-1" style={{ color: 'var(--admin-text-primary)' }}>
+                          {row ? row.screenPageViews.toLocaleString('pt-BR') : '0'}
+                        </p>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            ) : (
+              <div className="px-6 py-8 text-center">
+                <p className="text-sm" style={{ color: 'var(--admin-text-muted)' }}>Configure GA4_SERVICE_ACCOUNT_KEY para ver dados de trafego.</p>
+              </div>
             )}
-            {totalPending > 0 && (
-              <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ background: 'var(--warning-bg)', color: 'var(--warning)', border: '1px solid var(--warning-border)' }}>
-                {totalPending} pendentes
-              </span>
+          </section>
+
+          {/* Secao 5: Clientes */}
+          <section id="clients" className="rounded-2xl overflow-hidden" style={{ background: 'var(--admin-bg-card)', backgroundImage: 'var(--admin-gradient-card)', border: '1px solid var(--admin-border-card)', boxShadow: 'var(--admin-shadow-md)' }} aria-labelledby="clients-heading">
+            <div className="px-6 py-4 flex items-center justify-between" style={{ borderBottom: '1px solid var(--admin-border-subtle)' }}>
+              <h2 id="clients-heading" className="font-semibold" style={{ color: 'var(--admin-text-heading)' }}>Clientes ({orgs.length})</h2>
+              <div className="flex gap-2 text-xs flex-wrap">
+                <span style={{ color: 'var(--admin-success)' }} className="font-semibold">{payingOrgs.length} pagantes</span>
+                <span style={{ color: 'var(--admin-text-muted)' }}>|</span>
+                <span style={{ color: 'var(--admin-text-secondary)' }}>{freeOrgs.length} free</span>
+                <span style={{ color: 'var(--admin-text-muted)' }}>|</span>
+                <span style={{ color: 'var(--admin-text-secondary)' }}>{leadToPayingRate}% lead para pagante</span>
+                {cancelledOrgs.length > 0 && (
+                  <>
+                    <span style={{ color: 'var(--admin-text-muted)' }}>|</span>
+                    <span style={{ color: 'var(--admin-error)' }}>{cancelledOrgs.length} cancelados</span>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {orgs.length === 0 ? (
+              <div className="px-6 py-12 text-center">
+                <p className="text-sm" style={{ color: 'var(--admin-text-muted)' }}>Nenhum cliente cadastrado ainda.</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr style={{ background: 'rgba(35,83,71,0.5)' }}>
+                      <th className="px-6 py-3 text-left" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)', whiteSpace: 'nowrap' }}>Status</th>
+                      <th className="px-4 py-3 text-left" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)' }}>Cliente</th>
+                      <th className="px-4 py-3 text-right" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)' }}>Score</th>
+                      <th className="px-4 py-3 text-left" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)' }}>Faixa</th>
+                      <th className="px-4 py-3 text-right" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)' }}>Delta</th>
+                      <th className="px-4 py-3 text-left" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)', whiteSpace: 'nowrap' }}>Ultimo score</th>
+                      <th className="px-4 py-3 text-center" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)' }}>Acoes</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {orgs.map((org, i) => {
+                      const scoreArr = scoresByOrg[org.id]
+                      const current = scoreArr?.[0]
+                      const previous = scoreArr?.[1]
+                      const delta = current && previous ? current.total - previous.total : null
+                      const pending = pendingByOrg[org.id] ?? 0
+                      const token = tokenByOrg[org.id]
+                      const tokenBroken = !token?.hasToken || isTokenStale(token.updatedAt)
+                      const subStatus = org.subscription_status ?? 'free'
+                      const sub = SUB_STYLE[subStatus] ?? SUB_STYLE.free
+                      const faixa = current ? (FAIXA_STYLE[current.faixa] ?? { bg: 'rgba(142,182,155,0.1)', text: 'var(--admin-text-muted)' }) : null
+                      const lastScoreDate = current?.snapshot_date
+                      const daysSinceScore = lastScoreDate ? daysSince(lastScoreDate) : null
+                      const isAtRisk = (delta !== null && delta < 0) || (daysSinceScore !== null && daysSinceScore > 14) || tokenBroken
+
+                      return (
+                        <tr
+                          key={org.id}
+                          className="admin-row-hover" style={i > 0 ? { borderTop: "1px solid var(--admin-border-subtle)" } : undefined}
+                          
+                          
+                        >
+                          {/* Status */}
+                          <td className="px-6 py-3">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <span
+                                className="text-[10px] font-bold px-1.5 py-0.5 rounded-md"
+                                style={{ background: sub.bg, color: sub.text, border: `1px solid ${sub.border}` }}
+                              >
+                                {sub.label}
+                              </span>
+                              {tokenBroken && (
+                                <span
+                                  className="text-[10px] font-bold px-1.5 py-0.5 rounded-md"
+                                  style={{ background: 'var(--admin-error-bg)', color: 'var(--admin-error)', border: '1px solid var(--admin-error-border)' }}
+                                  title="Token Google invalido ou desatualizado"
+                                >
+                                  Token
+                                </span>
+                              )}
+                              {pending > 0 && (
+                                <span
+                                  className="text-[10px] font-bold px-1.5 py-0.5 rounded-md"
+                                  style={{ background: 'var(--admin-warning-bg)', color: 'var(--admin-warning)', border: '1px solid var(--admin-warning-border)' }}
+                                >
+                                  {pending} pend.
+                                </span>
+                              )}
+                            </div>
+                          </td>
+
+                          {/* Cliente */}
+                          <td className="px-4 py-3">
+                            <div className="flex items-center gap-1.5 min-w-0">
+                              {isAtRisk && (
+                                <span className="shrink-0 w-1.5 h-1.5 rounded-full" style={{ background: 'var(--admin-error)' }} role="status" aria-label="Cliente em risco" />
+                              )}
+                              <div className="min-w-0">
+                                <p className="text-sm font-semibold truncate" style={{ color: 'var(--admin-text-primary)' }}>{org.name}</p>
+                                <p className="text-xs truncate" style={{ color: 'var(--admin-text-muted)' }}>
+                                  {org.specialty}
+                                  {org.utm_source && <span> via {org.utm_source}</span>}
+                                  {!org.lgpd_ai_consent && <span> sem onboarding</span>}
+                                </p>
+                              </div>
+                            </div>
+                          </td>
+
+                          {/* Score */}
+                          <td className="px-4 py-3 text-right">
+                            {current ? (
+                              <span className="text-sm font-black" style={{ color: 'var(--admin-text-primary)' }}>{current.total}</span>
+                            ) : (
+                              <span className="text-xs" style={{ color: 'var(--admin-text-muted)' }}>-</span>
+                            )}
+                          </td>
+
+                          {/* Faixa */}
+                          <td className="px-4 py-3">
+                            {faixa && current ? (
+                              <span
+                                className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md"
+                                style={{ background: faixa.bg, color: faixa.text }}
+                              >
+                                {FAIXA_LABEL[current.faixa] ?? current.faixa}
+                              </span>
+                            ) : (
+                              <span className="text-xs" style={{ color: 'var(--admin-text-muted)' }}>-</span>
+                            )}
+                          </td>
+
+                          {/* Delta */}
+                          <td className="px-4 py-3 text-right">
+                            {delta !== null && delta !== 0 ? (
+                              <span className="text-xs font-bold" style={{ color: delta > 0 ? 'var(--admin-success)' : 'var(--admin-error)' }}>
+                                {delta > 0 ? '+' : ''}{delta}
+                              </span>
+                            ) : (
+                              <span className="text-xs" style={{ color: 'var(--admin-text-muted)' }}>-</span>
+                            )}
+                          </td>
+
+                          {/* Ultimo score */}
+                          <td className="px-4 py-3 text-xs whitespace-nowrap" style={{ color: 'var(--admin-text-muted)' }}>
+                            {lastScoreDate ? (
+                              <span style={{ color: daysSinceScore !== null && daysSinceScore > 14 ? 'var(--admin-warning)' : 'var(--admin-text-muted)' }}>
+                                {formatDate(lastScoreDate)}{daysSinceScore !== null && ` (${daysSinceScore}d)`}
+                              </span>
+                            ) : '-'}
+                          </td>
+
+                          {/* Acoes */}
+                          <td className="px-4 py-3 text-center">
+                            <RetriggerButton orgId={org.id} orgName={org.name} />
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
             )}
-          </div>
-        </div>
-      </div>
+          </section>
 
-      <div className="max-w-6xl mx-auto px-6 py-8 space-y-6">
+          {/* Secao 6: Leads */}
+          <section id="leads" className="rounded-2xl overflow-hidden" style={{ background: 'var(--admin-bg-card)', backgroundImage: 'var(--admin-gradient-card)', border: '1px solid var(--admin-border-card)', boxShadow: 'var(--admin-shadow-md)' }} aria-labelledby="leads-heading">
+            <div className="px-6 py-4" style={{ borderBottom: '1px solid var(--admin-border-subtle)' }}>
+              <h2 id="leads-heading" className="font-semibold" style={{ color: 'var(--admin-text-heading)' }}>Ultimos leads ({leads.length})</h2>
+            </div>
+            {leads.length === 0 ? (
+              <div className="px-6 py-8 text-center">
+                <p className="text-sm" style={{ color: 'var(--admin-text-muted)' }}>Nenhum lead capturado ainda.</p>
+              </div>
+            ) : (
+              <>
+                <p className="text-[10px] px-6 py-1 md:hidden" style={{ color: 'var(--admin-text-muted)' }}>Deslize para ver mais</p>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr style={{ background: 'rgba(35,83,71,0.5)' }}>
+                        <th className="px-6 py-3 text-left" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)' }}>Email</th>
+                        <th className="px-4 py-3 text-left" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)' }}>Negocio</th>
+                        <th className="px-4 py-3 text-right" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)' }}>Score</th>
+                        <th className="px-4 py-3 text-left" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)' }}>Fonte</th>
+                        <th className="px-4 py-3 text-left" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)' }}>Data</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {leads.map((lead, i) => (
+                        <tr
+                          key={lead.id}
+                          className="admin-row-hover" style={i > 0 ? { borderTop: "1px solid var(--admin-border-subtle)" } : undefined}
+                          
+                          
+                        >
+                          <td className="px-6 py-2.5 font-medium" style={{ color: 'var(--admin-text-primary)' }}>{lead.email}</td>
+                          <td className="px-4 py-2.5 truncate max-w-[200px]" style={{ color: 'var(--admin-text-secondary)' }}>{lead.place_name ?? '-'}</td>
+                          <td className="px-4 py-2.5 text-right">
+                            {lead.score !== null ? (
+                              <span className="font-bold" style={{ color: 'var(--admin-text-primary)' }}>{lead.score}</span>
+                            ) : <span style={{ color: 'var(--admin-text-muted)' }}>-</span>}
+                          </td>
+                          <td className="px-4 py-2.5">
+                            {lead.utm_source ? (
+                              <span
+                                className="text-xs font-semibold px-2 py-0.5 rounded-md"
+                                style={{ background: 'rgba(142,182,155,0.12)', color: 'var(--admin-accent-bright)', border: '1px solid rgba(142,182,155,0.2)' }}
+                              >
+                                {lead.utm_source}{lead.utm_medium ? `/${lead.utm_medium}` : ''}
+                              </span>
+                            ) : (
+                              <span className="text-xs" style={{ color: 'var(--admin-text-muted)' }}>organico</span>
+                            )}
+                          </td>
+                          <td className="px-4 py-2.5 text-xs whitespace-nowrap" style={{ color: 'var(--admin-text-muted)' }}>{formatDateFull(lead.created_at)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
+          </section>
 
-        {/* Row 1: Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <StatCard value={`R$${mrr.toLocaleString('pt-BR')}`} label="MRR" color="var(--accent)" />
-          <StatCard value={payingOrgs.length} label="pagantes" color="var(--success)" />
-          <StatCard value={freeOrgs.length} label="free" />
-          <StatCard value={avgScore} label="score medio" />
-          <StatCard value={`${activationRate}%`} label="ativacao" color={activationRate > 50 ? 'var(--success)' : 'var(--warning)'} />
-          <StatCard value={`${churnRate}%`} label="churn" color={churnRate > 5 ? 'var(--error)' : 'var(--success)'} />
-          <StatCard value={ltv > 0 ? `R$${ltv.toLocaleString('pt-BR')}` : '-'} label="LTV est." color="var(--accent-bright)" />
-          <StatCard value={brokenTokens.length} label="tokens" color={brokenTokens.length > 0 ? 'var(--error)' : undefined} />
-        </div>
-
-        {/* Row 2: Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <MrrLeadsChart data={mrrLeadsData} />
-          <ScoreEvolutionChart data={scoreEvolution} />
-        </div>
-
-        {/* Row 3: Top Movers + Attribution */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <TopMovers movers={topMovers} />
-          <Attribution channels={attribution} />
-        </div>
-
-        {/* Row 3b: Trafego do site (GA4) */}
-        <section className="rounded-2xl overflow-hidden" style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}>
-          <div className="px-6 py-4" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-            <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Tráfego do site</h2>
-            <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>Page views dos últimos 30 dias (GA4)</p>
-          </div>
-          {ga4Data ? (
-            <div className="px-6 py-4">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {['/', '/diagnostico', '/login', '/dashboard'].map(path => {
-                  const row = ga4Data.find(r => r.pagePath === path)
+          {/* Secao 7: Alertas - tokens com problema */}
+          {brokenTokens.length > 0 && (
+            <section id="alerts" className="rounded-2xl overflow-hidden" style={{ background: 'var(--admin-bg-card)', border: '1px solid var(--admin-error-border)' }} aria-labelledby="alerts-heading">
+              <div className="px-6 py-4" style={{ borderBottom: '1px solid var(--admin-error-border)' }}>
+                <h2 id="alerts-heading" className="font-semibold" style={{ color: 'var(--admin-error)' }}>Tokens com problema ({brokenTokens.length})</h2>
+                <p className="text-xs mt-0.5" style={{ color: 'var(--admin-text-muted)' }}>Clientes com entrega parada. Automacoes nao estao funcionando.</p>
+              </div>
+              <div>
+                {brokenTokens.map((org, i) => {
+                  const t = tokenByOrg[org.id]
                   return (
-                    <div key={path} className="rounded-xl px-4 py-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-subtle)' }}>
-                      <p className="text-xs font-mono truncate" style={{ color: 'var(--text-muted)' }}>{path}</p>
-                      <p className="text-lg font-bold mt-1" style={{ color: 'var(--text-primary)' }}>
-                        {row ? row.screenPageViews.toLocaleString('pt-BR') : '0'}
-                      </p>
+                    <div
+                      key={org.id}
+                      className="px-6 py-3 flex items-center justify-between admin-row-hover"
+                      style={i > 0 ? { borderTop: '1px solid var(--admin-border-subtle)' } : undefined}
+                    >
+                      <div>
+                        <p className="text-sm font-medium" style={{ color: 'var(--admin-text-primary)' }}>{org.name}</p>
+                        <p className="text-xs" style={{ color: 'var(--admin-text-muted)' }}>
+                          {!t?.hasToken ? 'Sem token Google' : `Ultima atualizacao: ${t.updatedAt ? formatDateFull(t.updatedAt) : 'nunca'}`}
+                        </p>
+                      </div>
+                      <RetriggerButton orgId={org.id} orgName={org.name} />
                     </div>
                   )
                 })}
               </div>
-            </div>
-          ) : (
-            <div className="px-6 py-8 text-center">
-              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Configure GA4_SERVICE_ACCOUNT_KEY para ver dados de tráfego.</p>
-            </div>
+            </section>
           )}
-        </section>
 
-        {/* Row 4: Clientes */}
-        <section className="rounded-2xl overflow-hidden" style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}>
-          <div className="px-6 py-4 flex items-center justify-between" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-            <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Clientes ({orgs.length})</h2>
-            <div className="flex gap-2 text-xs">
-              <span style={{ color: 'var(--success)' }} className="font-semibold">{payingOrgs.length} pagantes</span>
-              <span style={{ color: 'var(--text-muted)' }}>|</span>
-              <span style={{ color: 'var(--text-tertiary)' }}>{freeOrgs.length} free</span>
-              <span style={{ color: 'var(--text-muted)' }}>|</span>
-              <span style={{ color: 'var(--text-tertiary)' }}>{leadToPayingRate}% lead→pagante</span>
-              {cancelledOrgs.length > 0 && (
-                <>
-                  <span style={{ color: 'var(--text-muted)' }}>|</span>
-                  <span style={{ color: 'var(--error)' }}>{cancelledOrgs.length} cancelados</span>
-                </>
-              )}
-            </div>
-          </div>
-
-          {orgs.length === 0 ? (
-            <div className="px-6 py-12 text-center">
-              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Nenhum cliente cadastrado ainda.</p>
-            </div>
-          ) : (
-            <div>
-              {orgs.map((org, i) => {
-                const scoreArr = scoresByOrg[org.id]
-                const current = scoreArr?.[0]
-                const previous = scoreArr?.[1]
-                const delta = current && previous ? current.total - previous.total : null
-                const pending = pendingByOrg[org.id] ?? 0
-                const token = tokenByOrg[org.id]
-                const tokenBroken = !token?.hasToken || isTokenStale(token.updatedAt)
-                const subStatus = org.subscription_status ?? 'free'
-                const sub = SUB_STYLE[subStatus] ?? SUB_STYLE.free
-                const faixa = current ? (FAIXA_STYLE[current.faixa] ?? { bg: 'rgba(255,255,255,0.06)', text: 'var(--text-muted)' }) : null
-                const lastScoreDate = current?.snapshot_date
-                const daysSinceScore = lastScoreDate ? daysSince(lastScoreDate) : null
-                const isAtRisk = (delta !== null && delta < 0) || (daysSinceScore !== null && daysSinceScore > 14) || tokenBroken
-
-                return (
-                  <div
-                    key={org.id}
-                    className="px-6 py-4 flex items-center justify-between gap-4"
-                    style={i > 0 ? { borderTop: '1px solid var(--border-subtle)' } : undefined}
-                  >
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        {isAtRisk && (
-                          <span className="shrink-0 flex items-center gap-1" role="status">
-                            <span className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--error)' }} aria-hidden="true" />
-                            <span className="sr-only">Cliente em risco</span>
-                          </span>
-                        )}
-                        <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{org.name}</p>
-                        <span className="shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded-md" style={{ background: sub.bg, color: sub.text, border: `1px solid ${sub.border}` }}>
-                          {sub.label}
-                        </span>
-                        {tokenBroken && (
-                          <span className="shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded-md" style={{ background: 'var(--error-bg)', color: 'var(--error)', border: '1px solid var(--error-border)' }}>
-                            Token
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                        {org.specialty}
-                        {org.utm_source && <><span aria-hidden="true"> · </span>via {org.utm_source}</>}
-                        <span aria-hidden="true"> · </span>{formatDate(org.created_at)}
-                        {!org.lgpd_ai_consent && <><span aria-hidden="true"> · </span>sem onboarding</>}
-                        {daysSinceScore !== null && <><span aria-hidden="true"> · </span>score {daysSinceScore}d atras</>}
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-3 shrink-0">
-                      {pending > 0 && (
-                        <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ background: 'var(--warning-bg)', color: 'var(--warning)', border: '1px solid var(--warning-border)' }}>
-                          {pending}
-                        </span>
-                      )}
-                      {current ? (
-                        <div className="text-right flex items-center gap-1.5">
-                          <span className="text-sm font-black" style={{ color: 'var(--text-primary)' }}>{current.total}</span>
-                          {delta !== null && delta !== 0 && (
-                            <span className="text-xs font-bold" style={{ color: delta > 0 ? 'var(--success)' : 'var(--error)' }}>
-                              {delta > 0 ? '+' : ''}{delta}
-                            </span>
-                          )}
-                          <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md" style={{ background: faixa!.bg, color: faixa!.text }}>
-                            {FAIXA_LABEL[current.faixa] ?? current.faixa}
-                          </span>
-                        </div>
-                      ) : (
-                        <span className="text-xs" style={{ color: 'var(--text-muted)' }}>sem score</span>
-                      )}
-                      <RetriggerButton orgId={org.id} orgName={org.name} />
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          )}
-        </section>
-
-        {/* Row 5: Tokens com problema */}
-        {brokenTokens.length > 0 && (
-          <section className="rounded-2xl overflow-hidden" style={{ background: 'var(--card-subtle)', border: '1px solid var(--error-border)' }}>
-            <div className="px-6 py-4" style={{ borderBottom: '1px solid var(--error-border)' }}>
-              <h2 className="font-semibold" style={{ color: 'var(--error)' }}>Tokens com problema ({brokenTokens.length})</h2>
-              <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>Clientes com entrega parada. Automações não estão funcionando.</p>
-            </div>
-            <div>
-              {brokenTokens.map((org, i) => {
-                const t = tokenByOrg[org.id]
-                return (
-                  <div key={org.id} className="px-6 py-3 flex items-center justify-between" style={i > 0 ? { borderTop: '1px solid var(--border-subtle)' } : undefined}>
-                    <div>
-                      <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{org.name}</p>
-                      <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                        {!t?.hasToken ? 'Sem token Google' : `Ultima atualizacao: ${t.updatedAt ? formatDateFull(t.updatedAt) : 'nunca'}`}
-                      </p>
-                    </div>
-                    <RetriggerButton orgId={org.id} orgName={org.name} />
-                  </div>
-                )
-              })}
-            </div>
-          </section>
-        )}
-
-        {/* Row 6: Ultimos leads */}
-        <section className="rounded-2xl overflow-hidden" style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}>
-          <div className="px-6 py-4" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-            <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Ultimos leads ({leads.length})</h2>
-          </div>
-          {leads.length === 0 ? (
-            <div className="px-6 py-8 text-center">
-              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Nenhum lead capturado ainda.</p>
-            </div>
-          ) : (
-            <>
-            <p className="text-[10px] px-6 py-1 md:hidden" style={{ color: 'var(--text-muted)' }}>← Deslize para ver mais →</p>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr style={{ background: 'rgba(255,255,255,0.03)' }}>
-                    <th className="px-6 py-2.5 text-left text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>Email</th>
-                    <th className="px-4 py-2.5 text-left text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>Negocio</th>
-                    <th className="px-4 py-2.5 text-left text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>Score</th>
-                    <th className="px-4 py-2.5 text-left text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>Fonte</th>
-                    <th className="px-4 py-2.5 text-left text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>Data</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {leads.map((lead, i) => (
-                    <tr key={lead.id} style={i > 0 ? { borderTop: '1px solid var(--border-subtle)' } : undefined}>
-                      <td className="px-6 py-2.5 font-medium" style={{ color: 'var(--text-primary)' }}>{lead.email}</td>
-                      <td className="px-4 py-2.5 truncate max-w-[200px]" style={{ color: 'var(--text-secondary)' }}>{lead.place_name ?? '-'}</td>
-                      <td className="px-4 py-2.5">
-                        {lead.score !== null ? (
-                          <span className="font-bold" style={{ color: 'var(--text-primary)' }}>{lead.score}</span>
-                        ) : <span style={{ color: 'var(--text-muted)' }}>-</span>}
-                      </td>
-                      <td className="px-4 py-2.5">
-                        {lead.utm_source ? (
-                          <span className="text-xs font-semibold px-2 py-0.5 rounded-md" style={{ background: 'var(--accent-bg)', color: 'var(--accent-bright)', border: '1px solid var(--accent-border)' }}>
-                            {lead.utm_source}{lead.utm_medium ? `/${lead.utm_medium}` : ''}
-                          </span>
-                        ) : (
-                          <span className="text-xs" style={{ color: 'var(--text-muted)' }}>organico</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-2.5 text-xs whitespace-nowrap" style={{ color: 'var(--text-muted)' }}>{formatDateFull(lead.created_at)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            </>
-          )}
-        </section>
-
+        </main>
       </div>
-    </main>
-  )
-}
 
-function StatCard({ value, label, color }: { value: string | number; label: string; color?: string }) {
-  return (
-    <div className="rounded-2xl px-4 py-3" style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}>
-      <p className="text-xl font-black" style={{ color: color ?? 'var(--text-primary)' }}>{value}</p>
-      <p className="text-[11px] mt-0.5" style={{ color: 'var(--text-muted)' }}>{label}</p>
+      {/* Responsive grid styles */}
+      <style>{`
+        @media (max-width: 1279px) {
+          .kpi-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .charts-grid { grid-template-columns: 1fr 1fr !important; }
+          .charts-grid > *:last-child { grid-column: 1 / -1; }
+        }
+        @media (max-width: 767px) {
+          .kpi-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .charts-grid { grid-template-columns: 1fr !important; }
+          .charts-grid > *:last-child { grid-column: auto; }
+          .movers-grid { grid-template-columns: 1fr !important; }
+        }
+        :focus-visible {
+          outline: 2px solid var(--admin-accent);
+          outline-offset: 2px;
+        }
+      `}</style>
     </div>
   )
 }

@@ -9,49 +9,102 @@ interface Mover {
 }
 
 const FAIXA_STYLE: Record<string, { bg: string; text: string }> = {
-  fraca: { bg: 'var(--error-bg)', text: 'var(--error)' },
-  funcional: { bg: 'var(--warning-bg)', text: 'var(--warning)' },
-  forte: { bg: 'var(--success-bg)', text: 'var(--success)' },
-  perfeita: { bg: 'var(--accent-bg)', text: 'var(--accent-bright)' },
+  fraca:     { bg: 'var(--admin-error-bg)',    text: 'var(--admin-error)'   },
+  funcional: { bg: 'var(--admin-warning-bg)',  text: 'var(--admin-warning)' },
+  forte:     { bg: 'var(--admin-success-bg)',  text: 'var(--admin-success)' },
+  perfeita:  { bg: 'rgba(142,182,155,0.15)',   text: 'var(--admin-accent-bright)' },
 }
 
 export function TopMovers({ movers }: { movers: Mover[] }) {
   return (
     <div
-      className="rounded-2xl p-5"
-      style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}
+      className="rounded-2xl p-5 admin-section-hover"
+      style={{
+        background: 'var(--admin-bg-card)',
+        backgroundImage: 'var(--admin-gradient-card)',
+        border: '1px solid var(--admin-border-card)',
+        boxShadow: 'var(--admin-shadow-md)',
+      }}
     >
-      <h2 className="font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Top movers da semana</h2>
+      <h2 className="font-semibold mb-1" style={{ color: 'var(--admin-text-heading)', fontSize: 15 }}>Top movers da semana</h2>
+      <p className="text-xs mb-4" style={{ color: 'var(--admin-text-muted)' }}>Maior variacao de score nos ultimos 7 dias</p>
       {movers.length === 0 ? (
-        <p className="text-sm py-4 text-center" style={{ color: 'var(--text-muted)' }}>Nenhuma evolucao detectada esta semana.</p>
+        <p className="text-sm py-4 text-center" style={{ color: 'var(--admin-text-muted)' }}>Nenhuma evolucao detectada esta semana.</p>
       ) : (
-        <div className="space-y-3">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {movers.map((m, i) => {
-            const faixa = FAIXA_STYLE[m.faixa] ?? { bg: 'rgba(255,255,255,0.06)', text: 'var(--text-muted)' }
+            const faixa = FAIXA_STYLE[m.faixa] ?? { bg: 'rgba(142,182,155,0.1)', text: 'var(--admin-text-muted)' }
             const isPositive = m.delta > 0
+            const pct = Math.min(Math.abs(m.delta), 20) / 20
             return (
-              <div key={i} className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3 min-w-0">
+              <div
+                key={i}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: 12,
+                  padding: '10px 12px',
+                  borderRadius: 12,
+                  background: 'rgba(5,31,32,0.4)',
+                  border: '1px solid var(--admin-border-subtle)',
+                  transition: 'background 150ms ease',
+                }}
+                className="admin-mover-hover"
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
                   <span
-                    className="shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold"
-                    style={{ background: isPositive ? 'var(--success-bg)' : 'var(--error-bg)', color: isPositive ? 'var(--success)' : 'var(--error)' }}
+                    style={{
+                      flexShrink: 0,
+                      width: 30,
+                      height: 30,
+                      borderRadius: 10,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 12,
+                      fontWeight: 800,
+                      background: isPositive ? 'var(--admin-success-bg)' : 'var(--admin-error-bg)',
+                      color: isPositive ? 'var(--admin-success)' : 'var(--admin-error)',
+                      border: `1px solid ${isPositive ? 'var(--admin-success-border)' : 'var(--admin-error-border)'}`,
+                    }}
                   >
                     {i + 1}
                   </span>
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{m.name}</p>
-                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                      {m.scoreBefore} → {m.scoreAfter}
-                    </p>
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--admin-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.name}</p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
+                      <div style={{ flex: 1, height: 3, borderRadius: 2, background: 'rgba(142,182,155,0.1)', overflow: 'hidden' }}>
+                        <div style={{
+                          width: `${pct * 100}%`,
+                          height: '100%',
+                          borderRadius: 2,
+                          background: isPositive ? 'var(--admin-success)' : 'var(--admin-error)',
+                          transition: 'width 400ms ease',
+                        }} />
+                      </div>
+                      <span style={{ fontSize: 11, color: 'var(--admin-text-muted)', whiteSpace: 'nowrap' }}>
+                        {m.scoreBefore} para {m.scoreAfter}
+                      </span>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className="text-sm font-black" style={{ color: isPositive ? 'var(--success)' : 'var(--error)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                  <span style={{ fontSize: 14, fontWeight: 900, color: isPositive ? 'var(--admin-success)' : 'var(--admin-error)' }}>
                     {isPositive ? '+' : ''}{m.delta}
                   </span>
                   <span
-                    className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md"
-                    style={{ background: faixa.bg, color: faixa.text }}
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 700,
+                      padding: '3px 8px',
+                      borderRadius: 8,
+                      background: faixa.bg,
+                      color: faixa.text,
+                      textTransform: 'capitalize',
+                      border: `1px solid ${faixa.text}30`,
+                      letterSpacing: '0.03em',
+                    }}
                   >
                     {m.faixa}
                   </span>
