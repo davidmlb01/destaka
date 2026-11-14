@@ -2,6 +2,7 @@
 // Extrai temas elogiados e pontos de atencao dos textos de reviews
 
 import { generateContent } from '@/lib/ai/client'
+import { getEngineContext } from '@/lib/vertical-vocab'
 
 export interface ReviewAnalysis {
   totalReviews: number
@@ -10,29 +11,38 @@ export interface ReviewAnalysis {
   concerns: Array<{ theme: string; count: number }> | null // null if no negative reviews
 }
 
-const SYSTEM_PROMPT =
-  'Voce e um analista de avaliacoes de pacientes em clinicas de saude. ' +
-  'Responda exclusivamente em JSON valido, sem markdown, sem explicacao.'
+function buildSystemPrompt(specialty?: string | null): string {
+  const ctx = getEngineContext(specialty)
+  return (
+    `Você é um analista de avaliações de ${ctx.vocab.clientes} em ${ctx.vocab.local}. ` +
+    'Responda exclusivamente em JSON válido, sem markdown, sem explicação.'
+  )
+}
 
-function buildAnalysisPrompt(reviews: Array<{ comment: string | null; rating: number }>): string {
+function buildAnalysisPrompt(
+  reviews: Array<{ comment: string | null; rating: number }>,
+  specialty?: string | null
+): string {
+  const ctx = getEngineContext(specialty)
   const textsBlock = reviews
     .filter((r) => r.comment)
     .map((r) => `[${r.rating}★] ${r.comment}`)
     .join('\n')
 
   return (
-    'Analise estas avaliacoes de pacientes. Extraia:\n' +
+    `Analise estas avaliações de ${ctx.vocab.clientes}. Extraia:\n` +
     '(1) as 3 palavras/temas mais elogiados (campo "topPraises", array com { "theme": string, "count": number })\n' +
-    '(2) pontos de atencao mencionados em avaliacoes 1-3 estrelas (campo "concerns", array com { "theme": string, "count": number }, ou null se nao houver avaliacoes negativas)\n\n' +
+    '(2) pontos de atenção mencionados em avaliações 1-3 estrelas (campo "concerns", array com { "theme": string, "count": number }, ou null se não houver avaliações negativas)\n\n' +
     'Responda APENAS com JSON no formato:\n' +
     '{"topPraises": [...], "concerns": [...] | null}\n\n' +
-    'Avaliacoes:\n' +
+    'Avaliações:\n' +
     textsBlock
   )
 }
 
 export async function analyzeMonthlyReviews(
-  reviews: Array<{ comment: string | null; rating: number }>
+  reviews: Array<{ comment: string | null; rating: number }>,
+  specialty?: string | null
 ): Promise<ReviewAnalysis> {
   const totalReviews = reviews.length
 
@@ -61,8 +71,9 @@ export async function analyzeMonthlyReviews(
     }
   }
 
-  const prompt = buildAnalysisPrompt(reviews)
-  const raw = await generateContent(prompt, SYSTEM_PROMPT)
+  const prompt = buildAnalysisPrompt(reviews, specialty)
+  const systemPrompt = buildSystemPrompt(specialty)
+  const raw = await generateContent(prompt, systemPrompt)
 
   let parsed: { topPraises: Array<{ theme: string; count: number }>; concerns: Array<{ theme: string; count: number }> | null }
   try {

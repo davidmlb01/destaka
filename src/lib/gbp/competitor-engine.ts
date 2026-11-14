@@ -2,6 +2,7 @@
 // Analisa benchmark e teardown de reviews dos concorrentes via Claude
 
 import { generateContent } from '@/lib/ai/client'
+import { getEngineContext } from '@/lib/vertical-vocab'
 
 export interface CompetitorSnapshot {
   name: string
@@ -48,6 +49,7 @@ export async function analyzeCompetitors(params: {
     ownName, ownReviewCount, ownAvgRating, ownCategoryCount,
     ownHasDescription, ownPhotoCount, competitors, specialty,
   } = params
+  const ctx = getEngineContext(specialty)
 
   const ownProfile = {
     name: ownName,
@@ -58,9 +60,9 @@ export async function analyzeCompetitors(params: {
     photo_count: ownPhotoCount,
   }
 
-  const prompt = `Você é especialista em SEO local para profissionais de saúde no Brasil.
+  const prompt = `Você é ${ctx.systemPromptRole} com foco em inteligência competitiva.
 
-PERFIL DO PROFISSIONAL:
+PERFIL DO ${ctx.vocab.profissional.toUpperCase()}:
 ${JSON.stringify(ownProfile, null, 2)}
 
 CONCORRENTES (top ${competitors.length}):
@@ -86,7 +88,7 @@ Analise o benchmark competitivo e retorne um JSON com esta estrutura exata:
 
 Seja específico, cite nomes dos concorrentes. Retorne APENAS o JSON, sem texto adicional.`
 
-  const systemPrompt = `Você é especialista em Google Business Profile e inteligência competitiva para clínicas de saúde no Brasil. Responda sempre em português brasileiro. Retorne apenas JSON válido quando solicitado.`
+  const systemPrompt = `Você é ${ctx.systemPromptRole} com especialização em inteligência competitiva. Responda sempre em português brasileiro. Retorne apenas JSON válido quando solicitado.`
 
   let teardown: CompetitorTeardown = {
     review_velocity: 'Dados insuficientes para análise de velocidade.',
@@ -113,14 +115,14 @@ Seja específico, cite nomes dos concorrentes. Retorne APENAS o JSON, sem texto 
     const topCompetitor = competitors[0]
     if (topCompetitor) {
       if (topCompetitor.review_count > ownReviewCount) {
-        opportunities.push(`${topCompetitor.name} tem ${topCompetitor.review_count - ownReviewCount} reviews a mais — foque em pedir avaliações ativamente.`)
+        opportunities.push(`${topCompetitor.name} tem ${topCompetitor.review_count - ownReviewCount} reviews a mais. Foque em pedir avaliações ativamente.`)
       }
       if ((topCompetitor.avg_rating ?? 0) < ownAvgRating) {
-        opportunities.push(`Sua nota média (${ownAvgRating.toFixed(1)}) é superior à de ${topCompetitor.name} (${topCompetitor.avg_rating?.toFixed(1)}) — destaque isso.`)
+        opportunities.push(`Sua nota média (${ownAvgRating.toFixed(1)}) é superior à de ${topCompetitor.name} (${topCompetitor.avg_rating?.toFixed(1)}). Destaque isso.`)
       }
     }
     if (!ownHasDescription) {
-      opportunities.push('Adicione uma descrição ao seu perfil — diferencia você de concorrentes sem descrição.')
+      opportunities.push('Adicione uma descrição ao seu perfil. Isso diferencia você de concorrentes sem descrição.')
     }
   }
 

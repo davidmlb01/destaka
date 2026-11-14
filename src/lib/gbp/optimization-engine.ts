@@ -2,6 +2,7 @@
 // Gera sugestões de categorias, atributos, 3 versões de descrição e serviços otimizados
 
 import { generateContent } from '@/lib/ai/client'
+import { getEngineContext } from '@/lib/vertical-vocab'
 import type { AuditReport, AuditGap } from './audit-engine'
 
 export interface DescriptionVariant {
@@ -65,6 +66,7 @@ export async function generateOptimizations(params: {
     competitorCategories = [],
     keywordOpportunities = [],
   } = params
+  const ctx = getEngineContext(specialty)
 
   const sev = (g: AuditGap) => g.severity as string
   const criticalGaps = auditReport.gaps.filter((g: AuditGap) => sev(g) === 'critico' || sev(g) === 'critical' || sev(g) === 'high')
@@ -75,7 +77,11 @@ export async function generateOptimizations(params: {
     c => !currentCategories.some(cc => cc.toLowerCase().includes(c.toLowerCase()))
   )
 
-  const prompt = `Você é especialista em SEO local para ${specialty} no Brasil.
+  const complianceNote = ctx.complianceRules
+    ? `\nREGRAS DE COMPLIANCE: ${ctx.complianceRules}`
+    : ''
+
+  const prompt = `Você é ${ctx.systemPromptRole}.${complianceNote}
 
 PERFIL ATUAL:
 - Nome: ${professionalName}
@@ -92,7 +98,7 @@ ${importantGaps.map((g: AuditGap) => `IMPORTANTE: ${g.title} — ${g.action}`).j
 CATEGORIAS USADAS POR CONCORRENTES QUE FALTAM:
 ${missingFromCompetitors.join(', ') || '(sem dados)'}
 
-KEYWORDS DE OPORTUNIDADE (termos que pacientes usam ao buscar concorrentes):
+KEYWORDS DE OPORTUNIDADE (termos que ${ctx.vocab.clientes} usam ao buscar concorrentes):
 ${keywordOpportunities.length > 0 ? keywordOpportunities.join(', ') : '(sem dados)'}
 Incorpore essas keywords naturalmente nas descricoes e servicos otimizados.
 
@@ -152,7 +158,7 @@ REGRAS:
 
 Retorne APENAS o JSON, sem texto adicional.`
 
-  const systemPrompt = `Você é especialista em Google Business Profile e SEO local para saúde no Brasil. Conhece as normas do CFM, CRO, COFFITO e CFP. Responda em português brasileiro. Retorne apenas JSON válido.`
+  const systemPrompt = `Você é ${ctx.systemPromptRole}. Responda em português brasileiro. Retorne apenas JSON válido.`
 
   try {
     const raw = await generateContent(prompt, systemPrompt)
@@ -187,16 +193,22 @@ Retorne APENAS o JSON, sem texto adicional.`
     // fallback abaixo
   }
 
-  return getFallbackReport(specialty, city, currentDescription, missingFromCompetitors)
+  return getFallbackReport(specialty, city, currentDescription, missingFromCompetitors, ctx)
 }
 
 function getFallbackReport(
   specialty: string,
   city: string,
   currentDescription: string | null,
-  missingCategories: string[]
+  missingCategories: string[],
+  ctx: ReturnType<typeof getEngineContext>
 ): OptimizationReport {
   const slug = `${specialty.toLowerCase()}-${city.toLowerCase().replace(/\s/g, '-')}`
+  const attributeSuggestions: Array<{ attribute: string; justification: string }> = []
+  if (ctx.complianceRules) {
+    attributeSuggestions.push({ attribute: 'Aceita convênios', justification: `Muito buscado por ${ctx.vocab.clientes} no Google Maps.` })
+  }
+  attributeSuggestions.push({ attribute: 'Acessível para cadeirantes', justification: 'Melhora visibilidade para buscas com filtro de acessibilidade.' })
 
   return {
     generated_at: new Date().toISOString(),
@@ -206,27 +218,24 @@ function getFallbackReport(
       justification: 'Categoria usada por concorrentes na mesma região.',
       used_by_competitors: true,
     })),
-    attribute_suggestions: [
-      { attribute: 'Aceita convênios', justification: 'Muito buscado por pacientes no Google Maps.' },
-      { attribute: 'Acessível para cadeirantes', justification: 'Melhora visibilidade para buscas com filtro de acessibilidade.' },
-    ],
+    attribute_suggestions: attributeSuggestions,
     description_variants: [
       {
         focus: 'seo',
         label: 'Focada em palavras-chave',
-        text: `${specialty} em ${city}. Atendimento especializado com foco na saúde e bem-estar dos pacientes. Agende sua consulta.`,
+        text: `${specialty} em ${city}. Atendimento especializado com foco no bem-estar dos ${ctx.vocab.clientes}. Agende agora.`,
         char_count: 0,
       },
       {
         focus: 'conversao',
         label: 'Focada em conversão',
-        text: currentDescription ?? `Oferecemos atendimento de qualidade em ${city}. Nossa equipe está pronta para cuidar de você. Agende agora.`,
+        text: currentDescription ?? `Oferecemos atendimento de qualidade em ${city}. Nossa equipe está pronta para atender você. Agende agora.`,
         char_count: 0,
       },
       {
         focus: 'confianca',
         label: 'Focada em credibilidade',
-        text: `Profissional de ${specialty} com dedicação ao atendimento humanizado em ${city}. Cada paciente recebe atenção individual e cuidado completo.`,
+        text: `${ctx.vocab.profissional.charAt(0).toUpperCase() + ctx.vocab.profissional.slice(1)} com dedicação ao atendimento humanizado em ${city}. Cada ${ctx.vocab.cliente} recebe atenção individual e cuidado completo.`,
         char_count: 0,
       },
     ],

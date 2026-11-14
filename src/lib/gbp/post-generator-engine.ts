@@ -1,42 +1,14 @@
-// Post Generator Engine — Story 005
+// Post Generator Engine — Story 005 / 6.3
 // Gera posts para GBP por tipo, especialidade e tom
 // Compliance CFM/CRO: validador independente (Correção A) + diversidade (Correção C)
+// Story 6.3: multi-vertical via getEngineContext()
 
 import { generateContent } from '@/lib/ai/client'
 import { validateCompliance } from '@/lib/ai/compliance-validator'
+import { getEngineContext } from '@/lib/vertical-vocab'
 import type { ReviewTone } from './review-response-engine'
 
 export type PostType = 'educativo' | 'procedimento' | 'bairro' | 'review_highlight' | 'equipe'
-
-const POST_TYPE_LABEL: Record<PostType, string> = {
-  educativo: 'post educativo (dica de saúde)',
-  procedimento: 'destaque de procedimento ou técnica',
-  bairro: 'conteúdo de bairro/localização',
-  review_highlight: 'destaque de avaliação positiva',
-  equipe: 'bastidores da equipe ou consultório',
-}
-
-const SPECIALTY_CONTEXT: Record<string, string> = {
-  dentista: 'odontologia, saúde bucal, sorriso, dentes, gengiva, tratamentos dentários',
-  medico: 'medicina, saúde, bem-estar, consulta médica, prevenção, diagnóstico',
-  fisioterapeuta: 'fisioterapia, reabilitação, dor, movimento, qualidade de vida, mobilidade',
-  psicologo: 'psicologia, saúde mental, bem-estar emocional, terapia, autoconhecimento',
-  nutricionista: 'nutrição, alimentação saudável, saúde, qualidade de vida, hábitos alimentares',
-  outro: 'saúde, bem-estar, qualidade de vida, cuidados com a saúde',
-}
-
-const COMPLIANCE_RULES = `
-REGRAS DE COMPLIANCE OBRIGATÓRIAS (CFM/CRO/COFFITO):
-- NUNCA mencione preços, valores ou promoções
-- NUNCA prometa resultados clínicos ("você vai ficar curado", "elimina a dor")
-- NUNCA use linguagem sensacionalista ou comparativa com outros profissionais
-- NUNCA mencione "o melhor", "o único", "o mais barato"
-- Use linguagem informativa, educativa e acolhedora
-- Procedimentos devem ser mencionados de forma técnica e educativa, nunca promocional
-- O post deve soar como se o PRÓPRIO PROFISSIONAL tivesse escrito, não uma IA
-- NUNCA use travessão (—)
-- SEMPRE termine o post com um CTA claro e curto: "Agende sua consulta", "Fale conosco", "Saiba mais" ou "Ligue agora"
-`
 
 export interface GeneratedPost {
   content: string
@@ -74,13 +46,23 @@ export async function generatePost(params: {
 }): Promise<GeneratedPost> {
   const { postType, specialty, professionalName, city, neighborhood, tone, recentReview, serviceAreas, postSequence, keywordOpportunities, styleExamples } = params
 
+  const ctx = getEngineContext(specialty)
+
+  // Labels de post adaptados por vertical
+  const postTypeLabel: Record<PostType, string> = {
+    educativo: `post educativo sobre ${ctx.postKeywords.split(',')[0].trim()}`,
+    procedimento: 'destaque de procedimento ou técnica',
+    bairro: 'conteúdo de bairro/localização',
+    review_highlight: 'destaque de avaliação positiva',
+    equipe: `bastidores da equipe ou ${ctx.vocab.local}`,
+  }
+
   const toneInstructions: Record<ReviewTone, string> = {
     formal: 'Tom formal e profissional. Linguagem cuidada e respeitosa.',
     proximo: 'Tom próximo e acolhedor. Use "você" com naturalidade. Quase como conversar com um amigo de confiança.',
     tecnico: 'Tom técnico e informativo. Pode usar termos da área, mas explique-os brevemente.',
   }
 
-  const specialtyKeywords = SPECIALTY_CONTEXT[specialty] ?? SPECIALTY_CONTEXT.outro
   const locationContext = neighborhood
     ? `${neighborhood}, ${city}`
     : city
@@ -90,7 +72,7 @@ export async function generatePost(params: {
     : ''
 
   const typeSpecificInstruction = postType === 'review_highlight' && recentReview
-    ? `Use esta avaliação real de paciente como base (sem mencionar o nome): "${recentReview}"`
+    ? `Use esta avaliação real como base (sem mencionar o nome): "${recentReview}"`
     : postType === 'bairro'
       ? `Mencione naturalmente a localização: ${locationContext}. Conecte o conteúdo com a comunidade local.`
       : ''
@@ -105,12 +87,17 @@ export async function generatePost(params: {
 
   const diversityContext = getDiversityContext(postSequence)
 
-  const prompt = `Você é ${professionalName}, profissional de ${specialty} em ${city}.
+  // Regras de compliance: apenas para verticais reguladas (saúde, jurídico)
+  const complianceSection = ctx.complianceRules
+    ? `\nREGRAS DE COMPLIANCE OBRIGATÓRIAS:\n${ctx.complianceRules}\n- NUNCA mencione preços, valores ou promoções\n- NUNCA prometa resultados ("garantido", "elimina o problema")\n- NUNCA use linguagem sensacionalista ou comparativa\n- NUNCA mencione "o melhor", "o único", "o mais barato"\n- Use linguagem informativa, educativa e acolhedora\n- O post deve soar como se o PRÓPRIO PROFISSIONAL tivesse escrito, não uma IA\n- NUNCA use travessão (—)\n- SEMPRE termine o post com um CTA claro e curto\n`
+    : `\nREGRAS GERAIS:\n- NUNCA mencione preços, valores ou promoções\n- NUNCA faça promessas impossíveis\n- NUNCA denigra concorrentes\n- Use linguagem informativa e acolhedora\n- O post deve soar como se o PRÓPRIO PROFISSIONAL tivesse escrito, não uma IA\n- NUNCA use travessão (—)\n- SEMPRE termine o post com um CTA claro e curto\n`
 
-Escreva um ${POST_TYPE_LABEL[postType]} para o Google Business Profile.
+  const prompt = `Você é ${professionalName}, ${ctx.vocab.profissional} em ${city}.
+
+Escreva um ${postTypeLabel[postType]} para o Google Business Profile.
 
 CONTEXTO:
-- Especialidade/keywords: ${specialtyKeywords}
+- Palavras-chave do segmento: ${ctx.postKeywords}
 - Localização: ${locationContext}
 - ${areasContext}
 - ${typeSpecificInstruction}
@@ -125,10 +112,8 @@ FORMATO DO POST:
 - Entre 150 e 300 caracteres (ideal para GBP)
 - Sem hashtags
 - Sem emojis em excesso (máximo 1-2 se o tom for próximo)
-- Terminar com uma chamada suave para ação (ex: "Agende sua consulta", "Tire suas dúvidas conosco")
-
-${COMPLIANCE_RULES}
-
+- Terminar com uma chamada suave para ação (ex: "Agende seu atendimento", "Fale conosco", "Saiba mais")
+${complianceSection}
 Retorne um JSON com esta estrutura:
 {
   "content": "texto do post",
@@ -139,7 +124,7 @@ Retorne um JSON com esta estrutura:
 
 Retorne APENAS o JSON, sem texto adicional.`
 
-  const systemPrompt = `Você é especialista em marketing digital para profissionais de saúde no Brasil, com profundo conhecimento das normas CFM, CRO, COFFITO e CFP. Cria conteúdo que engaja pacientes sem violar nenhuma regra de publicidade médica. Nunca use travessão (—).`
+  const systemPrompt = `Você é ${ctx.systemPromptRole}, com profundo conhecimento de SEO local e boas práticas de comunicação digital. Cria conteúdo que engaja ${ctx.vocab.clientes} sem violar nenhuma regra de publicidade. Nunca use travessão (—).`
 
   try {
     const raw = await generateContent(prompt, systemPrompt)
@@ -154,7 +139,7 @@ Retorne APENAS o JSON, sem texto adicional.`
 
       // Segunda passagem: validação independente (Correção A)
       // O modelo não valida seu próprio output de forma confiável.
-      const externalCheck = await validateCompliance(parsed.content)
+      const externalCheck = await validateCompliance(parsed.content, specialty)
       const finalCompliancePassed = parsed.compliance_passed && externalCheck.passed
 
       return {
@@ -175,23 +160,25 @@ Retorne APENAS o JSON, sem texto adicional.`
 }
 
 function getFallbackPost(postType: PostType, specialty: string, city: string, tone: ReviewTone): GeneratedPost {
+  const ctx = getEngineContext(specialty)
+
   const greetings: Record<ReviewTone, string> = {
-    formal: 'Prezados pacientes',
+    formal: `Prezados ${ctx.vocab.clientes}`,
     proximo: 'Olá',
     tecnico: 'Informativo',
   }
 
   const fallbackContent: Record<PostType, string> = {
-    educativo: `${greetings[tone]}, a prevenção é sempre o melhor caminho para a saúde. Consultas regulares fazem toda a diferença. Agende a sua!`,
-    procedimento: `Cuidar da sua saúde com profissionais qualificados em ${city} é essencial. Conheça nossos serviços e agende uma avaliação.`,
-    bairro: `Atendendo com cuidado e dedicação em ${city}. Estamos aqui para cuidar da sua saúde. Agende sua consulta!`,
-    review_highlight: `Fico muito feliz com o carinho dos nossos pacientes. Obrigado pela confiança! Agende sua consulta.`,
-    equipe: `Nossa equipe está pronta para oferecer o melhor atendimento. Venha nos conhecer em ${city}!`,
+    educativo: `${greetings[tone]}, cuidar da sua saúde e bem-estar faz toda a diferença. ${ctx.vocab.atendimento.charAt(0).toUpperCase() + ctx.vocab.atendimento.slice(1)}s regulares ajudam a prevenir problemas. Agende o seu!`,
+    procedimento: `Encontre qualidade e dedicação em ${city}. Conheça nossos serviços e agende uma avaliação.`,
+    bairro: `Atendendo com cuidado e atenção em ${city}. Estamos aqui para ajudar. Fale conosco!`,
+    review_highlight: `Fico muito feliz com o carinho dos nossos ${ctx.vocab.clientes}. Obrigado pela confiança! Agende seu ${ctx.vocab.atendimento}.`,
+    equipe: `Nossa equipe está pronta para oferecer o melhor atendimento no nosso ${ctx.vocab.local} em ${city}. Venha nos conhecer!`,
   }
 
   return {
     content: fallbackContent[postType],
-    photo_suggestion: 'foto da fachada ou recepção do consultório com boa iluminação',
+    photo_suggestion: `foto da fachada ou interior do ${ctx.vocab.local} com boa iluminação`,
     post_type: postType,
     compliance_passed: true,
   }

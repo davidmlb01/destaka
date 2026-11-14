@@ -2,6 +2,7 @@
 // Analisa o perfil GBP do profissional e gera relatório de gaps via Claude
 
 import { generateContent } from '@/lib/ai/client'
+import { getEngineContext } from '@/lib/vertical-vocab'
 import type { GBPLocation, GBPReview, GBPMediaItem } from '@/lib/google/gbp-client'
 
 export interface AuditInput {
@@ -37,6 +38,7 @@ export interface AuditReport {
 
 export async function runAudit(input: AuditInput): Promise<AuditReport> {
   const { location, reviews, media, specialty, competitors = [] } = input
+  const ctx = getEngineContext(specialty)
 
   const photoCount = media.length
   const reviewCount = reviews.length
@@ -80,7 +82,7 @@ export async function runAudit(input: AuditInput): Promise<AuditReport> {
       })).join('\n')
     : '(sem dados de concorrentes ainda)'
 
-  const prompt = `Você é um especialista em SEO local para profissionais de saúde no Brasil.
+  const prompt = `Você é um ${ctx.systemPromptRole}.
 
 PERFIL DO PROFISSIONAL:
 ${locationSummary}
@@ -93,7 +95,7 @@ Analise o perfil e identifique gaps de otimização. Para cada gap encontrado, f
   "dimension": "categorias|atributos|servicos|descricao|fotos|avaliacoes",
   "severity": "critico|importante|sugestao",
   "title": "título curto do problema",
-  "description": "explicação clara para o profissional de saúde (sem jargão técnico)",
+  "description": "explicação clara para o ${ctx.vocab.profissional} (sem jargão técnico)",
   "action": "ação específica e concreta para corrigir",
   "estimated_impact": número de 1 a 10
 }
@@ -104,7 +106,7 @@ Foque nos gaps com maior impacto no Google Maps. Seja específico. Retorne APENA
   let summary = ''
 
   try {
-    const systemPrompt = `Você é um especialista em Google Business Profile e SEO local para clínicas e consultórios de saúde no Brasil. Responda sempre em português brasileiro. Retorne apenas JSON válido quando solicitado.`
+    const systemPrompt = `Você é um ${ctx.systemPromptRole}. Responda sempre em português brasileiro. Retorne apenas JSON válido quando solicitado.`
 
     const rawGaps = await generateContent(prompt, systemPrompt)
     const jsonMatch = rawGaps.match(/\[[\s\S]*\]/)
@@ -113,7 +115,7 @@ Foque nos gaps com maior impacto no Google Maps. Seja específico. Retorne APENA
     }
   } catch {
     // Fallback: gaps básicos baseados em regras
-    gaps = generateRuleBasedGaps({ hasDescription, photoCount, categoryCount, attributeCount, serviceCount, reviewCount })
+    gaps = generateRuleBasedGaps({ hasDescription, photoCount, categoryCount, attributeCount, serviceCount, reviewCount, ctx })
   }
 
   // Gera resumo
@@ -150,15 +152,17 @@ function generateRuleBasedGaps(data: {
   attributeCount: number
   serviceCount: number
   reviewCount: number
+  ctx: ReturnType<typeof getEngineContext>
 }): AuditGap[] {
   const gaps: AuditGap[] = []
+  const { ctx } = data
 
   if (!data.hasDescription) {
     gaps.push({
       dimension: 'descricao',
       severity: 'critico',
       title: 'Sem descrição no perfil',
-      description: 'Seu consultório não tem descrição. O Google usa esse texto para aparecer em buscas relevantes.',
+      description: `Seu ${ctx.vocab.local} não tem descrição. O Google usa esse texto para aparecer em buscas relevantes.`,
       action: 'Adicione uma descrição de 250-750 caracteres com sua especialidade, diferenciais e localização.',
       estimated_impact: 8,
     })
@@ -169,7 +173,7 @@ function generateRuleBasedGaps(data: {
       dimension: 'fotos',
       severity: data.photoCount < 3 ? 'critico' : 'importante',
       title: `Poucas fotos (${data.photoCount})`,
-      description: 'Consultórios com mais fotos recebem mais cliques. O ideal é ter pelo menos 10 fotos.',
+      description: 'Perfis com mais fotos recebem mais cliques. O ideal é ter pelo menos 10 fotos.',
       action: 'Adicione fotos da fachada, recepção, sala de atendimento e equipe.',
       estimated_impact: 7,
     })
@@ -191,18 +195,19 @@ function generateRuleBasedGaps(data: {
       dimension: 'servicos',
       severity: 'importante',
       title: 'Seção de serviços incompleta',
-      description: 'Listar seus procedimentos ajuda pacientes a encontrar exatamente o que precisam.',
-      action: 'Adicione pelo menos 5 procedimentos com descrição e preço (opcional).',
+      description: `Listar seus serviços ajuda ${ctx.vocab.clientes} a encontrar exatamente o que precisam.`,
+      action: 'Adicione pelo menos 5 serviços com descrição e preço (opcional).',
       estimated_impact: 5,
     })
   }
 
   if (data.attributeCount < 5) {
+    const convenioBit = ctx.complianceRules ? '"Aceita convênios" e ' : ''
     gaps.push({
       dimension: 'atributos',
       severity: 'sugestao',
       title: 'Atributos não configurados',
-      description: 'Atributos como "Aceita convênios" e "Acessível para cadeirantes" aparecem no Google Maps.',
+      description: `Atributos como ${convenioBit}"Acessível para cadeirantes" aparecem no Google Maps e atraem mais ${ctx.vocab.clientes}.`,
       action: 'Configure os atributos disponíveis para sua categoria de negócio.',
       estimated_impact: 4,
     })
