@@ -8,6 +8,7 @@ import { getVocab } from '@/lib/vertical-vocab'
 
 type Step =
   | 'welcome'
+  | 'specialty'
   | 'contact'
   | 'routine'
   | 'services'
@@ -20,6 +21,50 @@ interface PrefillData {
   name: string
   phone: string
   specialty: string
+}
+
+const ALL_SPECIALTIES = [
+  'dentista',
+  'médico',
+  'psicólogo',
+  'psiquiatra',
+  'fisioterapeuta',
+  'advogado',
+  'veterinário',
+  'contador',
+  'imobiliária',
+  'beleza',
+  'fitness',
+  'restaurante',
+  'automotivo',
+  'educação',
+  'tecnologia',
+  'profissional de saúde',
+  'negócio local',
+  'nutricionista',
+  'outro',
+] as const
+
+const SPECIALTY_LABELS: Record<string, string> = {
+  'dentista': 'Dentista',
+  'médico': 'Médico',
+  'psicólogo': 'Psicólogo',
+  'psiquiatra': 'Psiquiatra',
+  'fisioterapeuta': 'Fisioterapeuta',
+  'advogado': 'Advogado',
+  'veterinário': 'Veterinário',
+  'contador': 'Contador',
+  'imobiliária': 'Imobiliária',
+  'beleza': 'Salão de beleza',
+  'fitness': 'Academia / Fitness',
+  'restaurante': 'Restaurante',
+  'automotivo': 'Automotivo',
+  'educação': 'Educação',
+  'tecnologia': 'Tecnologia',
+  'profissional de saúde': 'Profissional de saúde',
+  'negócio local': 'Negócio local',
+  'nutricionista': 'Nutricionista',
+  'outro': 'Outro',
 }
 
 function getChallenges(clientes: string) {
@@ -80,6 +125,11 @@ export default function OnboardingPage() {
   const [prefill, setPrefill] = useState<PrefillData | null>(null)
   const [prefillLoading, setPrefillLoading] = useState(true)
 
+  // Specialty confirmation
+  const [confirmedSpecialty, setConfirmedSpecialty] = useState<string>('')
+  const [specialtySelectOpen, setSpecialtySelectOpen] = useState(false)
+  const [specialtyLoading, setSpecialtyLoading] = useState(false)
+
   // Contact
   const [phone, setPhone] = useState('')
   const [instagramHandle, setInstagramHandle] = useState('')
@@ -135,6 +185,7 @@ export default function OnboardingPage() {
           if (data.org) {
             setPrefill(data.org)
             if (data.org.phone) setPhone(data.org.phone)
+            if (data.org.specialty) setConfirmedSpecialty(data.org.specialty)
           }
           // Pre-fill serviços do GBP
           if (data.gbpServices && data.gbpServices.length > 0) {
@@ -166,6 +217,25 @@ export default function OnboardingPage() {
     setActivationDone(true)
     trackOnboardingComplete()
   }, [])
+
+  async function handleSpecialtyConfirm(specialty: string) {
+    setSpecialtyLoading(true)
+    try {
+      await fetch('/api/organizations/specialty', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ specialty }),
+      })
+      setConfirmedSpecialty(specialty)
+    } catch {
+      // Falha silenciosa: a especialidade confirmada fica no estado local,
+      // será salva na próxima atualização da org
+      setConfirmedSpecialty(specialty)
+    } finally {
+      setSpecialtyLoading(false)
+      setStep('contact')
+    }
+  }
 
   async function handleFinish() {
     setStep('activating')
@@ -207,7 +277,7 @@ export default function OnboardingPage() {
   }
 
   // Progress
-  const FORM_STEPS: Step[] = ['contact', 'routine', 'services', 'categories', 'attributes', 'automation']
+  const FORM_STEPS: Step[] = ['specialty', 'contact', 'routine', 'services', 'categories', 'attributes', 'automation']
   const currentIndex = FORM_STEPS.indexOf(step)
   const progress = currentIndex >= 0 ? ((currentIndex + 1) / FORM_STEPS.length) * 100 : 0
 
@@ -242,7 +312,7 @@ export default function OnboardingPage() {
     return digits
   }
 
-  const vocab = getVocab(prefill?.specialty)
+  const vocab = getVocab(confirmedSpecialty || prefill?.specialty)
   const isFormStep = currentIndex >= 0
 
   return (
@@ -297,13 +367,119 @@ export default function OnboardingPage() {
                 Vamos configurar seu perfil em 2 minutos.
               </p>
               <button
-                onClick={() => setStep('contact')}
+                onClick={() => setStep('specialty')}
                 disabled={prefillLoading}
                 className="w-full rounded-xl px-6 py-3.5 font-medium transition-colors disabled:opacity-40 cursor-pointer"
                 style={{ background: 'var(--accent)', color: '#fff' }}
               >
                 {prefillLoading ? 'Carregando...' : 'Começar'}
               </button>
+            </div>
+          )}
+
+          {/* SPECIALTY CONFIRMATION */}
+          {step === 'specialty' && (
+            <div>
+              <h1 className="text-lg font-semibold text-white mb-1">
+                Qual é o seu tipo de negócio?
+              </h1>
+              <p className="text-sm mb-6" style={{ color: 'var(--text-tertiary)' }}>
+                Usamos essa informação para personalizar seu perfil e as sugestões de conteúdo.
+              </p>
+
+              {!specialtySelectOpen ? (
+                <>
+                  {/* Confirmação da especialidade detectada */}
+                  {prefill?.specialty ? (
+                    <div
+                      className="p-4 rounded-xl mb-4"
+                      style={{
+                        background: 'rgba(20,184,166,0.08)',
+                        border: '1px solid rgba(20,184,166,0.2)',
+                      }}
+                    >
+                      <p className="text-sm mb-1" style={{ color: 'var(--text-muted)' }}>
+                        Detectamos que seu negócio é:
+                      </p>
+                      <p className="text-base font-semibold" style={{ color: 'var(--accent-bright)' }}>
+                        {SPECIALTY_LABELS[prefill.specialty] ?? prefill.specialty}
+                      </p>
+                    </div>
+                  ) : (
+                    <div
+                      className="p-4 rounded-xl mb-4"
+                      style={{
+                        background: 'rgba(255,255,255,0.04)',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                      }}
+                    >
+                      <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                        Não conseguimos detectar automaticamente o tipo do seu negócio.
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="flex flex-col gap-2">
+                    {prefill?.specialty && (
+                      <button
+                        onClick={() => handleSpecialtyConfirm(prefill.specialty)}
+                        disabled={specialtyLoading}
+                        className="w-full rounded-xl px-6 py-3.5 font-medium transition-colors disabled:opacity-40 cursor-pointer"
+                        style={{ background: 'var(--accent)', color: '#fff' }}
+                      >
+                        {specialtyLoading ? 'Salvando...' : 'Sim, está correto'}
+                      </button>
+                    )}
+                    <button
+                      onClick={() => setSpecialtySelectOpen(true)}
+                      className="w-full rounded-xl px-6 py-3.5 font-medium transition-colors cursor-pointer"
+                      style={{
+                        background: 'rgba(255,255,255,0.06)',
+                        color: 'var(--text-secondary)',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                      }}
+                    >
+                      {prefill?.specialty ? 'Não, quero corrigir' : 'Selecionar tipo de negócio'}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="space-y-1.5 mb-4 max-h-72 overflow-y-auto pr-1">
+                    {ALL_SPECIALTIES.map(sp => (
+                      <button
+                        key={sp}
+                        onClick={() => {
+                          handleSpecialtyConfirm(sp)
+                          setSpecialtySelectOpen(false)
+                        }}
+                        disabled={specialtyLoading}
+                        className="w-full px-4 py-3 rounded-xl text-sm text-left transition-colors cursor-pointer disabled:opacity-40"
+                        style={{
+                          background: (confirmedSpecialty || prefill?.specialty) === sp
+                            ? 'rgba(20,184,166,0.15)'
+                            : 'rgba(255,255,255,0.04)',
+                          color: (confirmedSpecialty || prefill?.specialty) === sp
+                            ? 'var(--accent-bright)'
+                            : 'rgba(255,255,255,0.7)',
+                          border: `1px solid ${(confirmedSpecialty || prefill?.specialty) === sp
+                            ? 'var(--accent)'
+                            : 'rgba(255,255,255,0.06)'}`,
+                        }}
+                      >
+                        {SPECIALTY_LABELS[sp]}
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => setSpecialtySelectOpen(false)}
+                    className="text-sm transition-colors cursor-pointer"
+                    style={{ color: 'var(--text-muted)' }}
+                  >
+                    Cancelar
+                  </button>
+                </>
+              )}
             </div>
           )}
 
@@ -504,10 +680,7 @@ export default function OnboardingPage() {
                       value={s}
                       onChange={e => updateService(i, e.target.value)}
                       placeholder={
-                        i === 0 ? 'Ex: Consulta e avaliação' :
-                        i === 1 ? 'Ex: Limpeza e profilaxia' :
-                        i === 2 ? 'Ex: Clareamento dental' :
-                        'Adicionar serviço'
+                        i < 3 ? vocab.servicePlaceholders[i as 0 | 1 | 2] : 'Adicionar serviço'
                       }
                       className="onboarding-input flex-1"
                       autoFocus={i === services.length - 1 && services.length > 1}

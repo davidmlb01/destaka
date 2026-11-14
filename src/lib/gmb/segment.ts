@@ -18,6 +18,9 @@ export type Segment =
   | 'fitness'
   | 'restaurante'
   | 'automotivo'
+  | 'floricultura'
+  | 'marketing'
+  | 'fotógrafo'
   | 'educação'
   | 'tecnologia'
   | 'profissional de saúde'
@@ -60,11 +63,20 @@ export function detectSegment(category: string): Segment {
   // Automotivo
   if (lower.includes('oficina') || lower.includes('mecânic') || lower.includes('mecanica') || lower.includes('auto center') || lower.includes('funilaria') || lower.includes('borracharia') || lower.includes('autoelétrica') || lower.includes('autoeletrica')) return 'automotivo'
 
+  // Flores e floricultura
+  if (lower.includes('floric') || lower.includes('florista') || lower.includes('flores') || lower.includes('arranjo floral') || lower.includes('buquê')) return 'floricultura'
+
+  // Fotografia
+  if (lower.includes('fotógrafo') || lower.includes('fotografo') || lower.includes('fotografia') || lower.includes('estúdio fotográfico') || lower.includes('studio fotografico') || lower.includes('ensaio fotográfico')) return 'fotógrafo'
+
+  // Marketing e consultoria
+  if (lower.includes('marketing') || lower.includes('agência de publicidade') || lower.includes('agencia de publicidade') || lower.includes('consultoria') || lower.includes('agência criativa') || lower.includes('agencia criativa') || lower.includes('comunicação')) return 'marketing'
+
   // Educação
-  if (lower.includes('escola') || lower.includes('curso') || lower.includes('faculdade') || lower.includes('professor') || lower.includes('educaç') || lower.includes('educac')) return 'educação'
+  if (lower.includes('escola') || lower.includes('curso') || lower.includes('faculdade') || lower.includes('professor') || lower.includes('educaç') || lower.includes('educac') || lower.includes('colégio') || lower.includes('colegio') || lower.includes('idiomas')) return 'educação'
 
   // Tecnologia
-  if (lower.includes('software') || lower.includes('agência digital') || lower.includes('agencia digital') || lower.includes('consultoria de ti') || lower.includes('desenvolvimento') || lower.includes('tecnologia')) return 'tecnologia'
+  if (lower.includes('software') || lower.includes('agência digital') || lower.includes('agencia digital') || lower.includes('consultoria de ti') || lower.includes('desenvolvimento') || lower.includes('tecnologia') || lower.includes('startup') || lower.includes('ti ') || lower.includes(' ti') || lower.includes('suporte técnico') || lower.includes('suporte tecnico')) return 'tecnologia'
 
   // Saúde genérica (médico por último para não pegar clínicas de outras áreas)
   if (lower.includes('médico') || lower.includes('medico') || lower.includes('clinica') || lower.includes('clínica') || lower.includes('cirurgi')) return 'médico'
