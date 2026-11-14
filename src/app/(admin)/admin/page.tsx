@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic'
 
 import './admin-tokens.css'
-import { createServiceClient } from '@/lib/supabase/server'
+import { createClient } from '@supabase/supabase-js'
 import { RetriggerButton } from './RetriggerButton'
 import { MrrLeadsChart, ScoreEvolutionChart, ConversionDonutChart } from './AdminCharts'
 import { TopMovers } from './TopMovers'
@@ -44,7 +44,11 @@ interface LeadRow {
 }
 
 async function getAdminData() {
-  const db = await createServiceClient()
+  // Client sem cookies para bypassar RLS (admin ve tudo)
+  const db = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  )
 
   const [
     { data: orgs },
