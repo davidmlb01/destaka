@@ -57,17 +57,56 @@ export async function GET() {
     }
   }
 
-  // Mapear colunas reais do score (gmb_completude, reputacao, etc.) para o formato do dashboard
+  // Mapear colunas reais do score para o formato do dashboard
+  // Colunas legadas no banco: visibilidade=keywords, retencao=alcance_geo, conversao=conteudo
+  // O dashboard precisa: posts, servicos, atributos (mapeados do gmb/scorer.ts)
+  // O score-calculator.ts grava os componentes do gmb/scorer nas colunas legacy
+  // mas tambem grava os detalhes como JSON no campo 'details' se disponivel
   const s = latestScore as Record<string, unknown> | null
+  const details = s?.details as Record<string, Record<string, number>> | null
+
+  // Buscar dados reais para posts e reviews do banco
+  const thirtyDaysAgoScore = new Date()
+  thirtyDaysAgoScore.setDate(thirtyDaysAgoScore.getDate() - 30)
+
+  const [
+    postsResult,
+    responsesResult,
+    { data: totalReviewsData },
+    { data: orgServices },
+  ] = await Promise.all([
+    adminClient().from('posts').select('id', { count: 'exact', head: true }).eq('organization_id', orgId).eq('status', 'published').gte('published_at', thirtyDaysAgoScore.toISOString()),
+    adminClient().from('review_responses').select('id', { count: 'exact', head: true }).eq('organization_id', orgId).eq('status', 'published'),
+    supabase.from('organizations').select('google_review_count').eq('id', orgId).maybeSingle(),
+    supabase.from('organizations').select('services').eq('id', orgId).maybeSingle(),
+  ])
+
+  // Calcular scores reais para posts (max 15)
+  const realPostCount = postsResult.count ?? 0
+  let scorePostsReal = 0
+  if (realPostCount >= 4) scorePostsReal = 10
+  else if (realPostCount >= 2) scorePostsReal = 5
+  else if (realPostCount >= 1) scorePostsReal = 2
+
+  // Calcular score de servicos a partir dos dados reais (max 10)
+  const services = (orgServices?.services as string[] | null) ?? []
+  let scoreServicosReal = 0
+  if (services.length >= 3) scoreServicosReal += 5
+  // Descricao detalhada: nao temos essa info, usar valor do banco se disponivel
+  scoreServicosReal += details?.services?.services_desc ?? 0
+
+  // Score de atributos do gmb/scorer (max 5), usar details se disponivel
+  const scoreAtributosReal = details?.attributes?.attributes ?? Math.min((s?.conversao as number) ?? 0, 5)
+
   const diagnostic = latestScore ? {
     id: (s?.id as string) ?? '',
     score_total: (s?.total as number) ?? 0,
     score_info_basica: Math.min((s?.gmb_completude as number) ?? 0, 25),
     score_fotos: Math.min((gbpProfile?.photo_count ?? 0) * 2, 20),
     score_avaliacoes: (s?.reputacao as number) ?? 0,
-    score_posts: (s?.visibilidade as number) ?? 0,
-    score_servicos: (s?.retencao as number) ?? 0,
-    score_atributos: (s?.conversao as number) ?? 0,
+    score_posts: Math.min(scorePostsReal, 15),
+    score_servicos: Math.min(scoreServicosReal, 10),
+    score_atributos: Math.min(scoreAtributosReal, 5),
     issues,
   } : null
 
