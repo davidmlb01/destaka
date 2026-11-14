@@ -20,11 +20,15 @@ export async function GET(request: Request) {
     { data: pros, error: prosErr },
     { data: scores, error: scoresErr },
     { data: tokens, error: tokensErr },
+    { data: pendingReviews, error: pendingReviewsErr },
+    { data: pendingPosts, error: pendingPostsErr },
   ] = await Promise.all([
     db.from('organizations').select('id, name, specialty, subscription_status, lgpd_ai_consent, created_at, utm_source'),
-    db.from('professionals').select('id, organization_id, user_id, full_name, email, created_at'),
+    db.from('professionals').select('id, organization_id, user_id, email, created_at'),
     db.from('scores').select('organization_id, total, faixa, snapshot_date').order('snapshot_date', { ascending: false }).limit(20),
     db.from('google_tokens').select('organization_id, updated_at'),
+    db.from('review_responses').select('id, organization_id, review_text, status, created_at').eq('status', 'pending'),
+    db.from('posts').select('id, organization_id, title, status, created_at').eq('status', 'pending'),
   ])
 
   return NextResponse.json({
@@ -32,5 +36,7 @@ export async function GET(request: Request) {
     professionals: { data: pros, error: prosErr?.message },
     recent_scores: { data: scores, error: scoresErr?.message },
     tokens: { data: tokens, error: tokensErr?.message },
+    pending_reviews: { data: pendingReviews, error: pendingReviewsErr?.message },
+    pending_posts: { data: pendingPosts, error: pendingPostsErr?.message },
   }, { status: 200 })
 }
