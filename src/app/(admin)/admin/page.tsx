@@ -23,6 +23,9 @@ interface OrgRow {
 interface ScoreRow {
   organization_id: string
   total: number
+  gmb_completude: number
+  reputacao: number
+  conversao: number
   faixa: string
   snapshot_date: string
 }
@@ -112,7 +115,7 @@ async function getAdminData() {
     { data: rewards },
   ] = await Promise.all([
     db.from('organizations').select('id, name, specialty, subscription_status, lgpd_ai_consent, created_at, utm_source'),
-    db.from('scores').select('organization_id, total, faixa, snapshot_date').order('snapshot_date', { ascending: false }),
+    db.from('scores').select('organization_id, total, gmb_completude, reputacao, conversao, faixa, snapshot_date').order('snapshot_date', { ascending: false }),
     db.from('review_responses').select('organization_id').eq('status', 'pending'),
     db.from('posts').select('organization_id').eq('status', 'pending'),
     db.from('google_tokens').select('organization_id, updated_at'),
@@ -124,6 +127,38 @@ async function getAdminData() {
     db.from('rewards').select('id, referral_id, type, amount_cents, status, created_at'),
   ])
 
+  // Dados extras para computar score real (mesma logica do dashboard do usuario)
+  const thirtyDaysAgo = new Date()
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+
+  const [
+    { data: gbpProfiles },
+    { data: publishedPosts },
+    { data: orgServices },
+  ] = await Promise.all([
+    db.from('gbp_profiles').select('organization_id, photo_count'),
+    db.from('posts').select('organization_id').eq('status', 'published').gte('published_at', thirtyDaysAgo.toISOString()),
+    db.from('organizations').select('id, services'),
+  ])
+
+  // Photo count por org
+  const photosByOrg: Record<string, number> = {}
+  for (const p of (gbpProfiles ?? []) as Array<{ organization_id: string; photo_count: number | null }>) {
+    photosByOrg[p.organization_id] = p.photo_count ?? 0
+  }
+
+  // Posts publicados nos ultimos 30 dias por org
+  const postCountByOrg: Record<string, number> = {}
+  for (const p of (publishedPosts ?? []) as Array<{ organization_id: string }>) {
+    postCountByOrg[p.organization_id] = (postCountByOrg[p.organization_id] ?? 0) + 1
+  }
+
+  // Services por org
+  const servicesByOrg: Record<string, string[]> = {}
+  for (const o of (orgServices ?? []) as Array<{ id: string; services: string[] | null }>) {
+    servicesByOrg[o.id] = o.services ?? []
+  }
+
   const safeOrgs = (orgs ?? []) as OrgRow[]
   const safeScores = (scores ?? []) as ScoreRow[]
   const safeLeads = (leads ?? []) as LeadRow[]
@@ -134,6 +169,31 @@ async function getAdminData() {
   for (const s of safeScores) {
     if (!scoresByOrg[s.organization_id]) scoresByOrg[s.organization_id] = []
     if (scoresByOrg[s.organization_id].length < 2) scoresByOrg[s.organization_id].push(s)
+  }
+
+  // Score real por org (mesma logica do dashboard do usuario)
+  const realScoreByOrg: Record<string, number> = {}
+  for (const [orgId, arr] of Object.entries(scoresByOrg)) {
+    const ls = arr[0]
+    if (!ls) continue
+    const catInfoBasica = Math.min(ls.gmb_completude ?? 0, 25)
+    const catFotos = Math.min((photosByOrg[orgId] ?? 0) * 2, 20)
+    const catAvaliacoes = ls.reputacao ?? 0
+
+    const pc = postCountByOrg[orgId] ?? 0
+    let catPosts = 0
+    if (pc >= 4) catPosts = 10
+    else if (pc >= 2) catPosts = 5
+    else if (pc >= 1) catPosts = 2
+    catPosts = Math.min(catPosts, 15)
+
+    const svcs = servicesByOrg[orgId] ?? []
+    let catServicos = svcs.length >= 3 ? 5 : 0
+    catServicos = Math.min(catServicos, 10)
+
+    const catAtributos = Math.min(ls.conversao ?? 0, 5)
+
+    realScoreByOrg[orgId] = catInfoBasica + catFotos + catAvaliacoes + catPosts + catServicos + catAtributos
   }
 
   // All scores by org (for evolution)
@@ -262,6 +322,7 @@ async function getAdminData() {
     partnerSummaries,
     clientReferralCount,
     totalReferrals: safeReferrals.length,
+    realScoreByOrg,
   }
 }
 
@@ -601,6 +662,7 @@ export default async function AdminPage() {
     mrrLeadsData, scoreEvolution, topMovers, attribution,
     activationRate, churnRate, leadToPayingRate, ga4Data,
     partnerSummaries, clientReferralCount, totalReferrals,
+    realScoreByOrg,
   } = await getAdminData()
 
   const totalPending = Object.values(pendingByOrg).reduce((a, b) => a + b, 0)
@@ -612,8 +674,9 @@ export default async function AdminPage() {
     const t = tokenByOrg[o.id]
     return !t?.hasToken || isTokenStale(t.updatedAt)
   })
-  const avgScore = Object.values(scoresByOrg).length > 0
-    ? Math.round(Object.values(scoresByOrg).reduce((s, arr) => s + (arr[0]?.total ?? 0), 0) / Object.values(scoresByOrg).length)
+  const realScoreValues = Object.values(realScoreByOrg)
+  const avgScore = realScoreValues.length > 0
+    ? Math.round(realScoreValues.reduce((a, b) => a + b, 0) / realScoreValues.length)
     : 0
   const ltv = churnRate > 0 ? Math.round(197 / (churnRate / 100)) : 0
 
@@ -937,7 +1000,8 @@ export default async function AdminPage() {
                       const scoreArr = scoresByOrg[org.id]
                       const current = scoreArr?.[0]
                       const previous = scoreArr?.[1]
-                      const delta = current && previous ? current.total - previous.total : null
+                      const realScore = realScoreByOrg[org.id] ?? current?.total ?? 0
+                      const delta = current && previous ? realScore - (previous.total ?? 0) : null
                       const pending = pendingByOrg[org.id] ?? 0
                       const token = tokenByOrg[org.id]
                       const tokenBroken = !token?.hasToken || isTokenStale(token.updatedAt)
@@ -1004,7 +1068,7 @@ export default async function AdminPage() {
                           {/* Score */}
                           <td className="px-4 py-3 text-right">
                             {current ? (
-                              <span className="text-sm font-black" style={{ color: 'var(--admin-text-primary)' }}>{current.total}</span>
+                              <span className="text-sm font-black" style={{ color: 'var(--admin-text-primary)' }}>{realScore}</span>
                             ) : (
                               <span className="text-xs" style={{ color: 'var(--admin-text-muted)' }}>-</span>
                             )}

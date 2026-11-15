@@ -102,7 +102,7 @@ export function PatientFunnelCard() {
       className="rounded-2xl p-6 animate-fade-in-up"
       style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}
     >
-      <SectionLabel className="mb-5">Seus clientes esta semana</SectionLabel>
+      <SectionLabel className="mb-5">Seus clientes na semana passada</SectionLabel>
 
       {/* Funil vertical */}
       <div className="flex flex-col gap-1">
