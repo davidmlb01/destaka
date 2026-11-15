@@ -782,7 +782,7 @@ export default async function AdminPage() {
               />
               <StatCard
                 value={brokenTokens.length}
-                label="Tokens"
+                label="Tokens quebrados"
                 icon={<KeyIcon />}
                 iconColor={brokenTokens.length > 0 ? 'var(--admin-error)' : 'var(--admin-text-muted)'}
                 alert={brokenTokens.length > 0}
