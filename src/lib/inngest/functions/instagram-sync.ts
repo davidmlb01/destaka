@@ -208,9 +208,47 @@ export const instagramSync = inngest.createFunction(
 
     for (const org of orgs) {
       const pubResult = await step.run(`publish-gbp-${org.id}`, async () => {
-        // Dados ja carregados no resolve-instagram-orgs (evita N+1 query)
-        if (!org.gbp_location_id || org.automation_preference !== 'automatico') {
+        if (!org.gbp_location_id) {
           return { org_id: org.id, published: 0, skipped: 0 }
+        }
+
+        // Modo manual: criar posts como pendentes para aprovacao no dashboard
+        if (org.automation_preference !== 'automatico') {
+          const { data: readyForApproval } = await db
+            .from('instagram_posts')
+            .select('id, rewritten_caption, image_url')
+            .eq('organization_id', org.id)
+            .eq('status', 'ready')
+            .not('rewritten_caption', 'is', null)
+            .order('engagement_score', { ascending: false })
+            .limit(MAX_GBP_PUBLISHES_PER_WEEK)
+
+          if (!readyForApproval || readyForApproval.length === 0) {
+            return { org_id: org.id, published: 0, skipped: 0 }
+          }
+
+          let pending = 0
+          for (const post of readyForApproval) {
+            // Evitar duplicatas: nao criar se ja existe post com mesmo conteudo
+            const { count: existing } = await db
+              .from('posts')
+              .select('id', { count: 'exact', head: true })
+              .eq('organization_id', org.id)
+              .eq('content', post.rewritten_caption)
+
+            if ((existing ?? 0) > 0) continue
+
+            await db.from('posts').insert({
+              organization_id: org.id,
+              content: post.rewritten_caption,
+              post_type: 'educativo',
+              status: 'pending',
+              photo_suggestion: post.image_url ?? 'Foto original do Instagram',
+            })
+            pending++
+          }
+
+          return { org_id: org.id, published: 0, skipped: 0, pending }
         }
 
         // Contar quantos posts ja foram publicados esta semana
@@ -221,7 +259,7 @@ export const instagramSync = inngest.createFunction(
           .from('instagram_posts')
           .select('id', { count: 'exact', head: true })
           .eq('organization_id', org.id)
-          .eq('status', 'published_gbp')
+          .eq('status', 'published')
           .gte('published_to_gbp_at', weekAgo.toISOString())
 
         const remainingSlots = MAX_GBP_PUBLISHES_PER_WEEK - (publishedThisWeek ?? 0)
@@ -268,7 +306,7 @@ export const instagramSync = inngest.createFunction(
             if (gbpPostId) {
               await db.from('instagram_posts')
                 .update({
-                  status: 'published_gbp',
+                  status: 'published',
                   gbp_post_id: gbpPostId,
                   published_to_gbp_at: new Date().toISOString(),
                 })
@@ -282,7 +320,6 @@ export const instagramSync = inngest.createFunction(
                 published_at: new Date().toISOString(),
                 gbp_post_id: gbpPostId,
                 photo_suggestion: 'Foto original do Instagram',
-                source: 'instagram',
               })
               published++
             } else {
