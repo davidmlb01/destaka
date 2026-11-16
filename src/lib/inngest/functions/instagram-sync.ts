@@ -12,7 +12,7 @@ import { publishPost as zernioPublishPost } from '@/lib/zernio/client'
 import { geotagAndUpload } from '@/lib/media/geotag'
 
 const MAX_POSTS_PER_WEEK = 3
-const MAX_GBP_PUBLISHES_PER_WEEK = 2
+const MAX_GBP_PUBLISHES_PER_WEEK = 3
 
 function admin() {
   return createAdminSupa(
