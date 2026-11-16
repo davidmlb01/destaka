@@ -67,12 +67,12 @@ export async function scrapeInstagramPosts(
       return type === 'Image' || type === 'Sidecar' || type === 'Video'
     })
     .filter((p) => {
-      // Apenas posts dos ultimos 30 dias
+      // Apenas posts dos ultimos 6 meses
       if (!p.timestamp) return true
       const postDate = new Date(p.timestamp)
-      const thirtyDaysAgo = new Date()
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
-      return postDate >= thirtyDaysAgo
+      const sixMonthsAgo = new Date()
+      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6)
+      return postDate >= sixMonthsAgo
     })
     .map((p) => ({
       id: p.id ?? p.shortCode ?? '',
