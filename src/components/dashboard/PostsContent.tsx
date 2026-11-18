@@ -8,7 +8,8 @@ import { Spinner } from '@/components/ui/Spinner'
 import { usePosts } from './hooks/usePosts'
 
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
-  draft: { label: 'Aguardando aprovação', color: '#FBBF24' },
+  draft: { label: 'Aguardando aprovacao', color: '#FBBF24' },
+  pending: { label: 'Aguardando aprovacao', color: '#FBBF24' },
   published: { label: 'Publicado', color: '#4ADE80' },
   scheduled: { label: 'Agendado', color: 'var(--accent-bright)' },
   failed: { label: 'Falhou', color: 'var(--error)' },
@@ -210,28 +211,29 @@ export function PostsContent() {
                       setEditingId(null)
                     }}
                     disabled={publishingId === post.id}
-                    className="flex-1 py-2 rounded-xl text-xs font-bold"
+                    className="flex-1 py-2 rounded-xl text-xs font-bold transition-all"
                     style={{
-                      background: 'rgba(74,222,128,0.15)',
+                      cursor: publishingId === post.id ? 'wait' : 'pointer',
+                      background: publishingId === post.id ? 'rgba(74,222,128,0.3)' : 'rgba(74,222,128,0.15)',
                       border: '1px solid rgba(74,222,128,0.25)',
                       color: publishingId === post.id ? 'rgba(74,222,128,0.4)' : '#4ADE80',
                     }}
                   >
-                    {publishingId === post.id ? 'Publicando...' : '✓ Publicar'}
+                    {publishingId === post.id ? 'Publicando...' : 'Publicar'}
                   </button>
                   {editingId === post.id ? (
                     <button
                       onClick={() => setEditingId(null)}
-                      className="px-4 py-2 rounded-xl text-xs font-medium"
-                      style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-tertiary)' }}
+                      className="px-4 py-2 rounded-xl text-xs font-medium transition-all"
+                      style={{ cursor: 'pointer', background: 'rgba(255,255,255,0.05)', color: 'var(--text-tertiary)' }}
                     >
                       Cancelar
                     </button>
                   ) : (
                     <button
                       onClick={() => { setEditingId(post.id); setEditText(post.content) }}
-                      className="px-4 py-2 rounded-xl text-xs font-medium"
-                      style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-tertiary)' }}
+                      className="px-4 py-2 rounded-xl text-xs font-medium transition-all"
+                      style={{ cursor: 'pointer', background: 'rgba(255,255,255,0.05)', color: 'var(--text-tertiary)' }}
                     >
                       Editar
                     </button>
@@ -239,10 +241,10 @@ export function PostsContent() {
                   <button
                     onClick={() => handleDiscard(post.id)}
                     disabled={deletingId === post.id}
-                    className="px-4 py-2 rounded-xl text-xs font-medium"
-                    style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-tertiary)' }}
+                    className="px-4 py-2 rounded-xl text-xs font-medium transition-all"
+                    style={{ cursor: deletingId === post.id ? 'wait' : 'pointer', background: 'rgba(255,255,255,0.05)', color: 'var(--text-tertiary)' }}
                   >
-                    Descartar
+                    {deletingId === post.id ? 'Removendo...' : 'Descartar'}
                   </button>
                 </div>
               </div>
@@ -257,7 +259,7 @@ export function PostsContent() {
           Histórico de posts
         </p>
 
-        {!data?.posts.filter(p => p.status !== 'draft').length ? (
+        {!data?.posts.filter(p => p.status !== 'draft' && p.status !== 'pending').length ? (
           <div
             className="rounded-2xl flex items-center justify-center py-12"
             style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.06)' }}
@@ -268,7 +270,7 @@ export function PostsContent() {
           </div>
         ) : (
           <div className="flex flex-col gap-3">
-            {data?.posts.filter(p => p.status !== 'draft').map(post => {
+            {data?.posts.filter(p => p.status !== 'draft' && p.status !== 'pending').map(post => {
               const cfg = STATUS_CONFIG[post.status] ?? STATUS_CONFIG.draft
               return (
                 <Card key={post.id} variant="dark" padding="sm">

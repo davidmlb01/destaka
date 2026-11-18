@@ -42,7 +42,7 @@ export async function POST(
   // Buscar post pendente
   const { data: post } = await admin
     .from('posts')
-    .select('id, content, image_url')
+    .select('id, content, photo_suggestion')
     .eq('id', postId)
     .eq('organization_id', orgId)
     .in('status', ['pending', 'draft'])
@@ -75,7 +75,7 @@ export async function POST(
     zernioPostId = await zernioPublishPost(
       org.zernio_account_id,
       finalContent,
-      (post as Record<string, string>).image_url ?? undefined
+      (post as Record<string, string>).photo_suggestion ?? undefined
     )
   } catch (err) {
     console.error('[posts/publish] Zernio error:', err instanceof Error ? err.message : err)
