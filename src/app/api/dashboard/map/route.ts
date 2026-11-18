@@ -27,7 +27,7 @@ export async function GET() {
   if (!snapshot) {
     return privateJson({
       empty: true,
-      message: 'Coletando dados de alcance. Volte na proxima semana.',
+      message: 'Coletando dados de alcance. Volte na próxima semana.',
     })
   }
 

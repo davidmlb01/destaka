@@ -218,10 +218,10 @@ export function VerifyTool() {
               style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.07)' }}
             >
               <p className="font-display font-bold text-white mb-1" style={{ fontSize: 14 }}>
-                Receba este relatorio no seu email
+                Receba este relatório no seu email
               </p>
               <p className="text-xs mb-4" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                Sem cadastro. So o relatorio.
+                Sem cadastro. Só o relatório.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 mb-3">
                 <input

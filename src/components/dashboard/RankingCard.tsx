@@ -88,7 +88,7 @@ export function RankingCard() {
       >
         <div className="flex flex-col items-center py-6 text-center">
           <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
-            Posicionamento sendo analisado. Primeiro resultado aparece na proxima segunda-feira.
+            Posicionamento sendo analisado. Primeiro resultado aparece na próxima segunda-feira.
           </p>
         </div>
       </div>

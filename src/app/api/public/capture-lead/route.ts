@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
   }
   if (count >= MAX_PER_IP_PER_DAY) {
     return NextResponse.json(
-      { error: 'Limite de auditorias diarias atingido. Tente novamente amanha.' },
+      { error: 'Limite de auditorias diárias atingido. Tente novamente amanhã.' },
       { status: 429 }
     )
   }
@@ -65,10 +65,10 @@ export async function POST(req: NextRequest) {
   const parsed = CaptureLeadBody.safeParse(await req.json().catch(() => null))
   if (!parsed.success) {
     const emailErr = parsed.error?.issues.find(i => i.path[0] === 'email')
-    if (emailErr) return NextResponse.json({ error: 'Email invalido' }, { status: 400 })
+    if (emailErr) return NextResponse.json({ error: 'Email inválido' }, { status: 400 })
     const lgpdErr = parsed.error?.issues.find(i => i.path[0] === 'lgpdConsent')
-    if (lgpdErr) return NextResponse.json({ error: 'Consentimento LGPD obrigatorio' }, { status: 400 })
-    return NextResponse.json({ error: 'Body invalido' }, { status: 400 })
+    if (lgpdErr) return NextResponse.json({ error: 'Consentimento LGPD obrigatório' }, { status: 400 })
+    return NextResponse.json({ error: 'Body inválido' }, { status: 400 })
   }
 
   // Rate limit per email (prevent relay abuse from rotating IPs)
@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
   const emailCount = await rateLimit(`ratelimit:lead-email:${emailHash}`, 86400)
   if (emailCount !== null && emailCount >= 2) {
     return NextResponse.json(
-      { error: 'Email ja recebeu auditoria recentemente. Tente novamente amanha.' },
+      { error: 'Email já recebeu auditoria recentemente. Tente novamente amanhã.' },
       { status: 429 }
     )
   }
@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
   }
 
   if (!lgpdConsent) {
-    return NextResponse.json({ error: 'Consentimento LGPD obrigatorio' }, { status: 400 })
+    return NextResponse.json({ error: 'Consentimento LGPD obrigatório' }, { status: 400 })
   }
 
   const topGaps = (categories ?? [])

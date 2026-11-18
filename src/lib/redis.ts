@@ -91,7 +91,7 @@ export async function cacheDel(key: string): Promise<void> {
 export async function rateLimitStrict(key: string, ttlSeconds: number): Promise<number> {
   const redis = getRedis()
   if (!redis) {
-    throw new Error('Rate limiter indisponivel. Tente novamente em instantes.')
+    throw new Error('Rate limiter indisponível. Tente novamente em instantes.')
   }
 
   try {
@@ -100,6 +100,6 @@ export async function rateLimitStrict(key: string, ttlSeconds: number): Promise<
     return count
   } catch (err) {
     console.error('[redis] rateLimitStrict error:', err)
-    throw new Error('Rate limiter indisponivel. Tente novamente em instantes.')
+    throw new Error('Rate limiter indisponível. Tente novamente em instantes.')
   }
 }

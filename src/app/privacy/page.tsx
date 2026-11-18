@@ -39,7 +39,7 @@ export default function PrivacyPage() {
           <section>
             <h2 style={{ color: teal }} className="text-lg font-semibold mb-3">1. Quem somos</h2>
             <p>
-              O Destaka é uma plataforma SaaS desenvolvida e operada pela <strong className="text-white">UNLMTD Co Producoes Ltda</strong>,
+              O Destaka é uma plataforma SaaS desenvolvida e operada pela <strong className="text-white">UNLMTD Co Produções Ltda</strong>,
               inscrita no CNPJ sob o número 33.838.440/0001-71, com sede em São Paulo, SP, Brasil.
             </p>
             <p className="mt-2">
@@ -52,7 +52,7 @@ export default function PrivacyPage() {
             <h2 style={{ color: teal }} className="text-lg font-semibold mb-3">2. Dados que coletamos</h2>
             <p>Ao utilizar o Destaka, coletamos os seguintes dados:</p>
             <ul className="mt-3 space-y-2 ml-4">
-              <li><strong className="text-white">Dados do Google Business Profile:</strong> informações do perfil comercial, avaliações de clientes, métricas de performance e localização — acessados via OAuth 2.0 com sua autorização explícita.</li>
+              <li><strong className="text-white">Dados do Google Business Profile:</strong> informações do perfil comercial, avaliações de clientes, métricas de performance e localização , acessados via OAuth 2.0 com sua autorização explícita.</li>
               <li><strong className="text-white">Dados de conta:</strong> e-mail e nome obtidos via autenticação Google (Google Sign-In).</li>
               <li><strong className="text-white">Dados de uso:</strong> interações com a plataforma para melhoria do serviço.</li>
               <li><strong className="text-white">Dados de faturamento:</strong> processados pelo Stripe. Não armazenamos dados de cartão de crédito.</li>
@@ -74,9 +74,9 @@ export default function PrivacyPage() {
             <h2 style={{ color: teal }} className="text-lg font-semibold mb-3">4. Base legal (LGPD)</h2>
             <p>O tratamento de dados realizado pelo Destaka tem como base legal:</p>
             <ul className="mt-3 space-y-2 ml-4">
-              <li><strong className="text-white">Art. 7º, V — Execução de contrato:</strong> o tratamento é necessário para a prestação do serviço contratado.</li>
-              <li><strong className="text-white">Art. 7º, IX — Legítimo interesse:</strong> para melhoria contínua da plataforma, sempre ponderado com seus direitos.</li>
-              <li><strong className="text-white">Art. 11 — Dados sensíveis de saúde:</strong> comentários de pacientes são sanitizados (CPF, nome, telefone removidos) antes de qualquer processamento por IA, mediante consentimento explícito.</li>
+              <li><strong className="text-white">Art. 7º, V , Execução de contrato:</strong> o tratamento é necessário para a prestação do serviço contratado.</li>
+              <li><strong className="text-white">Art. 7º, IX , Legítimo interesse:</strong> para melhoria contínua da plataforma, sempre ponderado com seus direitos.</li>
+              <li><strong className="text-white">Art. 11 , Dados sensíveis de saúde:</strong> comentários de pacientes são sanitizados (CPF, nome, telefone removidos) antes de qualquer processamento por IA, mediante consentimento explícito.</li>
             </ul>
           </section>
 
@@ -142,7 +142,7 @@ export default function PrivacyPage() {
             </p>
             <p className="mt-2">
               <strong className="text-white">Encarregado de Dados (DPO):</strong><br />
-              UNLMTD Co Producoes Ltda<br />
+              UNLMTD Co Produções Ltda<br />
               <a href="mailto:privacidade@destaka.com.br" style={{ color: teal }}>privacidade@destaka.com.br</a>
             </p>
           </section>
@@ -150,7 +150,7 @@ export default function PrivacyPage() {
         </div>
 
         <div style={{ borderTop: `1px solid ${bgCardBorder}` }} className="mt-16 pt-8 text-xs text-white/30">
-          Destaka — by UNLMTD Co Producoes Ltda — CNPJ 33.838.440/0001-71 —
+          Destaka , by UNLMTD Co Produções Ltda , CNPJ 33.838.440/0001-71 
           <Link href="/termos" style={{ color: teal }} className="ml-1">Termos de Uso</Link>
         </div>
       </div>

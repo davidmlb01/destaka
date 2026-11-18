@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
 
   const parsed = ApplyPayloadSchema.safeParse(await request.json().catch(() => null))
   if (!parsed.success) {
-    return NextResponse.json({ error: 'Payload invalido' }, { status: 400 })
+    return NextResponse.json({ error: 'Payload inválido' }, { status: 400 })
   }
   const { type, value } = parsed.data
 

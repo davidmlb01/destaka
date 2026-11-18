@@ -119,7 +119,7 @@ export const referralTrigger = inngest.createFunction(
 
       const totalSearches = data.total_searches ?? 0
       const searchesText =
-        totalSearches > 0 ? `${totalSearches} pessoas encontraram voce pelo Google este mes.` : ''
+        totalSearches > 0 ? `${totalSearches} pessoas encontraram você pelo Google este mês.` : ''
 
       // Mensagem personalizada com resultado real como prova social
       const params: Record<string, string> = {

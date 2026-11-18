@@ -83,7 +83,7 @@ export const MetricCard = memo(function MetricCard({ label, value, icon, hint, l
             {label}
           </p>
           <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-muted)' }}>
-            {lastKnownDate ? `Sem dados desde ${lastKnownDate}` : 'Disponivel em breve'}
+            {lastKnownDate ? `Sem dados desde ${lastKnownDate}` : 'Disponível em breve'}
           </p>
         </>
       )}

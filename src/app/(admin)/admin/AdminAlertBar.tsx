@@ -58,7 +58,7 @@ export function AdminAlertBar({ brokenTokensCount, totalPending }: AdminAlertBar
             }}
           >
             <AlertTriangleIcon />
-            {brokenTokensCount} token{brokenTokensCount > 1 ? 's' : ''} invalido{brokenTokensCount > 1 ? 's' : ''}
+            {brokenTokensCount} token{brokenTokensCount > 1 ? 's' : ''} inválido{brokenTokensCount > 1 ? 's' : ''}
           </span>
         )}
         {totalPending > 0 && (

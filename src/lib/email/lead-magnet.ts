@@ -127,7 +127,7 @@ export async function sendLeadMagnetEmail(params: LeadMagnetEmailParams) {
   return resend.emails.send({
     from: FROM,
     to,
-    subject: `${(placeName ?? '').replace(/[\r\n\t]/g, ' ').slice(0, 100)}: ${score}/100. Veja quantos ${vocab.clientes} voce esta perdendo`,
+    subject: `${(placeName ?? '').replace(/[\r\n\t]/g, ' ').slice(0, 100)}: ${score}/100. Veja quantos ${vocab.clientes} você está perdendo`,
     html,
   })
 }

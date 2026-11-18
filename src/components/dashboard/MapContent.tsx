@@ -113,7 +113,7 @@ export default function MapContent({ center, zones, radiusKm = 5 }: MapContentPr
 
       <Marker position={[center.lat, center.lng]} icon={centerIcon}>
         <Popup>
-          <span style={{ color: '#000', fontWeight: 500 }}>Seu negocio</span>
+          <span style={{ color: '#000', fontWeight: 500 }}>Seu negócio</span>
         </Popup>
       </Marker>
     </MapContainer>

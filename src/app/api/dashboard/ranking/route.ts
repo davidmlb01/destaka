@@ -15,7 +15,7 @@ export async function GET() {
     .order('is_primary', { ascending: false })
 
   if (!keywords?.length) {
-    return privateJson({ empty: true, message: 'Keywords sendo geradas. Dados aparecem na proxima segunda.' })
+    return privateJson({ empty: true, message: 'Keywords sendo geradas. Dados aparecem na próxima segunda.' })
   }
 
   // Posicoes mais recentes para cada keyword

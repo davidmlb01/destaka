@@ -34,7 +34,7 @@ export async function GET() {
     .maybeSingle()
 
   if (!professional?.organization_id) {
-    return NextResponse.json({ error: 'Organizacao nao encontrada' }, { status: 404 })
+    return NextResponse.json({ error: 'Organização não encontrada' }, { status: 404 })
   }
 
   const orgId = professional.organization_id
@@ -74,7 +74,7 @@ export async function GET() {
         suggested.push({
           displayName: cat,
           name: cat.toLowerCase().replace(/\s+/g, '_'),
-          reason: 'Categoria usada por 2+ concorrentes na sua regiao.',
+          reason: 'Categoria usada por 2+ concorrentes na sua região.',
         })
       }
     }
@@ -101,14 +101,14 @@ export async function POST(request: NextRequest) {
     .maybeSingle()
 
   if (!professional?.organization_id) {
-    return NextResponse.json({ error: 'Organizacao nao encontrada' }, { status: 404 })
+    return NextResponse.json({ error: 'Organização não encontrada' }, { status: 404 })
   }
 
   const orgId = professional.organization_id
   const parsed = ApplyCategoriesSchema.safeParse(await request.json().catch(() => null))
 
   if (!parsed.success) {
-    return NextResponse.json({ error: 'Dados invalidos' }, { status: 400 })
+    return NextResponse.json({ error: 'Dados inválidos' }, { status: 400 })
   }
 
   const admin = createServiceClient()
@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
     .maybeSingle()
 
   if (!profile?.location_id) {
-    return NextResponse.json({ error: 'Perfil GBP nao encontrado' }, { status: 404 })
+    return NextResponse.json({ error: 'Perfil GBP não encontrado' }, { status: 404 })
   }
 
   const existingCategories: string[] = Array.isArray(profile.categories)

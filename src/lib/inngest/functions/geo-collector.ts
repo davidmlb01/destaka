@@ -162,7 +162,7 @@ export const geoCollector = inngest.createFunction(
           zones.unshift({
             lat: centerLat,
             lng: centerLng,
-            label: 'Seu negocio',
+            label: 'Seu negócio',
             count: 100,
             status: 'strong',
           })

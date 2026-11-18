@@ -46,7 +46,7 @@ export function MrrLeadsChart({ data }: { data: MrrPoint[] }) {
         boxShadow: 'var(--admin-shadow-md)',
       }}
     >
-      <h2 className="font-semibold mb-1" style={{ color: 'var(--admin-text-heading)', fontSize: 15 }}>MRR e Leads por mes</h2>
+      <h2 className="font-semibold mb-1" style={{ color: 'var(--admin-text-heading)', fontSize: 15 }}>MRR e Leads por mês</h2>
       <p className="text-xs mb-4" style={{ color: 'var(--admin-text-muted)' }}>Receita recorrente e volume de leads</p>
       {data.length < 2 ? (
         <p className="text-sm py-8 text-center" style={{ color: 'var(--admin-text-muted)' }}>Dados insuficientes para o gráfico.</p>

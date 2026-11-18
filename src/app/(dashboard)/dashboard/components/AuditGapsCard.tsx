@@ -18,8 +18,8 @@ export function AuditGapsCard({ auditReport }: { auditReport: AuditReport | null
   if (!auditReport || typeof auditReport !== 'object') {
     return (
       <div className="rounded-2xl p-6" style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}>
-        <p className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--text-muted)' }}>Diagnostico do perfil</p>
-        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Auditoria em andamento. Disponivel em instantes.</p>
+        <p className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: 'var(--text-muted)' }}>Diagnóstico do perfil</p>
+        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Auditoria em andamento. Disponível em instantes.</p>
       </div>
     )
   }

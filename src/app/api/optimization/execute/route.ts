@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
   }
 
   if (!body.actions?.length) {
-    return NextResponse.json({ error: 'Nenhuma acao para executar' }, { status: 400 })
+    return NextResponse.json({ error: 'Nenhuma ação para executar' }, { status: 400 })
   }
   const admin = createServiceClient()
 
@@ -102,7 +102,7 @@ Inclua keywords de SEO local. Sem travessao. Retorne APENAS o texto da descricao
           } else {
             const errBody = await res.text()
             console.error('[optimization/execute] GBP PATCH description error:', errBody)
-            results.push({ action, status: 'failed', error: 'Falha ao atualizar descricao no Google' })
+            results.push({ action, status: 'failed', error: 'Falha ao atualizar descrição no Google' })
           }
         } else {
           results.push({ action, status: 'failed', error: 'IA não gerou descrição válida' })

@@ -78,13 +78,13 @@ function scoreInfo(p: GmbProfileData): CategoryScore {
   let score = 0
 
   if (p.hasName) score += 5
-  else issues.push({ field: 'name', severity: 'critical', message: 'Nome do negocio nao preenchido', impact: 5 })
+  else issues.push({ field: 'name', severity: 'critical', message: 'Nome do negócio não preenchido', impact: 5 })
 
   if (p.hasPhone) score += 5
-  else issues.push({ field: 'phone', severity: 'critical', message: 'Telefone nao cadastrado, clientes nao conseguem ligar', impact: 5 })
+  else issues.push({ field: 'phone', severity: 'critical', message: 'Telefone não cadastrado, clientes não conseguem ligar', impact: 5 })
 
   if (p.hasAddress) score += 5
-  else issues.push({ field: 'address', severity: 'critical', message: 'Endereco nao configurado, nao aparece no Maps', impact: 5 })
+  else issues.push({ field: 'address', severity: 'critical', message: 'Endereço não configurado, não aparece no Maps', impact: 5 })
 
   if (p.hasHours) score += 5
   else issues.push({ field: 'hours', severity: 'warning', message: 'Horário de funcionamento não definido', impact: 5 })
@@ -142,9 +142,9 @@ function scorePosts(p: GmbProfileData): CategoryScore {
     score += 10
   } else if (p.lastPostDaysAgo !== null && p.lastPostDaysAgo <= 30) {
     score += 5
-    issues.push({ field: 'post_recency', severity: 'info', message: 'Ultimo post ha mais de 7 dias, poste toda semana', impact: 5 })
+    issues.push({ field: 'post_recency', severity: 'info', message: 'Último post há mais de 7 dias, poste toda semana', impact: 5 })
   } else {
-    issues.push({ field: 'posts', severity: 'critical', message: p.lastPostDaysAgo === null ? 'Nunca publicou um post' : `Ultimo post ha ${p.lastPostDaysAgo} dias`, impact: 15 })
+    issues.push({ field: 'posts', severity: 'critical', message: p.lastPostDaysAgo === null ? 'Nunca publicou um post' : `Último post há ${p.lastPostDaysAgo} dias`, impact: 15 })
   }
 
   return makeCategory('posts', 'Posts', score, 15, issues)
@@ -155,12 +155,12 @@ function scoreServices(p: GmbProfileData): CategoryScore {
   let score = 0
 
   if (p.servicesCount >= 3) score += 5
-  else issues.push({ field: 'services_count', severity: 'warning', message: `Apenas ${p.servicesCount} ${p.servicesCount === 1 ? 'servico listado' : 'servicos listados'}, ideal: 3+`, impact: 5 })
+  else issues.push({ field: 'services_count', severity: 'warning', message: `Apenas ${p.servicesCount} ${p.servicesCount === 1 ? 'serviço listado' : 'serviços listados'}, ideal: 3+`, impact: 5 })
 
   if (p.servicesWithDescCount >= p.servicesCount && p.servicesCount > 0) score += 5
-  else issues.push({ field: 'services_desc', severity: 'info', message: 'Servicos sem descricao detalhada', impact: 5 })
+  else issues.push({ field: 'services_desc', severity: 'info', message: 'Serviços sem descrição detalhada', impact: 5 })
 
-  return makeCategory('services', 'Servicos', score, 10, issues)
+  return makeCategory('services', 'Serviços', score, 10, issues)
 }
 
 function scoreAttributes(p: GmbProfileData): CategoryScore {
@@ -168,7 +168,7 @@ function scoreAttributes(p: GmbProfileData): CategoryScore {
   let score = 0
 
   if (p.attributesCount >= 5) score += 5
-  else issues.push({ field: 'attributes', severity: 'warning', message: `Apenas ${p.attributesCount} ${p.attributesCount === 1 ? 'atributo' : 'atributos'}, ideal: 5+ (ex: Wi-Fi, estacionamento, acessivel)`, impact: 5 })
+  else issues.push({ field: 'attributes', severity: 'warning', message: `Apenas ${p.attributesCount} ${p.attributesCount === 1 ? 'atributo' : 'atributos'}, ideal: 5+ (ex: Wi-Fi, estacionamento, acessível)`, impact: 5 })
 
   return makeCategory('attributes', 'Atributos', score, 5, issues)
 }

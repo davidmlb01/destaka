@@ -252,7 +252,7 @@ function buildAutoGaps(
 
   // Destaka gera descricao otimizada
   if (!input.hasDescription) {
-    gaps.push({ field: 'descricao', impact: 10, message: 'Descricao do perfil ausente ou incompleta' })
+    gaps.push({ field: 'descricao', impact: 10, message: 'Descrição do perfil ausente ou incompleta' })
   }
 
   // Destaka gera posts automaticos semanais

@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     const count = await rateLimit(`ratelimit:verify:${ipHash}`, 86400)
     if (count === null) {
       return NextResponse.json(
-        { error: 'Servico temporariamente indisponivel' },
+        { error: 'Serviço temporariamente indisponível' },
         { status: 503 }
       )
     }

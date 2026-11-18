@@ -40,7 +40,7 @@ export function useVerifyDiagnostic() {
 
     if (!res.ok) {
       const data = (await res.json()) as { error?: string }
-      setError(data.error ?? 'Nao foi possivel analisar este estabelecimento.')
+      setError(data.error ?? 'Não foi possível analisar este estabelecimento.')
       setLoading(false)
       return
     }

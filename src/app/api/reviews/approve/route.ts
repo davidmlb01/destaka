@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const parsed = ResponseIdSchema.safeParse(await request.json().catch(() => null))
-  if (!parsed.success) return NextResponse.json({ error: 'response_id invalido' }, { status: 400 })
+  if (!parsed.success) return NextResponse.json({ error: 'response_id inválido' }, { status: 400 })
   const { response_id } = parsed.data
 
   const admin = createServiceClient()
@@ -100,7 +100,7 @@ export async function DELETE(request: NextRequest) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const parsed = ResponseIdSchema.safeParse(await request.json().catch(() => null))
-  if (!parsed.success) return NextResponse.json({ error: 'response_id invalido' }, { status: 400 })
+  if (!parsed.success) return NextResponse.json({ error: 'response_id inválido' }, { status: 400 })
   const { response_id } = parsed.data
 
   const admin = createServiceClient()

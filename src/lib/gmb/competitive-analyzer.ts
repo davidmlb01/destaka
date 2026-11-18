@@ -135,14 +135,14 @@ function analyzeCategoryGaps(
   return {
     type: 'categories',
     priority: 'high',
-    gap_description: `${missing.length} ${missing.length === 1 ? 'categoria que' : 'categorias que'} seus concorrentes usam e voce nao tem`,
+    gap_description: `${missing.length} ${missing.length === 1 ? 'categoria que' : 'categorias que'} seus concorrentes usam e você não tem`,
     competitor_values: Array.from(catFreq.keys()),
     client_values: clientCatsNorm,
     missing,
     suggested_action: {
       type: 'update_categories',
       label: `Adicionar ${missing.length === 1 ? 'categoria' : 'categorias'}: ${missing.slice(0, 3).join(', ')}`,
-      description: `${missing.length === 1 ? 'Essa categoria aparece' : 'Essas categorias aparecem'} em 2 ou mais concorrentes da sua regiao.`,
+      description: `${missing.length === 1 ? 'Essa categoria aparece' : 'Essas categorias aparecem'} em 2 ou mais concorrentes da sua região.`,
       impact: 8,
     },
     impact_score: 8,
@@ -175,14 +175,14 @@ function analyzeKeywordGaps(
   return {
     type: 'description_keywords',
     priority: 'high',
-    gap_description: `Keywords populares nas avaliacoes dos concorrentes que nao aparecem na sua descricao`,
+    gap_description: `Keywords populares nas avaliações dos concorrentes que não aparecem na sua descrição`,
     competitor_values: consensusKeywords,
     client_values: clientDescription ? [clientDescription.slice(0, 100)] : [],
     missing: missing.slice(0, 10),
     suggested_action: {
       type: 'update_description',
-      label: 'Otimizar descricao com keywords dos concorrentes',
-      description: `Incorporar termos como "${missing.slice(0, 3).join('", "')}" que pacientes usam ao buscar servicos na sua regiao.`,
+      label: 'Otimizar descrição com keywords dos concorrentes',
+      description: `Incorporar termos como "${missing.slice(0, 3).join('", "')}" que pacientes usam ao buscar serviços na sua região.`,
       impact: 9,
     },
     impact_score: 9,
@@ -201,7 +201,7 @@ function analyzePhotoGap(
   return {
     type: 'photos',
     priority: 'medium',
-    gap_description: `Seus concorrentes tem em media ${Math.round(avgPhotos)} fotos. Voce tem ${clientPhotoCount}.`,
+    gap_description: `Seus concorrentes têm em média ${Math.round(avgPhotos)} fotos. Você tem ${clientPhotoCount}.`,
     competitor_values: competitors.map(c => `${c.name}: ${c.photo_count}`),
     client_values: [`${clientPhotoCount} fotos`],
     missing: [],
@@ -223,9 +223,9 @@ function analyzeReviewGap(
   return {
     type: 'reviews',
     priority: 'low',
-    gap_description: `Seus concorrentes tem em media ${Math.round(avgReviews)} avaliacoes. Voce tem ${clientReviewCount}.`,
+    gap_description: `Seus concorrentes têm em média ${Math.round(avgReviews)} avaliações. Você tem ${clientReviewCount}.`,
     competitor_values: competitors.map(c => `${c.name}: ${c.review_count} (${c.avg_rating?.toFixed(1) ?? '-'})`),
-    client_values: [`${clientReviewCount} avaliacoes (${clientRating?.toFixed(1) ?? '-'})`],
+    client_values: [`${clientReviewCount} avaliações (${clientRating?.toFixed(1) ?? '-'})`],
     missing: [],
     suggested_action: null, // nao automatizavel
     impact_score: 3,
@@ -337,16 +337,16 @@ function buildSummary(gaps: CompetitiveGap[], competitorCount: number): string {
   const mediumGaps = gaps.filter(g => g.priority === 'medium')
 
   if (highGaps.length === 0 && mediumGaps.length === 0) {
-    return `Seu perfil esta bem posicionado em relacao aos ${competitorCount} concorrentes analisados.`
+    return `Seu perfil está bem posicionado em relação aos ${competitorCount} concorrentes analisados.`
   }
 
   const parts: string[] = []
   if (highGaps.length > 0) {
-    parts.push(`${highGaps.length} ${highGaps.length === 1 ? 'oportunidade prioritaria' : 'oportunidades prioritarias'}`)
+    parts.push(`${highGaps.length} ${highGaps.length === 1 ? 'oportunidade prioritária' : 'oportunidades prioritárias'}`)
   }
   if (mediumGaps.length > 0) {
     parts.push(`${mediumGaps.length} ${mediumGaps.length === 1 ? 'melhoria recomendada' : 'melhorias recomendadas'}`)
   }
 
-  return `Analise de ${competitorCount} concorrentes identificou ${parts.join(' e ')} para melhorar seu posicionamento.`
+  return `Análise de ${competitorCount} concorrentes identificou ${parts.join(' e ')} para melhorar seu posicionamento.`
 }

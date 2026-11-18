@@ -24,7 +24,7 @@ export const ONBOARDING_TEMPLATES: WhatsAppTemplate[] = [
       '2': data.link,
     }),
     preview: (data) =>
-      `Ola, ${data.nome}! Seu perfil no Google ja esta no piloto automatico com o Destaka. Nos proximos 30 dias, vamos otimizar sua presenca online. Acompanhe tudo na sua dashboard: ${data.link}`,
+      `Olá, ${data.nome}! Seu perfil no Google já está no piloto automático com o Destaka. Nos próximos 30 dias, vamos otimizar sua presença online. Acompanhe tudo na sua dashboard: ${data.link}`,
   },
   {
     name: 'destaka_onboarding_dia3_tarefas_manuais',
@@ -33,7 +33,7 @@ export const ONBOARDING_TEMPLATES: WhatsAppTemplate[] = [
       '1': data.nome,
     }),
     preview: (data) =>
-      `${data.nome}, tem 3 coisas que fazem toda diferenca e so voce pode fazer: adicionar fotos reais, responder reviews com seu toque pessoal e manter o horario atualizado. O Destaka cuida do resto.`,
+      `${data.nome}, tem 3 coisas que fazem toda diferença e só você pode fazer: adicionar fotos reais, responder reviews com seu toque pessoal e manter o horário atualizado. O Destaka cuida do resto.`,
   },
   {
     name: 'destaka_onboarding_dia7_primeiro_resultado',
@@ -43,7 +43,7 @@ export const ONBOARDING_TEMPLATES: WhatsAppTemplate[] = [
       '2': data.link,
     }),
     preview: (data) =>
-      `${data.nome}, primeira semana concluida! Ja otimizamos seu perfil e publicamos conteudo. Veja o progresso: ${data.link}`,
+      `${data.nome}, primeira semana concluída! Já otimizamos seu perfil e publicamos conteudo. Veja o progresso: ${data.link}`,
   },
   {
     name: 'destaka_onboarding_dia14_checkin',
@@ -52,7 +52,7 @@ export const ONBOARDING_TEMPLATES: WhatsAppTemplate[] = [
       '1': data.nome,
     }),
     preview: (data) =>
-      `${data.nome}, como esta a experiencia com o Destaka? Se tiver alguma duvida, responda aqui mesmo.`,
+      `${data.nome}, como está a experiência com o Destaka? Se tiver alguma dúvida, responda aqui mesmo.`,
   },
   {
     name: 'destaka_onboarding_dia30_resumo_mensal',
@@ -64,6 +64,6 @@ export const ONBOARDING_TEMPLATES: WhatsAppTemplate[] = [
       '4': data.link,
     }),
     preview: (data) =>
-      `${data.nome}, seu primeiro mes esta completo. Score: ${data.score_atual ?? '0'}/100 (era ${data.score_inicial ?? '0'}). Veja o relatorio: ${data.link}`,
+      `${data.nome}, seu primeiro mês está completo. Score: ${data.score_atual ?? '0'}/100 (era ${data.score_inicial ?? '0'}). Veja o relatório: ${data.link}`,
   },
 ]

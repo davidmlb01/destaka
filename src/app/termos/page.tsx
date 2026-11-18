@@ -48,7 +48,7 @@ export default function TermosPage() {
           <section>
             <h2 style={{ color: teal }} className="text-lg font-semibold mb-3">2. Descrição do Serviço</h2>
             <p>
-              O Destaka é uma plataforma SaaS desenvolvida pela UNLMTD Co Producoes Ltda (CNPJ 33.838.440/0001-71)
+              O Destaka é uma plataforma SaaS desenvolvida pela UNLMTD Co Produções Ltda (CNPJ 33.838.440/0001-71)
               que automatiza a gestão do Google Business Profile para profissionais de saúde no Brasil,
               incluindo monitoramento de avaliações, publicação de posts e análise de visibilidade.
             </p>
@@ -89,7 +89,7 @@ export default function TermosPage() {
           <section>
             <h2 style={{ color: teal }} className="text-lg font-semibold mb-3">6. Propriedade Intelectual</h2>
             <p>
-              A plataforma Destaka, seu código, design e marca pertencem à UNLMTD Co Producoes Ltda.
+              A plataforma Destaka, seu código, design e marca pertencem à UNLMTD Co Produções Ltda.
               O conteúdo gerado pela IA e publicado no seu perfil Google pertence a você.
               Você nos concede licença para utilizar os dados do seu perfil exclusivamente para a prestação do serviço.
             </p>
@@ -138,7 +138,7 @@ export default function TermosPage() {
           <section>
             <h2 style={{ color: teal }} className="text-lg font-semibold mb-3">11. Contato</h2>
             <p>
-              <strong className="text-white">UNLMTD Co Producoes Ltda</strong><br />
+              <strong className="text-white">UNLMTD Co Produções Ltda</strong><br />
               CNPJ: 33.838.440/0001-71<br />
               <a href="mailto:contato@destaka.com.br" style={{ color: teal }}>contato@destaka.com.br</a>
             </p>
@@ -147,7 +147,7 @@ export default function TermosPage() {
         </div>
 
         <div style={{ borderTop: `1px solid ${bgCardBorder}` }} className="mt-16 pt-8 text-xs text-white/30">
-          Destaka — by UNLMTD Co Producoes Ltda — CNPJ 33.838.440/0001-71 —
+          Destaka , by UNLMTD Co Produções Ltda , CNPJ 33.838.440/0001-71 
           <Link href="/privacy" style={{ color: teal }} className="ml-1">Política de Privacidade</Link>
         </div>
       </div>

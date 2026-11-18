@@ -11,7 +11,7 @@ export function CompetitorsCard({ competitors }: { competitors: Competitor[] }) 
   return (
     <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}>
       <div className="px-6 py-4" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-        <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Concorrentes proximos</h2>
+        <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Concorrentes próximos</h2>
       </div>
 
       <div>

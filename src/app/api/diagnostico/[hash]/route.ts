@@ -26,13 +26,13 @@ export async function GET(
   const { hash } = await params
 
   if (!hash || hash.length !== 16) {
-    return NextResponse.json({ error: 'Link invalido' }, { status: 400 })
+    return NextResponse.json({ error: 'Link inválido' }, { status: 400 })
   }
 
   // Rate limit per hash (prevent brute-force enumeration)
   const rlCount = await rateLimit(`ratelimit:diag:${hash}`, 3600)
   if (rlCount === null) {
-    return NextResponse.json({ error: 'Servico temporariamente indisponivel' }, { status: 503 })
+    return NextResponse.json({ error: 'Serviço temporariamente indisponível' }, { status: 503 })
   }
   if (rlCount >= 30) {
     return NextResponse.json({ error: 'Muitas requisicoes. Tente novamente em 1 hora.' }, { status: 429 })
@@ -85,7 +85,7 @@ export async function GET(
   }
 
   if (!matchedOrg) {
-    return NextResponse.json({ error: 'Diagnostico nao encontrado' }, { status: 404 })
+    return NextResponse.json({ error: 'Diagnóstico não encontrado' }, { status: 404 })
   }
 
   const orgId = matchedOrg.id

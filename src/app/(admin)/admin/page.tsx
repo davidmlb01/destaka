@@ -1135,7 +1135,7 @@ export default async function AdminPage() {
                     <thead>
                       <tr style={{ background: 'rgba(35,83,71,0.5)' }}>
                         <th className="px-6 py-3 text-left" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)' }}>Email</th>
-                        <th className="px-4 py-3 text-left" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)' }}>Negocio</th>
+                        <th className="px-4 py-3 text-left" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)' }}>Negócio</th>
                         <th className="px-4 py-3 text-right" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)' }}>Score</th>
                         <th className="px-4 py-3 text-left" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)' }}>Fonte</th>
                         <th className="px-4 py-3 text-left" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)' }}>Data</th>
@@ -1163,7 +1163,7 @@ export default async function AdminPage() {
                                 {lead.utm_source}{lead.utm_medium ? `/${lead.utm_medium}` : ''}
                               </span>
                             ) : (
-                              <span className="text-xs" style={{ color: 'var(--admin-text-muted)' }}>organico</span>
+                              <span className="text-xs" style={{ color: 'var(--admin-text-muted)' }}>orgânico</span>
                             )}
                           </td>
                           <td className="px-4 py-2.5 text-xs whitespace-nowrap" style={{ color: 'var(--admin-text-muted)' }}>{formatDateFull(lead.created_at)}</td>

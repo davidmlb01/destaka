@@ -54,7 +54,7 @@ export function PendingActions({
   if (remaining === 0) {
     return (
       <div className="rounded-2xl p-6" style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.15)' }}>
-        <p className="text-green-400 font-semibold text-sm">Tudo aprovado. Nenhuma acao pendente.</p>
+        <p className="text-green-400 font-semibold text-sm">Tudo aprovado. Nenhuma ação pendente.</p>
       </div>
     )
   }
@@ -62,7 +62,7 @@ export function PendingActions({
   return (
     <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--card-subtle)', border: '1px solid var(--border-card)' }}>
       <div className="px-6 py-4 flex items-center justify-between" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-        <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Acoes pendentes</h2>
+        <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Ações pendentes</h2>
         <span className="bg-amber-500/15 text-amber-400 text-xs font-bold px-2.5 py-1 rounded-full">{remaining}</span>
       </div>
 

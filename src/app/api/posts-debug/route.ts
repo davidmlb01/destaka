@@ -24,7 +24,7 @@ export async function GET(_req: NextRequest) {
       ? Buffer.from(rawToken.slice(7), 'base64').toString('utf8')
       : rawToken
   } catch {
-    return NextResponse.json({ error: 'Token invalido' }, { status: 401 })
+    return NextResponse.json({ error: 'Token inválido' }, { status: 401 })
   }
 
   let accessToken: string
@@ -32,7 +32,7 @@ export async function GET(_req: NextRequest) {
     const parsed = JSON.parse(tokenJson)
     accessToken = parsed.access_token
   } catch {
-    return NextResponse.json({ error: 'Token invalido' }, { status: 401 })
+    return NextResponse.json({ error: 'Token inválido' }, { status: 401 })
   }
 
   if (!accessToken) {

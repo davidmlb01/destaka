@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
 
   const accessToken = await getValidTokenForOrg(db, orgId)
   if (!accessToken) {
-    return NextResponse.json({ error: 'sem token Google valido' }, { status: 401 })
+    return NextResponse.json({ error: 'sem token Google válido' }, { status: 401 })
   }
 
   const { data: org } = await db
