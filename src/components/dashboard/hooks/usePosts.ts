@@ -1,5 +1,5 @@
 import useSWR from 'swr'
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { toast } from 'sonner'
 import { fetcher } from '@/lib/swr/fetcher'
 import { apiFetch } from '@/lib/api/client'
@@ -30,6 +30,7 @@ export function usePosts() {
   const [publishingId, setPublishingId] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [savingMode, setSavingMode] = useState(false)
+  const [justPublishedId, setJustPublishedId] = useState<string | null>(null)
 
   async function handleGenerate() {
     setGenerating(true)
@@ -39,6 +40,7 @@ export function usePosts() {
         toast.error(error)
         return
       }
+      toast.success('Post gerado com sucesso!')
       await mutate()
     } finally {
       setGenerating(false)
@@ -57,7 +59,10 @@ export function usePosts() {
         toast.error(error)
         return
       }
+      toast.success('Post publicado no Google!')
+      setJustPublishedId(postId)
       await mutate()
+      setTimeout(() => setJustPublishedId(null), 4000)
     } finally {
       setPublishingId(null)
     }
@@ -71,6 +76,7 @@ export function usePosts() {
         toast.error(error)
         return
       }
+      toast.success('Post descartado.')
       await mutate()
     } finally {
       setDeletingId(null)
@@ -88,14 +94,17 @@ export function usePosts() {
       })
       if (res.ok) {
         await mutate({ ...data, autoPostMode: mode }, false)
+        toast.success('Modo de postagem atualizado.')
       } else {
         const err = (await res.json().catch(() => ({}))) as { error?: string }
-        toast.error(err.error ?? 'Erro ao salvar configuração.')
+        toast.error(err.error ?? 'Erro ao salvar configuracao.')
       }
     } finally {
       setSavingMode(false)
     }
   }
+
+  const clearJustPublished = useCallback(() => setJustPublishedId(null), [])
 
   return {
     data,
@@ -105,9 +114,11 @@ export function usePosts() {
     publishingId,
     deletingId,
     savingMode,
+    justPublishedId,
     handleGenerate,
     handlePublish,
     handleDiscard,
     handleModeChange,
+    clearJustPublished,
   }
 }
