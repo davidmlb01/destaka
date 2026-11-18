@@ -35,7 +35,7 @@ export async function POST(
     .maybeSingle()
 
   if (!professional?.organization_id) {
-    return NextResponse.json({ error: 'Organizacao nao encontrada' }, { status: 404 })
+    return NextResponse.json({ error: 'Organização não encontrada' }, { status: 404 })
   }
 
   const orgId = professional.organization_id
@@ -50,7 +50,7 @@ export async function POST(
     .maybeSingle()
 
   if (!post) {
-    return NextResponse.json({ error: 'Post nao encontrado ou ja publicado' }, { status: 404 })
+    return NextResponse.json({ error: 'Post não encontrado ou já publicado' }, { status: 404 })
   }
 
   // Buscar zernio_account_id
@@ -61,7 +61,7 @@ export async function POST(
     .maybeSingle()
 
   if (!org?.zernio_account_id) {
-    return NextResponse.json({ error: 'Conta Google Business nao conectada. Faca login novamente.' }, { status: 400 })
+    return NextResponse.json({ error: 'Conta Google Business não conectada. Faça login novamente.' }, { status: 400 })
   }
 
   // Se texto foi editado, atualizar no banco antes de publicar

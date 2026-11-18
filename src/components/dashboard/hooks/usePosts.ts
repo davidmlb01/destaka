@@ -97,7 +97,7 @@ export function usePosts() {
         toast.success('Modo de postagem atualizado.')
       } else {
         const err = (await res.json().catch(() => ({}))) as { error?: string }
-        toast.error(err.error ?? 'Erro ao salvar configuracao.')
+        toast.error(err.error ?? 'Erro ao salvar configuração.')
       }
     } finally {
       setSavingMode(false)

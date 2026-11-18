@@ -8,8 +8,8 @@ import { Spinner } from '@/components/ui/Spinner'
 import { usePosts } from './hooks/usePosts'
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  draft: { label: 'Aguardando aprovacao', color: '#FBBF24', bg: 'rgba(251,191,36,0.1)' },
-  pending: { label: 'Aguardando aprovacao', color: '#FBBF24', bg: 'rgba(251,191,36,0.1)' },
+  draft: { label: 'Aguardando aprovação', color: '#FBBF24', bg: 'rgba(251,191,36,0.1)' },
+  pending: { label: 'Aguardando aprovação', color: '#FBBF24', bg: 'rgba(251,191,36,0.1)' },
   published: { label: 'Publicado', color: '#4ADE80', bg: 'rgba(74,222,128,0.1)' },
   scheduled: { label: 'Agendado', color: 'var(--accent-bright)', bg: 'rgba(14,165,233,0.1)' },
   failed: { label: 'Falhou', color: 'var(--error)', bg: 'rgba(239,68,68,0.1)' },
@@ -32,11 +32,11 @@ function getNextAutoPostLabel(): string {
   const todayCron = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 10, 15))
   const target = now < todayCron ? todayCron : new Date(todayCron.getTime() + 24 * 60 * 60 * 1000)
   const brt = new Date(target.getTime() - 3 * 60 * 60 * 1000)
-  const weekdays = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado']
+  const weekdays = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado']
   const day = weekdays[brt.getUTCDay()]
   const dd = String(brt.getUTCDate()).padStart(2, '0')
   const mm = String(brt.getUTCMonth() + 1).padStart(2, '0')
-  return `${day} (${dd}/${mm}) as 07:15`
+  return `${day} (${dd}/${mm}) às 07:15`
 }
 
 export function PostsContent() {
@@ -62,7 +62,7 @@ export function PostsContent() {
 
   if (error) return (
     <div className="flex flex-col items-center justify-center py-20 text-center">
-      <p className="text-[15px] mb-4" style={{ color: 'var(--text-secondary)' }}>Nao foi possivel carregar. Tente novamente.</p>
+      <p className="text-[15px] mb-4" style={{ color: 'var(--text-secondary)' }}>Não foi possível carregar. Tente novamente.</p>
       <button
         onClick={() => window.location.reload()}
         className="text-[14px] font-medium px-4 py-2 rounded-lg"
@@ -86,7 +86,7 @@ export function PostsContent() {
         <Card variant="dark" padding="sm">
           <p className="font-display font-semibold text-white text-sm mb-1">Modo de postagem</p>
           <p className="text-xs mb-4" style={{ color: 'var(--text-tertiary)' }}>
-            Como os posts semanais serao tratados
+            Como os posts semanais serão tratados
           </p>
           <div className="flex gap-2">
             {(['approval', 'automatic'] as const).map(mode => (
@@ -102,14 +102,14 @@ export function PostsContent() {
                   color: data?.autoPostMode === mode ? 'var(--accent-bright)' : 'rgba(255,255,255,0.4)',
                 }}
               >
-                {mode === 'approval' ? 'Aprovacao' : 'Automatico'}
+                {mode === 'approval' ? 'Aprovação' : 'Automático'}
               </button>
             ))}
           </div>
           <p className="text-xs mt-3" style={{ color: 'var(--text-muted)' }}>
             {data?.autoPostMode === 'automatic'
-              ? 'Posts sao publicados direto toda semana, sem precisar revisar.'
-              : 'Voce recebe o post para revisar antes de publicar.'}
+              ? 'Posts são publicados direto toda semana, sem precisar revisar.'
+              : 'Você recebe o post para revisar antes de publicar.'}
           </p>
         </Card>
 
@@ -117,7 +117,7 @@ export function PostsContent() {
         <Card variant="dark" padding="sm" className="flex flex-col justify-between">
           {data?.scheduledNext ? (
             <div className="mb-3">
-              <p className="font-display font-semibold text-white text-sm mb-1">Proximo post agendado</p>
+              <p className="font-display font-semibold text-white text-sm mb-1">Próximo post agendado</p>
               <p className="text-xs line-clamp-2" style={{ color: 'var(--text-tertiary)' }}>
                 {data.scheduledNext.content}
               </p>
@@ -132,7 +132,7 @@ export function PostsContent() {
               <p className="font-display font-semibold text-white text-sm mb-1">Nenhum post agendado</p>
               {data?.autoPostMode === 'automatic' ? (
                 <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                  Proximo post automatico: <span style={{ color: 'var(--accent-bright)' }}>{getNextAutoPostLabel()}</span>
+                  Próximo post automático: <span style={{ color: 'var(--accent-bright)' }}>{getNextAutoPostLabel()}</span>
                 </p>
               ) : (
                 <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
@@ -171,7 +171,7 @@ export function PostsContent() {
           <div className="flex items-center gap-2 mb-3">
             <div className="w-2 h-2 rounded-full" style={{ background: '#FBBF24' }} />
             <p className="font-display font-semibold text-white text-sm">
-              Aguardando aprovacao
+              Aguardando aprovação
             </p>
             <span
               className="text-xs font-bold px-2 py-0.5 rounded-full"
