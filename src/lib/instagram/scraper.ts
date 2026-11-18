@@ -66,14 +66,6 @@ export async function scrapeInstagramPosts(
       const type = p.type ?? 'Image'
       return type === 'Image' || type === 'Sidecar' || type === 'Video'
     })
-    .filter((p) => {
-      // Apenas posts dos ultimos 6 meses
-      if (!p.timestamp) return true
-      const postDate = new Date(p.timestamp)
-      const sixMonthsAgo = new Date()
-      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6)
-      return postDate >= sixMonthsAgo
-    })
     .map((p) => ({
       id: p.id ?? p.shortCode ?? '',
       shortCode: p.shortCode ?? '',
