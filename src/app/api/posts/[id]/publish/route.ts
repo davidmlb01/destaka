@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { publishPost as zernioPublishPost } from '@/lib/zernio/client'
+import { geotagAndUpload } from '@/lib/media/geotag'
 
 function adminDb() {
   return createAdminSupa(
@@ -13,7 +14,7 @@ function adminDb() {
 }
 
 // POST /api/posts/[id]/publish
-// Publica um post pendente via Zernio
+// Publica um post pendente via Zernio (com geotagging)
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -34,7 +35,7 @@ export async function POST(
     .maybeSingle()
 
   if (!professional?.organization_id) {
-    return NextResponse.json({ error: 'Organização não encontrada' }, { status: 404 })
+    return NextResponse.json({ error: 'Organizacao nao encontrada' }, { status: 404 })
   }
 
   const orgId = professional.organization_id
@@ -49,7 +50,7 @@ export async function POST(
     .maybeSingle()
 
   if (!post) {
-    return NextResponse.json({ error: 'Post não encontrado ou já publicado' }, { status: 404 })
+    return NextResponse.json({ error: 'Post nao encontrado ou ja publicado' }, { status: 404 })
   }
 
   // Buscar zernio_account_id
@@ -60,7 +61,7 @@ export async function POST(
     .maybeSingle()
 
   if (!org?.zernio_account_id) {
-    return NextResponse.json({ error: 'Conta Google Business não conectada. Faça login novamente.' }, { status: 400 })
+    return NextResponse.json({ error: 'Conta Google Business nao conectada. Faca login novamente.' }, { status: 400 })
   }
 
   // Se texto foi editado, atualizar no banco antes de publicar
@@ -69,13 +70,21 @@ export async function POST(
     await admin.from('posts').update({ content: editedContent }).eq('id', postId)
   }
 
+  // Geotagging: injeta coordenadas GPS na imagem e faz upload pro Supabase Storage
+  // Tambem resolve o problema de URLs de CDN do Instagram que expiram
+  const rawImageUrl = (post as Record<string, string>).photo_suggestion ?? undefined
+  let finalImageUrl = rawImageUrl
+  if (rawImageUrl && rawImageUrl.startsWith('http')) {
+    finalImageUrl = await geotagAndUpload(orgId, rawImageUrl)
+  }
+
   // Publicar via Zernio
   let zernioPostId: string | null
   try {
     zernioPostId = await zernioPublishPost(
       org.zernio_account_id,
       finalContent,
-      (post as Record<string, string>).photo_suggestion ?? undefined
+      finalImageUrl
     )
   } catch (err) {
     console.error('[posts/publish] Zernio error:', err instanceof Error ? err.message : err)

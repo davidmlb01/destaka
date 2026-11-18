@@ -112,13 +112,23 @@ export async function geotagAndUpload(
   try {
     const db = adminDb()
 
-    const { data: profile } = await db
-      .from('gbp_profiles')
-      .select('name, latitude, longitude')
+    // Buscar coordenadas via professionals -> gmb_profiles
+    const { data: prof } = await db
+      .from('professionals')
+      .select('user_id')
       .eq('organization_id', orgId)
+      .limit(1)
       .maybeSingle()
 
-    if (!profile?.latitude || !profile?.longitude) {
+    if (!prof?.user_id) return imageUrl
+
+    const { data: gmbProfile } = await db
+      .from('gmb_profiles')
+      .select('name, latitude, longitude')
+      .eq('user_id', prof.user_id)
+      .maybeSingle()
+
+    if (!gmbProfile?.latitude || !gmbProfile?.longitude) {
       return imageUrl
     }
 
@@ -131,9 +141,9 @@ export async function geotagAndUpload(
     const keywords = org?.specialty ? [org.specialty as string] : undefined
 
     const buffer = await geotagImage(imageUrl, {
-      lat: profile.latitude,
-      lng: profile.longitude,
-      businessName: profile.name ?? 'Negocio',
+      lat: gmbProfile.latitude,
+      lng: gmbProfile.longitude,
+      businessName: gmbProfile.name ?? 'Negocio',
       keywords,
     })
 
