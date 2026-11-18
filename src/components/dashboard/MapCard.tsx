@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import useSWR from 'swr'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
+import { fetcher } from '@/lib/swr/fetcher'
 
 interface MapZone {
   lat: number
@@ -25,25 +26,11 @@ interface MapData {
 const MapContent = dynamic(() => import('./MapContent'), { ssr: false })
 
 export default function MapCard({ isSubscriber }: { isSubscriber: boolean }) {
-  const [data, setData] = useState<MapData | null>(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    if (!isSubscriber) {
-      setLoading(false) // eslint-disable-line react-hooks/set-state-in-effect -- guard clause
-      return
-    }
-    fetch('/api/dashboard/map')
-      .then(res => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        return res.json()
-      })
-      .then((d: MapData) => {
-        if (d && !('paywall' in d)) setData(d)
-      })
-      .catch(() => setData(null))
-      .finally(() => setLoading(false))
-  }, [isSubscriber])
+  const { data: raw, isLoading: loading } = useSWR<MapData>(
+    isSubscriber ? '/api/dashboard/map' : null,
+    fetcher
+  )
+  const data = (raw && !('paywall' in raw) && !raw.empty) ? raw : null
 
   const strongCount = data?.zones?.filter(z => z.status === 'strong').length ?? 0
   const mediumCount = data?.zones?.filter(z => z.status === 'medium').length ?? 0

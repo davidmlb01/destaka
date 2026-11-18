@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import useSWR from 'swr'
 import { Spinner } from '@/components/ui/Spinner'
 import { SectionLabel } from '@/components/ui/SectionLabel'
+import { fetcher } from '@/lib/swr/fetcher'
 
 interface FunnelData {
   current: {
@@ -46,23 +47,8 @@ function DeltaBadge({ label, value, unit }: { label: string; value: number | nul
 }
 
 export function PatientFunnelCard() {
-  const [data, setData] = useState<FunnelData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
-
-  useEffect(() => {
-    fetch('/api/dashboard/funnel')
-      .then(r => r.json())
-      .then((d: FunnelData) => {
-        if (d.empty) {
-          setData(null)
-        } else {
-          setData(d)
-        }
-      })
-      .catch(() => setError(true))
-      .finally(() => setLoading(false))
-  }, [])
+  const { data: raw, error, isLoading: loading } = useSWR<FunnelData>('/api/dashboard/funnel', fetcher)
+  const data = raw?.empty ? null : raw ?? null
 
   if (loading) {
     return (

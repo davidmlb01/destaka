@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import useSWR from 'swr'
+import { fetcher } from '@/lib/swr/fetcher'
 function SectionLabel({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return <p className={`text-[11px] font-semibold tracking-[0.08em] uppercase ${className}`} style={{ color: 'var(--text-muted)' }}>{children}</p>
 }
@@ -31,16 +32,8 @@ const STATUS_STYLE = {
 }
 
 export function GapAnalysisCard() {
-  const [data, setData] = useState<GapData | null>(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    fetch('/api/dashboard/gap')
-      .then(r => r.json())
-      .then((d: GapData) => setData(d.empty ? null : d))
-      .catch(() => {})
-      .finally(() => setLoading(false))
-  }, [])
+  const { data: raw, isLoading: loading } = useSWR<GapData>('/api/dashboard/gap', fetcher)
+  const data = raw?.empty ? null : raw ?? null
 
   if (loading) {
     return (

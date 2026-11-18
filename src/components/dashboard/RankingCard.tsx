@@ -1,7 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { RankingChart } from './RankingChart'
+import useSWR from 'swr'
+import dynamic from 'next/dynamic'
+import { fetcher } from '@/lib/swr/fetcher'
+
+const RankingChart = dynamic(() => import('./RankingChart').then(m => m.RankingChart), { ssr: false })
 function SectionLabel({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return <p className={`text-[11px] font-semibold tracking-[0.08em] uppercase ${className}`} style={{ color: 'var(--text-muted)' }}>{children}</p>
 }
@@ -60,16 +63,8 @@ function DeltaIndicator({ delta }: { delta: number | null }) {
 }
 
 export function RankingCard() {
-  const [data, setData] = useState<RankingData | null>(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    fetch('/api/dashboard/ranking')
-      .then(r => r.json())
-      .then((d: RankingData) => setData(d.empty ? null : d))
-      .catch(() => {})
-      .finally(() => setLoading(false))
-  }, [])
+  const { data: raw, isLoading: loading } = useSWR<RankingData>('/api/dashboard/ranking', fetcher)
+  const data = raw?.empty ? null : raw ?? null
 
   if (loading) {
     return (

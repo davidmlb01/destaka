@@ -1,7 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import useSWR from 'swr'
 import dynamic from 'next/dynamic'
+import { fetcher } from '@/lib/swr/fetcher'
 
 interface GridPoint {
   lat: number
@@ -72,17 +74,9 @@ function formatWeek(dateStr: string) {
 }
 
 export function GeoGridMap() {
-  const [data, setData] = useState<GeoGridResponse | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [selectedWeek, setSelectedWeek] = useState(0) // 0 = mais recente
-
-  useEffect(() => {
-    fetch('/api/dashboard/geo-grid')
-      .then(r => r.json())
-      .then((d: GeoGridResponse) => setData(d.empty ? null : d))
-      .catch(() => {})
-      .finally(() => setLoading(false))
-  }, [])
+  const { data: raw, isLoading: loading } = useSWR<GeoGridResponse>('/api/dashboard/geo-grid', fetcher)
+  const data = raw?.empty ? null : raw ?? null
+  const [selectedWeek, setSelectedWeek] = useState(0)
 
   if (loading) {
     return (
