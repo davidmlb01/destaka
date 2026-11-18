@@ -188,8 +188,7 @@ async function getAdminData() {
     catPosts = Math.min(catPosts, 15)
 
     const svcs = servicesByOrg[orgId] ?? []
-    let catServicos = svcs.length >= 3 ? 5 : 0
-    catServicos = Math.min(catServicos, 10)
+    const catServicos = svcs.length >= 3 ? 5 : 0
 
     const catAtributos = Math.min(ls.conversao ?? 0, 5)
 
@@ -1016,8 +1015,6 @@ export default async function AdminPage() {
                         <tr
                           key={org.id}
                           className="admin-row-hover" style={i > 0 ? { borderTop: "1px solid var(--admin-border-subtle)" } : undefined}
-                          
-                          
                         >
                           {/* Status */}
                           <td className="px-6 py-3">
@@ -1149,8 +1146,6 @@ export default async function AdminPage() {
                         <tr
                           key={lead.id}
                           className="admin-row-hover" style={i > 0 ? { borderTop: "1px solid var(--admin-border-subtle)" } : undefined}
-                          
-                          
                         >
                           <td className="px-6 py-2.5 font-medium" style={{ color: 'var(--admin-text-primary)' }}>{lead.email}</td>
                           <td className="px-4 py-2.5 truncate max-w-[200px]" style={{ color: 'var(--admin-text-secondary)' }}>{lead.place_name ?? '-'}</td>

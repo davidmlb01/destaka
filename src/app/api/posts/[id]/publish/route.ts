@@ -67,7 +67,11 @@ export async function POST(
   // Se texto foi editado, atualizar no banco antes de publicar
   const finalContent = editedContent ?? post.content
   if (editedContent) {
-    await admin.from('posts').update({ content: editedContent }).eq('id', postId)
+    const { error: updateErr } = await admin.from('posts').update({ content: editedContent }).eq('id', postId)
+    if (updateErr) {
+      console.error('[posts/publish] Falha ao salvar edicao:', updateErr.message)
+      return NextResponse.json({ error: 'Falha ao salvar a edição. Tente novamente.' }, { status: 500 })
+    }
   }
 
   // Geotagging: injeta coordenadas GPS na imagem e faz upload pro Supabase Storage
@@ -91,7 +95,7 @@ export async function POST(
     return NextResponse.json({ error: 'Falha ao publicar post no Google. Tente novamente.' }, { status: 502 })
   }
 
-  await admin
+  const { error: statusErr } = await admin
     .from('posts')
     .update({
       status: 'published',
@@ -99,6 +103,10 @@ export async function POST(
       gbp_post_id: zernioPostId ?? null,
     })
     .eq('id', postId)
+
+  if (statusErr) {
+    console.error('[posts/publish] Post publicado no Google mas falha ao atualizar status:', statusErr.message)
+  }
 
   return NextResponse.json({ status: 'published', gbp_post_id: zernioPostId })
 }

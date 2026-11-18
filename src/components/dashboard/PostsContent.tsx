@@ -165,7 +165,7 @@ export function PostsContent() {
         </Card>
       </div>
 
-      {/* ─── Secao: Posts pendentes ─── */}
+      {/* Secao: Posts pendentes */}
       {pendingPosts.length > 0 && (
         <div>
           <div className="flex items-center gap-2 mb-3">
@@ -282,12 +282,12 @@ export function PostsContent() {
         </div>
       )}
 
-      {/* ─── Divisor visual ─── */}
+      {/* Divisor visual */}
       {pendingPosts.length > 0 && publishedPosts.length > 0 && (
         <div style={{ height: 1, background: 'rgba(255,255,255,0.06)' }} />
       )}
 
-      {/* ─── Secao: Historico de posts ─── */}
+      {/* Secao: Historico de posts */}
       <div>
         <div className="flex items-center gap-2 mb-3">
           <div className="w-2 h-2 rounded-full" style={{ background: '#4ADE80' }} />

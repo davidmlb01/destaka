@@ -209,6 +209,7 @@ export const instagramSync = inngest.createFunction(
     for (const org of orgs) {
       const pubResult = await step.run(`publish-gbp-${org.id}`, async () => {
         if (!org.gbp_location_id) {
+          console.warn(`[instagram-sync] Org ${org.id} (${org.name}) sem gbp_location_id, pulando publicação`)
           return { org_id: org.id, published: 0, skipped: 0 }
         }
 
@@ -243,7 +244,7 @@ export const instagramSync = inngest.createFunction(
               content: post.rewritten_caption,
               post_type: 'educativo',
               status: 'pending',
-              photo_suggestion: post.image_url ?? 'Foto original do Instagram',
+              photo_suggestion: post.image_url ?? null,
             })
             pending++
           }
@@ -323,11 +324,11 @@ export const instagramSync = inngest.createFunction(
               })
               published++
             } else {
-              console.error(`[instagram-sync] Post ${post.id}: Zernio e GBP v4 falharam`)
+              console.error(`[instagram-sync] Post ${post.id}: Zernio e GBP v4 falharam na publicação`)
               await db.from('instagram_posts')
                 .update({
                   status: 'failed',
-                  skip_reason: 'Zernio e GBP v4 falharam na publicacao',
+                  skip_reason: 'Zernio e GBP v4 falharam na publicação',
                 })
                 .eq('id', post.id)
               skipped++

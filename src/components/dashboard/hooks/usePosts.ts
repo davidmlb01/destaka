@@ -1,5 +1,5 @@
 import useSWR from 'swr'
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 import { fetcher } from '@/lib/swr/fetcher'
 import { apiFetch } from '@/lib/api/client'
@@ -103,8 +103,6 @@ export function usePosts() {
     }
   }
 
-  const clearJustPublished = useCallback(() => setJustPublishedId(null), [])
-
   return {
     data,
     error,
@@ -118,6 +116,5 @@ export function usePosts() {
     handlePublish,
     handleDiscard,
     handleModeChange,
-    clearJustPublished,
   }
 }

@@ -21,6 +21,7 @@ interface ApifyPostRaw {
   caption?: string
   displayUrl?: string
   url?: string
+  videoUrl?: string
   timestamp?: string
   likesCount?: number
   type?: string
@@ -42,10 +43,13 @@ export async function scrapeInstagramPosts(
 
   // Run the Instagram Post Scraper Actor
   const runRes = await fetch(
-    `${APIFY_BASE}/acts/apify~instagram-post-scraper/run-sync-get-dataset-items?token=${token}`,
+    `${APIFY_BASE}/acts/apify~instagram-post-scraper/run-sync-get-dataset-items`,
     {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
       body: JSON.stringify({
         username: [cleanHandle],
         resultsLimit: maxPosts,
@@ -71,7 +75,7 @@ export async function scrapeInstagramPosts(
       shortCode: p.shortCode ?? '',
       caption: p.caption ?? '',
       imageUrl: p.displayUrl ?? p.url ?? '',
-      videoUrl: (p as Record<string, unknown>).videoUrl as string ?? null,
+      videoUrl: p.videoUrl ?? null,
       timestamp: p.timestamp ?? new Date().toISOString(),
       likesCount: p.likesCount ?? 0,
       type: (p.type ?? 'Image') as 'Image' | 'Sidecar' | 'Video',
