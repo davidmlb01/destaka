@@ -1,9 +1,9 @@
 export const dynamic = 'force-dynamic'
 
-
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { redirect } from 'next/navigation'
 import { getDashboardContext } from '@/lib/dashboard/get-dashboard-context'
+import { getDashboardData } from '@/lib/dashboard/get-dashboard-data'
 import { DashboardContent } from '@/components/dashboard/DashboardContent'
 import { OptimizationConfirmCard } from './components/OptimizationConfirmCard'
 import { CheckoutBanner } from './components/CheckoutBanner'
@@ -33,9 +33,9 @@ export default async function DashboardPage({
     redirect('/onboarding')
   }
 
-  const [{ data: profile }] = await Promise.all([
+  const [{ data: profile }, dashboardData] = await Promise.all([
     db.from('gbp_profiles').select('optimization_report, description, photo_count').eq('organization_id', ctx.orgId).maybeSingle(),
-    db.from('reviews').select('id', { count: 'exact', head: true }).eq('organization_id', ctx.orgId).is('response_text', null),
+    getDashboardData(ctx.orgId),
   ])
 
   return (
@@ -44,7 +44,7 @@ export default async function DashboardPage({
 
       {!ctx.zernioConnected && <ZernioConnectBanner orgId={ctx.orgId} />}
 
-      <DashboardContent />
+      <DashboardContent initialData={dashboardData as Parameters<typeof DashboardContent>[0]['initialData']} />
 
       <OptimizationConfirmCard
         totalSuggestions={(() => {
