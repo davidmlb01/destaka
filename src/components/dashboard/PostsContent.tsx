@@ -74,7 +74,8 @@ export function PostsContent() {
   )
 
   const pendingPosts = data?.posts.filter(p => p.status === 'draft' || p.status === 'pending') ?? []
-  const publishedPosts = data?.posts.filter(p => p.status !== 'draft' && p.status !== 'pending') ?? []
+  const scheduledPosts = data?.posts.filter(p => p.status === 'scheduled') ?? []
+  const publishedPosts = data?.posts.filter(p => p.status === 'published' || p.status === 'failed') ?? []
 
   return (
     <div className="flex flex-col gap-6">
@@ -244,9 +245,9 @@ export function PostsContent() {
                       {isPublishing ? (
                         <span className="flex items-center justify-center gap-2">
                           <Spinner size="sm" />
-                          Publicando...
+                          Agendando...
                         </span>
-                      ) : 'Publicar no Google'}
+                      ) : 'Aprovar e agendar'}
                     </button>
                     {editingId === post.id ? (
                       <button
@@ -282,8 +283,60 @@ export function PostsContent() {
         </div>
       )}
 
+      {/* Secao: Posts agendados */}
+      {scheduledPosts.length > 0 && (
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-2 h-2 rounded-full" style={{ background: 'var(--accent-bright)' }} />
+            <p className="font-display font-semibold text-white text-sm">
+              Agendados
+            </p>
+            <span
+              className="text-xs font-bold px-2 py-0.5 rounded-full"
+              style={{ background: 'rgba(14,165,233,0.15)', color: 'var(--accent-bright)' }}
+            >
+              {scheduledPosts.length}
+            </span>
+          </div>
+          <div className="flex flex-col gap-3">
+            {scheduledPosts.map(post => {
+              const schedDate = post.scheduled_at ? new Date(post.scheduled_at) : null
+              const weekdays = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado']
+              const schedLabel = schedDate
+                ? `${weekdays[schedDate.getUTCDay()]} (${String(schedDate.getUTCDate()).padStart(2, '0')}/${String(schedDate.getUTCMonth() + 1).padStart(2, '0')}) às ${String(schedDate.getUTCHours() - 3).padStart(2, '0')}h`
+                : ''
+
+              return (
+                <Card key={post.id} variant="dark" padding="sm">
+                  <div className="flex items-center justify-between gap-3 mb-2">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="text-xs font-medium px-2 py-0.5 rounded-full"
+                        style={{ background: 'rgba(14,165,233,0.1)', color: 'var(--accent-bright)' }}
+                      >
+                        {TYPE_LABELS[post.type] ?? post.type}
+                      </span>
+                    </div>
+                    <span className="flex items-center gap-1 text-xs font-medium" style={{ color: 'var(--accent-bright)' }}>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                      </svg>
+                      {schedLabel}
+                    </span>
+                  </div>
+                  <p className="text-sm" style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                    {post.content}
+                  </p>
+                </Card>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Divisor visual */}
-      {pendingPosts.length > 0 && publishedPosts.length > 0 && (
+      {(pendingPosts.length > 0 || scheduledPosts.length > 0) && publishedPosts.length > 0 && (
         <div style={{ height: 1, background: 'rgba(255,255,255,0.06)' }} />
       )}
 

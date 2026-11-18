@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { publishPost as zernioPublishPost } from '@/lib/zernio/client'
 import { geotagAndUpload } from '@/lib/media/geotag'
+import { getNextPublishSlot, formatScheduleLabel } from '@/lib/posts/schedule'
 
 function adminDb() {
   return createAdminSupa(
@@ -14,7 +15,7 @@ function adminDb() {
 }
 
 // POST /api/posts/[id]/publish
-// Publica um post pendente via Zernio (com geotagging)
+// Agenda um post pendente para o próximo slot (segunda, quarta ou sexta às 10h BRT)
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -53,7 +54,28 @@ export async function POST(
     return NextResponse.json({ error: 'Post não encontrado ou já publicado' }, { status: 404 })
   }
 
-  // Buscar zernio_account_id
+  // Se texto foi editado, atualizar no banco
+  const finalContent = editedContent ?? post.content
+  if (editedContent) {
+    const { error: updateErr } = await admin.from('posts').update({ content: editedContent }).eq('id', postId)
+    if (updateErr) {
+      console.error('[posts/publish] Falha ao salvar edição:', updateErr.message)
+      return NextResponse.json({ error: 'Falha ao salvar a edição. Tente novamente.' }, { status: 500 })
+    }
+  }
+
+  // Buscar posts já agendados pra evitar conflito de data
+  const { data: alreadyScheduled } = await admin
+    .from('posts')
+    .select('scheduled_at')
+    .eq('organization_id', orgId)
+    .eq('status', 'scheduled')
+
+  const scheduledDates = (alreadyScheduled ?? [])
+    .map(p => (p as { scheduled_at: string | null }).scheduled_at)
+    .filter((d): d is string => d !== null)
+
+  // Buscar zernio_account_id (necessário pra publicação imediata)
   const { data: org } = await admin
     .from('organizations')
     .select('zernio_account_id')
@@ -64,49 +86,51 @@ export async function POST(
     return NextResponse.json({ error: 'Conta Google Business não conectada. Faça login novamente.' }, { status: 400 })
   }
 
-  // Se texto foi editado, atualizar no banco antes de publicar
-  const finalContent = editedContent ?? post.content
-  if (editedContent) {
-    const { error: updateErr } = await admin.from('posts').update({ content: editedContent }).eq('id', postId)
-    if (updateErr) {
-      console.error('[posts/publish] Falha ao salvar edicao:', updateErr.message)
-      return NextResponse.json({ error: 'Falha ao salvar a edição. Tente novamente.' }, { status: 500 })
+  const slot = getNextPublishSlot(scheduledDates)
+  const now = new Date()
+
+  // Se o próximo slot já passou (usuário aprovou atrasado), publicar imediatamente
+  if (slot <= now) {
+    const rawImage = (post as Record<string, string>).photo_suggestion ?? undefined
+    let finalImage = rawImage
+    if (rawImage && rawImage.startsWith('http')) {
+      finalImage = await geotagAndUpload(orgId, rawImage)
     }
+
+    let gbpPostId: string | null
+    try {
+      gbpPostId = await zernioPublishPost(org.zernio_account_id, finalContent, finalImage)
+    } catch (err) {
+      console.error('[posts/publish] Zernio error:', err instanceof Error ? err.message : err)
+      return NextResponse.json({ error: 'Falha ao publicar post no Google. Tente novamente.' }, { status: 502 })
+    }
+
+    await admin.from('posts').update({
+      status: 'published',
+      content: finalContent,
+      published_at: new Date().toISOString(),
+      gbp_post_id: gbpPostId ?? null,
+    }).eq('id', postId)
+
+    return NextResponse.json({ status: 'published', gbp_post_id: gbpPostId })
   }
 
-  // Geotagging: injeta coordenadas GPS na imagem e faz upload pro Supabase Storage
-  // Tambem resolve o problema de URLs de CDN do Instagram que expiram
-  const rawImageUrl = (post as Record<string, string>).photo_suggestion ?? undefined
-  let finalImageUrl = rawImageUrl
-  if (rawImageUrl && rawImageUrl.startsWith('http')) {
-    finalImageUrl = await geotagAndUpload(orgId, rawImageUrl)
-  }
+  // Agendar para o próximo slot (cron scheduled-post-publisher publica no horário)
+  const label = formatScheduleLabel(slot)
 
-  // Publicar via Zernio
-  let zernioPostId: string | null
-  try {
-    zernioPostId = await zernioPublishPost(
-      org.zernio_account_id,
-      finalContent,
-      finalImageUrl
-    )
-  } catch (err) {
-    console.error('[posts/publish] Zernio error:', err instanceof Error ? err.message : err)
-    return NextResponse.json({ error: 'Falha ao publicar post no Google. Tente novamente.' }, { status: 502 })
-  }
-
-  const { error: statusErr } = await admin
+  const { error: scheduleErr } = await admin
     .from('posts')
     .update({
-      status: 'published',
-      published_at: new Date().toISOString(),
-      gbp_post_id: zernioPostId ?? null,
+      status: 'scheduled',
+      content: finalContent,
+      scheduled_at: slot.toISOString(),
     })
     .eq('id', postId)
 
-  if (statusErr) {
-    console.error('[posts/publish] Post publicado no Google mas falha ao atualizar status:', statusErr.message)
+  if (scheduleErr) {
+    console.error('[posts/publish] Falha ao agendar:', scheduleErr.message)
+    return NextResponse.json({ error: 'Falha ao agendar o post. Tente novamente.' }, { status: 500 })
   }
 
-  return NextResponse.json({ status: 'published', gbp_post_id: zernioPostId })
+  return NextResponse.json({ status: 'scheduled', scheduled_at: slot.toISOString(), label })
 }

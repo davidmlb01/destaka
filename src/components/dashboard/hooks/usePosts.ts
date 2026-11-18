@@ -50,7 +50,7 @@ export function usePosts() {
   async function handlePublish(postId: string, editedContent?: string) {
     setPublishingId(postId)
     try {
-      const { error } = await apiFetch(`/api/posts/${postId}/publish`, {
+      const { data: result, error } = await apiFetch<{ status: string; label?: string }>(`/api/posts/${postId}/publish`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: editedContent ? JSON.stringify({ content: editedContent }) : undefined,
@@ -59,7 +59,11 @@ export function usePosts() {
         toast.error(error)
         return
       }
-      toast.success('Post publicado no Google!')
+      if (result?.status === 'scheduled' && result.label) {
+        toast.success(`Post agendado para ${result.label}`)
+      } else {
+        toast.success('Post publicado no Google!')
+      }
       setJustPublishedId(postId)
       await mutate()
       setTimeout(() => setJustPublishedId(null), 4000)

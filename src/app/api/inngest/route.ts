@@ -26,6 +26,7 @@ import { rankingTracker } from '@/lib/inngest/functions/ranking-tracker'
 import { geoGridTracker } from '@/lib/inngest/functions/geo-grid-tracker'
 import { reviewSolicitation } from '@/lib/inngest/functions/review-solicitation'
 import { competitorAlert } from '@/lib/inngest/functions/competitor-alert'
+import { scheduledPostPublisher } from '@/lib/inngest/functions/scheduled-post-publisher'
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -51,5 +52,6 @@ export const { GET, POST, PUT } = serve({
     geoGridTracker,
     reviewSolicitation,
     competitorAlert,
+    scheduledPostPublisher,
   ],
 })
