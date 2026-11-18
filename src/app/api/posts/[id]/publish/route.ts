@@ -24,7 +24,7 @@ export async function POST(
   const editedContent = body.content?.trim() || null
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (!user) return NextResponse.json({ error: 'Sessão expirada. Faça login novamente.' }, { status: 401 })
 
   const admin = adminDb()
 

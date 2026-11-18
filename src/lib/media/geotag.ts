@@ -38,7 +38,7 @@ const ALLOWED_IMAGE_HOSTS = [
 
 function validateImageUrl(url: string): void {
   const parsed = new URL(url)
-  const allowed = ALLOWED_IMAGE_HOSTS.some(h => parsed.hostname.endsWith(h) || parsed.hostname.includes(h))
+  const allowed = ALLOWED_IMAGE_HOSTS.some(h => parsed.hostname.endsWith(h) || parsed.hostname.startsWith(h))
   if (!allowed) {
     throw new Error(`[geotag] Blocked fetch to untrusted host: ${parsed.hostname}`)
   }
@@ -143,7 +143,7 @@ export async function geotagAndUpload(
     const buffer = await geotagImage(imageUrl, {
       lat: gmbProfile.latitude,
       lng: gmbProfile.longitude,
-      businessName: gmbProfile.name ?? 'Negocio',
+      businessName: gmbProfile.name ?? 'Negócio',
       keywords,
     })
 

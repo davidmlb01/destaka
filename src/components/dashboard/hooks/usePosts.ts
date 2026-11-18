@@ -87,17 +87,16 @@ export function usePosts() {
     if (!data || mode === data.autoPostMode) return
     setSavingMode(true)
     try {
-      const res = await fetch('/api/posts/settings', {
+      const { error } = await apiFetch('/api/posts/settings', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ autoPostMode: mode }),
       })
-      if (res.ok) {
+      if (error) {
+        toast.error(error)
+      } else {
         await mutate({ ...data, autoPostMode: mode }, false)
         toast.success('Modo de postagem atualizado.')
-      } else {
-        const err = (await res.json().catch(() => ({}))) as { error?: string }
-        toast.error(err.error ?? 'Erro ao salvar configuração.')
       }
     } finally {
       setSavingMode(false)

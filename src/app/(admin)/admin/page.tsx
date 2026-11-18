@@ -407,13 +407,13 @@ function computeAttribution(
   const convBySource: Record<string, number> = {}
 
   for (const l of leads) {
-    const src = l.utm_source ?? 'organico'
+    const src = l.utm_source ?? 'orgânico'
     leadsBySource[src] = (leadsBySource[src] ?? 0) + 1
   }
 
   for (const o of orgs) {
     if (o.subscription_status !== 'active') continue
-    const src = o.utm_source ?? 'organico'
+    const src = o.utm_source ?? 'orgânico'
     convBySource[src] = (convBySource[src] ?? 0) + 1
   }
 
@@ -791,7 +791,7 @@ export default async function AdminPage() {
           </section>
 
           {/* Secao 2: Charts */}
-          <section aria-label="Graficos de desempenho">
+          <section aria-label="Gráficos de desempenho">
             <div
               style={{
                 display: 'grid',
@@ -991,8 +991,8 @@ export default async function AdminPage() {
                       <th className="px-4 py-3 text-right" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)' }}>Score</th>
                       <th className="px-4 py-3 text-left" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)' }}>Faixa</th>
                       <th className="px-4 py-3 text-right" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)' }}>Delta</th>
-                      <th className="px-4 py-3 text-left" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)', whiteSpace: 'nowrap' }}>Ultimo score</th>
-                      <th className="px-4 py-3 text-center" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)' }}>Acoes</th>
+                      <th className="px-4 py-3 text-left" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)', whiteSpace: 'nowrap' }}>Último score</th>
+                      <th className="px-4 py-3 text-center" style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--admin-text-muted)' }}>Ações</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1032,7 +1032,7 @@ export default async function AdminPage() {
                                 <span
                                   className="text-[10px] font-bold px-1.5 py-0.5 rounded-md"
                                   style={{ background: 'var(--admin-error-bg)', color: 'var(--admin-error)', border: '1px solid var(--admin-error-border)' }}
-                                  title="Token Google invalido ou desatualizado"
+                                  title="Token Google inválido ou desatualizado"
                                 >
                                   Token
                                 </span>
@@ -1099,7 +1099,7 @@ export default async function AdminPage() {
                             )}
                           </td>
 
-                          {/* Ultimo score */}
+                          {/* Último score */}
                           <td className="px-4 py-3 text-xs whitespace-nowrap" style={{ color: 'var(--admin-text-muted)' }}>
                             {lastScoreDate ? (
                               <span style={{ color: daysSinceScore !== null && daysSinceScore > 14 ? 'var(--admin-warning)' : 'var(--admin-text-muted)' }}>
@@ -1108,7 +1108,7 @@ export default async function AdminPage() {
                             ) : '-'}
                           </td>
 
-                          {/* Acoes */}
+                          {/* Ações */}
                           <td className="px-4 py-3 text-center">
                             <RetriggerButton orgId={org.id} orgName={org.name} />
                           </td>

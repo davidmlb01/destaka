@@ -261,7 +261,7 @@ export function PostsContent() {
                         onClick={() => { setEditingId(post.id); setEditText(post.content) }}
                         disabled={isBusy}
                         className="px-4 py-2.5 rounded-xl text-xs font-medium transition-all active:scale-[0.97]"
-                        style={{ cursor: isBusy ? 'default' : 'pointer', background: 'rgba(255,255,255,0.05)', color: 'var(--text-tertiary)' }}
+                        style={{ cursor: isBusy ? 'not-allowed' : 'pointer', background: 'rgba(255,255,255,0.05)', color: 'var(--text-tertiary)' }}
                       >
                         Editar
                       </button>
