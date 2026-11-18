@@ -17,27 +17,19 @@ export async function GET() {
   const { orgId } = auth
   const db = adminClient()
 
-  const { data: posts, count, error: queryErr } = await db
-    .from('posts')
-    .select('id, content, post_type, status, scheduled_at, published_at, created_at', { count: 'exact' })
-    .eq('organization_id', orgId)
-    .limit(20)
+  const [
+    { data: posts, count, error: queryErr },
+    { data: org },
+    { data: gbp },
+  ] = await Promise.all([
+    db.from('posts').select('id, content, post_type, status, scheduled_at, published_at, created_at', { count: 'exact' }).eq('organization_id', orgId).limit(20),
+    db.from('organizations').select('name, specialty, automation_preference').eq('id', orgId).maybeSingle(),
+    db.from('gbp_profiles').select('id').eq('organization_id', orgId).maybeSingle(),
+  ])
 
   if (queryErr) {
     console.error('[posts] query error:', queryErr.message, queryErr.code, queryErr.details)
   }
-
-  const { data: org } = await db
-    .from('organizations')
-    .select('name, specialty, automation_preference')
-    .eq('id', orgId)
-    .maybeSingle()
-
-  const { data: gbp } = await db
-    .from('gbp_profiles')
-    .select('id')
-    .eq('organization_id', orgId)
-    .maybeSingle()
 
   const mappedPosts = (posts ?? []).map((p: Record<string, unknown>) => ({
     id: p.id as string,

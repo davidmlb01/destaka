@@ -3,8 +3,6 @@ export const dynamic = 'force-dynamic'
 // API de dados do dashboard, retorna o shape esperado por useDashboard
 import { getAuthOrg, privateJson } from '@/lib/api/with-auth'
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
-import { GBPClient } from '@/lib/google/gbp-client'
-import { getValidGmbToken } from '@/lib/gmb/auth'
 
 function adminClient() {
   return createAdminSupa(
@@ -129,53 +127,20 @@ export async function GET() {
     created_at: (s.snapshot_date as string) ?? '',
   }))
 
-  // Metrics: buscar da GBP Performance API (real), fallback para gmb_metrics (banco)
+  // Metrics: buscar do banco (performance_metrics, coletado pelo cron semanal)
+  // GBP Performance API removida da hot path: latencia de 300ms-2s bloqueava o dashboard
   let metrics = {
     viewsSearch: 0,
     viewsMaps: 0,
     clicksWebsite: 0,
     clicksCall: 0,
     clicksDirections: 0,
-    period: 'Últimos 30 dias',
-    source: 'none' as 'api' | 'database' | 'none',
+    period: 'Últimas 4 semanas',
+    source: 'none' as 'database' | 'none',
   }
 
-  const locationName = (org as Record<string, unknown>)?.gbp_location_id as string | undefined
-
-  // Tentar API real primeiro
-  if (locationName) {
-    try {
-      const accessToken = await getValidGmbToken(user.id)
-      const gbpClient = new GBPClient(accessToken)
-      const perfData = await gbpClient.getPerformanceMetrics(locationName)
-
-      if (perfData.metricValues?.length) {
-        for (const mv of perfData.metricValues) {
-          const total = mv.dimensionalValues?.reduce(
-            (sum, dv) => sum + (parseInt(dv.value, 10) || 0), 0
-          ) ?? (mv.totalValue ? parseInt(String(mv.totalValue.metricOption), 10) || 0 : 0)
-
-          const metric = mv.metric?.toUpperCase() ?? ''
-          if (metric.includes('SEARCH') && metric.includes('IMPRESSION')) metrics.viewsSearch = total
-          else if (metric.includes('MAPS') && metric.includes('IMPRESSION')) metrics.viewsMaps = total
-          else if (metric.includes('WEBSITE')) metrics.clicksWebsite = total
-          else if (metric.includes('CALL')) metrics.clicksCall = total
-          else if (metric.includes('DIRECTION')) metrics.clicksDirections = total
-        }
-        // Só marca como 'api' se extraiu algum valor real; senão cai no fallback do banco
-        const apiTotal = metrics.viewsSearch + metrics.viewsMaps + metrics.clicksWebsite + metrics.clicksCall + metrics.clicksDirections
-        if (apiTotal > 0) {
-          metrics.source = 'api'
-        }
-      }
-    } catch {
-      // API falhou, cai no fallback abaixo
-    }
-  }
-
-  // Fallback 1: performance_metrics (coletado pelo performance-collector cron)
-  // Usa admin client porque performance_metrics pode nao ter RLS para user
-  if (metrics.source === 'none') {
+  // performance_metrics (coletado pelo performance-collector cron)
+  {
     const { data: perfRows } = await adminClient()
       .from('performance_metrics')
       .select('views_search, views_maps, actions_website, actions_phone, actions_directions, week_start')

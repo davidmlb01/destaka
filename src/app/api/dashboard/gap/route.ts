@@ -38,54 +38,32 @@ export async function GET() {
 
   if (!latestPos?.top_competitor_name) return privateJson({ empty: true })
 
-  // Dados do perfil
-  const { data: profile } = await db
-    .from('gbp_profiles')
-    .select('photo_count')
-    .eq('organization_id', orgId)
-    .maybeSingle()
+  // Queries independentes em paralelo
+  const thirtyDaysAgo = new Date()
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
-  // Website do gmb_profiles
-  const { data: prof } = await db.from('professionals').select('user_id').eq('organization_id', orgId).maybeSingle()
+  const [
+    { data: profile },
+    { data: prof },
+    { count: reviewCount },
+    { count: totalResponses },
+    { count: recentPostCount },
+    { data: org },
+    { data: competitors },
+  ] = await Promise.all([
+    db.from('gbp_profiles').select('photo_count').eq('organization_id', orgId).maybeSingle(),
+    db.from('professionals').select('user_id').eq('organization_id', orgId).maybeSingle(),
+    db.from('reviews').select('id', { count: 'exact', head: true }).eq('organization_id', orgId),
+    db.from('review_responses').select('id', { count: 'exact', head: true }).eq('organization_id', orgId).eq('status', 'published'),
+    db.from('posts').select('id', { count: 'exact', head: true }).eq('organization_id', orgId).eq('status', 'published').gte('published_at', thirtyDaysAgo.toISOString()),
+    db.from('organizations').select('name').eq('id', orgId).maybeSingle(),
+    db.from('competitors').select('place_id, name').ilike('name', `%${latestPos.top_competitor_name.split(' ').slice(0, 2).join(' ')}%`).limit(1),
+  ])
+
+  // Website do gmb_profiles (sequencial: depende de prof.user_id)
   const { data: gmbProf } = prof?.user_id
     ? await db.from('gmb_profiles').select('website').eq('user_id', prof.user_id).maybeSingle()
     : { data: null }
-
-  // Review count real
-  const { count: reviewCount } = await db
-    .from('reviews')
-    .select('id', { count: 'exact', head: true })
-    .eq('organization_id', orgId)
-
-  // Response rate via review_responses (nao reviews.response_text)
-  const { count: totalResponses } = await db
-    .from('review_responses')
-    .select('id', { count: 'exact', head: true })
-    .eq('organization_id', orgId)
-    .eq('status', 'published')
-
-  // Posts recentes
-  const thirtyDaysAgo = new Date()
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
-  const { count: recentPostCount } = await db
-    .from('posts')
-    .select('id', { count: 'exact', head: true })
-    .eq('organization_id', orgId)
-    .eq('status', 'published')
-    .gte('published_at', thirtyDaysAgo.toISOString())
-
-  const { data: org } = await db
-    .from('organizations')
-    .select('name')
-    .eq('id', orgId)
-    .maybeSingle()
-
-  // Competitor data
-  const { data: competitors } = await db
-    .from('competitors')
-    .select('place_id, name')
-    .ilike('name', `%${latestPos.top_competitor_name.split(' ').slice(0, 2).join(' ')}%`)
-    .limit(1)
 
   const competitor = competitors?.[0]
   if (!competitor?.place_id) return privateJson({ empty: true })
