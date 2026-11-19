@@ -23,7 +23,7 @@ function formatDate(iso: string) {
 const FILTER_LABELS: Record<ReviewFilter, string> = {
   all: 'Todas',
   pending: 'Sem resposta',
-  negative: 'Negativas (1-2)',
+  negative: 'Negativas (1-3)',
   pending_approval: 'Aguardando aprovação',
 }
 
@@ -412,7 +412,7 @@ function ReviewsSectioned({ reviews, openReplyModal, ignoreReview }: ReviewsSect
   const pendingReviews = reviews.filter(
     r => r.reply_status === 'no_response' || r.reply_status === 'pending'
   )
-  const respondedReviews = reviews.filter(r => r.reply_status === 'replied')
+  const respondedReviews = reviews.filter(r => r.reply_status === 'replied' || r.reply_status === 'ignored')
 
   return (
     <div className="flex flex-col gap-1">

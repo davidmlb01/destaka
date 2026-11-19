@@ -39,9 +39,8 @@ export function useReplyModal(onSuccess: () => void) {
       setModal((m) => (m ? { ...m, draft: reply, generating: false } : m))
     } else {
       const err = (await res.json().catch(() => ({}))) as { error?: string }
-      setModal((m) =>
-        m ? { ...m, draft: `Erro ao gerar: ${err.error ?? res.status}`, generating: false } : m,
-      )
+      toast.error(err.error ?? 'Não foi possível gerar a resposta. Tente novamente.')
+      setModal((m) => (m ? { ...m, generating: false } : m))
     }
   }
 
@@ -71,7 +70,11 @@ export function useReplyModal(onSuccess: () => void) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'ignore' }),
     })
-    if (res.ok) onSuccess()
+    if (res.ok) {
+      onSuccess()
+    } else {
+      toast.error('Erro ao ignorar avaliação. Tente novamente.')
+    }
   }
 
   return {

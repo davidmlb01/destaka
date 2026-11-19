@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { replyToReview as zernioReplyToReview } from '@/lib/zernio/client'
+import { z } from 'zod'
 
 function adminDb() {
   return createAdminSupa(
@@ -11,6 +12,11 @@ function adminDb() {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
 }
+
+const PatchSchema = z.object({
+  action: z.enum(['publish', 'ignore']),
+  reply: z.string().max(4096).optional(),
+})
 
 // PATCH /api/reviews/[id]
 // Actions: publish (edita texto + publica via Zernio), ignore (marca como ignorado)
@@ -23,8 +29,9 @@ export async function PATCH(
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const body = await request.json().catch(() => ({})) as { reply?: string; action?: string }
-  const { reply, action } = body
+  const parsed = PatchSchema.safeParse(await request.json().catch(() => null))
+  if (!parsed.success) return NextResponse.json({ error: 'Dados inválidos' }, { status: 400 })
+  const { reply, action } = parsed.data
 
   const admin = adminDb()
 
@@ -121,5 +128,4 @@ export async function PATCH(
     return NextResponse.json({ status: 'published' })
   }
 
-  return NextResponse.json({ error: 'Ação inválida' }, { status: 400 })
 }

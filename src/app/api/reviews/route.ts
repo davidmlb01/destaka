@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
       query = query.not('id', 'in', `(${excludeIds.join(',')})`)
     }
   } else if (filter === 'negative') {
-    query = query.lte('rating', 2)
+    query = query.lte('rating', 3)
   } else if (filter === 'pending_approval') {
     // Reviews that have a review_response with status 'pending'
     const { data: pendingResponses } = await supabase

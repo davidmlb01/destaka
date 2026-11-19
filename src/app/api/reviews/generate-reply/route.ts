@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { generateReviewResponse, type ReviewTone } from '@/lib/gbp/review-response-engine'
+import { hasLgpdConsentForAi } from '@/lib/ai/prompt-sanitizer'
 import { z } from 'zod'
 
 const BodySchema = z.object({ reviewId: z.string().uuid() })
@@ -54,12 +55,16 @@ export async function POST(request: NextRequest) {
   // Busca dados da org para o prompt
   const { data: org } = await admin
     .from('organizations')
-    .select('name, specialty, tone')
+    .select('name, specialty, tone, lgpd_ai_consent, lgpd_consent_date')
     .eq('id', orgId)
     .single()
 
   if (!org) {
     return NextResponse.json({ error: 'Organização não encontrada' }, { status: 500 })
+  }
+
+  if (!hasLgpdConsentForAi(org)) {
+    return NextResponse.json({ error: 'Consentimento LGPD para uso de IA não configurado.' }, { status: 403 })
   }
 
   // Busca cidade

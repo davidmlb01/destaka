@@ -229,7 +229,7 @@ export const reviewMonitor = inngest.createFunction(
             published_at: review.createTime,
           }, { onConflict: 'review_id', ignoreDuplicates: false })
 
-          // Reviews negativos (1-3 estrelas): enviar alerta por email, sem gerar resposta IA
+          // Reviews negativos (abaixo de 4 estrelas): enviar alerta por email, sem gerar resposta IA
           if (rating <= 3) {
             // Verifica se alerta ja foi enviado para este review
             const { data: existingAlert } = await db
@@ -274,8 +274,8 @@ export const reviewMonitor = inngest.createFunction(
                 })
 
                 alertsSent++
-              } catch {
-                console.error(`[review-monitor] Falha ao enviar alerta de review negativo para org ${orgId}`)
+              } catch (alertErr) {
+                console.error(`[review-monitor] Falha ao enviar alerta de review negativo: org=${orgId}, review=${review.reviewId}`, alertErr)
               }
             }
 
@@ -303,7 +303,7 @@ export const reviewMonitor = inngest.createFunction(
               reviewerName: review.reviewer?.displayName ?? '',
               specialty: org.specialty,
               city,
-              tone: org.tone as ReviewTone,
+              tone: (org.tone as ReviewTone) ?? 'proximo',
             })
           } catch (err) {
             console.error(`[review-monitor] Falha ao gerar resposta IA: org=${orgId}, review=${review.reviewId}`, err)
