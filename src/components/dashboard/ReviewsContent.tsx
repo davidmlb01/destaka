@@ -1,6 +1,6 @@
 'use client'
 
-import type { ReviewFilter } from '@/lib/gmb/reviews'
+import type { Review, ReviewFilter } from '@/lib/gmb/reviews'
 import { ReviewsSkeleton } from './Skeletons'
 import { formatDateShort } from '@/lib/utils/format-date'
 import { Spinner } from '@/components/ui/Spinner'
@@ -122,111 +122,21 @@ export function ReviewsContent() {
             Nenhuma avaliação encontrada para este filtro.
           </p>
         </div>
+      ) : filter === 'all' ? (
+        <ReviewsSectioned
+          reviews={data.reviews}
+          openReplyModal={openReplyModal}
+          ignoreReview={ignoreReview}
+        />
       ) : (
         <div className="flex flex-col gap-3">
           {data.reviews.map(review => (
-            <div
+            <ReviewCard
               key={review.id}
-              className="rounded-2xl p-5"
-              style={{
-                background: 'rgba(0,0,0,0.25)',
-                border: `1px solid ${(review.reply_status === 'pending' || review.reply_status === 'no_response') && review.rating <= 2
-                  ? 'rgba(239,68,68,0.2)'
-                  : 'rgba(255,255,255,0.08)'}`,
-              }}
-            >
-              {/* Header */}
-              <div className="flex items-start justify-between gap-3 mb-2">
-                <div>
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <span className="text-sm font-bold text-white">{review.author}</span>
-                    <StarRow rating={review.rating} />
-                  </div>
-                  <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                    {formatDate(review.review_date)}
-                  </p>
-                </div>
-                <StatusBadge status={review.reply_status} />
-              </div>
-
-              {/* Texto da avaliação */}
-              {review.text && (
-                <p className="text-sm mb-3" style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                  &ldquo;{review.text}&rdquo;
-                </p>
-              )}
-
-              {/* Resposta publicada */}
-              {review.reply && (
-                <div
-                  className="rounded-xl px-4 py-3 mb-3"
-                  style={{ background: 'rgba(74,222,128,0.06)', border: '1px solid rgba(74,222,128,0.12)' }}
-                >
-                  <p className="text-xs mb-1 font-medium" style={{ color: 'var(--success)' }}>Sua resposta</p>
-                  <p className="text-sm" style={{ color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-                    {review.reply}
-                  </p>
-                </div>
-              )}
-
-              {/* Resposta sugerida (draft inline) */}
-              {(review.reply_status === 'pending' || review.reply_status === 'no_response') && review.ai_reply_draft && (
-                <div
-                  className="rounded-xl px-4 py-3 mb-3"
-                  style={{ background: 'rgba(14,165,233,0.06)', border: '1px solid rgba(14,165,233,0.12)' }}
-                >
-                  <p className="text-xs mb-1 font-medium" style={{ color: 'var(--accent-bright)' }}>Resposta sugerida</p>
-                  <p className="text-sm" style={{ color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-                    {review.ai_reply_draft}
-                  </p>
-                </div>
-              )}
-
-              {/* Ações */}
-              {(review.reply_status === 'pending' || review.reply_status === 'no_response') && (
-                <div className="flex gap-2">
-                  {review.ai_reply_draft ? (
-                    <button
-                      onClick={() => openReplyModal(review)}
-                      className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold transition-all"
-                      style={{
-                        background: 'rgba(74,222,128,0.15)',
-                        border: '1px solid rgba(74,222,128,0.25)',
-                        color: 'var(--success)',
-                      }}
-                    >
-                      Aprovar e publicar
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => openReplyModal(review)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
-                      style={{
-                        background: 'rgba(14,165,233,0.15)',
-                        border: '1px solid rgba(14,165,233,0.25)',
-                        color: 'var(--accent-bright)',
-                      }}
-                    >
-                      <PinIcon size={12} color="var(--accent-bright)" bg="transparent" /> Responder
-                    </button>
-                  )}
-                  <button
-                    onClick={() => openReplyModal(review)}
-                    className="px-3 py-1.5 rounded-lg text-xs font-medium"
-                    style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-tertiary)' }}
-                  >
-                    Editar
-                  </button>
-                  <button
-                    onClick={() => ignoreReview(review.id)}
-                    className="px-3 py-1.5 rounded-lg text-xs font-medium"
-                    style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-tertiary)' }}
-                  >
-                    Ignorar
-                  </button>
-                </div>
-              )}
-            </div>
+              review={review}
+              openReplyModal={openReplyModal}
+              ignoreReview={ignoreReview}
+            />
           ))}
         </div>
       )}
@@ -376,6 +286,198 @@ export function ReviewsContent() {
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+type ReviewCardProps = {
+  review: Review
+  openReplyModal: (review: Review) => void
+  ignoreReview: (id: string) => void
+}
+
+function ReviewCard({ review, openReplyModal, ignoreReview }: ReviewCardProps) {
+  return (
+    <div
+      className="rounded-2xl p-5"
+      style={{
+        background: 'rgba(0,0,0,0.25)',
+        border: `1px solid ${(review.reply_status === 'pending' || review.reply_status === 'no_response') && review.rating <= 2
+          ? 'rgba(239,68,68,0.2)'
+          : 'rgba(255,255,255,0.08)'}`,
+      }}
+    >
+      {/* Header */}
+      <div className="flex items-start justify-between gap-3 mb-2">
+        <div>
+          <div className="flex items-center gap-2 mb-0.5">
+            <span className="text-sm font-bold text-white">{review.author}</span>
+            <StarRow rating={review.rating} />
+          </div>
+          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+            {formatDate(review.review_date)}
+          </p>
+        </div>
+        <StatusBadge status={review.reply_status} />
+      </div>
+
+      {/* Texto da avaliação */}
+      {review.text && (
+        <p className="text-sm mb-3" style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+          &ldquo;{review.text}&rdquo;
+        </p>
+      )}
+
+      {/* Resposta publicada */}
+      {review.reply && (
+        <div
+          className="rounded-xl px-4 py-3 mb-3"
+          style={{ background: 'rgba(74,222,128,0.06)', border: '1px solid rgba(74,222,128,0.12)' }}
+        >
+          <p className="text-xs mb-1 font-medium" style={{ color: 'var(--success)' }}>Sua resposta</p>
+          <p className="text-sm" style={{ color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+            {review.reply}
+          </p>
+        </div>
+      )}
+
+      {/* Resposta sugerida (draft inline) */}
+      {(review.reply_status === 'pending' || review.reply_status === 'no_response') && review.ai_reply_draft && (
+        <div
+          className="rounded-xl px-4 py-3 mb-3"
+          style={{ background: 'rgba(14,165,233,0.06)', border: '1px solid rgba(14,165,233,0.12)' }}
+        >
+          <p className="text-xs mb-1 font-medium" style={{ color: 'var(--accent-bright)' }}>Resposta sugerida</p>
+          <p className="text-sm" style={{ color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+            {review.ai_reply_draft}
+          </p>
+        </div>
+      )}
+
+      {/* Ações */}
+      {(review.reply_status === 'pending' || review.reply_status === 'no_response') && (
+        <div className="flex gap-2">
+          {review.ai_reply_draft ? (
+            <button
+              onClick={() => openReplyModal(review)}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold transition-all"
+              style={{
+                background: 'rgba(74,222,128,0.15)',
+                border: '1px solid rgba(74,222,128,0.25)',
+                color: 'var(--success)',
+              }}
+            >
+              Aprovar e publicar
+            </button>
+          ) : (
+            <button
+              onClick={() => openReplyModal(review)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+              style={{
+                background: 'rgba(14,165,233,0.15)',
+                border: '1px solid rgba(14,165,233,0.25)',
+                color: 'var(--accent-bright)',
+              }}
+            >
+              <PinIcon size={12} color="var(--accent-bright)" bg="transparent" /> Responder
+            </button>
+          )}
+          <button
+            onClick={() => openReplyModal(review)}
+            className="px-3 py-1.5 rounded-lg text-xs font-medium"
+            style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-tertiary)' }}
+          >
+            Editar
+          </button>
+          <button
+            onClick={() => ignoreReview(review.id)}
+            className="px-3 py-1.5 rounded-lg text-xs font-medium"
+            style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-tertiary)' }}
+          >
+            Ignorar
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+type ReviewsSectionedProps = {
+  reviews: Review[]
+  openReplyModal: (review: Review) => void
+  ignoreReview: (id: string) => void
+}
+
+function ReviewsSectioned({ reviews, openReplyModal, ignoreReview }: ReviewsSectionedProps) {
+  const pendingReviews = reviews.filter(
+    r => r.reply_status === 'no_response' || r.reply_status === 'pending'
+  )
+  const respondedReviews = reviews.filter(r => r.reply_status === 'replied')
+
+  return (
+    <div className="flex flex-col gap-1">
+
+      {/* Secao: Aguardando resposta */}
+      {pendingReviews.length > 0 && (
+        <div>
+          <div className="flex items-center gap-2 mb-3 mt-2">
+            <div className="w-2 h-2 rounded-full" style={{ background: '#FBBF24' }} />
+            <p className="font-display font-semibold text-white text-sm">
+              Aguardando resposta
+            </p>
+            <span
+              className="text-xs font-bold px-2 py-0.5 rounded-full"
+              style={{ background: 'rgba(251,191,36,0.15)', color: '#FBBF24' }}
+            >
+              {pendingReviews.length}
+            </span>
+          </div>
+          <div className="flex flex-col gap-3">
+            {pendingReviews.map(review => (
+              <ReviewCard
+                key={review.id}
+                review={review}
+                openReplyModal={openReplyModal}
+                ignoreReview={ignoreReview}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Divisor visual */}
+      {pendingReviews.length > 0 && respondedReviews.length > 0 && (
+        <div className="mt-5 mb-1" style={{ height: 1, background: 'rgba(255,255,255,0.06)' }} />
+      )}
+
+      {/* Secao: Respondidas */}
+      {respondedReviews.length > 0 && (
+        <div>
+          <div className="flex items-center gap-2 mb-3 mt-4">
+            <div className="w-2 h-2 rounded-full" style={{ background: '#4ADE80' }} />
+            <p className="font-display font-semibold text-white text-sm">
+              Respondidas
+            </p>
+            <span
+              className="text-xs font-bold px-2 py-0.5 rounded-full"
+              style={{ background: 'rgba(74,222,128,0.1)', color: '#4ADE80' }}
+            >
+              {respondedReviews.length}
+            </span>
+          </div>
+          <div className="flex flex-col gap-3">
+            {respondedReviews.map(review => (
+              <ReviewCard
+                key={review.id}
+                review={review}
+                openReplyModal={openReplyModal}
+                ignoreReview={ignoreReview}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }

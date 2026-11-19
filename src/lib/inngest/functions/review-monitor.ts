@@ -38,7 +38,7 @@ export const reviewMonitor = inngest.createFunction(
   {
     id: 'review-monitor',
     triggers: [
-      { cron: '0 */6 * * *' },
+      { cron: '0 */3 * * *' },
       { event: 'destaka/reviews.sync.requested' },
     ],
   },
@@ -147,15 +147,29 @@ export const reviewMonitor = inngest.createFunction(
         }
 
         // Detecta reviews novos (sem resposta já publicada e sem resposta pendente no banco)
+        // Passo 1: busca UUIDs de reviews que já têm resposta na tabela review_responses
         const { data: existingResponseIds } = await db
           .from('review_responses')
           .select('review_id')
           .eq('organization_id', orgId)
           .in('status', ['pending', 'approved', 'published'])
 
-        const respondedReviewIds = new Set(
-          (existingResponseIds ?? []).map((r: { review_id: string }) => r.review_id)
-        )
+        const respondedReviewUuids = (existingResponseIds ?? []).map((r: { review_id: string }) => r.review_id)
+
+        // Passo 2: busca os Google review_ids (string) correspondentes a esses UUIDs
+        // review_responses.review_id é FK para reviews.id (UUID), não para o Google review_id (string)
+        // A comparação deve ser feita com r.reviewId (Google ID), não com o UUID
+        let respondedReviewIds = new Set<string>()
+        if (respondedReviewUuids.length > 0) {
+          const { data: reviewsWithResponses } = await db
+            .from('reviews')
+            .select('review_id')
+            .in('id', respondedReviewUuids)
+
+          respondedReviewIds = new Set(
+            (reviewsWithResponses ?? []).map((r: { review_id: string }) => r.review_id)
+          )
+        }
 
         const newReviews = reviews.filter(r => {
           const hasGbpReply = !!r.reviewReply?.comment
@@ -165,6 +179,7 @@ export const reviewMonitor = inngest.createFunction(
 
         let responsesQueued = 0
         let alertsSent = 0
+        let generationsFailed = 0
 
         for (const review of newReviews) {
           const rating = GBPClient.starRatingToNumber(review.starRating)
@@ -256,7 +271,9 @@ export const reviewMonitor = inngest.createFunction(
               city,
               tone: org.tone as ReviewTone,
             })
-          } catch {
+          } catch (err) {
+            console.error(`[review-monitor] Falha ao gerar resposta IA: org=${orgId}, review=${review.reviewId}`, err)
+            generationsFailed++
             continue
           }
 
@@ -322,6 +339,7 @@ export const reviewMonitor = inngest.createFunction(
           new_reviews: newReviews.length,
           responses_queued: responsesQueued,
           alerts_sent: alertsSent,
+          generations_failed: generationsFailed,
         }
       })
 
