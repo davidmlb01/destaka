@@ -1,4 +1,4 @@
-// Story 004: Review Management — monitoramento a cada 6h + respostas por IA
+// Story 004: Review Management — monitoramento a cada 3h + respostas por IA
 // Detecta novos reviews, gera respostas via Claude, publica ou enfileira para aprovação
 
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
@@ -176,6 +176,9 @@ export const reviewMonitor = inngest.createFunction(
         // Para modo automático: pular reviews que já têm reply no Google (já publicadas).
         const isManualMode = org.automation_preference !== 'automatico'
 
+        // Limite: só processa reviews dos últimos 30 dias (evita inundar com histórico)
+        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+
         const newReviews = reviews.filter(r => {
           const hasGbpReply = !!r.reviewReply?.comment
           const hasPendingResponse = respondedReviewIds.has(r.reviewId)
@@ -183,6 +186,8 @@ export const reviewMonitor = inngest.createFunction(
           // Modo automático: pula reviews que já tem reply no Google
           if (hasPendingResponse) return false
           if (hasGbpReply && !isManualMode) return false
+          // Só processa reviews recentes (30 dias)
+          if (r.createTime && r.createTime < thirtyDaysAgo) return false
           return true
         })
 
@@ -348,15 +353,19 @@ export const reviewMonitor = inngest.createFunction(
               .maybeSingle()
 
             if (prof?.email) {
-              sendReviewApprovalEmail({
-                to: prof.email,
-                businessName: org.name,
-                reviewAuthor: authorName,
-                reviewRating: rating,
-                reviewText: review.comment ?? null,
-                suggestedReply: responseText,
-                specialty: (org.specialty as string) ?? null,
-              }).catch(() => {})
+              try {
+                await sendReviewApprovalEmail({
+                  to: prof.email,
+                  businessName: org.name,
+                  reviewAuthor: authorName,
+                  reviewRating: rating,
+                  reviewText: review.comment ?? null,
+                  suggestedReply: responseText,
+                  specialty: (org.specialty as string) ?? null,
+                })
+              } catch (emailErr) {
+                console.error(`[review-monitor] Falha ao enviar email de aprovação: org=${orgId}, review=${review.reviewId}`, emailErr)
+              }
             }
           }
 
