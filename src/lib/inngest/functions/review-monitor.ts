@@ -185,6 +185,26 @@ export const reviewMonitor = inngest.createFunction(
           const rating = GBPClient.starRatingToNumber(review.starRating)
           const authorName = review.reviewer.isAnonymous ? 'Anônimo' : review.reviewer.displayName
 
+          // Verifica se já existe review do mesmo autor na mesma data (evita duplicatas entre fontes: Places vs Zernio)
+          const publishedDate = review.createTime ? review.createTime.substring(0, 10) : null
+          if (publishedDate) {
+            const { data: existingByAuthor } = await db
+              .from('reviews')
+              .select('id, review_id')
+              .eq('organization_id', orgId)
+              .eq('author_name', authorName)
+              .eq('rating', rating)
+              .neq('review_id', review.reviewId)
+              .gte('published_at', `${publishedDate}T00:00:00`)
+              .lte('published_at', `${publishedDate}T23:59:59`)
+              .maybeSingle()
+
+            if (existingByAuthor) {
+              console.log(`[review-monitor] Review duplicado detectado: ${authorName} (${review.reviewId} duplica ${existingByAuthor.review_id}). Pulando.`)
+              continue
+            }
+          }
+
           // Salva o review no banco se ainda não existe
           await db.from('reviews').upsert({
             organization_id: orgId,
