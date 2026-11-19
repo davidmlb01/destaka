@@ -125,9 +125,7 @@ export async function POST(req: NextRequest) {
       competitor_gaps: report.competitor_gaps?.length ?? 0,
     })
   } catch (err) {
-    return NextResponse.json({
-      error: err instanceof Error ? err.message : 'unknown',
-      stack: err instanceof Error ? err.stack?.slice(0, 500) : undefined,
-    }, { status: 500 })
+    console.error('[run-optimizer] Erro:', err)
+    return NextResponse.json({ error: 'Erro interno ao executar otimizador' }, { status: 500 })
   }
 }

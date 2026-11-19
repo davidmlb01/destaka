@@ -4,6 +4,7 @@ export const maxDuration = 60
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { getValidTokenForOrg } from '@/lib/google/token-refresh'
+import { verifyAdminKey } from '@/lib/api/admin-auth'
 
 function admin() {
   return createAdminSupa(
@@ -29,8 +30,7 @@ interface PerformanceResponse {
 }
 
 export async function POST(req: NextRequest) {
-  const authHeader = req.headers.get('x-admin-key')
-  if (authHeader !== process.env.ADMIN_SECRET_KEY) {
+  if (!verifyAdminKey(req.headers.get('x-admin-key'))) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
   }
 

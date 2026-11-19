@@ -22,7 +22,7 @@ function buildCsp(nonce: string): string {
 export async function proxy(request: NextRequest) {
   // Captura ?ref= e salva cookie de 90 dias (URL limpa apos redirect)
   const refCode = request.nextUrl.searchParams.get('ref')
-  if (refCode && refCode.trim().length > 0) {
+  if (refCode && refCode.trim().length > 0 && refCode.trim().length <= 20) {
     const cleanUrl = request.nextUrl.clone()
     cleanUrl.searchParams.delete('ref')
     const redirect = NextResponse.redirect(cleanUrl)
