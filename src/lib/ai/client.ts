@@ -17,7 +17,7 @@ export async function generateContent(prompt: string, systemPrompt: string): Pro
   try {
     const response = await client.messages.create({
       model: MODEL,
-      max_tokens: 4096,
+      max_tokens: 512,
       system: systemPrompt,
       messages: [{ role: 'user', content: prompt }],
     })

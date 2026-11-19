@@ -129,15 +129,25 @@ export const reviewMonitor = inngest.createFunction(
           // Se GBP v4 retornou vazio, usa Places API como fallback
           if (reviews.length === 0) {
             // google_place_id esta em gmb_profiles (tabela antiga)
-            const { data: gmbProfile } = await db
-              .from('gmb_profiles')
-              .select('google_place_id')
-              .eq('user_id', (await db.from('professionals').select('user_id').eq('organization_id', orgId).maybeSingle()).data?.user_id)
+            const { data: prof } = await db
+              .from('professionals')
+              .select('user_id')
+              .eq('organization_id', orgId)
               .maybeSingle()
 
-            const placeId = (gmbProfile as { google_place_id?: string } | null)?.google_place_id
-            if (placeId) {
-              reviews = await GBPClient.listReviewsViaPlaces(placeId)
+            if (!prof?.user_id) {
+              console.log(`[review-monitor] Sem profissional vinculado à org ${orgId}, Places API fallback indisponível`)
+            } else {
+              const { data: gmbProfile } = await db
+                .from('gmb_profiles')
+                .select('google_place_id')
+                .eq('user_id', prof.user_id)
+                .maybeSingle()
+
+              const placeId = (gmbProfile as { google_place_id?: string } | null)?.google_place_id
+              if (placeId) {
+                reviews = await GBPClient.listReviewsViaPlaces(placeId)
+              }
             }
           }
         }
@@ -152,7 +162,7 @@ export const reviewMonitor = inngest.createFunction(
           .from('review_responses')
           .select('review_id')
           .eq('organization_id', orgId)
-          .in('status', ['pending', 'approved', 'published'])
+          .in('status', ['pending', 'published'])
 
         const respondedReviewUuids = (existingResponseIds ?? []).map((r: { review_id: string }) => r.review_id)
 
@@ -191,6 +201,18 @@ export const reviewMonitor = inngest.createFunction(
           return true
         })
 
+        // Batch load reviews existentes para dedup cross-source em memória
+        const { data: existingOrgReviews } = await db
+          .from('reviews')
+          .select('review_id, author_name, rating, published_at')
+          .eq('organization_id', orgId)
+
+        const existingReviewSet = new Set(
+          (existingOrgReviews ?? []).map((r: { author_name: string; rating: number; published_at: string }) =>
+            `${r.author_name}|${r.rating}|${r.published_at?.substring(0, 10) ?? ''}`
+          )
+        )
+
         let responsesQueued = 0
         let alertsSent = 0
         let generationsFailed = 0
@@ -199,24 +221,18 @@ export const reviewMonitor = inngest.createFunction(
           const rating = GBPClient.starRatingToNumber(review.starRating)
           const authorName = review.reviewer.isAnonymous ? 'Anônimo' : review.reviewer.displayName
 
-          // Verifica se já existe review do mesmo autor na mesma data (evita duplicatas entre fontes: Places vs Zernio)
+          // Dedup cross-source em memória (evita N+1 queries)
           const publishedDate = review.createTime ? review.createTime.substring(0, 10) : null
-          if (publishedDate) {
-            const { data: existingByAuthor } = await db
-              .from('reviews')
-              .select('id, review_id')
-              .eq('organization_id', orgId)
-              .eq('author_name', authorName)
-              .eq('rating', rating)
-              .neq('review_id', review.reviewId)
-              .gte('published_at', `${publishedDate}T00:00:00`)
-              .lte('published_at', `${publishedDate}T23:59:59`)
-              .maybeSingle()
-
-            if (existingByAuthor) {
-              console.log(`[review-monitor] Review duplicado detectado: ${authorName} (${review.reviewId} duplica ${existingByAuthor.review_id}). Pulando.`)
-              continue
-            }
+          const dedupKey = `${authorName}|${rating}|${publishedDate ?? ''}`
+          // Verifica se existe outro review (diferente deste) com mesmo autor+rating+data
+          const existsInDb = existingReviewSet.has(dedupKey)
+          // Se já existe no DB E o review_id atual não está no DB, é duplicata cross-source
+          const currentExists = (existingOrgReviews ?? []).some(
+            (r: { review_id: string }) => r.review_id === review.reviewId
+          )
+          if (existsInDb && !currentExists) {
+            console.log(`[review-monitor] Review duplicado cross-source: ${authorName} (${review.reviewId}). Pulando.`)
+            continue
           }
 
           // Salva o review no banco se ainda não existe
@@ -227,7 +243,7 @@ export const reviewMonitor = inngest.createFunction(
             rating,
             comment: review.comment ?? null,
             published_at: review.createTime,
-          }, { onConflict: 'review_id', ignoreDuplicates: false })
+          }, { onConflict: 'review_id', ignoreDuplicates: true })
 
           // Reviews negativos (abaixo de 4 estrelas): enviar alerta por email, sem gerar resposta IA
           if (rating <= 3) {

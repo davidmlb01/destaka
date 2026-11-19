@@ -7,6 +7,8 @@ interface ReviewsData {
   reviews: Review[]
   total: number
   pendingCount: number
+  noResponseCount: number
+  negativeCount: number
   page: number
   pageSize: number
   profile: { id: string; name: string; category: string }

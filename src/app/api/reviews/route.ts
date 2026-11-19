@@ -24,18 +24,19 @@ export async function GET(request: NextRequest) {
 
   // Apply filters
   if (filter === 'pending') {
-    // Reviews without a response (pending, published, or approved)
+    // Reviews without a response (pending or published)
     const { data: respondedIds } = await supabase
       .from('review_responses')
       .select('review_id')
       .eq('organization_id', orgId)
-      .in('status', ['pending', 'approved', 'published'])
+      .in('status', ['pending', 'published'])
 
     const excludeIds = (respondedIds ?? []).map((r: { review_id: string }) => r.review_id)
     if (excludeIds.length > 0) {
       query = query.not('id', 'in', `(${excludeIds.join(',')})`)
     }
   } else if (filter === 'negative') {
+
     query = query.lte('rating', 3)
   } else if (filter === 'pending_approval') {
     // Reviews that have a review_response with status 'pending'
@@ -54,6 +55,8 @@ export async function GET(request: NextRequest) {
         reviews: [],
         total: 0,
         pendingCount: 0,
+        noResponseCount: 0,
+        negativeCount: 0,
         page,
         pageSize: PAGE_SIZE,
         profile: await getProfile(supabase, orgId),
@@ -90,6 +93,15 @@ export async function GET(request: NextRequest) {
     .eq('organization_id', orgId)
     .eq('status', 'pending')
 
+  // Count reviews sem nenhuma resposta e negativas (para badges dos filtros)
+  const [{ data: allReviewIds }, { data: allRespondedIds }, { count: negativeCount }] = await Promise.all([
+    supabase.from('reviews').select('id').eq('organization_id', orgId),
+    supabase.from('review_responses').select('review_id').eq('organization_id', orgId).in('status', ['pending', 'published']),
+    supabase.from('reviews').select('id', { count: 'exact', head: true }).eq('organization_id', orgId).lte('rating', 3),
+  ])
+  const respondedSet = new Set((allRespondedIds ?? []).map((r: { review_id: string }) => r.review_id))
+  const noResponseCount = (allReviewIds ?? []).filter((r: { id: string }) => !respondedSet.has(r.id)).length
+
   // Map to the Review shape expected by useReviews
   const mappedReviews = (reviews ?? []).map((r: {
     id: string
@@ -124,6 +136,8 @@ export async function GET(request: NextRequest) {
     reviews: mappedReviews,
     total: count ?? 0,
     pendingCount: pendingCount ?? 0,
+    noResponseCount,
+    negativeCount: negativeCount ?? 0,
     page,
     pageSize: PAGE_SIZE,
     profile: await getProfile(supabase, orgId),

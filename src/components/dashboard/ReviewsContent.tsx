@@ -16,10 +16,6 @@ function StarRow({ rating }: { rating: number }) {
   )
 }
 
-function formatDate(iso: string) {
-  return formatDateShort(iso)
-}
-
 const FILTER_LABELS: Record<ReviewFilter, string> = {
   all: 'Todas',
   pending: 'Sem resposta',
@@ -62,14 +58,14 @@ export function ReviewsContent() {
   return (
     <div className="flex flex-col gap-5">
       {/* Status de avaliações */}
-      {data && data.pendingCount > 0 ? (
+      {data && data.noResponseCount > 0 ? (
         <div
           className="rounded-xl px-4 py-3 flex items-center gap-3"
           style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)' }}
         >
           <PinIcon size={18} />
           <p className="text-sm font-medium" style={{ color: 'var(--warning)' }}>
-            {data.pendingCount} {data.pendingCount === 1 ? 'avaliação aguardando' : 'avaliações aguardando'} resposta. Responder rápido melhora seu ranking.
+            {data.noResponseCount} {data.noResponseCount === 1 ? 'avaliação aguardando' : 'avaliações aguardando'} resposta. Responder rápido melhora seu ranking.
           </p>
         </div>
       ) : data && data.reviews.length > 0 ? (
@@ -98,12 +94,20 @@ export function ReviewsContent() {
             }}
           >
             {FILTER_LABELS[f]}
-            {f === 'pending' && data && data.pendingCount > 0 && (
+            {f === 'pending' && data && data.noResponseCount > 0 && (
               <span
                 className="ml-1 text-xs font-bold"
                 style={{ color: 'var(--accent-bright)', fontSize: 10 }}
               >
-                {data.pendingCount}
+                {data.noResponseCount}
+              </span>
+            )}
+            {f === 'negative' && data && data.negativeCount > 0 && (
+              <span
+                className="ml-1 text-xs font-bold"
+                style={{ color: 'var(--accent-bright)', fontSize: 10 }}
+              >
+                {data.negativeCount}
               </span>
             )}
           </button>
@@ -189,7 +193,7 @@ export function ReviewsContent() {
                 <div className="flex items-center gap-2">
                   <StarRow rating={modal.review.rating} />
                   <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                    {formatDate(modal.review.review_date)}
+                    {formatDateShort(modal.review.review_date)}
                   </span>
                 </div>
               </div>
@@ -280,7 +284,7 @@ export function ReviewsContent() {
                   color: modal.draft.trim() && !modal.publishing ? 'var(--success)' : 'rgba(255,255,255,0.2)',
                 }}
               >
-                {modal.publishing ? 'Publicando...' : 'Publicar Resposta'}
+                {modal.publishing ? 'Publicando...' : 'Aprovar e publicar'}
               </button>
             </div>
           </div>
@@ -315,7 +319,7 @@ function ReviewCard({ review, openReplyModal, ignoreReview }: ReviewCardProps) {
             <StarRow rating={review.rating} />
           </div>
           <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-            {formatDate(review.review_date)}
+            {formatDateShort(review.review_date)}
           </p>
         </div>
         <StatusBadge status={review.reply_status} />
