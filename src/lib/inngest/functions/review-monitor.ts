@@ -171,6 +171,44 @@ export const reviewMonitor = inngest.createFunction(
           )
         }
 
+        // Sync: registra replies que já existem no Google mas não estão no nosso banco
+        // (corrige divergência entre estado real e UI)
+        const reviewsWithGbpReply = reviews.filter(r => !!r.reviewReply?.comment && !respondedReviewIds.has(r.reviewId))
+        for (const r of reviewsWithGbpReply) {
+          const authorName = r.reviewer.isAnonymous ? 'Anônimo' : r.reviewer.displayName
+          // Garante que o review existe no banco
+          await db.from('reviews').upsert({
+            organization_id: orgId,
+            review_id: r.reviewId,
+            author_name: authorName,
+            rating: GBPClient.starRatingToNumber(r.starRating),
+            comment: r.comment ?? null,
+            published_at: r.createTime,
+          }, { onConflict: 'review_id', ignoreDuplicates: true })
+
+          const { data: row } = await db.from('reviews').select('id').eq('review_id', r.reviewId).maybeSingle()
+          if (row?.id) {
+            // Verifica se já existe response para este review
+            const { data: existing } = await db
+              .from('review_responses')
+              .select('id')
+              .eq('review_id', row.id)
+              .eq('organization_id', orgId)
+              .limit(1)
+              .maybeSingle()
+
+            if (!existing) {
+              await db.from('review_responses').insert({
+                review_id: row.id,
+                organization_id: orgId,
+                generated_text: r.reviewReply!.comment,
+                status: 'published',
+                published_at: r.reviewReply!.updateTime ?? new Date().toISOString(),
+              })
+            }
+          }
+        }
+
         const newReviews = reviews.filter(r => {
           const hasGbpReply = !!r.reviewReply?.comment
           const hasPendingResponse = respondedReviewIds.has(r.reviewId)
