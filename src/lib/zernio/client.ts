@@ -188,19 +188,38 @@ export async function listReviews(accountId: string): Promise<Array<{
 }>> {
   try {
     const zernio = getZernioClient()
-    const { data } = await zernio.accounts.getGoogleBusinessReviews({
-      path: { accountId },
-      query: { pageSize: 50 },
-    })
     type GBReview = { id?: string; reviewer?: { displayName?: string }; rating?: number; comment?: string; createTime?: string; reviewReply?: { comment?: string } }
-    return (data?.reviews ?? []).map((r: GBReview) => ({
-      id: r.id ?? '',
-      author: r.reviewer?.displayName ?? 'Anônimo',
-      rating: r.rating ?? 5,
-      comment: r.comment ?? null,
-      createdAt: r.createTime ?? new Date().toISOString(),
-      reply: r.reviewReply?.comment ?? null,
-    }))
+    const allReviews: Array<{
+      id: string
+      author: string
+      rating: number
+      comment: string | null
+      createdAt: string
+      reply: string | null
+    }> = []
+    let pageToken: string | undefined = undefined
+    const MAX_REVIEWS = 500
+
+    do {
+      const { data } = await zernio.accounts.getGoogleBusinessReviews({
+        path: { accountId },
+        query: { pageSize: 50, ...(pageToken ? { pageToken } : {}) },
+      }) as { data: { reviews?: GBReview[]; nextPageToken?: string } }
+
+      const page = (data?.reviews ?? []).map((r: GBReview) => ({
+        id: r.id ?? '',
+        author: r.reviewer?.displayName ?? 'Anônimo',
+        rating: r.rating ?? 5,
+        comment: r.comment ?? null,
+        createdAt: r.createTime ?? new Date().toISOString(),
+        reply: r.reviewReply?.comment ?? null,
+      }))
+
+      allReviews.push(...page)
+      pageToken = data?.nextPageToken ?? undefined
+    } while (pageToken && allReviews.length < MAX_REVIEWS)
+
+    return allReviews
   } catch {
     return []
   }

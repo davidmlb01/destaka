@@ -104,15 +104,20 @@ export const instagramSync = inngest.createFunction(
             .sort((a, b) => b.likesCount - a.likesCount)
             .slice(0, MAX_POSTS_PER_WEEK)
 
-          // Buscar cidade do GBP
+          // Buscar cidade e bairro do GBP
           const { data: profile } = await db
             .from('gbp_profiles')
             .select('address')
             .eq('organization_id', org.id)
             .maybeSingle()
 
-          const address = profile?.address as { locality?: string } | null
+          const address = profile?.address as { locality?: string; sublocality?: string; addressLines?: string[]; formattedAddress?: string } | null
           const city = address?.locality ?? 'Brasil'
+          const fullAddress = address?.formattedAddress ?? address?.addressLines?.join(', ') ?? ''
+          const knownBairros = ['Copacabana', 'Ipanema', 'Leblon', 'Botafogo', 'Flamengo', 'Lapa', 'Centro', 'Tijuca', 'Barra', 'Recreio', 'Meier', 'Vila Isabel', 'Jardim Botanico', 'Gavea', 'Lagoa', 'Humaita', 'Catete', 'Laranjeiras', 'Urca', 'Leme', 'Pinheiros', 'Vila Mariana', 'Moema', 'Itaim', 'Jardins', 'Higienopolis', 'Consolacao', 'Liberdade', 'Savassi', 'Funcionarios', 'Lourdes', 'Boa Viagem', 'Meireles']
+          const neighborhood = address?.sublocality
+            ?? knownBairros.find(b => fullAddress.toLowerCase().includes(b.toLowerCase()))
+            ?? undefined
 
           // Buscar keyword opportunities da inteligencia competitiva
           const { data: competitiveData } = await db
@@ -124,6 +129,11 @@ export const instagramSync = inngest.createFunction(
             .maybeSingle()
 
           const keywordOpps = (competitiveData?.keyword_opportunities as string[] | null) ?? []
+
+          // Garantir que o bairro apareca nas keywords para ancoragem geografica
+          if (neighborhood && !keywordOpps.some(k => k.toLowerCase().includes(neighborhood.toLowerCase()))) {
+            keywordOpps.unshift(neighborhood)
+          }
 
           let readyCount = 0
 
@@ -154,6 +164,7 @@ export const instagramSync = inngest.createFunction(
               specialty: org.specialty ?? 'saude',
               professionalName: org.name ?? '',
               city,
+              neighborhood,
               tone: org.tone ?? 'proximo',
               keywords: keywordOpps.slice(0, 3),
             })
