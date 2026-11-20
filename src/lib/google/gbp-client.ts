@@ -280,8 +280,11 @@ export class GBPClient {
       dailySubEntityType: 'DAILY_SUB_ENTITY_TYPE_UNSPECIFIED',
     }
 
+    // Performance API usa apenas locations/{id}, sem prefixo accounts/
+    const perfLocation = locationName.replace(/^accounts\/\d+\//, '')
+
     return this.fetch<GBPPerformanceMetrics>(
-      `https://businessprofileperformance.googleapis.com/v1/${locationName}:fetchMultiDailyMetricsTimeSeries`,
+      `https://businessprofileperformance.googleapis.com/v1/${perfLocation}:fetchMultiDailyMetricsTimeSeries`,
       { method: 'POST', body: JSON.stringify(body) }
     )
   }
@@ -298,13 +301,18 @@ export class GBPClient {
     const [startYear, startMonth] = start.split('-').map(Number)
     const [endYear, endMonth] = end.split('-').map(Number)
 
+    // Performance API usa apenas locations/{id}, sem prefixo accounts/
+    const perfLocationName = locationName.includes('/')
+      ? locationName.replace(/^accounts\/\d+\//, '')
+      : locationName
+
     const data = await this.fetch<{
       searchKeywordsCounts?: Array<{
         searchKeyword: string
         insightsValue: { value: string }
       }>
     }>(
-      `https://businessprofileperformance.googleapis.com/v1/${locationName}/searchkeywords/impressions/monthly?monthlyRange.startMonth.year=${startYear}&monthlyRange.startMonth.month=${startMonth}&monthlyRange.endMonth.year=${endYear}&monthlyRange.endMonth.month=${endMonth}`
+      `https://businessprofileperformance.googleapis.com/v1/${perfLocationName}/searchkeywords/impressions/monthly?monthlyRange.startMonth.year=${startYear}&monthlyRange.startMonth.month=${startMonth}&monthlyRange.endMonth.year=${endYear}&monthlyRange.endMonth.month=${endMonth}`
     )
 
     return (data.searchKeywordsCounts ?? []).map(k => ({
