@@ -181,22 +181,45 @@ export const reviewMonitor = inngest.createFunction(
           )
         }
 
-        // Para modo manual: NÃO pular reviews que têm reply no Google.
-        // O usuário precisa ver todas as reviews na UI, mesmo as já respondidas externamente.
-        // Para modo automático: pular reviews que já têm reply no Google (já publicadas).
-        const isManualMode = org.automation_preference !== 'automatico'
-
         // Limite: só processa reviews dos últimos 30 dias (evita inundar com histórico)
         const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
 
+        // Sync: reviews que já têm reply no Google mas não no nosso banco
+        // Registra como "published" para a UI mostrar "Respondida" corretamente
+        const reviewsWithGbpReply = reviews.filter(r =>
+          !!r.reviewReply?.comment && !respondedReviewIds.has(r.reviewId)
+        )
+        for (const r of reviewsWithGbpReply) {
+          const rAuthor = r.reviewer.isAnonymous ? 'Anônimo' : r.reviewer.displayName
+          await db.from('reviews').upsert({
+            organization_id: orgId,
+            review_id: r.reviewId,
+            author_name: rAuthor,
+            rating: GBPClient.starRatingToNumber(r.starRating),
+            comment: r.comment ?? null,
+            published_at: r.createTime,
+          }, { onConflict: 'review_id', ignoreDuplicates: true })
+          const { data: row } = await db.from('reviews').select('id').eq('review_id', r.reviewId).maybeSingle()
+          if (row?.id) {
+            const { data: existing } = await db.from('review_responses').select('id').eq('review_id', row.id).eq('organization_id', orgId).limit(1).maybeSingle()
+            if (!existing) {
+              await db.from('review_responses').insert({
+                review_id: row.id,
+                organization_id: orgId,
+                generated_text: r.reviewReply!.comment,
+                status: 'published',
+                published_at: r.reviewReply!.updateTime ?? new Date().toISOString(),
+              })
+            }
+          }
+        }
+
+        // Filtra reviews novos: sem reply no Google E sem resposta no banco
         const newReviews = reviews.filter(r => {
           const hasGbpReply = !!r.reviewReply?.comment
           const hasPendingResponse = respondedReviewIds.has(r.reviewId)
-          // Modo manual: gera resposta mesmo se já tem reply no Google (usuário quer ver e aprovar)
-          // Modo automático: pula reviews que já tem reply no Google
           if (hasPendingResponse) return false
-          if (hasGbpReply && !isManualMode) return false
-          // Só processa reviews recentes (30 dias)
+          if (hasGbpReply) return false
           if (r.createTime && r.createTime < thirtyDaysAgo) return false
           return true
         })
