@@ -11,8 +11,8 @@ import { getValidTokenForOrg } from '@/lib/google/token-refresh'
 import { publishPost as zernioPublishPost } from '@/lib/zernio/client'
 import { geotagAndUpload } from '@/lib/media/geotag'
 
-const MAX_POSTS_PER_WEEK = 3
-const MAX_GBP_PUBLISHES_PER_WEEK = 3
+const MAX_POSTS_PER_WEEK = 5
+const MAX_GBP_PUBLISHES_PER_WEEK = 5
 
 function admin() {
   return createAdminSupa(

@@ -16,7 +16,7 @@ export const scheduledPostPublisher = inngest.createFunction(
   {
     id: 'scheduled-post-publisher',
     triggers: [
-      { cron: '0 13 * * 1,3,5' },
+      { cron: '0 13 * * 1-5' },
       { event: 'destaka/posts.publish-scheduled.requested' },
     ],
   },

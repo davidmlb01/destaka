@@ -1,5 +1,5 @@
-// Story 005: Content Automation — gera e publica 2-3 posts/semana no GBP
-// Cron: segunda, quarta e sexta às 10h
+// Story 005: Content Automation — gera e publica 5 posts/semana no GBP
+// Cron: segunda a sexta às 10h UTC (07h BRT)
 
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { inngest } from '../client'
@@ -65,7 +65,7 @@ export const postGenerator = inngest.createFunction(
   {
     id: 'post-generator',
     triggers: [
-      { cron: '0 10 * * 1,3,5' },
+      { cron: '0 10 * * 1-5' },
       { event: 'destaka/post.generate.requested' },
     ],
   },
@@ -167,14 +167,27 @@ export const postGenerator = inngest.createFunction(
           .eq('organization_id', orgId)
           .single()
 
-        const address = profile?.address as { locality?: string; formattedAddress?: string; addressLines?: string[] } | null
+        const address = profile?.address as { locality?: string; sublocality?: string; formattedAddress?: string; addressLines?: string[] } | null
         const city = address?.locality ?? 'Brasil'
-        // Extrair bairro do endereco para contexto local nos posts
-        const formattedAddr = address?.formattedAddress ?? ''
-        const addrParts = formattedAddr.split(',')
-        const neighborhood = addrParts.length >= 2
-          ? addrParts[addrParts.length - 2].trim().split('-').pop()?.trim()
-          : undefined
+        // Extrair bairro principal do endereco
+        const knownBairros = ['Copacabana', 'Ipanema', 'Leblon', 'Botafogo', 'Flamengo', 'Leme', 'Urca', 'Catete', 'Laranjeiras', 'Humaitá', 'Lagoa', 'Jardim Botânico', 'Gávea', 'São Conrado', 'Tijuca', 'Centro']
+        const fullAddress = address?.formattedAddress ?? ''
+        const neighborhood = address?.sublocality
+          ?? knownBairros.find(b => fullAddress.includes(b))
+          ?? undefined
+
+        // Bairros vizinhos para expansão geográfica de keywords
+        // Cada post usa o bairro principal + 1 bairro vizinho em rotação
+        const bairroExpansion: Record<string, string[]> = {
+          'Copacabana': ['Ipanema', 'Leme', 'Botafogo', 'Leblon', 'Flamengo'],
+          'Ipanema': ['Copacabana', 'Leblon', 'Lagoa', 'Gávea'],
+          'Botafogo': ['Copacabana', 'Flamengo', 'Humaitá', 'Urca'],
+          'Leblon': ['Ipanema', 'Gávea', 'Jardim Botânico', 'São Conrado'],
+          'Flamengo': ['Botafogo', 'Catete', 'Laranjeiras', 'Centro'],
+        }
+        const vizinhos = neighborhood ? (bairroExpansion[neighborhood] ?? []) : []
+        // Rotaciona bairro vizinho com base no dia da semana (0-6)
+        const vizinhoHoje = vizinhos.length > 0 ? vizinhos[new Date().getDay() % vizinhos.length] : undefined
 
         // Buscar keywords de ranking (prioridade) + analise competitiva (fallback)
         const { data: rankingKws } = await db
@@ -186,11 +199,18 @@ export const postGenerator = inngest.createFunction(
 
         let keywordOpportunities: string[] = []
         if (rankingKws?.length) {
-          // Extrair o servico da keyword (remover bairro): "quiropraxia Copacabana" -> "quiropraxia"
           keywordOpportunities = rankingKws.map(k => k.keyword.split(' ')[0]).slice(0, 3)
         } else {
           const competitiveAnalysis = await getLatestAnalysis(db, orgId)
           keywordOpportunities = (competitiveAnalysis?.keyword_opportunities ?? []).slice(0, 3)
+        }
+
+        // Injetar bairro principal + vizinho nas keywords
+        if (neighborhood && !keywordOpportunities.some(k => k.includes(neighborhood))) {
+          keywordOpportunities.unshift(neighborhood)
+        }
+        if (vizinhoHoje && !keywordOpportunities.includes(vizinhoHoje)) {
+          keywordOpportunities.push(vizinhoHoje)
         }
 
         // Determina próximo tipo de post (rotação) + sequência para seed de diversidade (Correção C)

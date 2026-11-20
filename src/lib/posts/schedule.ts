@@ -1,10 +1,10 @@
 /**
- * Calcula o proximo slot de publicacao disponivel (segunda, quarta ou sexta as 10h BRT / 13h UTC).
+ * Calcula o proximo slot de publicacao disponivel (segunda a sexta as 10h BRT / 13h UTC).
  * Se hoje for um dia de publicacao e ainda nao passou das 13h UTC, usa hoje.
  * Senao, avanca pro proximo dia valido.
  */
 export function getNextPublishSlot(existingScheduledDates: string[] = []): Date {
-  const PUBLISH_DAYS = [1, 3, 5] // segunda, quarta, sexta
+  const PUBLISH_DAYS = [1, 2, 3, 4, 5] // segunda a sexta
   const PUBLISH_HOUR_UTC = 13 // 10h BRT
 
   const now = new Date()
