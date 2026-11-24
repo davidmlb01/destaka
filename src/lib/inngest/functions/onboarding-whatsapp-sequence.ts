@@ -1,12 +1,12 @@
-// Regua de WhatsApp pos-contratacao
+// Régua de WhatsApp pós-contratação
 // Trigger: destaka/subscription.activated
-// Sequencia: dia 0, 3, 7, 14, 30
+// Sequência: dia 0, 14, 30 (só mensagens com propósito claro)
 
 import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { inngest } from '../client'
 import { createWhatsAppClient } from '@/lib/whatsapp/client'
 import { ONBOARDING_TEMPLATES } from '@/lib/whatsapp/templates'
-import type { OnboardingMessageData } from '@/lib/whatsapp/templates'
+import type { TemplateData } from '@/lib/whatsapp/templates'
 
 function admin() {
   return createAdminSupa(
@@ -54,18 +54,17 @@ export const onboardingWhatsappSequence = inngest.createFunction(
     const results: Array<{ template: string; status: string; error?: string }> = []
 
     for (const template of ONBOARDING_TEMPLATES) {
-      // Aguarda o numero de dias correto entre as mensagens
-      if (template.day > 0) {
-        const previousDay = ONBOARDING_TEMPLATES[
-          ONBOARDING_TEMPLATES.indexOf(template) - 1
-        ]?.day ?? 0
+      // Aguarda o número de dias correto entre as mensagens
+      if (template.day && template.day > 0) {
+        const idx = ONBOARDING_TEMPLATES.indexOf(template)
+        const previousDay = idx > 0 ? (ONBOARDING_TEMPLATES[idx - 1]?.day ?? 0) : 0
         const daysToWait = template.day - previousDay
         await step.sleep(`wait-until-day-${template.day}`, `${daysToWait}d`)
       }
 
       const result = await step.run(`send-${template.name}`, async () => {
         // Para o template do dia 30, busca scores atualizados
-        let messageData: OnboardingMessageData = {
+        let messageData: TemplateData = {
           nome: orgData.name,
           link: dashboardLink,
         }
