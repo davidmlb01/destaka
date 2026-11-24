@@ -44,7 +44,7 @@ export async function POST(
   // Buscar post pendente
   const { data: post } = await admin
     .from('posts')
-    .select('id, content, photo_suggestion')
+    .select('id, content, photo_suggestion, scheduled_at')
     .eq('id', postId)
     .eq('organization_id', orgId)
     .in('status', ['pending', 'draft'])
@@ -64,18 +64,7 @@ export async function POST(
     }
   }
 
-  // Buscar posts já agendados pra evitar conflito de data
-  const { data: alreadyScheduled } = await admin
-    .from('posts')
-    .select('scheduled_at')
-    .eq('organization_id', orgId)
-    .eq('status', 'scheduled')
-
-  const scheduledDates = (alreadyScheduled ?? [])
-    .map(p => (p as { scheduled_at: string | null }).scheduled_at)
-    .filter((d): d is string => d !== null)
-
-  // Buscar zernio_account_id (necessário pra publicação imediata)
+  // Buscar zernio_account_id
   const { data: org } = await admin
     .from('organizations')
     .select('zernio_account_id')
@@ -86,36 +75,52 @@ export async function POST(
     return NextResponse.json({ error: 'Conta Google Business não conectada. Faça login novamente.' }, { status: 400 })
   }
 
-  const slot = getNextPublishSlot(scheduledDates)
-  const now = new Date()
+  // Se o post já tem scheduled_at do gerador, usar esse valor
+  const existingSchedule = (post as Record<string, string | null>).scheduled_at
+  let slot: Date
 
-  // Se o próximo slot já passou (usuário aprovou atrasado), publicar imediatamente
-  if (slot <= now) {
-    const rawImage = (post as Record<string, string>).photo_suggestion ?? undefined
-    let finalImage = rawImage
-    if (rawImage && rawImage.startsWith('http')) {
-      finalImage = await geotagAndUpload(orgId, rawImage)
-    }
+  if (existingSchedule) {
+    slot = new Date(existingSchedule)
+  } else {
+    // Calcula novo slot se não tiver agenda
+    const { data: alreadyScheduled } = await admin
+      .from('posts')
+      .select('scheduled_at')
+      .eq('organization_id', orgId)
+      .eq('status', 'scheduled')
 
-    let gbpPostId: string | null
-    try {
-      gbpPostId = await zernioPublishPost(org.zernio_account_id, finalContent, finalImage)
-    } catch (err) {
-      console.error('[posts/publish] Zernio error:', err instanceof Error ? err.message : err)
-      return NextResponse.json({ error: 'Falha ao publicar post no Google. Tente novamente.' }, { status: 502 })
-    }
+    const scheduledDates = (alreadyScheduled ?? [])
+      .map(p => (p as { scheduled_at: string | null }).scheduled_at)
+      .filter((d): d is string => d !== null)
 
-    await admin.from('posts').update({
-      status: 'published',
-      content: finalContent,
-      published_at: new Date().toISOString(),
-      gbp_post_id: gbpPostId ?? null,
-    }).eq('id', postId)
-
-    return NextResponse.json({ status: 'published', gbp_post_id: gbpPostId })
+    slot = getNextPublishSlot(scheduledDates)
   }
 
-  // Agendar para o próximo slot (cron scheduled-post-publisher publica no horário)
+  const now = new Date()
+
+  // Se o slot já passou, agendar para o próximo slot disponível
+  if (slot <= now) {
+    const { data: alreadyScheduled } = await admin
+      .from('posts')
+      .select('scheduled_at')
+      .eq('organization_id', orgId)
+      .eq('status', 'scheduled')
+
+    const scheduledDates = (alreadyScheduled ?? [])
+      .map(p => (p as { scheduled_at: string | null }).scheduled_at)
+      .filter((d): d is string => d !== null)
+
+    slot = getNextPublishSlot(scheduledDates)
+
+    // Se ainda assim já passou (nenhum slot futuro), agendar para amanhã 13h UTC
+    if (slot <= now) {
+      slot = new Date(now)
+      slot.setUTCDate(slot.getUTCDate() + 1)
+      slot.setUTCHours(13, 0, 0, 0)
+    }
+  }
+
+  // Agendar para o slot (cron scheduled-post-publisher publica no horário)
   const label = formatScheduleLabel(slot)
 
   const { error: scheduleErr } = await admin
