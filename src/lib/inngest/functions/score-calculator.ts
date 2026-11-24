@@ -88,14 +88,15 @@ export const scoreCalculator = inngest.createFunction(
           db.from('reviews').select('rating, published_at').eq('organization_id', orgId),
           db.from('review_responses').select('review_id').eq('organization_id', orgId).eq('status', 'published'),
           db.from('posts').select('id').eq('organization_id', orgId).eq('status', 'published').gte('published_at', thirtyDaysAgo.toISOString()),
-          db.from('scores').select('total').eq('organization_id', orgId).order('snapshot_date', { ascending: false }).limit(7),
+          db.from('scores').select('total, details').eq('organization_id', orgId).order('snapshot_date', { ascending: false }).limit(7),
           db.from('geo_snapshots').select('regions').eq('org_id', orgId).order('week_start', { ascending: false }).limit(1).maybeSingle(),
           db.from('keyword_snapshots').select('impressions, week_start').eq('org_id', orgId).order('week_start', { ascending: false }).limit(50),
-          db.from('organizations').select('google_review_count').eq('id', orgId).maybeSingle(),
+          db.from('organizations').select('google_review_count, services').eq('id', orgId).maybeSingle(),
         ])
 
         const reviewList = reviews ?? []
         const googleCount = (orgData as Record<string, unknown> | null)?.google_review_count as number | null
+        const orgServices = ((orgData as Record<string, unknown> | null)?.services as string[] | null) ?? []
         const reviewCount = Math.max(reviewList.length, googleCount ?? 0)
         const avgRating = reviewList.length > 0
           ? reviewList.reduce((sum: number, r: { rating: number }) => sum + r.rating, 0) / reviewList.length
@@ -112,6 +113,9 @@ export const scoreCalculator = inngest.createFunction(
 
         const recentPostCount = recentPosts?.length ?? 0
         const previousScores = (previousSnapshots ?? []).map((s: { total: number }) => s.total).reverse()
+
+        // Detalhes do snapshot mais recente (escrito pelo gbp-audit), usado na formula do dashboard
+        const latestDetails = (previousSnapshots?.[0] as Record<string, unknown> | undefined)?.details as Record<string, Record<string, number>> | null | undefined
 
         // Dados geograficos do snapshot mais recente
         const regions = (geoSnapshot?.regions ?? []) as Array<{ status: string }>
@@ -140,12 +144,36 @@ export const scoreCalculator = inngest.createFunction(
         const breakdown = calculateScore(input, previousScores)
         const legacy = toLegacyBreakdown(breakdown)
 
+        // Formula unificada: mesma logica do dashboard (computedTotal)
+        // catInfoBasica: gmb_completude capeado em 25
+        const catInfoBasica = Math.min(breakdown.gmb_completude, 25)
+        // catFotos: photo_count * 2 capeado em 20
+        const catFotos = Math.min((profile.photo_count ?? 0) * 2, 20)
+        // catAvaliacoes: reputacao sem capeamento adicional (max 20 pelo calculator)
+        const catAvaliacoes = breakdown.reputacao
+        // catPosts: 0/2/5/10 baseado em posts dos ultimos 30 dias, capeado em 15
+        let scorePostsRaw = 0
+        if (recentPostCount >= 4) scorePostsRaw = 10
+        else if (recentPostCount >= 2) scorePostsRaw = 5
+        else if (recentPostCount >= 1) scorePostsRaw = 2
+        const catPosts = Math.min(scorePostsRaw, 15)
+        // catServicos: baseado em services da org + services_desc do details (gbp-audit)
+        let scoreServicosRaw = 0
+        if (orgServices.length >= 3) scoreServicosRaw += 5
+        scoreServicosRaw += latestDetails?.services?.services_desc ?? 0
+        const catServicos = Math.min(scoreServicosRaw, 10)
+        // catAtributos: do details (gbp-audit) ou fallback em conversao capeado em 5
+        const scoreAtributosRaw = latestDetails?.attributes?.attributes ?? Math.min(legacy.conversao, 5)
+        const catAtributos = Math.min(scoreAtributosRaw, 5)
+
+        const computedTotal = catInfoBasica + catFotos + catAvaliacoes + catPosts + catServicos + catAtributos
+
         // Persiste snapshot (upsert para evitar duplicatas no mesmo dia)
         const snapshotDate = today.toISOString().split('T')[0]
 
         await db.from('scores').upsert({
           organization_id: orgId,
-          total: legacy.total,
+          total: computedTotal,
           projected_score: legacy.projected_score,
           gmb_completude: legacy.gmb_completude,
           reputacao: legacy.reputacao,
@@ -203,7 +231,7 @@ export const scoreCalculator = inngest.createFunction(
               avgRating: input.avgRating,
               reviewResponseRate: input.reviewResponseRate,
               hasWebsite: input.hasWebsite,
-              totalScore: breakdown.total,
+              totalScore: computedTotal,
             }
             const { updated, plan: updatedPlan } = updatePlanProgress(activePlan, planCtx)
             if (updated) {
@@ -222,7 +250,7 @@ export const scoreCalculator = inngest.createFunction(
             ? previousScores.reduce((a: number, b: number) => a + b, 0) / previousScores.length
             : 0
 
-          const scoreGain = breakdown.total - prevAvg
+          const scoreGain = computedTotal - prevAvg
 
           // Buscar semana anterior de keyword_snapshots para comparar
           const prevWeekCandidates = kwList.filter(
@@ -246,7 +274,7 @@ export const scoreCalculator = inngest.createFunction(
           if (shouldTriggerReferral) {
             let detail = ''
             if (scoreGain >= 5) {
-              detail = `seu score Destaka subiu de ${Math.round(prevAvg)} para ${breakdown.total}`
+              detail = `seu score Destaka subiu de ${Math.round(prevAvg)} para ${computedTotal}`
             } else {
               detail = `suas buscas no Google subiram ${Math.round(kwGrowthPct)}% esta semana`
             }
@@ -270,7 +298,7 @@ export const scoreCalculator = inngest.createFunction(
 
         return {
           org_id: orgId,
-          score: breakdown.total,
+          score: computedTotal,
           faixa: breakdown.faixa,
         }
       })
