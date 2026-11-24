@@ -3,6 +3,7 @@
 // REGRA: o body da request NUNCA e logado, retornado em erro, ou persistido.
 
 import { NextRequest, NextResponse } from 'next/server'
+import { createClient as createAdminSupa } from '@supabase/supabase-js'
 import { createReviewProvider } from '@/lib/wa-reviews/provider'
 import { processWebhookBatch } from '@/lib/wa-reviews/webhook-processor'
 import { getConnection } from '@/lib/wa-reviews/db'
@@ -10,19 +11,39 @@ import { logger } from '@/lib/logger'
 
 export const dynamic = 'force-dynamic'
 
-// Resolver orgId a partir do phone_number_id do webhook
-// Na Fase 6, isso vira lookup real. Por enquanto, aceita orgId no query string (dev/test).
+function adminDb() {
+  return createAdminSupa(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
+
+// Resolver orgId: query string (dev) ou phone_number_id do payload (producao)
 async function resolveOrgId(
   request: NextRequest,
-  _body: string
+  body: string
 ): Promise<string | null> {
   // Dev/test: orgId no query string
   const orgFromQuery = request.nextUrl.searchParams.get('org_id')
   if (orgFromQuery) return orgFromQuery
 
-  // Producao: extrair phone_number_id do payload e fazer lookup
-  // Implementado na Fase 6 com o parceiro real
-  return null
+  // Producao: extrair phone_number_id do payload Kapso e fazer lookup
+  try {
+    const payload = JSON.parse(body)
+    const phoneNumberId = payload?.phone_number_id ??
+      payload?.conversation?.phone_number_id
+    if (!phoneNumberId) return null
+
+    const { data } = await adminDb()
+      .from('whatsapp_connections')
+      .select('organization_id')
+      .eq('phone_number_id', phoneNumberId)
+      .maybeSingle()
+
+    return data?.organization_id ?? null
+  } catch {
+    return null
+  }
 }
 
 export async function POST(request: NextRequest) {
