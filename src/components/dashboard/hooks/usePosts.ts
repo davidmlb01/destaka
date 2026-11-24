@@ -8,7 +8,7 @@ interface Post {
   id: string
   content: string
   type: string
-  status: 'draft' | 'pending' | 'published' | 'scheduled' | 'failed'
+  status: 'draft' | 'pending' | 'published' | 'scheduled' | 'approved' | 'failed' | 'rejected'
   scheduled_at: string | null
   published_at: string | null
   created_at: string
@@ -59,7 +59,7 @@ export function usePosts() {
         toast.error(error)
         return
       }
-      if (result?.status === 'scheduled' && result.label) {
+      if ((result?.status === 'scheduled' || result?.status === 'approved') && result.label) {
         toast.success(`Post agendado para ${result.label}`)
       } else {
         toast.success('Post publicado no Google!')

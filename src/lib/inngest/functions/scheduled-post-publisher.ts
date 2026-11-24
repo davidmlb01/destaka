@@ -27,7 +27,7 @@ export const scheduledPostPublisher = inngest.createFunction(
       const { data } = await db
         .from('posts')
         .select('id, organization_id, content, photo_suggestion, scheduled_at')
-        .eq('status', 'scheduled')
+        .in('status', ['scheduled', 'approved'])
         .lte('scheduled_at', new Date().toISOString())
         .order('scheduled_at', { ascending: true })
 

@@ -126,7 +126,7 @@ export async function POST(
   const { error: scheduleErr } = await admin
     .from('posts')
     .update({
-      status: 'scheduled',
+      status: 'approved',
       content: finalContent,
       scheduled_at: slot.toISOString(),
     })
@@ -137,5 +137,5 @@ export async function POST(
     return NextResponse.json({ error: 'Falha ao agendar o post. Tente novamente.' }, { status: 500 })
   }
 
-  return NextResponse.json({ status: 'scheduled', scheduled_at: slot.toISOString(), label })
+  return NextResponse.json({ status: 'approved', scheduled_at: slot.toISOString(), label })
 }

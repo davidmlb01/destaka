@@ -74,7 +74,7 @@ export function PostsContent() {
   )
 
   const pendingPosts = data?.posts.filter(p => p.status === 'draft' || p.status === 'pending') ?? []
-  const scheduledPosts = data?.posts.filter(p => p.status === 'scheduled') ?? []
+  const scheduledPosts = data?.posts.filter(p => p.status === 'scheduled' || p.status === 'approved') ?? []
   const publishedPosts = data?.posts.filter(p => p.status === 'published' || p.status === 'failed') ?? []
 
   return (
