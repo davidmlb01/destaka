@@ -102,6 +102,7 @@ export function OptimizationsPage({
 
   // Services
   const [editedServices, setEditedServices] = useState<Record<number, string>>({})
+  const [editedServiceDescs, setEditedServiceDescs] = useState<Record<number, string>>({})
   const [svcStatus, setSvcStatus] = useState<SectionStatus>('idle')
 
   // Applied items collapsed
@@ -195,7 +196,7 @@ export function OptimizationsPage({
         category: 'service',
         label: {
           displayName: editedServices[i] ?? svc.optimized,
-          description: '',
+          description: editedServiceDescs[i] ?? svc.description ?? '',
         },
       },
     }))
@@ -667,12 +668,20 @@ export function OptimizationsPage({
                       }}
                     />
                     {svc.description && (
-                      <p
-                        className="text-[13px] mt-2 px-1 leading-relaxed"
-                        style={{ color: 'var(--text-secondary)' }}
-                      >
-                        {svc.description}
-                      </p>
+                      <textarea
+                        value={editedServiceDescs[i] ?? svc.description}
+                        onChange={e => {
+                          setEditedServiceDescs(prev => ({ ...prev, [i]: e.target.value }))
+                          setSvcStatus('idle')
+                        }}
+                        rows={3}
+                        className="w-full rounded-lg px-3 py-2 text-[13px] mt-2 outline-none transition-colors resize-none leading-relaxed"
+                        style={{
+                          background: 'rgba(255,255,255,0.04)',
+                          border: '1px solid rgba(255,255,255,0.1)',
+                          color: 'var(--text-secondary)',
+                        }}
+                      />
                     )}
                     {svc.keywords_added.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-2">
