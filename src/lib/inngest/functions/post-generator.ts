@@ -169,9 +169,9 @@ export const postGenerator = inngest.createFunction(
 
         const address = profile?.address as { locality?: string; sublocality?: string; formattedAddress?: string; addressLines?: string[] } | null
         const city = address?.locality ?? 'Brasil'
-        // Extrair bairro principal do endereco
+        // Extrair bairro principal do endereco (tenta sublocality, formattedAddress, addressLines)
         const knownBairros = ['Copacabana', 'Ipanema', 'Leblon', 'Botafogo', 'Flamengo', 'Leme', 'Urca', 'Catete', 'Laranjeiras', 'Humaitá', 'Lagoa', 'Jardim Botânico', 'Gávea', 'São Conrado', 'Tijuca', 'Centro']
-        const fullAddress = address?.formattedAddress ?? ''
+        const fullAddress = address?.formattedAddress ?? (address?.addressLines ?? []).join(', ')
         const neighborhood = address?.sublocality
           ?? knownBairros.find(b => fullAddress.includes(b))
           ?? undefined
@@ -199,7 +199,8 @@ export const postGenerator = inngest.createFunction(
 
         let keywordOpportunities: string[] = []
         if (rankingKws?.length) {
-          keywordOpportunities = rankingKws.map(k => k.keyword.split(' ')[0]).slice(0, 3)
+          // Usar keyword completa com bairro (ex: "quiropraxia Copacabana"), não só o termo
+          keywordOpportunities = rankingKws.map(k => k.keyword).slice(0, 3)
         } else {
           const competitiveAnalysis = await getLatestAnalysis(db, orgId)
           keywordOpportunities = (competitiveAnalysis?.keyword_opportunities ?? []).slice(0, 3)
