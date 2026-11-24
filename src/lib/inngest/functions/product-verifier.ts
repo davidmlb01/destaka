@@ -137,7 +137,7 @@ async function checkReviews(
   const twoDaysAgo = new Date()
   twoDaysAgo.setDate(twoDaysAgo.getDate() - 2)
 
-  // Reviews sem resposta nos ultimos 30 dias
+  // Reviews sem resposta nos últimos 30 dias
   const { data: reviewsSemResposta } = await db
     .from('reviews')
     .select('id, created_at')
@@ -147,15 +147,15 @@ async function checkReviews(
 
   const semResposta = (reviewsSemResposta ?? []).length
   if (semResposta === 0) {
-    items.push({ status: 'ok', message: '0 reviews sem resposta nos ultimos 30 dias' })
+    items.push({ status: 'ok', message: '0 reviews sem resposta nos últimos 30 dias' })
   } else {
     items.push({
       status: 'warning',
-      message: `${semResposta} review(s) sem resposta nos ultimos 30 dias`,
+      message: `${semResposta} review(s) sem resposta nos últimos 30 dias`,
     })
   }
 
-  // Respostas pendentes ha mais de 48h (review_responses com status pending)
+  // Respostas pendentes há mais de 48h (review_responses com status pending)
   const { data: pendentes } = await db
     .from('review_responses')
     .select('id, created_at')
@@ -167,7 +167,7 @@ async function checkReviews(
   if (totalPendentes > 0) {
     items.push({
       status: 'warning',
-      message: `${totalPendentes} resposta(s) pendentes ha mais de 48h sem notificacao`,
+      message: `${totalPendentes} resposta(s) pendentes há mais de 48h sem notificação`,
     })
   }
 
@@ -187,12 +187,12 @@ async function checkReviews(
     if (horasPassadas > 6) {
       items.push({
         status: 'warning',
-        message: `Monitor possivelmente inativo: ultima atividade ha ${Math.round(horasPassadas)}h`,
+        message: `Monitor possivelmente inativo: última atividade há ${Math.round(horasPassadas)}h`,
       })
     } else {
       items.push({
         status: 'ok',
-        message: `Monitor ativo (ultima atividade ha ${Math.round(horasPassadas)}h)`,
+        message: `Monitor ativo (última atividade há ${Math.round(horasPassadas)}h)`,
       })
     }
   }
@@ -219,7 +219,7 @@ async function checkScore(
     .maybeSingle()
 
   if (!score) {
-    items.push({ status: 'failed', message: 'Score nao calculado hoje' })
+    items.push({ status: 'failed', message: 'Score não calculado hoje' })
   } else if (score.total_score <= 0) {
     items.push({
       status: 'failed',
@@ -251,18 +251,18 @@ async function checkOptimizations(
     .maybeSingle()
 
   if (!report) {
-    items.push({ status: 'warning', message: 'Nenhum relatorio de otimizacao encontrado' })
+    items.push({ status: 'warning', message: 'Nenhum relatório de otimização encontrado' })
     return items
   }
 
-  items.push({ status: 'ok', message: 'Relatorio de otimizacao existe' })
+  items.push({ status: 'ok', message: 'Relatório de otimização existe' })
 
   // Verifica applied_sections (nao deve estar marcando itens nao aplicados)
   const applied = Array.isArray(report.applied_sections) ? report.applied_sections : []
   if (applied.length > 0) {
     items.push({
       status: 'ok',
-      message: `${applied.length} secao(oes) marcadas como aplicadas`,
+      message: `${applied.length} seção(ões) marcadas como aplicadas`,
     })
   }
 
