@@ -407,14 +407,14 @@ export const productVerifier = inngest.createFunction(
 
       const isWeekly = checkType === 'weekly-report'
       const subject = isWeekly
-        ? `[Destaka] Relatorio semanal - ${dataBR}`
-        : `[Destaka] Verificacao diaria - ${dataBR} ${horaBR}`
+        ? `[Destaka] Relatório semanal - ${dataBR}`
+        : `[Destaka] Verificação diária - ${dataBR} ${horaBR}`
 
       const includeOptimizations = checkType === 'full'
 
       let body = isWeekly
-        ? `RELATORIO SEMANAL DE PRODUTO - ${dataBR}\n`
-        : `VERIFICACAO DE PRODUTO - ${dataBR} ${horaBR}\n`
+        ? `RELATÓRIO SEMANAL DE PRODUTO - ${dataBR}\n`
+        : `VERIFICAÇÃO DE PRODUTO - ${dataBR} ${horaBR}\n`
 
       body += `Tipo: ${checkType} | Orgs verificadas: ${orgs.length}\n`
 
@@ -435,7 +435,7 @@ export const productVerifier = inngest.createFunction(
       if (totalFailed === 0 && totalWarnings === 0) {
         body += '\nTudo funcionando corretamente.\n'
       } else if (totalFailed > 0) {
-        body += `\n${totalFailed} falha(s) identificada(s). Pecanha despachou correcao automatica.\n`
+        body += `\n${totalFailed} falha(s) identificada(s). Peçanha já despachou correção automática.\n`
       }
 
       console.log(`[product-verifier] ${body}`)
@@ -450,19 +450,19 @@ export const productVerifier = inngest.createFunction(
       <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
         <tr><td style="background:#111827;border-radius:16px 16px 0 0;padding:24px 32px;">
           <span style="font-size:18px;font-weight:700;color:#ffffff;letter-spacing:-0.015em;">Destaka</span>
-          <span style="font-size:14px;color:#9ca3af;margin-left:12px;">Verificacao de Produto</span>
+          <span style="font-size:14px;color:#9ca3af;margin-left:12px;">Verificação de Produto</span>
         </td></tr>
         <tr><td style="background:#ffffff;padding:32px;">
           <h2 style="margin:0 0 8px;font-size:20px;font-weight:800;color:#111827;">${subject.replace('[Destaka] ', '')}</h2>
-          <p style="margin:0 0 24px;font-size:13px;color:#6b7280;">${dataBR} ${horaBR} &mdash; ${orgs.length} org(s) verificada(s)</p>
+          <p style="margin:0 0 24px;font-size:13px;color:#6b7280;">${dataBR} ${horaBR} &mdash; ${orgs.length} organização(ões) verificada(s)</p>
           <div style="background:#f9fafb;border-radius:8px;padding:20px;font-family:monospace;font-size:13px;color:#374151;white-space:pre-wrap;line-height:1.6;">${body.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
           ${totalFailed > 0
             ? `<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:16px;margin-top:20px;">
-                <p style="margin:0;font-size:14px;font-weight:700;color:#dc2626;">${totalFailed} falha(s) identificada(s). Verificar dashboard imediatamente.</p>
+                <p style="margin:0;font-size:14px;font-weight:700;color:#dc2626;">${totalFailed} falha(s) identificada(s). Peçanha já despachou correção.</p>
                </div>`
             : totalWarnings > 0
             ? `<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:16px;margin-top:20px;">
-                <p style="margin:0;font-size:14px;font-weight:600;color:#d97706;">${totalWarnings} aviso(s). Monitorar nas proximas horas.</p>
+                <p style="margin:0;font-size:14px;font-weight:600;color:#d97706;">${totalWarnings} aviso(s). Monitorar nas próximas horas.</p>
                </div>`
             : `<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:16px;margin-top:20px;">
                 <p style="margin:0;font-size:14px;font-weight:600;color:#16a34a;">Todos os sistemas operando normalmente.</p>
@@ -470,7 +470,7 @@ export const productVerifier = inngest.createFunction(
           }
         </td></tr>
         <tr><td style="background:#f3f4f6;border-radius:0 0 16px 16px;padding:20px 32px;text-align:center;">
-          <p style="font-size:11px;color:#9ca3af;margin:0;">Destaka &mdash; Verificacao automatica por Pecanha</p>
+          <p style="font-size:11px;color:#9ca3af;margin:0;">Destaka &mdash; Verificação automática por Peçanha</p>
         </td></tr>
       </table>
     </td></tr>
@@ -478,12 +478,17 @@ export const productVerifier = inngest.createFunction(
 </body>
 </html>`
 
-      await resend.emails.send({
-        from: FROM,
-        to: ALERT_EMAIL,
-        subject,
-        html: htmlBody,
-      })
+      try {
+        await resend.emails.send({
+          from: FROM,
+          to: ALERT_EMAIL,
+          subject,
+          html: htmlBody,
+        })
+        console.log(`[product-verifier] Email relatório enviado para ${ALERT_EMAIL}`)
+      } catch (emailErr) {
+        console.error(`[product-verifier] FALHA ao enviar email relatório:`, emailErr)
+      }
 
       return {
         subject,
@@ -538,7 +543,7 @@ export const productVerifier = inngest.createFunction(
       }
 
       if (fixes.length > 0) {
-        console.log(`[product-verifier] Pecanha despachou ${fixes.length} correcao(oes): ${fixes.join('; ')}`)
+        console.log(`[product-verifier] Peçanha despachou ${fixes.length} correção(ões): ${fixes.join('; ')}`)
       }
 
       return fixes
@@ -553,7 +558,7 @@ export const productVerifier = inngest.createFunction(
         await resend.emails.send({
           from: FROM,
           to: ALERT_EMAIL,
-          subject: `[Destaka] Pecanha despachou ${dispatched.length} correcao(oes) - ${dataBR}`,
+          subject: `[Destaka] Peçanha despachou ${dispatched.length} correção(ões) - ${dataBR}`,
           html: `<!DOCTYPE html>
 <html lang="pt-BR">
 <head><meta charset="UTF-8"></head>
@@ -563,16 +568,16 @@ export const productVerifier = inngest.createFunction(
       <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
         <tr><td style="background:#111827;border-radius:16px 16px 0 0;padding:24px 32px;">
           <span style="font-size:18px;font-weight:700;color:#ffffff;">Destaka</span>
-          <span style="font-size:14px;color:#F59E0B;margin-left:12px;">Pecanha: correcoes despachadas</span>
+          <span style="font-size:14px;color:#F59E0B;margin-left:12px;">Peçanha: correções despachadas</span>
         </td></tr>
         <tr><td style="background:#ffffff;padding:32px;">
-          <h2 style="margin:0 0 16px;font-size:18px;font-weight:800;color:#111827;">Problemas detectados e correcoes acionadas</h2>
-          <p style="margin:0 0 16px;font-size:14px;color:#4b5563;">Pecanha identificou problemas e despachou automaticamente para os responsaveis:</p>
+          <h2 style="margin:0 0 16px;font-size:18px;font-weight:800;color:#111827;">Problemas detectados e correções acionadas</h2>
+          <p style="margin:0 0 16px;font-size:14px;color:#4b5563;">Peçanha identificou problemas e despachou automaticamente para os responsáveis:</p>
           <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:20px;font-family:monospace;font-size:13px;color:#374151;white-space:pre-wrap;line-height:1.8;">${dispatchList}</div>
-          <p style="margin:16px 0 0;font-size:13px;color:#9ca3af;">As funcoes responsaveis foram re-disparadas via Inngest. Os resultados aparecem na proxima verificacao.</p>
+          <p style="margin:16px 0 0;font-size:13px;color:#9ca3af;">As funções responsáveis foram re-disparadas via Inngest. Os resultados aparecem na próxima verificação.</p>
         </td></tr>
         <tr><td style="background:#f3f4f6;border-radius:0 0 16px 16px;padding:20px 32px;text-align:center;">
-          <p style="font-size:11px;color:#9ca3af;margin:0;">Destaka: Pecanha, agente de verificacao de produto</p>
+          <p style="font-size:11px;color:#9ca3af;margin:0;">Destaka: Peçanha, agente de verificação de produto</p>
         </td></tr>
       </table>
     </td></tr>
