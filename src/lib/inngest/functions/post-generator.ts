@@ -92,69 +92,14 @@ export const postGenerator = inngest.createFunction(
           return { org_id: orgId, status: 'skip', error: 'gbp_location_id nao configurado' }
         }
 
-        // Instagram tem prioridade: se ha posts ready, publicar 1 em vez de gerar IA
+        // Buscar posts do Instagram prontos para usar como parte dos 5 da semana
         const { data: instagramReady } = await db
           .from('instagram_posts')
           .select('id, rewritten_caption, image_url')
           .eq('organization_id', orgId)
           .eq('status', 'ready')
           .order('engagement_score', { ascending: false })
-          .limit(1)
-
-        if (instagramReady && instagramReady.length > 0) {
-          const igPost = instagramReady[0]
-
-          const isAutomatic = org.automation_preference === 'automatico'
-
-          if (isAutomatic) {
-            // Geotag na imagem com coordenadas do perfil GBP
-            const geotaggedUrl = igPost.image_url ? await geotagAndUpload(orgId, igPost.image_url) : undefined
-            // Try Zernio first, then GBP v4 legacy
-            let gbpPostId = await publishViaZernio(orgId, igPost.rewritten_caption, geotaggedUrl)
-            if (!gbpPostId) {
-              const validToken = await getValidTokenForOrg(db, orgId)
-              if (validToken) {
-                gbpPostId = await publishGbpPostLegacy(validToken, org.gbp_location_id, igPost.rewritten_caption, geotaggedUrl)
-              }
-            }
-
-            await db.from('instagram_posts')
-              .update({
-                status: gbpPostId ? 'published' : 'failed',
-                gbp_post_id: gbpPostId,
-                published_to_gbp_at: gbpPostId ? new Date().toISOString() : null,
-                ...(gbpPostId ? {} : { skip_reason: 'Publicacao GBP falhou' }),
-              })
-              .eq('id', igPost.id)
-
-            if (gbpPostId) {
-              await db.from('posts').insert({
-                organization_id: orgId,
-                content: igPost.rewritten_caption,
-                post_type: 'educativo',
-                status: 'published',
-                published_at: new Date().toISOString(),
-                gbp_post_id: gbpPostId,
-                photo_suggestion: 'Foto original do Instagram',
-                source: 'instagram',
-              })
-            }
-
-            return { org_id: orgId, status: gbpPostId ? 'published' : 'failed', post_type: 'educativo' }
-          }
-
-          // Se nao e automatico, marca como pending para aprovacao
-          await db.from('posts').insert({
-            organization_id: orgId,
-            content: igPost.rewritten_caption,
-            post_type: 'educativo',
-            status: 'pending',
-            photo_suggestion: 'Foto original do Instagram',
-            source: 'instagram',
-          })
-
-          return { org_id: orgId, status: 'pending', post_type: 'educativo' }
-        }
+          .limit(5)
 
         // Verificar se ja existem 5 posts gerados esta semana (evita duplicatas se o cron rodar duas vezes)
         const mondayMidnight = new Date()
@@ -265,11 +210,29 @@ export const postGenerator = inngest.createFunction(
         const generatedTypes: PostType[] = []
         let skippedCompliance = 0
 
+        const igPosts = instagramReady ?? []
+
         for (let i = 0; i < 5; i++) {
           // Calcula a data de agendamento para este post (segunda + i dias, as 13h UTC)
           const scheduleDate = new Date(mondayMidnight)
           scheduleDate.setUTCDate(scheduleDate.getUTCDate() + scheduleDayOffsets[i])
           scheduleDate.setUTCHours(PUBLISH_HOUR_UTC, 0, 0, 0)
+
+          // Se tem post do Instagram pronto, usa ele em vez de gerar via IA
+          if (igPosts.length > 0) {
+            const igPost = igPosts.shift()!
+            await db.from('instagram_posts').update({ status: 'used' }).eq('id', igPost.id)
+            await db.from('posts').insert({
+              organization_id: orgId,
+              content: igPost.rewritten_caption,
+              post_type: 'educativo' as PostType,
+              status: isAutomatic ? 'scheduled' : 'pending',
+              photo_suggestion: igPost.image_url ?? 'Foto original do Instagram',
+              scheduled_at: scheduleDate.toISOString(),
+            })
+            generatedTypes.push('educativo' as PostType)
+            continue
+          }
 
           // Rotacao de tipo usando historico + posts gerados nesta rodada
           const recentTypes = [
