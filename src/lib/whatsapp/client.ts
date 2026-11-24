@@ -134,12 +134,16 @@ class GupshupWhatsAppClient implements WhatsAppClient {
 
 // --- Factory ---
 
-export type WhatsAppProvider = 'stub' | 'twilio' | 'gupshup'
+export type WhatsAppProvider = 'stub' | 'kapso' | 'twilio' | 'gupshup'
 
 export function createWhatsAppClient(): WhatsAppClient {
   const provider = (process.env.WHATSAPP_PROVIDER ?? 'stub') as WhatsAppProvider
 
   switch (provider) {
+    case 'kapso': {
+      const { KapsoWhatsAppClient } = require('@/lib/kapso/send-adapter')
+      return new KapsoWhatsAppClient()
+    }
     case 'twilio':
       return new TwilioWhatsAppClient()
     case 'gupshup':

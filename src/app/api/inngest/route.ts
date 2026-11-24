@@ -28,6 +28,7 @@ import { reviewSolicitation } from '@/lib/inngest/functions/review-solicitation'
 import { competitorAlert } from '@/lib/inngest/functions/competitor-alert'
 import { scheduledPostPublisher } from '@/lib/inngest/functions/scheduled-post-publisher'
 import { productVerifier } from '@/lib/inngest/functions/product-verifier'
+import { waReviewSender } from '@/lib/inngest/functions/wa-review-sender'
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -55,5 +56,6 @@ export const { GET, POST, PUT } = serve({
     competitorAlert,
     scheduledPostPublisher,
     productVerifier,
+    waReviewSender,
   ],
 })
