@@ -27,6 +27,7 @@ import { geoGridTracker } from '@/lib/inngest/functions/geo-grid-tracker'
 import { reviewSolicitation } from '@/lib/inngest/functions/review-solicitation'
 import { competitorAlert } from '@/lib/inngest/functions/competitor-alert'
 import { scheduledPostPublisher } from '@/lib/inngest/functions/scheduled-post-publisher'
+import { productVerifier } from '@/lib/inngest/functions/product-verifier'
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -53,5 +54,6 @@ export const { GET, POST, PUT } = serve({
     reviewSolicitation,
     competitorAlert,
     scheduledPostPublisher,
+    productVerifier,
   ],
 })
