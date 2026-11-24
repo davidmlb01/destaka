@@ -25,6 +25,7 @@ interface AttributeSuggestion {
 interface ServiceOptimization {
   original: string
   optimized: string
+  description?: string
   keywords_added: string[]
 }
 
@@ -636,7 +637,7 @@ export function OptimizationsPage({
             {/* Optimized versions */}
             <div className="px-5 pb-3">
               <p className="text-[10px] font-bold uppercase tracking-widest mb-3 mt-3" style={{ color: 'var(--text-muted)' }}>
-                Nomes otimizados para o Google
+                Nomes e descrições otimizados para o Google
               </p>
               <div className="space-y-3">
                 {svcOptimizations.map((svc, i) => (
@@ -665,6 +666,14 @@ export function OptimizationsPage({
                         color: 'var(--text-primary)',
                       }}
                     />
+                    {svc.description && (
+                      <p
+                        className="text-[13px] mt-2 px-1 leading-relaxed"
+                        style={{ color: 'var(--text-secondary)' }}
+                      >
+                        {svc.description}
+                      </p>
+                    )}
                     {svc.keywords_added.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-2">
                         {svc.keywords_added.map((kw, j) => (
