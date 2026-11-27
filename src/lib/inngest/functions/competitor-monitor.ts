@@ -34,7 +34,7 @@ export const competitorMonitor = inngest.createFunction(
       if (event.name === 'destaka/competitors.discover.requested') {
         return [(event as unknown as { data: { organization_id: string } }).data.organization_id]
       }
-      const { data } = await db.from('organizations').select('id')
+      const { data } = await db.from('organizations').select('id').eq('subscription_status', 'active')
       return (data ?? []).map((r: { id: string }) => r.id)
     })
 

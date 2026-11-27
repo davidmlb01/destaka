@@ -43,6 +43,9 @@ export const getDashboardContext = cache(async (): Promise<DashboardContext> => 
     isActiveSubscriber(orgId),
   ])
 
+  // Nao-assinante nao acessa o dashboard: redireciona para diagnostico
+  if (!subscriber) redirect('/diagnostico')
+
   return {
     user: { id: user.id, email: user.email ?? '' },
     orgId,

@@ -30,7 +30,7 @@ export const scoreCalculator = inngest.createFunction(
       if (event.name === 'destaka/score.calculate.requested' && eventData?.organization_id) {
         return [eventData.organization_id]
       }
-      const { data } = await db.from('organizations').select('id')
+      const { data } = await db.from('organizations').select('id').eq('subscription_status', 'active')
       return (data ?? []).map((r: { id: string }) => r.id)
     })
 

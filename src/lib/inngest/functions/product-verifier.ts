@@ -348,7 +348,7 @@ export const productVerifier = inngest.createFunction(
           .eq('id', eventData.organization_id)
         return data ?? []
       }
-      const { data } = await db.from('organizations').select('id, name')
+      const { data } = await db.from('organizations').select('id, name').eq('subscription_status', 'active')
       return data ?? []
     })
 
