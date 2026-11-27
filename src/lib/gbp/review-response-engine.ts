@@ -17,12 +17,32 @@ const TONE_DESCRIPTION: Record<ReviewTone, string> = {
 }
 
 const STAR_STRATEGY: Record<number, string> = {
-  5: `Agradecimento genuíno e caloroso. Inclua naturalmente a especialidade e a cidade (ex: "em nosso escritório em São Paulo"). Convide para o próximo atendimento. Máximo 3 frases.`,
+  5: `Agradecimento genuíno. Inclua naturalmente a especialidade e a cidade. Convide para o próximo atendimento. Máximo 3 frases.`,
   4: `Agradeça o feedback. Reconheça sutilmente que há espaço para melhoria sem entrar em detalhes. Convide para o próximo atendimento. Máximo 3 frases.`,
   3: `Tome responsabilidade de forma empática sem culpar o cliente. Agradeça por ter compartilhado. Ofereça contato direto para entender melhor e melhorar. Máximo 4 frases.`,
   2: `Tom profissional e empático. Não seja defensivo. Agradeça pelo feedback. Ofereça um canal de contato direto (telefone ou email) para resolver a situação. Máximo 4 frases.`,
   1: `Tome responsabilidade sem ser defensivo. Tom calmo e empático. Desescale qualquer tensão. Ofereça contato direto para resolução. Deixe claro que a experiência do cliente é prioridade. Máximo 4 frases.`,
 }
+
+// Instruções de variação para evitar respostas repetitivas
+const VARIATION_INSTRUCTION = `
+REGRA CRÍTICA DE VARIAÇÃO:
+Cada resposta deve ser ÚNICA. Nunca repita estruturas ou frases de respostas anteriores.
+
+Varie entre estes formatos (escolha UM diferente a cada vez):
+- Começar comentando algo específico que o cliente mencionou na avaliação
+- Começar agradecendo de forma direta e curta ("Que bom ler isso, [nome]!")
+- Começar reconhecendo o cliente pelo nome com uma frase pessoal
+- Começar com o impacto que a avaliação tem ("Avaliações como a sua nos motivam...")
+- Começar destacando algo do atendimento ("Cuidar de você é sempre...")
+
+Varie também:
+- As palavras de agradecimento (obrigado, gratidão, que bom, fico feliz, que legal, faz nosso dia)
+- O convite de retorno (esperamos te ver, conte conosco, estamos aqui, até breve, volte quando precisar)
+- O tamanho (algumas respostas mais curtas, outras um pouco mais longas)
+- NÃO use "carinhoso", "acolhido/a" ou "dedicação" em todas as respostas
+
+Se a avaliação não tem texto (só estrelas), seja mais breve (2 frases no máximo).`
 
 export async function generateReviewResponse(params: {
   reviewComment: string
@@ -60,6 +80,10 @@ export async function generateReviewResponse(params: {
     ? `\nREGRAS DE COMPLIANCE OBRIGATÓRIAS:\n${ctx.complianceRules}\n- NUNCA prometa resultados específicos\n- NUNCA mencione valores, preços ou promoções\n- NUNCA compare com outros profissionais ou estabelecimentos\n- A resposta deve soar como se o PRÓPRIO PROFISSIONAL tivesse escrito, não uma IA\n`
     : `\nREGRAS GERAIS:\n- NUNCA prometa resultados ou garantias\n- NUNCA mencione valores, preços ou promoções\n- NUNCA denigra concorrentes\n- A resposta deve soar como se o PRÓPRIO PROFISSIONAL tivesse escrito, não uma IA\n`
 
+  // Seed de variação baseado no nome do reviewer + rating (determinístico por review)
+  const variationSeed = `${reviewerName ?? 'anon'}-${starRating}-${sanitizedComment.length}`
+  const variationIndex = Math.abs(hashCode(variationSeed)) % 5
+
   const prompt = `Você é ${professionalName}, ${ctx.vocab.profissional} em ${city}.
 
 AVALIAÇÃO (${stars} estrela${stars > 1 ? 's' : ''}):
@@ -69,6 +93,9 @@ ESTRATÉGIA PARA ESTA RESPOSTA:
 ${strategy}
 
 TOM: ${toneDesc}
+${VARIATION_INSTRUCTION}
+
+VARIAÇÃO #${variationIndex + 1}: Use o formato número ${variationIndex + 1} da lista de formatos acima.
 ${complianceSection}
 Escreva a resposta em português brasileiro. Não use travessão. Retorne APENAS o texto da resposta, sem aspas, sem prefixos.`
 
@@ -81,6 +108,17 @@ Escreva a resposta em português brasileiro. Não use travessão. Retorne APENAS
     // Fallback por faixa de estrelas
     return getFallbackResponse(stars, professionalName, tone, specialty)
   }
+}
+
+// Hash simples para gerar variação determinística por review
+function hashCode(str: string): number {
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i)
+    hash = ((hash << 5) - hash) + char
+    hash |= 0
+  }
+  return hash
 }
 
 function getFallbackResponse(stars: number, name: string, tone: ReviewTone, specialty?: string): string {
