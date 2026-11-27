@@ -167,12 +167,16 @@ export async function GET(request: NextRequest) {
       const orgName = locationName || user.user_metadata?.full_name || user.email || 'Meu Negocio'
       const specialty = locationCategory ? detectSegment(locationCategory) : 'negócio local'
 
-      // Captura UTMs do cookie (setado pelo TrackingScripts no client)
+      // Captura UTMs do cookie (server-side via proxy, fallback client-side)
       const utmCookie = request.cookies.get('destaka_utm')?.value
       let utmData: Record<string, string> = {}
       if (utmCookie) {
         try { utmData = JSON.parse(decodeURIComponent(utmCookie)) } catch { /* ignore */ }
       }
+
+      // Captura referrer (server-side via proxy)
+      const referrerCookie = request.cookies.get('destaka_referrer')?.value
+      const referrer = referrerCookie ?? null
 
       const { data: org, error: orgError } = await admin
         .from('organizations')
@@ -185,6 +189,7 @@ export async function GET(request: NextRequest) {
           utm_source: utmData.utm_source ?? null,
           utm_medium: utmData.utm_medium ?? null,
           utm_campaign: utmData.utm_campaign ?? null,
+          referrer,
         })
         .select()
         .single()
